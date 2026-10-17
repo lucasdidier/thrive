@@ -1,8 +1,9 @@
+import {defaultInvoiceDesign} from './invoice-design.js';
 import {baseSeed} from './seed.js';
 export const uid=()=>globalThis.crypto.randomUUID();
 export const today=()=>new Date().toISOString().slice(0,10);
 export const money=cents=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:cents%100?2:0,maximumFractionDigits:2}).format(cents/100);
-export const projectClient=(s,p)=>s.clients.find(c=>c.id===p.clientId);
+export const projectClient=(s,p)=>s.clients.find(c=>c.id===p?.clientId);
 export const invoiceStatus=i=>i.paid>=i.amount?'paid':i.due<today()?'overdue':'outstanding';
 const clean=x=>String(x??'').trim(), clone=x=>JSON.parse(JSON.stringify(x));
 const get=(s,id)=>{const p=s.projects.find(p=>p.id===id);if(!p)throw Error('Project not found.');return p;};
@@ -51,7 +52,7 @@ export function createProject(s,data){
  const phases=s.settings.phases.map(name=>({id:uid(),name,done:false})),billingPlan=defaultPlan(data.budget,s.settings.deposit,phases);
  const p={id:uid(),name,clientId:data.clientId,budget:data.budget,service:clean(data.service)||'Services',due:data.due||'',status:'inquiry',archived:false,deposit:s.settings.deposit,phases,billingPlan,accepted:false,proposal:clean(data.scope)||'Describe the scope of work.',deliverables:'',proposalStatus:'draft',versions:[],currentVersion:null};s.projects.unshift(p);addActivity(s,'Project created',p.name);return p;
 }
-function deliveryFunded(s,p){const bills=s.invoices.filter(i=>i.projectId===p.id),deposits=bills.filter(i=>i.kind==='deposit');return deposits.length?deposits.every(i=>i.paid>=i.amount):p.budget>0&&bills.reduce((a,i)=>a+i.paid,0)>=p.budget;}
+function deliveryFunded(s,p){const bills=s.invoices.filter(i=>i.projectId===p.id&&i.kind!=='manual'),deposits=bills.filter(i=>i.kind==='deposit');return deposits.length?deposits.every(i=>i.paid>=i.amount):p.budget>0&&bills.reduce((a,i)=>a+i.paid,0)>=p.budget;}
 export function updateProject(s,id,data){
  const p=get(s,id);openProject(p);const name=clean(data.name),service=clean(data.service),due=data.due||'',status=data.status||p.status;if(!name||!validDate(due))throw Error('Enter a project name and valid target date.');
  if(!['inquiry','proposal','awaiting deposit','active','completed','cancelled','declined'].includes(status))throw Error('Invalid project status.');
@@ -77,20 +78,20 @@ export function acceptProposal(s,id,number){const {p,v}=currentVersion(s,id,numb
 export function declineProposal(s,id,number){const {p,v}=currentVersion(s,id,number);if(p.accepted)throw Error('An accepted proposal cannot be declined.');v.status='declined';p.proposalStatus='declined';p.status='declined';addActivity(s,'Proposal declined',p.name,'document');}
 function issue(s,p,r){
  const existing=s.invoices.find(i=>i.projectId===p.id&&i.ruleId===r.id);if(existing)return existing;
- if(s.invoices.filter(i=>i.projectId===p.id).reduce((a,i)=>a+i.amount,0)+r.amount>p.budget)throw Error('This invoice would exceed the agreed fee.');
+ if(s.invoices.filter(i=>i.projectId===p.id&&i.kind!=='manual').reduce((a,i)=>a+i.amount,0)+r.amount>p.budget)throw Error('This invoice would exceed the agreed fee.');
  const v=p.versions.find(v=>v.number===p.currentVersion),c=v?.client||projectClient(s,p);
- const i={id:uid(),number:`INV-${String(Math.max(0,...s.invoices.map(i=>Number(i.number.split('-')[1])||0))+1).padStart(3,'0')}`,projectId:p.id,ruleId:r.id,amount:r.amount,paid:0,due:today(),kind:r.phaseId?'milestone':'deposit',label:r.name,clientName:c.name,clientEmail:c.email,projectName:v?.name||p.name,business:v?.business||s.settings.business,paymentInstructions:s.settings.paymentInstructions||'',payments:[]};s.invoices.unshift(i);addActivity(s,'Invoice created',`${p.name} · ${r.name} · ${money(i.amount)}`,'document');return i;
+ const i={id:uid(),number:`INV-${String(Math.max(0,...s.invoices.map(i=>Number(i.number.split('-')[1])||0))+1).padStart(3,'0')}`,projectId:p.id,ruleId:r.id,amount:r.amount,paid:0,due:today(),kind:r.phaseId?'milestone':'deposit',label:r.name,clientName:c.name,clientEmail:c.email,projectName:v?.name||p.name,business:v?.business||s.settings.business,paymentInstructions:s.settings.paymentInstructions||'',payments:[],issued:today(),design:clone(s.settings.invoiceDesign||defaultInvoiceDesign())};s.invoices.unshift(i);addActivity(s,'Invoice created',`${p.name} · ${r.name} · ${money(i.amount)}`,'document');return i;
 }
 export function generateDeposit(s,id){const p=get(s,id);openProject(p);if(!p.accepted)throw Error('Accept the proposal first.');const existing=s.invoices.find(i=>i.projectId===id&&i.kind==='deposit');if(existing)return existing;const r=p.billingPlan.find(r=>!r.phaseId);if(!r)throw Error('No deposit is scheduled.');return issue(s,p,r);}
 export function approveMilestone(s,id,phaseId){
  const p=get(s,id);openProject(p);if(!p.accepted||!['active','completed'].includes(p.status))throw Error('Record the deposit before approving a milestone.');const f=p.phases.find(f=>f.id===phaseId);if(!f)throw Error('Phase not found.');const rules=p.billingPlan.filter(r=>r.phaseId===phaseId);
- const total=s.invoices.filter(i=>i.projectId===id).reduce((a,i)=>a+i.amount,0),added=rules.filter(r=>!s.invoices.some(i=>i.projectId===id&&i.ruleId===r.id)).reduce((a,r)=>a+r.amount,0);if(total+added>p.budget)throw Error('The milestone would exceed the agreed fee.');
+ const total=s.invoices.filter(i=>i.projectId===id&&i.kind!=='manual').reduce((a,i)=>a+i.amount,0),added=rules.filter(r=>!s.invoices.some(i=>i.projectId===id&&i.ruleId===r.id)).reduce((a,r)=>a+r.amount,0);if(total+added>p.budget)throw Error('The milestone would exceed the agreed fee.');
  const bills=rules.map(r=>issue(s,p,r));if(!f.approved){f.done=true;f.approved=true;f.approvedAt=new Date().toISOString();addActivity(s,'Milestone approved',`${p.name} · ${f.name}`);}if(p.phases.every(f=>f.done))p.status='completed';return bills;
 }
 export function togglePhase(s,id,phaseId){const p=get(s,id);openProject(p);if(!['active','completed'].includes(p.status))throw Error('Record the deposit before starting delivery.');const f=p.phases.find(f=>f.id===phaseId);if(!f)throw Error('Phase not found.');if(p.billingPlan.some(r=>r.phaseId===phaseId))throw Error('Use milestone approval for phases linked to a payment.');f.done=!f.done;p.status=p.phases.every(f=>f.done)?'completed':'active';}
 export function initBilling(s){
- s.settings.paymentInstructions??='';
- for(const i of s.invoices){i.paymentInstructions??='';i.payments??=i.paid>0?[{id:`legacy-${i.id}`,amount:i.paid,date:i.paidAt||null,method:'Previously recorded',reference:'',legacy:true}]:[];}
+ s.settings.paymentInstructions??='';s.settings.invoiceDesign??=defaultInvoiceDesign();
+ for(const i of s.invoices){i.clientId??=s.projects.find(p=>p.id===i.projectId)?.clientId||null;i.design??=defaultInvoiceDesign();i.paymentInstructions??='';i.payments??=i.paid>0?[{id:`legacy-${i.id}`,amount:i.paid,date:i.paidAt||null,method:'Previously recorded',reference:'',legacy:true}]:[];}
  return s;
 }
 export function savePaymentInstructions(s,text,invoiceId){
@@ -106,9 +107,9 @@ export function recordManualPayment(s,id,data,key){
  if(!Number.isSafeInteger(amount)||amount<1||amount>i.amount-i.paid)throw Error('Enter an amount greater than zero and no more than the invoice balance.');
  if(!date||!validDate(date)||date>today())throw Error('Enter a valid payment date on or before today.');
  if(!['Bank transfer','Cash','Check','Other'].includes(method))throw Error('Choose how the payment was received.');if(reference.length>200)throw Error('Keep the reference under 200 characters.');
- const p=get(s,i.projectId);initBilling(s);
+ const p=i.projectId?get(s,i.projectId):null;initBilling(s);
  i.payments.push({id:key,amount,date,method,reference,recordedAt:new Date().toISOString()});i.paid+=amount;i.paidAt=i.payments.map(p=>p.date).filter(Boolean).sort().at(-1)||date;
- if(i.paid===i.amount&&i.kind==='deposit'&&p.status==='awaiting deposit')p.status='active';
+ if(i.paid===i.amount&&i.kind==='deposit'&&p?.status==='awaiting deposit')p.status='active';
  addActivity(s,'Payment recorded',`${i.clientName||projectClient(s,p).name} · ${money(amount)} · ${method}`,'payment');return true;
 }
 export function recordPayment(s,id){const i=s.invoices.find(i=>i.id===id);if(!i)throw Error('Invoice not found.');if(i.paid>=i.amount)return false;return recordManualPayment(s,id,{amount:i.amount-i.paid,date:today(),method:'Other',reference:''},`full-payment-${id}`);}
