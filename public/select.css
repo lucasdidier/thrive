@@ -14,6 +14,7 @@ select.thrive-native-select{position:absolute!important;width:1px!important;heig
 .field>.thrive-select{width:100%;margin-top:5px}
 .field>.thrive-select .thrive-select-trigger{font-size:13px;min-height:37px}
 .crm-popover .thrive-select-trigger,.time-filters .thrive-select-trigger,.messages-filters .thrive-select-trigger{min-height:30px;padding:5px 9px;font-size:12px}
+.fb-add>.thrive-select{flex:1}.messages-toolbar .thrive-select,.message-relations .thrive-select{max-width:180px}.schedule-filter .thrive-select{max-width:130px}
 .time-filters .thrive-select{min-width:145px;max-width:240px}
 .thrive-select-popover{position:fixed;inset:auto;margin:0;padding:4px;border:1px solid var(--line,#e5e5e5);border-radius:7px;background:var(--card,#fff);color:var(--text,#252525);font:400 12px/1.45 'DM Sans',sans-serif;box-shadow:0 6px 24px #0002,0 1px 3px #0002;overflow:hidden;box-sizing:border-box;z-index:1000}
 .thrive-select-popover:popover-open{display:flex;flex-direction:column}
