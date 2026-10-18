@@ -7,6 +7,7 @@ const objects = [
   ['Meeting', 'calendar', 'booking-preview'],
   ['Meeting type', 'scheduling', 'meeting-type-new'],
   ['Time entry', 'clock', 'log-time'],
+  ['Workflow', 'workflows', 'wf-new'],
 ];
 
 export function createMenu(icon) {

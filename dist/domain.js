@@ -44,7 +44,8 @@ export function seed(){return migrate(baseSeed());}
 export function saveClient(s,data,id){
  const name=clean(data.name),contact=clean(data.contact),email=clean(data.email).toLowerCase();if(!name||!contact||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('Enter a client name, contact name, and valid email.');
  if(s.clients.some(c=>c.id!==id&&c.email.toLowerCase()===email))throw Error('A client with this email already exists.');
- const current=id?s.clients.find(c=>c.id===id):null;if(id&&!current)throw Error('Client not found.');const c={...current,id:id||uid(),name,contact,email,tag:clean(data.tag)||'Client',initials:name[0].toUpperCase(),color:current?.color||'sage',archived:current?.archived||false};if(current)Object.assign(current,c);else s.clients.unshift(c);addActivity(s,id?'Client updated':'Client created',name,'client');return current||c;
+ const tags=data.tags===undefined?null:[...new Set((Array.isArray(data.tags)?data.tags:String(data.tags).split(',')).map(clean).filter(Boolean))];if(tags&&(tags.length>20||tags.some(t=>t.length>60)))throw Error('Use up to 20 tags, with at most 60 characters each.');
+ const current=id?s.clients.find(c=>c.id===id):null;if(id&&!current)throw Error('Client not found.');const c={...current,id:id||uid(),name,contact,email,tag:clean(data.tag)||'Client',initials:name[0].toUpperCase(),color:current?.color||'sage',tags:tags??current?.tags??[],archived:current?.archived||false};if(current)Object.assign(current,c);else s.clients.unshift(c);addActivity(s,id?'Client updated':'Client created',name,'client');return current||c;
 }
 export function archiveClient(s,id){const c=s.clients.find(c=>c.id===id);if(!c)throw Error('Client not found.');c.archived=!c.archived;addActivity(s,c.archived?'Client archived':'Client restored',c.name,'client');}
 export function createProject(s,data){
