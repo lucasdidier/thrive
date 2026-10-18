@@ -1,4 +1,5 @@
 import {env} from 'cloudflare:workers';
 import {handleShared} from '../../../../server/sharing.mjs';
-export async function GET(request:Request,context:{params:Promise<{token:string}>}){return handleShared(request,env.DB,(await context.params).token);}
-export async function POST(request:Request,context:{params:Promise<{token:string}>}){return handleShared(request,env.DB,(await context.params).token);}
+import {withRuntime} from '../../../../server/runtime.mjs';
+export async function GET(request:Request,context:{params:Promise<{token:string}>}){const {token}=await context.params;return withRuntime(request,env,async({request,db})=>handleShared(request,db,token),{publicAccess:true});}
+export async function POST(request:Request,context:{params:Promise<{token:string}>}){const {token}=await context.params;return withRuntime(request,env,async({request,db})=>handleShared(request,db,token),{publicAccess:true});}
