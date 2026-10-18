@@ -83,6 +83,20 @@ All workflow catalog actions are available via MCP, plus typed field administrat
 
 Remaining prototype boundaries: no payment collection or Stripe connection, no third-party e-signature or signer verification service, no background email refresh or date triggers. Gmail and Google Calendar require operator OAuth setup plus user consent. Calendar availability is checked live; event creation is explicit, and subsequent edits/cancellations must be managed in Google Calendar. Owner preview and MCP document responses remain explicitly simulated. Client-link responses are recorded against the shared version. AI chat still uses the existing prototype intent parser; adding MCP does not turn chat into a hosted LLM service.
 
+## Client portals
+
+Open a client (or project) and choose **Client portal**. Set the title and welcome message, enable sections, and select the exact records to share. **Client preview** uses the same safe projection as the client page; it cannot submit responses. Activate the portal, then **Save & share** to generate an expiring or non-expiring link. Pause the portal or revoke its link to stop access.
+
+One portal spans the client's projects. Pending documents, requested forms, and unpaid invoices appear first. Clients can review/accept/sign documents, submit forms and attachments, download documents/invoices, see payment instructions, and expand project phases. Selected meetings show their time and location. Recorded payments and completed responses update the pending list automatically. Clients cannot mark an invoice paid.
+
+New records are private until selected. Only published document versions and issued invoices can be selected; document revisions require explicit re-selection. Internal notes, custom fields, project budgets, meeting briefs, and unselected records are excluded server-side. Every child request rechecks the portal and its selection; hiding a section, removing a record, pausing the portal, or archiving the client blocks that access. Independent document/form/invoice links retain their own sharing settings.
+
+A form assignment accepts one response for this client, even when the form has no CRM email field. A bound email must match that client's email. To request another response, remove the form, save, and add it again. Old assignment URLs stop working. Response receipts are scoped to the portal item, and existing workflow and file-upload protections apply.
+
+Agents can use `portal.save` through Thrive MCP with `clientId` and `data` (`enabled`, `title`, `intro`, `sections`, and arrays of record IDs for `documents`, `forms`, `invoices`, `projects`, `meetings`). Partial updates preserve selections and pinned versions. Use `share.create` with `entity: "portal"` and the client ID, and `share.revoke` to manage links. The catalog describes these actions. Configuration is stored on the client record.
+
+The current private Sites audience still applies to client URLs. This does not activate external customer access, independent signup, messaging, booking, or payment collection.
+
 ## Client links
 
 Published documents, issued invoices, and active forms have a **Share** action. Generate or copy a link, choose 7/30/90 days or no expiry, and revoke it at any time. Documents are pinned to a published version; revision, archive, revocation, or expiry makes that link unavailable. Completed versions remain downloadable. Forms use their current definition and reject submissions from an outdated page. Invoices show the current recorded balance and payment instructions; clients cannot mark invoices paid.

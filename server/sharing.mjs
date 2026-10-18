@@ -1,3 +1,4 @@
+import {portalProjection,portalEntry,portalFormResponse} from '../public/portal-domain.js';
 import {validateDocumentDesign,pricingVisible} from '../public/document-design.js';
 import {validQuantity} from '../public/pricing.js';
 import {publicFormData,validateFormAnswers} from '../public/form-domain.js';
@@ -19,8 +20,17 @@ export async function resolveShare(db,token){
  if(!current||!linkAvailable(current.state,link))throw unavailable();
  return {...current,link,owner:entry.owner_id};
 }
+/** @param {any} db @param {string} token @param {string|null} [item] */
+export async function resolveSharedResource(db,token,item=null){
+ const current=await resolveShare(db,token);
+ if(!item)return current;
+ if(current.link.entity!=='portal')throw unavailable();
+ let entry;try{entry=portalEntry(current.state,current.link.recordId,item);}catch{throw unavailable();}
+ return {...current,portalContext:{clientId:current.link.recordId,assignmentId:entry.assignmentId,key:entry.key},link:{...current.link,entity:entry.entity,recordId:entry.recordId,version:entry.version}};
+}
 // Explicit allowlists keep internal notes, tags, custom fields and relationships out.
 export function clientProjection(state,link){
+ if(link.entity==='portal')return portalProjection(state,link.recordId);
  const {record}=shareTarget(state,link.entity,link.recordId);
  if(link.entity==='document'){
   const v=record.versions.find(x=>x.number===link.version);
@@ -60,13 +70,16 @@ function validateInput(body,entity){
   if(body.selections!==undefined&&(!Array.isArray(body.selections)||body.selections.length>20||body.selections.some(s=>!s||typeof s.id!=='string'||s.id.length>100||!validQuantity(s.quantity))))throw new StoreError('Check your service selections.');
  }
 }
-export async function respondToShare(db,token,body){
+export async function respondToShare(db,token,body,item=null){
  for(let attempt=0;attempt<3;attempt++){
-  const current=await resolveShare(db,token),{state,link,owner,revision}=current;
+  const current=await resolveSharedResource(db,token,item),{state,link,owner,revision,portalContext}=current;
+  if(link.entity==='portal')throw new StoreError('Choose an item in the client portal.',405);
   if(link.entity==='invoice')throw new StoreError('Invoices are read-only.',405);
   validateInput(body,link.entity);
-  const key=`share:${link.id}:${(await hashRequest(body.request_id)).slice(0,32)}`,hash=await hashRequest(body),prior=await receiptFor(db,owner,key,hash);
+  const key=`share:${link.id}:${(await hashRequest(portalContext?[portalContext.key,body.request_id]:body.request_id)).slice(0,32)}`,hash=await hashRequest(body),prior=await receiptFor(db,owner,key,hash);
   if(prior)return {ok:prior.ok,message:prior.message,replayed:true};
+  if(portalContext&&link.entity==='form'&&portalFormResponse(state,portalContext.clientId,portalContext.assignmentId))throw new StoreError('This form has already been completed.',409);
+  if(portalContext&&link.entity==='form'&&body.data.answers===undefined)throw new StoreError('Reload this form and complete its questions.');
   if(link.entity==='form'&&body.form_revision!==await hashRequest(clientProjection(state,link).data))throw new StoreError('This form has changed. Reload before submitting your request.',409);
   if(!clientProjection(state,link).actions.includes(body.action))throw new StoreError('This item no longer accepts that response. Reload to see its current status.',409);
   const next=structuredClone(state),before=snapshotWorkspace(state),nextLink=next.shareLinks.find(l=>l.id===link.id),at=new Date().toISOString();
@@ -74,7 +87,7 @@ export async function respondToShare(db,token,body){
    if(nextLink.submissionWindow&&Date.now()-Date.parse(nextLink.submissionWindow)<3600000&&nextLink.submissionCount>=30)throw new StoreError('This form has received too many submissions. Try again later.',429);
    if(!nextLink.submissionWindow||Date.now()-Date.parse(nextLink.submissionWindow)>=3600000){nextLink.submissionWindow=at;nextLink.submissionCount=0;}
    nextLink.submissionCount=(nextLink.submissionCount||0)+1;
-   try{if(body.data.answers!==undefined){const f=next.forms.find(f=>f.id===link.recordId),checked=validateFormAnswers(f,body.data.answers);await validateUploadedAnswers(db,owner,f.id,checked.snapshots,{shareId:link.id,requestId:body.request_id,revision:body.form_revision});}submitForm(next,link.recordId,body.data,key);}catch(e){if(/archived/.test(e.message))throw new StoreError('Unable to submit this request. Contact the sender.');throw e;}
+   try{if(body.data.answers!==undefined){const f=next.forms.find(f=>f.id===link.recordId),checked=validateFormAnswers(f,body.data.answers);await validateUploadedAnswers(db,owner,f.id,checked.snapshots,{shareId:link.id,requestId:body.request_id,revision:body.form_revision});}submitForm(next,link.recordId,body.data,key,portalContext||{});}catch(e){if(/archived/.test(e.message))throw new StoreError('Unable to submit this request. Contact the sender.');throw e;}
   }else{
    respondDocument(next,link.recordId,link.version,body.action,{name:body.name,consent:body.consent,selections:body.selections});
    const d=next.documents.find(d=>d.id===link.recordId),v=d.versions.find(v=>v.number===link.version);
@@ -89,7 +102,8 @@ export async function respondToShare(db,token,body){
  }
 }
 export async function handleShared(request,db,token){try{
- if(request.method==='GET'){const {state,link}=await resolveShare(db,token);const result=clientProjection(state,link);if(link.entity==='form')result.formRevision=await hashRequest(result.data);return json(result);}
- if(request.method==='POST'){checkOrigin(request);const scope=await resolveShare(db,token),limit=scope.link.entity==='form'?600000:20000;if(Number(request.headers.get('content-length'))>limit)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,limit)));}
+ const item=new URL(request.url).searchParams.get('item');
+ if(request.method==='GET'){const {state,link,portalContext}=await resolveSharedResource(db,token,item);const result=clientProjection(state,link);if(link.entity==='form'){result.formRevision=await hashRequest(result.data);if(portalContext&&portalFormResponse(state,portalContext.clientId,portalContext.assignmentId)){result.actions=[];result.completed=true;}}if(portalContext)result.portal={title:state.clients.find(c=>c.id===portalContext.clientId).portal.title};return json(result);}
+ if(request.method==='POST'){checkOrigin(request);const scope=await resolveSharedResource(db,token,item),limit=scope.link.entity==='form'?600000:20000;if(Number(request.headers.get('content-length'))>limit)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,limit),item));}
  return json({error:'Method not allowed.'},405);
  }catch(e){return errorResponse(e);}}

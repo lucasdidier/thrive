@@ -1,8 +1,10 @@
-// Links are capabilities for one item, never for the workspace or a whole client.
-const collections={document:'documents',invoice:'invoices',form:'forms'};
+import {portalClient} from './portal-domain.js';
+// Links authorize one item or an explicitly configured client portal.
+const collections={document:'documents',invoice:'invoices',form:'forms',portal:'clients'};
 export const validShareToken=token=>typeof token==='string'&&/^[a-f0-9]{64}$/.test(token);
 export function shareTarget(state,entity,id){
- if(!collections[entity])throw Error('Choose a document, invoice, or form.');
+ if(!collections[entity])throw Error('Choose a document, invoice, form, or client portal.');
+ if(entity==='portal')return {record:portalClient(state,id),version:null};
  const record=state[collections[entity]]?.find(r=>r.id===id);
  if(!record||record.archived)throw Error('This item is unavailable.');
  if(entity==='document'){
