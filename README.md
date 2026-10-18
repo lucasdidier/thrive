@@ -24,6 +24,14 @@ Source layout:
 - `app/mcp/route.ts`, `server/`: MCP, action dispatch, validation, and shared persistence.
 - `db/`, `drizzle/`: schema and immutable generated migrations.
 
+## Bulk selection
+
+Record lists use **Select multiple** beside their view controls. Row checkboxes and **Select all in this view** appear only in selection mode. A floating bar at the bottom of the workspace shows the selected count and available actions. This covers clients, projects (table and board), documents, invoices, forms and submissions, time, meetings and meeting types, messages, workflows and run history. Configuration checkboxes inside editors remain ordinary form controls.
+
+Select all affects only the current filtered view. Filters/search remove hidden records from the selection, and navigation clears it. Escape or **Done selecting** exits; Cmd/Ctrl+A selects the current view only while selection mode is active and focus is outside a text field. The header checkbox shows the mixed state for a partial selection.
+
+Actions include archive/restore, pause/enable, invoice-draft deletion, and time-to-invoice where supported. Mixed or ineligible selections disable those actions. Mutations are reviewed with selected record names and applied to a copy of state before one save; stale or invalid records cannot cause partial local changes. CSV export includes selected visible columns (or the section’s summary fields) and escapes spreadsheet formulas. Issued invoices remain protected; billed/reserved time cannot be archived. Read-only lists offer export.
+
 ## Custom fields
 
 Clients and projects have independent definitions. Use the table's **+** button or **Display → Manage custom fields**. Fields support text, number, currency (USD decimals), date, checkbox, select, multi-select, email, and URL. Values can be edited from table cells or record details, displayed in saved views, searched, filtered, and sorted. New fields appear in default table views. Archived fields and values are retained and can be restored.
