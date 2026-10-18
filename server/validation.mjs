@@ -1,5 +1,6 @@
 import {fieldsFor,fieldTypes,validateFieldValue} from '../public/custom-fields-domain.js';
 import {validateShareLinks} from '../public/share-domain.js';
+import {validateEmailDraft} from '../public/communications-domain.js';
 export function validateWorkspace(s,old){
  validateShareLinks(s,old);
  if(!s||typeof s!=='object'||s.workspaceSchema!==3||!s.settings||typeof s.settings.business!=='string'||typeof s.settings.name!=='string')throw Error('Invalid workspace data.');
@@ -8,6 +9,7 @@ export function validateWorkspace(s,old){
  for(const r of s[e==='client'?'clients':'projects'])for(const [id,value]of Object.entries(r.customFields||{})){const f=defs.find(f=>f.id===id);if(!f)throw Error('A custom field definition is missing.');validateFieldValue({...f,archived:false},value);}
  for(const f of fieldsFor(old||{},e,true))if(!ids.has(f.id))throw Error('Archive custom fields instead of deleting them.');}
  for(const p of s.projects)if(!s.clients.some(c=>c.id===p.clientId)||!Array.isArray(p.phases)||!Array.isArray(p.billingPlan))throw Error('Invalid project relationship.');
+ if(s.emailDrafts!==undefined){if(!Array.isArray(s.emailDrafts)||s.emailDrafts.length>1000)throw Error('Invalid email draft collection.');const ids=new Set();for(const d of s.emailDrafts){validateEmailDraft(s,d);if(ids.has(d.id))throw Error('Duplicate email draft.');ids.add(d.id);}}
  for(const d of old?.documents||[])for(const v of d.versions||[]){const n=s.documents.find(x=>x.id===d.id)?.versions?.find(x=>x.number===v.number);if(!n)throw Error('Published document versions cannot be deleted.');for(const key of ['title','kind','responseMode','clientId','projectId','billing','phases','scope','deliverables','terms','offers','client','business','due','createdAt'])if(JSON.stringify(n[key])!==JSON.stringify(v[key]))throw Error('Published content is immutable. Create a new document revision.');}
  for(const i of s.invoices){if(!Number.isSafeInteger(i.amount)||i.amount<0||!Number.isSafeInteger(i.paid)||i.paid<0||i.paid>i.amount)throw Error('Invalid invoice balance.');}
  for(const i of old?.invoices||[]){const next=s.invoices.find(x=>x.id===i.id);if(!next)throw Error('Issued invoices cannot be deleted.');for(const key of ['number','amount','items','taxRate','subtotal','tax','clientId','projectId','issued','due','design','clientName','clientEmail','business','agreedItems'])if(JSON.stringify(next[key])!==JSON.stringify(i[key]))throw Error(`Issued invoice ${i.number} cannot change its ${key}.`);if(next.paid<i.paid)throw Error('Recorded invoice payments cannot be removed.');for(const p of i.payments||[])if(!next.payments?.some(n=>JSON.stringify(n)===JSON.stringify(p)))throw Error('Recorded payments are immutable.');}

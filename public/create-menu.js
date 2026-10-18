@@ -3,6 +3,7 @@ const objects = [
   ['Project', 'projects', 'new-project'],
   ['Document', 'documents', 'new-document'],
   ['Form', 'forms', 'new-form'],
+  ['Email draft', 'mail', 'mail-new'],
   ['Invoice', 'invoices', 'new-invoice'],
   ['Service or package', 'tag', 'service-new'],
   ['Meeting', 'calendar', 'booking-preview'],

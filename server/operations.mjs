@@ -1,3 +1,4 @@
+import {saveEmailDraft} from '../public/communications-domain.js';
 import {createShareLink,revokeShareLink,sharePath} from '../public/share-domain.js';
 import {actions,triggers,entities,executeWorkspaceAction,saveWorkflow,testWorkflow,initWorkflows,records,snapshotWorkspace,runWorkflows} from '../public/workflow-domain.js';
 import {saveClient,updateProject,recordManualPayment,approveMilestone,togglePhase} from '../public/domain.js';
@@ -9,6 +10,8 @@ import {saveMeetingType,completeMeeting,saveAvailability,saveFollowupEmail} from
 const extra=(id,description,required=[],properties={})=>({id,description,inputSchema:{type:'object',properties,required,additionalProperties:false}});
 const string={type:'string'},object={type:'object'},bool={type:'boolean'},id={type:'string',description:'Existing record ID'},data={type:'object',description:'Record fields; use get_record to inspect the existing shape. Amounts in integer cents unless named otherwise.'},scope={enum:['client','project']};
 export const extraActions=[
+ extra('emailDraft.save','Create or edit an email draft; never sends email.',['data'],{id,data}),
+ extra('emailDraft.delete','Delete an email draft; delivery receipts are retained.',['id'],{id}),
  extra('share.create','Create or reuse a client-only link to a published document, issued invoice, or active form. Returns a relative path; no email is sent.',['entity','recordId'],{entity:{enum:['document','invoice','form']},recordId:id,expiresInDays:{enum:[0,7,30,90]}}),
  extra('share.revoke','Permanently revoke one client link.',['id'],{id}),
  extra('customField.save','Create or rename a field. Type is immutable. Option IDs remain stable.', ['entity','data'],{entity:scope,id,data:{type:'object',required:['name'],properties:{name:string,type:{enum:Object.keys(fieldTypes)},description:string,options:{type:'array',items:{type:'object',required:['label'],properties:{id,label:string}}}}}}),
@@ -34,6 +37,8 @@ export function checkShape(value,schema,path='input'){if(schema.enum&&!schema.en
 export function performAction(s,type,input,requestId){const spec=actionCatalog().find(a=>a.id===type);if(!spec)throw Error('Unknown action. Read the catalog for supported IDs.');checkShape(input,spec.inputSchema);let result;const {id,data,entity}=input;
  if(actions.some(a=>a.id===type))result=executeWorkspaceAction(s,type,input.targetId,input.config,input.context);
  else switch(type){
+ case'emailDraft.save':result=saveEmailDraft(s,data,id);break;
+ case'emailDraft.delete':if(!s.emailDrafts?.some(d=>d.id===id))throw Error('Email draft not found.');s.emailDrafts=s.emailDrafts.filter(d=>d.id!==id);result={id,deleted:true};break;
  case'share.create':{const link=createShareLink(s,input);result={...link,path:sharePath(link)};break;}
  case'share.revoke':result=revokeShareLink(s,id);break;
  case'customField.save':result=saveField(s,entity,data,id);break;case'customField.archive':result=archiveField(s,entity,id,input.archived);break;case'customField.set':result=setFieldValue(s,entity,input.recordId,input.fieldId,input.value);break;

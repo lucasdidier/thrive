@@ -1,6 +1,6 @@
 # Thrive
 
-A compact freelancer workspace for clients, projects, forms, documents, invoices, time, scheduling, and one-trigger/one-action workflows. The existing HTML/JS interface is served by a Sites Vinext Worker; authenticated data is stored in D1.
+A compact freelancer workspace for clients, projects, forms, documents, invoices, time, scheduling, client email, and one-trigger/one-action workflows. The existing HTML/JS interface is served by a Sites Vinext Worker; authenticated data is stored in D1.
 
 ## Develop
 
@@ -9,6 +9,7 @@ Requires Node 22.13+ (Node 24 recommended). Run `npm run install:ci`, then `npm 
 ```sh
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_outstanding_otto_octavius.sql
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_warm_sway.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0002_chunky_bullseye.sql
 npm run dev -- --port 4173 --hostname 127.0.0.1
 ```
 
@@ -54,6 +55,12 @@ Tools:
 | `thrive_test_workflow` | Simulate a workflow on a sample record without emitting live events |
 | `thrive_read_events` | Cursor-based polling of actual committed business events |
 | `thrive_list_workflow_runs` | Successes, failures, and loop prevention |
+| `thrive_get_connections` / `thrive_list_conversations` | Google status, cached client threads, delivery receipts |
+| `thrive_refresh_gmail` / `thrive_update_conversation` | Refresh mail; link projects or archive locally |
+| `thrive_calendar_availability` | Live primary-calendar busy intervals |
+| `thrive_preview_delivery` | Exact draft/meeting content and fingerprint for review |
+| `thrive_send_email` / `thrive_check_email_delivery` | Explicit Gmail send and delivery reconciliation |
+| `thrive_create_calendar_event` | Explicit Google event creation and client invitation |
 
 Typical agent sequence: read workspace + catalog, read target records, preview an action, execute at the observed revision with a unique request ID. Retry an uncertain write using the same exact arguments/request ID; after a revision conflict, read and review again with a new request ID. Select/multi-select values use stable option IDs. Money in invoice/project data is integer cents; workflow `config.amount` is a USD decimal string. Custom currency fields use USD decimal numbers.
 
@@ -73,7 +80,7 @@ Example custom field action input:
 
 All workflow catalog actions are available via MCP, plus typed field administration, draft editing/issuing, service editing, document responses/revisions, form submission, manual payments, meeting completion, and workflow management. Triggers describe observed state changes: callers cannot fabricate a paid invoice/signature by emitting arbitrary events. MCP discovery contains no private data; all data-bearing calls require authenticated identity. Separate users cannot access each other's workspaces. A Sites service-access bypass token alone does not grant data access.
 
-Remaining prototype boundaries: no payment collection or Stripe connection, no outbound email, no third-party e-signature or signer verification service, no external calendar sync, no background date triggers. Owner preview and MCP document responses remain explicitly simulated. Client-link responses are recorded against the shared version. AI chat still uses the existing prototype intent parser; adding MCP does not turn chat into a hosted LLM service.
+Remaining prototype boundaries: no payment collection or Stripe connection, no third-party e-signature or signer verification service, no background email refresh or date triggers. Gmail and Google Calendar require operator OAuth setup plus user consent. Calendar availability is checked live; event creation is explicit, and subsequent edits/cancellations must be managed in Google Calendar. Owner preview and MCP document responses remain explicitly simulated. Client-link responses are recorded against the shared version. AI chat still uses the existing prototype intent parser; adding MCP does not turn chat into a hosted LLM service.
 
 ## Client links
 
@@ -86,3 +93,41 @@ The D1 `share_links` index stores SHA-256 hashes of 256-bit random tokens; only 
 The Sites audience must permit anonymous requests for these routes. The root workspace still redirects to sign-in; workspace API and MCP record calls require trusted identity and remain scoped to that owner. No platform bypass credential is used in client links.
 
 Agents can create/reuse links with `share.create` (`entity`, `recordId`, optional `expiresInDays`), revoke with `share.revoke` (`id`), and read their owner's links using entity `shareLink`. Returned `path` values are relative to the Thrive site origin.
+
+
+## Client communications and Google connections
+
+Messages provides Needs reply, All conversations, Sent, Drafts, and Archived views, search, client/project filters, threaded replies, and explicit project assignment. Client records and project details link into contextual compose and conversation views. The global New menu includes Email draft. Drafts have project-update, document-delivery, and follow-up templates. Existing client links can be inserted; their hosting audience restrictions still apply. Email bodies are rendered as escaped plain text without remote images or attachments.
+
+Drafts live in the shared workspace and support `emailDraft.create`, `emailDraft.save`, and `emailDraft.delete` through MCP. Created/updated draft events and the Draft email workflow action use the existing event engine. Automation only prepares drafts. External Gmail sends and Google invitations use separate tools and review screens; an agent must obtain explicit authorization for the recipient and contents before using those tools.
+
+Google tokens and OAuth state are stored separately from workspace snapshots. Tokens use AES-GCM with a server-only encryption key and owner-bound additional data. OAuth uses single-use, ten-minute, owner-bound state and PKCE. Gmail and Calendar are separate consent steps for the same Google account. Sites remains the workspace identity provider; Google is only an integration. Disconnect removes tokens and cached conversations, attempts grant revocation, and preserves drafts and delivery receipts.
+
+Email refresh imports up to 25 threads from the last 90 days, searching the first 100 distinct client email addresses. Each thread retains the latest 10 messages. Refresh is manual; it is not a complete mailbox mirror. A project is assigned explicitly. Archive only changes Thrive, not Gmail. Gmail messages and attachments remain accessible in Gmail. The initial connection uses the primary Google calendar only.
+
+Sending uses a draft fingerprint and a durable per-draft operation claim. A draft cannot be edited or deleted after a send attempt. Confirmed sends retain a content snapshot and Gmail IDs. Transport errors remain unconfirmed; retries of the same draft do not send again. Check delivery searches Sent by the deterministic RFC Message-ID. A negative search is not proof of non-delivery, so it does not unlock automatic retry. Definite provider rejections can be copied into a new draft after correction.
+
+The booking preview filters Google busy intervals. Browser saves and MCP booking actions recheck new/changed bookings on the server, including buffers, and fail if connected Google availability cannot be checked. This is an availability check, not an atomic reservation across Google and Thrive: another calendar can still change after the check. Adding a meeting to Google requires a separate review and invitation action. Its deterministic Google event ID prevents duplicate events on retries. Internal meeting notes and briefs are never copied into the invitation. Thrive does not yet update/delete an exported event when a local meeting changes, and this is stated at export/cancellation.
+
+### Operator setup
+
+1. Create a Google Cloud project and enable Gmail API and Google Calendar API. Configure the OAuth consent screen and a Web application OAuth client. During testing, add the intended Google accounts as test users.
+2. Register this exact authorized redirect URI: `https://thrive-workspace.creambirch3.chatgpt.site/api/google/callback`. For local testing, use a separate client or add `http://127.0.0.1:4173/api/google/callback` and set the corresponding environment value.
+3. Configure server environment variables in Sites: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, and `GOOGLE_TOKEN_ENCRYPTION_KEY`. The encryption key is 32 random bytes encoded as Base64; keep it stable or existing tokens become unreadable. Never commit these values or expose them through public environment prefixes.
+4. Deploy the environment revision, open Messages → Connections, and connect Gmail and/or Calendar. Refresh Messages to import existing client threads.
+
+Gmail requests `gmail.readonly` and `gmail.send`, plus identity scopes. Calendar requests `calendar.events` and `calendar.freebusy`. Public distribution of an app that stores/transmits restricted Gmail data requires Google's applicable verification/security assessment. External OAuth apps in testing can also receive short-lived refresh tokens. See [Gmail scope classifications](https://developers.google.com/workspace/gmail/api/auth/scopes) and [Google OAuth web-server guidance](https://developers.google.com/identity/protocols/oauth2/web-server).
+
+No Google credentials were present during implementation. Automated tests use a fake Google transport to exercise token isolation, OAuth state, MIME encoding, sync boundaries, send receipts, reconciliation, and calendar conflicts. A real account connection, consent round trip, mail delivery, and invitation have not been tested yet.
+
+### Integration research and product decisions — 18 October 2026
+
+| Option | Fit for Thrive | Decision |
+| --- | --- | --- |
+| [Google Gmail API](https://developers.google.com/workspace/gmail/api/guides/sending) + [Calendar API](https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query) | Native Google capabilities, our own UI, no additional integration service | Implemented direct adapters and OAuth foundations. Google APIs are hosted APIs, not open-source services. |
+| [Cal.diy](https://github.com/calcom/cal.diy) | Current community self-hosted scheduling project; MIT-licensed repository, separate Node/PostgreSQL stack | Revisit for a dedicated scheduler. Its current README positions the community edition for personal/non-production use. |
+| [Nango](https://github.com/NangoHQ/nango) | OAuth/token/sync infrastructure, useful with more providers | Defer extra service. Current repository license is Elastic License 2.0, source-available rather than permissive open source. |
+| [EmailEngine](https://emailengine.app/) | Self-hosted email gateway with Gmail/IMAP/Graph support | Defer: separate service and EmailEngine licensing; does not solve scheduling. |
+| [Nylas](https://developer.nylas.com/docs/provider-guides/google/) | Commercial unified email/calendar APIs with Google onboarding options | Consider when multiple providers justify a vendor dependency. |
+
+UX patterns adapted: Dubsado's contact-focused inbox and contextual recipients ([Dubsado Inbox](https://help.dubsado.com/en/articles/15811791-dubsado-inbox)); Plutio's shared conversation history linked to clients/projects and reusable drafts ([Plutio Gmail](https://www.plutio.com/help/gmail-integration), [Inbox and communication](https://www.plutio.com/help/inbox-and-communication)). Thrive retains its existing visual system. This pass used product documentation and prior research notes; no new authenticated competitor-session inspection was possible while the Mac was locked.
