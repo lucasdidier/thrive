@@ -1,6 +1,8 @@
+import {templateContent,defaultDocumentDesign,validateDocumentDesign,pricingVisible} from './document-design.js';
+import {hasTimePricing} from './pricing.js';
 import {normalizeQuestions,validateFormAnswers} from './form-domain.js';
 import {uid,today,addActivity,allocatePlan,defaultPlan,acceptProposal,submitInquiry,saveIntake,saveClient,createProject} from './domain.js';
-import {validateOffers,quoteOffers} from './services-domain.js';
+import {validateOffers,quoteOffers,applySelectionMode} from './services-domain.js';
 const copy=x=>JSON.parse(JSON.stringify(x)), clean=x=>String(x??'').trim();
 export const responseLabels={acceptance:'Acceptance',signature:'Signature',none:'No response'};
 export const kindLabels={proposal:'Proposal',contract:'Contract',agreement:'Proposal + contract',document:'Document'};
@@ -23,9 +25,10 @@ export function upgradeWorkspace(s){
 export function createDocument(s,data){
  const client=s.clients.find(c=>c.id===data.clientId&&!c.archived);if(!client)throw Error('Choose an active client.');
  const p=data.projectId?s.projects.find(p=>p.id===data.projectId):null;if(data.projectId&&(!p||p.clientId!==client.id||p.archived||p.status==='cancelled'))throw Error('Choose an active project for this client.');
+ const starter=data.templateId?templateContent(data.templateId,{business:s.settings.business,client:client.name}):{};data={...starter,...data};const design=validateDocumentDesign(data.design||defaultDocumentDesign(s));
  const kind=data.kind||'proposal';if(!kindLabels[kind])throw Error('Choose a document type.');
  const phases=copy(p?.phases||s.settings.phases.map(name=>({id:uid(),name,done:false}))),budget=p?.budget||0;
- const d={id:uid(),title:clean(data.title)||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance',clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document',budget,phases,billingPlan:copy(p?.billingPlan||[]),scope:p?.proposal||'',deliverables:'',terms:'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
+ const d={id:uid(),design,templateId:data.templateId||null,showPricing:data.showPricing??true,selectionMode:data.selectionMode||'advanced',title:clean(data.title)||starter.title||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance',clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document'&&data.showPricing!==false&&!['time-agreement','retainer'].includes(data.templateId),budget,phases,billingPlan:copy(p?.billingPlan||[]),scope:data.scope??p?.proposal??'',deliverables:data.deliverables||'',terms:data.terms||'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
  if(d.billing){p.billingDocumentId=d.id;if(budget&&!d.billingPlan.length)d.billingPlan=defaultPlan(budget,s.settings.deposit,phases);}
  s.documents.unshift(d);addActivity(s,'Document created',d.title,'document');return d;
 }
@@ -33,23 +36,24 @@ export function saveDocument(s,id,data){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Create a revision before editing this document.');
  const title=clean(data.title),scope=clean(data.scope),kind=data.kind||d.kind,responseMode=data.responseMode||d.responseMode;
  if(!title||!scope)throw Error('Enter a document title and content.');if(!kindLabels[kind]||!responseLabels[responseMode])throw Error('Choose a valid type and response requirement.');
- const offers=validateOffers(data.offers??d.offers??[]);if(offers.length&&responseMode==='none')throw Error('Service selection requires acceptance or signature.');const quote=offers.length?quoteOffers(offers):null;
+ if(data.showPricing!==undefined&&typeof data.showPricing!=='boolean')throw Error('Pricing visibility must be on or off.');const showPricing=data.showPricing??pricingVisible(d),selectionMode=data.selectionMode||d.selectionMode||'advanced',design=validateDocumentDesign(data.design||d.design||defaultDocumentDesign(s)),offers=validateOffers(applySelectionMode(data.offers??d.offers??[],selectionMode)),visibleOffers=showPricing?offers:[];if(visibleOffers.some(o=>o.mode!=='required'||o.min!==o.max)&&responseMode==='none')throw Error('Selectable services require acceptance or signature.');const quote=visibleOffers.length?quoteOffers(visibleOffers):null;
  const billing=!!data.billing,p=s.projects.find(p=>p.id===d.projectId);let phases=copy(d.phases),billingPlan=copy(d.billingPlan),budget=d.budget;
  if(billing){
+  if(!showPricing)throw Error('Show pricing before enabling project billing.');if(hasTimePricing(visibleOffers))throw Error('Time & materials are estimates. Turn off automatic project billing and invoice actual quantities.');
   if(!p)throw Error('Link a project before enabling billing.');if(responseMode==='none')throw Error('Billing requires acceptance or signature. Turn off billing for an information-only document.');
   if(p.accepted||s.documents.some(x=>x.id!==id&&x.projectId===p.id&&x.billing))throw Error('This project already has a billing agreement.');
   const names=(data.phases||d.phases.map(f=>f.name)).map(clean);if(!names.length||names.length>8||names.some(x=>!x)||new Set(names.map(x=>x.toLowerCase())).size!==names.length)throw Error('Enter one to eight unique delivery phases.');
   phases=names.map((name,i)=>({id:data.phaseIds?.[i]||d.phases[i]?.id||uid(),name,done:false}));budget=quote?.amount??Number(data.budget);billingPlan=allocatePlan(budget,data.rules||d.billingPlan,phases);
  }
  if(quote)budget=quote.amount;
- Object.assign(d,{offers,title,scope,kind,responseMode,billing,phases,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
+ Object.assign(d,{offers,showPricing,selectionMode,design,title,scope,kind,responseMode,billing,phases,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
  if(p){if(billing)p.billingDocumentId=id;else if(p.billingDocumentId===id)delete p.billingDocumentId;}
  addActivity(s,'Document draft saved',d.title,'document');return d;
 }
 export function publishDocument(s,id){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Only a draft can be published.');if(!d.title||!clean(d.scope))throw Error('Add document content first.');
- if(d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none')throw Error('Service selection requires a response.');}
- if(d.billing){if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan,d.phases);}
+ if(pricingVisible(d)&&d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none'&&d.offers.some(o=>o.mode!=='required'||o.min!==o.max))throw Error('Selectable services require a response.');}
+ if(d.billing){if(!pricingVisible(d)||hasTimePricing(d.offers||[]))throw Error('Automatic project billing needs visible, fixed-fee pricing.');if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan,d.phases);}
  const v={...copy(d),versions:undefined,number:d.versions.length+1,client:copy(s.clients.find(c=>c.id===d.clientId)),business:s.settings.business,status:'published',createdAt:new Date().toISOString()};
  d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();addActivity(s,'Document published',d.title,'document');return v;
 }
@@ -64,7 +68,7 @@ export function respondDocument(s,id,number,action,signature={}){
  if(v.responseMode==='acceptance'&&action!=='accept')throw Error('This document requires acceptance, not a signature.');
  // Complete against a copy so invoice validation cannot leave a half-completed agreement.
  const next=copy(s),nd=getDoc(next,id),nv=nd.versions.find(x=>x.number===v.number);
- if(v.offers?.length){const q=quoteOffers(v.offers,signature.selections);Object.assign(nv,{selections:q.selections,agreedItems:q.items,budget:q.amount});if(v.billing)nv.billingPlan=allocatePlan(q.amount,v.billingPlan,v.phases);Object.assign(nd,{budget:nv.budget,billingPlan:copy(nv.billingPlan),selections:q.selections,agreedItems:q.items});}
+ if(pricingVisible(v)&&v.offers?.length){const q=quoteOffers(v.offers,signature.selections);Object.assign(nv,{selections:q.selections,agreedItems:q.items,budget:q.amount,pricingEstimated:q.estimated});if(v.billing)nv.billingPlan=allocatePlan(q.amount,v.billingPlan,v.phases);Object.assign(nd,{pricingEstimated:nv.pricingEstimated,budget:nv.budget,billingPlan:copy(nv.billingPlan),selections:q.selections,agreedItems:q.items});}
  if(v.billing){const p=next.projects.find(p=>p.id===v.projectId);if(!p||p.accepted||p.billingDocumentId!==id)throw Error('The project billing agreement has changed.');
   Object.assign(p,{budget:nv.budget,proposal:v.scope,deliverables:v.deliverables,phases:copy(v.phases),billingPlan:copy(nv.billingPlan),deposit:nv.billingPlan[0].percent,proposalStatus:'published',accepted:false,currentVersion:v.number,versions:[{...copy(nv),name:p.name,status:'published'}],needsPricing:false});
   acceptProposal(next,p.id,v.number);

@@ -1,3 +1,5 @@
+import {validateDocumentDesign,pricingVisible} from '../public/document-design.js';
+import {validQuantity} from '../public/pricing.js';
 import {publicFormData,validateFormAnswers} from '../public/form-domain.js';
 import {validateUploadedAnswers} from './form-files.mjs';
 import {validShareToken,linkAvailable,shareTarget} from '../public/share-domain.js';
@@ -22,19 +24,20 @@ export function clientProjection(state,link){
  const {record}=shareTarget(state,link.entity,link.recordId);
  if(link.entity==='document'){
   const v=record.versions.find(x=>x.number===link.version);
-  const data=pick(v,['title','kind','responseMode','scope','deliverables','terms','number','status','business','budget','billing','createdAt','completedAt','declinedAt']);
+  const data=pick(v,['design','showPricing','selectionMode','pricingEstimated','title','kind','responseMode','scope','deliverables','terms','number','status','business','budget','billing','createdAt','completedAt','declinedAt']);
   data.client=pick(v.client,['name','contact','email']);
-  data.offers=(v.offers||[]).map(o=>pick(o,['id','name','description','rate','mode','group','min','max','quantity']));
-  data.selections=v.selections||null;
-  data.agreedItems=(v.agreedItems||[]).map(o=>pick(o,['name','description','quantity','rate','amount']));
-  data.billingPlan=(v.billingPlan||[]).map(r=>({...pick(r,['name','percent','amount']),trigger:r.phaseId?`${v.phases.find(p=>p.id===r.phaseId)?.name||'Milestone'} approved`:'On completion'}));
+  data.offers=(pricingVisible(v)?v.offers||[]:[]).map(o=>pick(o,['id','name','description','rate','billingModel','unit','mode','group','min','max','quantity']));
+  data.selections=pricingVisible(v)?v.selections||null:null;
+  data.agreedItems=(pricingVisible(v)?v.agreedItems||[]:[]).map(o=>pick(o,['name','description','quantity','rate','amount','billingModel','unit']));
+  if(v.design)data.design=validateDocumentDesign(v.design);if(!pricingVisible(v)){delete data.budget;data.billing=false;}
+  data.billingPlan=(pricingVisible(v)?v.billingPlan||[]:[]).map(r=>({...pick(r,['name','percent','amount']),trigger:r.phaseId?`${v.phases.find(p=>p.id===r.phaseId)?.name||'Milestone'} approved`:'On completion'}));
   data.response=v.response?pick(v.response,['name','action','at','consent']):null;
   data.signature=v.signature?pick(v.signature,['name','simulated']):null;
   return {entity:'document',data,actions:v.status==='published'?(v.responseMode==='signature'?['sign','decline']:v.responseMode==='acceptance'?['accept','decline']:[]):[]};
  }
  if(link.entity==='invoice'){
   const data=pick(record,['number','business','clientName','clientEmail','billingAddress','projectName','issued','due','amount','paid','subtotal','taxRate','taxAmount','notes','paymentInstructions','kind','label']);
-  data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>pick(i,['description','quantity','rate','amount']));
+  data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>pick(i,['description','quantity','rate','amount','billingModel','unit']));
   data.design=pick(record.design,['template','color','logo','issuerDetails','footer']);
   return {entity:'invoice',data:{...data,status:invoiceStatus(record)},actions:[]};
  }
@@ -54,7 +57,7 @@ function validateInput(body,entity){
   if(!['accept','sign','decline'].includes(body.action))throw new StoreError('Unsupported document response.');
   if(typeof body.name!=='string'||!body.name.trim()||body.name.length>100)throw new StoreError('Enter your full name.');
   if(body.action!=='decline'&&body.consent!==true)throw new StoreError('Confirm that you agree to this document.');
-  if(body.selections!==undefined&&(!Array.isArray(body.selections)||body.selections.length>20||body.selections.some(s=>!s||typeof s.id!=='string'||s.id.length>100||!Number.isSafeInteger(s.quantity))))throw new StoreError('Check your service selections.');
+  if(body.selections!==undefined&&(!Array.isArray(body.selections)||body.selections.length>20||body.selections.some(s=>!s||typeof s.id!=='string'||s.id.length>100||!validQuantity(s.quantity))))throw new StoreError('Check your service selections.');
  }
 }
 export async function respondToShare(db,token,body){

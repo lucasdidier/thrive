@@ -1,3 +1,6 @@
+import {documentTemplates,documentLayouts,validateDocumentDesign} from '../public/document-design.js';
+import {populateCatalog,verticals} from '../public/catalog-starters.js';
+import {rateUnits} from '../public/pricing.js';
 import {questionTypes,fieldBindings} from '../public/form-domain.js';
 import {saveEmailDraft} from '../public/communications-domain.js';
 import {createShareLink,revokeShareLink,sharePath} from '../public/share-domain.js';
@@ -5,12 +8,15 @@ import {actions,triggers,entities,executeWorkspaceAction,saveWorkflow,testWorkfl
 import {saveClient,updateProject,recordManualPayment,approveMilestone,togglePhase} from '../public/domain.js';
 import {saveField,archiveField,setFieldValue,fieldsFor,fieldTypes} from '../public/custom-fields-domain.js';
 import {saveInvoiceDraft,issueInvoiceDraft,deleteInvoiceDraft,saveInvoiceDefaults} from '../public/invoice-domain.js';
-import {saveDocument,reviseDocument,respondDocument,saveForm,submitForm} from '../public/workspace-domain.js';
+import {createDocument,saveDocument,reviseDocument,respondDocument,saveForm,submitForm} from '../public/workspace-domain.js';
 import {saveService,toggleService} from '../public/services-domain.js';
 import {saveMeetingType,completeMeeting,saveAvailability,saveFollowupEmail} from '../public/scheduling-domain.js';
 const extra=(id,description,required=[],properties={})=>({id,description,inputSchema:{type:'object',properties,required,additionalProperties:false}});
 const string={type:'string'},object={type:'object'},bool={type:'boolean'},id={type:'string',description:'Existing record ID'},data={type:'object',description:'Record fields; use get_record to inspect the existing shape. Amounts in integer cents unless named otherwise.'},scope={enum:['client','project']};
 export const extraActions=[
+ extra('document.from_template','Create a draft proposal or contract from a starter template; no publication or sending.',['data'],{data:{type:'object',required:['templateId','clientId'],properties:{templateId:{enum:documentTemplates.map(t=>t.id)},clientId:id,projectId:id,title:string}}}),
+ extra('document.defaults','Set default document layout and branding for future documents.',['data'],{data}),
+ extra('catalog.seed','Add example services for a business type. Keeps existing catalog items and prices.',['vertical'],{vertical:{enum:Object.keys(verticals)}}),
  extra('emailDraft.save','Create or edit an email draft; never sends email.',['data'],{id,data}),
  extra('emailDraft.delete','Delete an email draft; delivery receipts are retained.',['id'],{id}),
  extra('share.create','Create or reuse a client-only link to a published document, issued invoice, or active form. Returns a relative path; no email is sent.',['entity','recordId'],{entity:{enum:['document','invoice','form']},recordId:id,expiresInDays:{enum:[0,7,30,90]}}),
@@ -23,7 +29,7 @@ export const extraActions=[
  extra('invoice.payment','Record a manual payment that has already occurred. Never charges a card. Amount is integer cents.',['id','data'],{id,data:{type:'object',required:['amount','date','method'],properties:{amount:{type:'integer',minimum:1},date:string,method:{enum:['Bank transfer','Cash','Check','Other']},reference:string}}}),
  extra('invoice.defaults','Set invoice design defaults for future invoices.',['data'],{data}),
  extra('document.revise','Create a revision of a published document.',['id'],{id}),
- extra('document.respond','Record a prototype response. Signatures are explicitly simulated, not legal e-signatures.',['id','version','response'],{id,version:{type:'integer',minimum:1},response:{enum:['accept','sign','decline']},signature:{type:'object',properties:{name:string,consent:bool,selections:object}}}),
+ extra('document.respond','Record a prototype response. Signatures are explicitly simulated, not legal e-signatures.',['id','version','response'],{id,version:{type:'integer',minimum:1},response:{enum:['accept','sign','decline']},signature:{type:'object',properties:{name:string,consent:bool,selections:{type:'array',maxItems:20,items:{type:'object',required:['id','quantity'],properties:{id,quantity:{type:'number'}}}}}}}),
  extra('form.submit','Save a form response. data.answers maps question IDs to typed values; choice values are option IDs, numbers use displayed units (including USD), file values are uploaded metadata arrays. Mapped email/project answers create or link records.',['id','data'],{id,data}),
  extra('service.archive','Archive or restore a service.',['id','archived'],{id,archived:bool}),
  extra('phase.reopen','Reopen a nonbilling project phase.',['projectId','phaseId'],{projectId:id,phaseId:id}),
@@ -33,11 +39,14 @@ export const extraActions=[
  extra('workflow.enable','Enable or pause a workflow.',['id','enabled'],{id,enabled:bool}),extra('workflow.delete','Delete a workflow and retain its run history.',['id'],{id})
 ];
 export function actionCatalog(){return [...actions.map(a=>({id:a.id,description:a.label+(a.hint?'. '+a.hint:''),target:a.target||null,inputSchema:{type:'object',required:[...(a.target?['targetId']:[]),'config'],properties:{targetId:{type:'string',description:'Explicit target record ID (use catalog target entity).'},context:{type:'object',properties:{entity:{enum:Object.keys(entities)},recordId:id},required:['entity','recordId'],additionalProperties:false},config:{type:'object',required:a.fields.filter(f=>f.type!=='customValue').map(f=>f.key),additionalProperties:false,properties:Object.fromEntries(a.fields.map(f=>[f.key,{type:'string',description:f.label+(f.type==='customValue'?'; option ID, JSON array of option IDs, true/false, number, or empty string to clear':''),...(f.options?{enum:f.options.map(([v])=>v)}:{})}]))}},additionalProperties:false}})),...extraActions];}
-export function catalog(){return {entities,triggers,actions:actionCatalog(),fieldTypes,formFields:{types:questionTypes,bindings:fieldBindings,maxQuestions:50,definition:'questions: [{id, label, type, required, description, binding, options: [{id,label}]}]. Optional per-type settings: min/max for numbers, scale 5/10 for rating, fileGroup any/documents/images and maxFiles 1/3/5 for file.'},note:'Triggers are emitted by real record changes. Preview workflow events without fabricating a paid invoice or signature. Integer cents for domain record amounts; workflow config.amount uses USD decimal strings.'};}
+export function catalog(){return {entities,triggers,actions:actionCatalog(),fieldTypes,documentTemplates:documentTemplates.map(({id,name,kind,description})=>({id,name,kind,description})),documentLayouts,pricing:{units:rateUnits,billingModels:['fixed','time'],selectionModes:['fixed','single','multiple','advanced'],note:'Time-based quantities are estimates. Accepted rates are preserved; invoice actual quantities separately. Rates are integer cents, quantities allow two decimals. showPricing=false hides pricing and disables document billing.'},verticals,formFields:{types:questionTypes,bindings:fieldBindings,maxQuestions:50,definition:'questions: [{id, label, type, required, description, binding, options: [{id,label}]}]. Optional per-type settings: min/max for numbers, scale 5/10 for rating, fileGroup any/documents/images and maxFiles 1/3/5 for file.'},note:'Triggers are emitted by real record changes. Preview workflow events without fabricating a paid invoice or signature. Integer cents for domain record amounts; workflow config.amount uses USD decimal strings.'};}
 export function checkShape(value,schema,path='input'){if(schema.enum&&!schema.enum.includes(value))throw Error(`${path}: choose an allowed value.`);if(schema.type==='object'){if(!value||typeof value!=='object'||Array.isArray(value))throw Error(`${path} must be an object.`);for(const key of schema.required||[])if(!(key in value))throw Error(`${path}.${key} is required.`);for(const [key,v] of Object.entries(value)){if(['__proto__','prototype','constructor'].includes(key))throw Error('Unsupported property.');if(schema.additionalProperties===false&&!schema.properties?.[key])throw Error(`${path}.${key} is unsupported.`);if(schema.properties?.[key])checkShape(v,schema.properties[key],`${path}.${key}`);}}else if(schema.type==='array'){if(!Array.isArray(value)||value.length<(schema.minItems||0)||value.length>(schema.maxItems||10000))throw Error(`${path} has an invalid number of items.`);value.forEach((v,i)=>checkShape(v,schema.items,`${path}[${i}]`));}else if(schema.type==='integer'){if(!Number.isSafeInteger(value)||value<(schema.minimum??-Infinity))throw Error(`${path} must be an integer.`);}else if(schema.type&&typeof value!==schema.type)throw Error(`${path} must be ${schema.type}.`);}
 export function performAction(s,type,input,requestId){const spec=actionCatalog().find(a=>a.id===type);if(!spec)throw Error('Unknown action. Read the catalog for supported IDs.');checkShape(input,spec.inputSchema);let result;const {id,data,entity}=input;
  if(actions.some(a=>a.id===type))result=executeWorkspaceAction(s,type,input.targetId,input.config,input.context);
  else switch(type){
+ case'document.from_template':result=createDocument(s,data);break;
+ case'document.defaults':result=s.settings.documentDesign=validateDocumentDesign(data);break;
+ case'catalog.seed':result={ids:populateCatalog(s,input.vertical)};break;
  case'emailDraft.save':result=saveEmailDraft(s,data,id);break;
  case'emailDraft.delete':if(!s.emailDrafts?.some(d=>d.id===id))throw Error('Email draft not found.');s.emailDrafts=s.emailDrafts.filter(d=>d.id!==id);result={id,deleted:true};break;
  case'share.create':{const link=createShareLink(s,input);result={...link,path:sharePath(link)};break;}
