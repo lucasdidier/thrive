@@ -240,3 +240,14 @@ Do not activate Supabase by replacing the current database or copying all previe
 MCP discovery stays public. In Supabase mode, protected `/mcp` calls need `Authorization: Bearer <Supabase user access token>` and verify the token with Supabase. Never give agents the service key. The previous Sites account header no longer identifies a Supabase account. Full MCP OAuth discovery/account-linking for hosted agent clients is a follow-up; interactive workspace accounts and a verified user bearer token are implemented now.
 
 Validation: `npm test` includes account-flow, cookie, CSRF, account-switching, private storage and adapter coverage tests. `tests/accounts-postgres.sql` additionally checks the real PostgreSQL migration's RLS, denied RPC/direct writes, atomic rollback, stale revisions and idempotency. Run that file only against an isolated database with Supabase's `anon`, `authenticated`, `service_role`, `auth.uid()` and `storage.buckets` available. Tests roll back their own records.
+
+
+## Shared list controls
+
+Clients, Projects, Documents, Invoices, Forms and Submissions, Time, Messages, Scheduling, and Workflow / Run history use `list-view-ui.js` for the same Search → Filter → Sort → Group by → Columns → Select multiple toolbar. Section-specific actions stay above it. Home, AI chat, and availability settings are not record lists.
+
+Grouping produces collapsible sections with counts, plus project fee or time-duration totals where relevant. Date fields support day, Monday-based week, and month. Project boards use the selected group field; the Columns control also controls their visible card fields. In Messages, it controls fields in the conversation preview. Related clients and projects with identical names remain separate groups. Missing values form a final “No …” group. Filtering and sorting happen before grouping, and group order is independent of row order.
+
+Collapsing a group removes its rows from the visible selection. Select all and CSV export apply only to the visible, filtered rows. The floating action bar remains the only place for bulk mutations. CRM saved views persist grouping alongside filters, sort, columns, and density; other list preferences are retained during navigation in the current session. Search is temporary. `/` focuses section search; Escape closes a view menu before exiting selection.
+
+Pattern references: [Attio filters and sorts](https://attio.com/help/reference/managing-your-data/views/filter-and-sort-views) and [Twenty views and filters](https://twentyhq-twenty.mintlify.app/core-concepts/views-and-filters). Thrive keeps its existing fonts, icons, palette, and document editors.
