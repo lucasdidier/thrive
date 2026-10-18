@@ -1,3 +1,4 @@
+import {validateWorkspaceFiles} from './form-files.mjs';
 import {catalog,actionCatalog,executeOperation,testWorkflow,records,fieldsFor,initWorkflows,checkShape} from './operations.mjs';
 import {loadWorkspace,commitWorkspace,readEvents,hashRequest,receiptFor,StoreError} from './store.mjs';
 import {ownerOf,checkOrigin,readBody,json} from './http.mjs';
@@ -51,7 +52,7 @@ export async function callTool(db,owner,name,args,env={},fetcher=fetch){const to
   const hash=await hashRequest(args);if(name==='thrive_execute_action'){const receipt=await receiptFor(db,owner,args.request_id,hash);if(receipt)return {...receipt,replayed:true};if(args.expected_revision!==revision)throw new StoreError('Workspace changed. Read the latest revision and preview again.',409);}
   const out=executeOperation(state,args.action,args.input,args.request_id||'preview-operation');validateWorkspace(out.state,state);const response={result:out.result,events:eventSummary(out.events),workflowRuns:initWorkflows(out.state).runs.filter(r=>!initWorkflows(state).runs.some(old=>old.id===r.id))};
   if(name==='thrive_preview_action')return {...response,revision,preview:true};
-  await validateCommunicationChanges(db,owner,state,out.state);await validateGoogleBookings(db,owner,env,state,out.state,fetcher);
+  await validateWorkspaceFiles(db,owner,state,out.state);await validateCommunicationChanges(db,owner,state,out.state);await validateGoogleBookings(db,owner,env,state,out.state,fetcher);
   return commitWorkspace(db,owner,revision,out.state,args.request_id,hash,response,out.events);
  }
  throw Error('Tool unavailable.');

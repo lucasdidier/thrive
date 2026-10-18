@@ -10,6 +10,7 @@ Requires Node 22.13+ (Node 24 recommended). Run `npm run install:ci`, then `npm 
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_outstanding_otto_octavius.sql
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_warm_sway.sql
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0002_chunky_bullseye.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0003_gorgeous_microchip.sql
 npm run dev -- --port 4173 --hostname 127.0.0.1
 ```
 
@@ -131,3 +132,14 @@ No Google credentials were present during implementation. Automated tests use a 
 | [Nylas](https://developer.nylas.com/docs/provider-guides/google/) | Commercial unified email/calendar APIs with Google onboarding options | Consider when multiple providers justify a vendor dependency. |
 
 UX patterns adapted: Dubsado's contact-focused inbox and contextual recipients ([Dubsado Inbox](https://help.dubsado.com/en/articles/15811791-dubsado-inbox)); Plutio's shared conversation history linked to clients/projects and reusable drafts ([Plutio Gmail](https://www.plutio.com/help/gmail-integration), [Inbox and communication](https://www.plutio.com/help/inbox-and-communication)). Thrive retains its existing visual system. This pass used product documentation and prior research notes; no new authenticated competitor-session inspection was possible while the Mac was locked.
+
+
+## Form builder
+
+Forms support 1–50 editable questions: short/long text, number, email, phone, website, date, time, single choice, dropdown, multiple choices, checkbox, rating (5 or 10), and file upload. Click a question to edit; use its controls to reorder, duplicate, or delete (with undo). Required settings, hints, choice labels, numeric limits, and accepted file groups are per question. Preview uses the same renderer and validation as the shared form.
+
+Existing inquiry fields become editable questions without replacing existing forms. In **More options → Use answer for**, an email question can match/create a client; a project-name question additionally creates a planned project. Without these mappings, a form simply saves responses. An unanswered budget leaves a project unpriced. Response snapshots preserve the original labels, choices, values, and form title when questions change later.
+
+Uploaded files use the `BUCKET` R2 binding and the `form_uploads` D1 table. Files are limited to 5 MB each, 1/3/5 per question, 20 MB per submission, and 500 MB per workspace. A share link accepts at most 100 uploads per hour. Accepted extensions cover PDF, text, CSV, Office documents, ZIP, and common raster images. Downloads require workspace ownership and always use attachment disposition. Uploaded files for shared responses are tied to the link, question, form revision and request ID; unsubmitted uploads expire for submission after 24 hours. Abandoned uploads still consume storage; automatic storage cleanup is not implemented. File content is not malware-scanned. Site audience settings continue to apply to all routes.
+
+The same question definitions are available via `thrive_execute_action` with `form.save` (`input: {id, data: {...form, questions}}`). `form.submit` accepts `input: {id, data: {answers: {questionId: value}}}`. Choice answers use option IDs; multiple choices use an ID array; numeric/rating answers are numbers and checkbox answers are booleans. File answers reference previously uploaded `{id, name, size}` metadata; arbitrary file IDs are rejected. Both actions use the usual revision and idempotency requirements.

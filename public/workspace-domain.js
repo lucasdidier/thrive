@@ -1,4 +1,5 @@
-import {uid,today,addActivity,allocatePlan,defaultPlan,acceptProposal,submitInquiry,saveIntake} from './domain.js';
+import {normalizeQuestions,validateFormAnswers} from './form-domain.js';
+import {uid,today,addActivity,allocatePlan,defaultPlan,acceptProposal,submitInquiry,saveIntake,saveClient,createProject} from './domain.js';
 import {validateOffers,quoteOffers} from './services-domain.js';
 const copy=x=>JSON.parse(JSON.stringify(x)), clean=x=>String(x??'').trim();
 export const responseLabels={acceptance:'Acceptance',signature:'Signature',none:'No response'};
@@ -74,10 +75,18 @@ export function respondDocument(s,id,number,action,signature={}){
 export function archiveDocument(s,id){const d=getDoc(s,id);d.archived=!d.archived;return d;}
 export function saveForm(s,data,id){
  const old=id?getForm(s,id):null;if(old?.status==='archived')throw Error('Restore the form before editing.');const temporary={};saveIntake(temporary,data);const config=temporary.intake;
- if(!clean(data.name||data.title))throw Error('Enter a form name.');const f={...old,...config,name:clean(data.name||data.title),id:old?.id||uid(),status:old?.status||'active',createdAt:old?.createdAt||today()};if(old)Object.assign(old,f);else s.forms.unshift(f);return old||f;
+ if(!clean(data.name||data.title))throw Error('Enter a form name.');if(data.questions!==undefined)config.questions=normalizeQuestions(data.questions);else if(old?.questions)config.questions=structuredClone(old.questions);if(clean(data.name||data.title).length>100||config.title.length>100||config.intro.length>2000)throw Error('Keep form names and titles under 100 characters and introductions under 2,000.');const f={...old,...config,name:clean(data.name||data.title),id:old?.id||uid(),status:old?.status||'active',createdAt:old?.createdAt||today()};if(old)Object.assign(old,f);else s.forms.unshift(f);return old||f;
 }
 export function toggleForm(s,id){const f=getForm(s,id);f.status=f.status==='active'?'archived':'active';return f;}
 export function submitForm(s,id,data,key){
- const f=getForm(s,id);if(f.status!=='active')throw Error('This form is archived.');const scopedKey=`${id}:${key}`,prior=s.submissions.find(x=>x.key===scopedKey);if(prior)return s.projects.find(p=>p.id===prior.projectId);
+ const f=getForm(s,id);if(f.status!=='active')throw Error('This form is archived.');const scopedKey=`${id}:${key}`,prior=s.submissions.find(x=>x.key===scopedKey);if(prior)return s.projects.find(p=>p.id===prior.projectId)||prior;
+ if(data.answers!==undefined||f.questions)return submitQuestionForm(s,f,data,key);
  const next=copy(s),previousIntake=next.intake;next.intake=copy(f);const p=submitInquiry(next,data,scopedKey);const submission=next.submissions.find(x=>x.key===scopedKey);Object.assign(submission,{formId:id,formTitle:f.title,scope:p.inquiry.scope,question:p.inquiry.question,answer:p.inquiry.answer,contactName:clean(data.contact),contactEmail:clean(data.email),clientName:clean(data.name)});next.intake=previousIntake;Object.assign(s,next);return s.projects.find(x=>x.id===p.id);
+}
+
+function submitQuestionForm(s,f,data,key){
+ if(!key)throw Error('Submission identifier is required.');const checked=validateFormAnswers(f,data.answers),d=checked.mapped,next=copy(s);let c=null,p=null;
+ if(d.email){c=next.clients.find(c=>c.email.toLowerCase()===d.email.toLowerCase());if(c?.archived)throw Error('This contact is archived. Restore the client first.');if(!c)c=saveClient(next,{name:d.name||d.contact||d.email,contact:d.contact||d.name||d.email,email:d.email,tag:f.tag});}
+ if(c&&d.project){p=createProject(next,{name:d.project,clientId:c.id,budget:d.budget||100,service:f.service,due:d.due||'',scope:d.scope||''});if(!d.budget){p.budget=0;p.billingPlan=[];p.needsPricing=true;}p.source='Inquiry form';p.inquiry={scope:d.scope||'',budget:d.budget??null,submittedAt:new Date().toISOString(),tag:f.tag};}
+ const sub={id:uid(),key:`${f.id}:${key}`,formId:f.id,formTitle:f.title,clientId:c?.id||null,projectId:p?.id||null,clientName:d.name||c?.name||'',contactName:d.contact||c?.contact||'',contactEmail:d.email||'',scope:d.scope||'',answers:checked.snapshots,createdAt:new Date().toISOString()};next.submissions.unshift(sub);addActivity(next,'Form submitted',f.title,'forms');Object.assign(s,next);return p?s.projects.find(x=>x.id===p.id):s.submissions.find(x=>x.id===sub.id);
 }

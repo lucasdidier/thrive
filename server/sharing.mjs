@@ -1,3 +1,5 @@
+import {publicFormData,validateFormAnswers} from '../public/form-domain.js';
+import {validateUploadedAnswers} from './form-files.mjs';
 import {validShareToken,linkAvailable,shareTarget} from '../public/share-domain.js';
 import {respondDocument,submitForm} from '../public/workspace-domain.js';
 import {snapshotWorkspace,runWorkflows} from '../public/workflow-domain.js';
@@ -36,7 +38,7 @@ export function clientProjection(state,link){
   data.design=pick(record.design,['template','color','logo','issuerDetails','footer']);
   return {entity:'invoice',data:{...data,status:invoiceStatus(record)},actions:[]};
  }
- return {entity:'form',data:{...pick(record,['title','intro','collectBudget','collectDate','question','questionRequired']),business:state.settings.business},actions:['submit']};
+ return {entity:'form',data:publicFormData(record,state.settings.business),actions:['submit']};
 }
 function validateInput(body,entity){
  if(!body||typeof body!=='object'||Array.isArray(body))throw new StoreError('Invalid response.');
@@ -46,7 +48,7 @@ function validateInput(body,entity){
  if(entity==='form'){
   if(body.action!=='submit'||!body.data||typeof body.data!=='object'||Array.isArray(body.data))throw new StoreError('Invalid form submission.');
   const fields={name:100,contact:100,email:254,project:100,scope:10000,due:10,answer:1000,website:200};
-  for(const [k,v]of Object.entries(body.data)){if(k==='budget'){if(v!==''&&(!Number.isSafeInteger(v)||v<1||v>10000000000))throw new StoreError('Enter a valid estimated budget.');continue;}if(!fields[k]||typeof v!=='string'||v.length>fields[k])throw new StoreError('Check the form fields and their lengths.');}
+  for(const [k,v]of Object.entries(body.data)){if(k==='answers'){if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).length>50)throw new StoreError('Invalid form answers.');continue;}if(k==='budget'){if(v!==''&&(!Number.isSafeInteger(v)||v<1||v>10000000000))throw new StoreError('Enter a valid estimated budget.');continue;}if(!fields[k]||typeof v!=='string'||v.length>fields[k])throw new StoreError('Check the form fields and their lengths.');}
   if(body.data.website)throw new StoreError('Unable to submit this form.');
  }else{
   if(!['accept','sign','decline'].includes(body.action))throw new StoreError('Unsupported document response.');
@@ -69,7 +71,7 @@ export async function respondToShare(db,token,body){
    if(nextLink.submissionWindow&&Date.now()-Date.parse(nextLink.submissionWindow)<3600000&&nextLink.submissionCount>=30)throw new StoreError('This form has received too many submissions. Try again later.',429);
    if(!nextLink.submissionWindow||Date.now()-Date.parse(nextLink.submissionWindow)>=3600000){nextLink.submissionWindow=at;nextLink.submissionCount=0;}
    nextLink.submissionCount=(nextLink.submissionCount||0)+1;
-   try{submitForm(next,link.recordId,body.data,key);}catch(e){if(/archived/.test(e.message))throw new StoreError('Unable to submit this request. Contact the sender.');throw e;}
+   try{if(body.data.answers!==undefined){const f=next.forms.find(f=>f.id===link.recordId),checked=validateFormAnswers(f,body.data.answers);await validateUploadedAnswers(db,owner,f.id,checked.snapshots,{shareId:link.id,requestId:body.request_id,revision:body.form_revision});}submitForm(next,link.recordId,body.data,key);}catch(e){if(/archived/.test(e.message))throw new StoreError('Unable to submit this request. Contact the sender.');throw e;}
   }else{
    respondDocument(next,link.recordId,link.version,body.action,{name:body.name,consent:body.consent,selections:body.selections});
    const d=next.documents.find(d=>d.id===link.recordId),v=d.versions.find(v=>v.number===link.version);
@@ -85,6 +87,6 @@ export async function respondToShare(db,token,body){
 }
 export async function handleShared(request,db,token){try{
  if(request.method==='GET'){const {state,link}=await resolveShare(db,token);const result=clientProjection(state,link);if(link.entity==='form')result.formRevision=await hashRequest(result.data);return json(result);}
- if(request.method==='POST'){checkOrigin(request);if(Number(request.headers.get('content-length'))>20000)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,20000)));}
+ if(request.method==='POST'){checkOrigin(request);const scope=await resolveShare(db,token),limit=scope.link.entity==='form'?600000:20000;if(Number(request.headers.get('content-length'))>limit)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,limit)));}
  return json({error:'Method not allowed.'},405);
  }catch(e){return errorResponse(e);}}

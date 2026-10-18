@@ -22,14 +22,17 @@ declare global {
 declare namespace VinextRouteTypes {
   type PageRoute = never;
   type LayoutRoute = "/";
-  type RouteHandlerRoute = "/" | "/api/communications" | "/api/google/callback" | "/api/shared/[token]" | "/api/workspace" | "/mcp" | "/share/[token]";
-  type AppRoute = "/" | "/api/communications" | "/api/google/callback" | "/api/shared/[token]" | "/api/workspace" | "/mcp" | "/share/[token]";
+  type RouteHandlerRoute = "/" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/mcp" | "/share/[token]";
+  type AppRoute = "/" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/mcp" | "/share/[token]";
 
   interface ParamMap {
     "/": {};
     "/api/communications": {};
+    "/api/form-files": {};
+    "/api/form-files/[id]": { id: string; };
     "/api/google/callback": {};
     "/api/shared/[token]": { token: string; };
+    "/api/shared/[token]/files": { token: string; };
     "/api/workspace": {};
     "/mcp": {};
     "/share/[token]": { token: string; };
