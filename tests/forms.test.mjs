@@ -36,7 +36,7 @@ test('workspace and submission upload quotas reject before storing more files',a
 
 function templateAnswers(f,overrides={}){return Object.fromEntries(f.questions.filter(q=>q.required||overrides[q.binding]!==undefined).map(q=>[q.id,overrides[q.binding]??(q.type==='email'?'template@example.com':q.type==='rating'?5:q.type==='number'?1000:q.type==='multiselect'?[q.options[0].id]:['select','radio'].includes(q.type)?q.options[0].id:'Example answer')]));}
 test('all form starters validate, render read-only previews, and produce independent editable copies',()=>{
- const snapshot=JSON.stringify(formTemplates);assert.equal(formTemplateCatalog().length,8);
+ const snapshot=JSON.stringify(formTemplates);assert.equal(formTemplateCatalog().length,9);
  for(const t of formTemplates){const a=formFromTemplate(t.id,{service:'Consulting'}),b=formFromTemplate(t.id);assert.equal(a.service,'Consulting');assert.doesNotThrow(()=>normalizeQuestions(a.questions));assert.doesNotThrow(()=>validateFormAnswers(a,templateAnswers(a)));assert.match(renderQuestions(a,{disabled:true}),/disabled/);assert.ok(a.questions.every(q=>!b.questions.some(x=>x.id===q.id)));const choice=a.questions.find(q=>q.options);if(choice){const other=b.questions.find(q=>q.label===choice.label);assert.notEqual(choice.options[0].id,other.options[0].id);choice.options[0].label='Custom option';}a.questions[0].label='My question';assert.notEqual(a.questions[0].label,b.questions[0].label);}
  assert.equal(JSON.stringify(formTemplates),snapshot);assert.throws(()=>formFromTemplate('unknown'),/template/);
 });
@@ -50,7 +50,7 @@ test('project inquiry template connects a client and unpriced planned project; o
 });
 test('briefs, content, feedback, testimonials and consultation starters save responses without creating CRM records',()=>{
  const s=state(),clients=s.clients.length,projects=s.projects.length,invoices=s.invoices.length;
- for(const t of formTemplates.filter(t=>!['project-inquiry','client-onboarding'].includes(t.id))){const f=saveForm(s,formFromTemplate(t.id));submitForm(s,f.id,{answers:templateAnswers(f)},'template-'+t.id);assert.equal(s.submissions[0].clientId,null);assert.equal(s.submissions[0].projectId,null);}
+ for(const t of formTemplates.filter(t=>!['project-inquiry','client-onboarding','website-contact'].includes(t.id))){const f=saveForm(s,formFromTemplate(t.id));submitForm(s,f.id,{answers:templateAnswers(f)},'template-'+t.id);assert.equal(s.submissions[0].clientId,null);assert.equal(s.submissions[0].projectId,null);}
  assert.equal(s.clients.length,clients);assert.equal(s.projects.length,projects);assert.equal(s.invoices.length,invoices);assert.equal(s.submissions.length,6);
 });
 test('template forms remain editable and retain response snapshots after later edits',()=>{
@@ -61,9 +61,35 @@ test('template forms remain editable and retain response snapshots after later e
 });
 test('MCP exposes form starters and creates exactly one form on replay without sharing it',async()=>{
  const db=database(),initial=state(),count=initial.forms.length;await bootstrap(db,'alice',initial);
- const catalog=await callTool(db,'alice','thrive_get_catalog',{});assert.equal(catalog.formTemplates.length,8);assert.ok(catalog.actions.some(a=>a.id==='form.from_template'));
+ const catalog=await callTool(db,'alice','thrive_get_catalog',{});assert.equal(catalog.formTemplates.length,9);assert.ok(catalog.actions.some(a=>a.id==='form.from_template'));
  const args={action:'form.from_template',input:{templateId:'website-brief'},expected_revision:0,request_id:'form-template-001'};
  const first=await callTool(db,'alice','thrive_execute_action',args),replay=await callTool(db,'alice','thrive_execute_action',args);assert.equal(first.result.id,replay.result.id);
  const saved=await loadWorkspace(db,'alice');assert.equal(saved.state.forms.length,count+1);assert.equal(saved.state.forms[0].title,'Website brief');assert.equal(saved.state.clients.length,initial.clients.length);assert.equal(saved.state.projects.length,initial.projects.length);assert.deepEqual(saved.state.shareLinks,initial.shareLinks);
  await assert.rejects(()=>callTool(db,'alice','thrive_execute_action',{...args,input:{templateId:'unknown'},expected_revision:saved.revision,request_id:'form-template-bad'}),/allowed value/);db.close();
+});
+
+test('website contact starter saves a message, matches its contact, and creates no project',()=>{
+ const s=state(),f=saveForm(s,formFromTemplate('website-contact')),clients=s.clients.length,projects=s.projects.length;
+ const answers=templateAnswers(f,{contact:'Website Visitor',email:'visitor@example.com'});
+ submitForm(s,f.id,{answers},'website-contact-001');
+ assert.equal(s.clients.length,clients+1);assert.equal(s.projects.length,projects);assert.ok(s.submissions[0].clientId);assert.equal(s.submissions[0].projectId,null);assert.equal(s.submissions[0].answers.length,4);
+ submitForm(s,f.id,{answers},'website-contact-002');assert.equal(s.clients.length,clients+1);
+});
+
+test('overlay is form-only; submissions use the existing authenticated-origin check and deduplicate',async()=>{
+ const {embeddedFormPage}=await import('../server/form-embed.mjs'),{handleShared}=await import('../server/sharing.mjs');
+ const {db,f,link,revision}=await setup([q('text',{id:'message',required:true})]);
+ const page=await embeddedFormPage(db,link.token,'<main>Form</main>');assert.equal(page.status,200);assert.match(page.headers.get('Content-Security-Policy'),/frame-ancestors https: http:/);assert.equal(page.headers.get('Referrer-Policy'),'no-referrer');
+ assert.equal((await embeddedFormPage(db,'bad','')).status,404);
+ const body={action:'submit',request_id:'overlay-submit-001',form_revision:revision,data:{answers:{message:'A message from the website'}}};
+ const post=origin=>new Request(`https://thrive.example/api/shared/${link.token}`,{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify(body)});
+ assert.equal((await handleShared(post('https://website.example'),db,link.token)).status,403);
+ assert.equal((await handleShared(post('https://thrive.example'),db,link.token)).status,200);
+ assert.equal((await handleShared(post('https://thrive.example'),db,link.token)).status,200);
+ let saved=await loadWorkspace(db,'alice');assert.equal(saved.state.submissions.filter(x=>x.formId===f.id).length,1);
+ await callTool(db,'alice','thrive_execute_action',{action:'share.revoke',input:{id:link.id},expected_revision:saved.revision,request_id:'revoke-overlay-001'});
+ assert.equal((await embeddedFormPage(db,link.token,'')).status,404);assert.equal((await handleShared(post('https://thrive.example'),db,link.token)).status,404);db.close();
+ const otherDB=database(),s=state(),{createShareLink}=await import('../public/share-domain.js');
+ const invoice=s.invoices.find(i=>i.number);assert.ok(invoice);const invoiceLink=createShareLink(s,{entity:'invoice',recordId:invoice.id});await bootstrap(otherDB,'owner',s);
+ assert.equal((await embeddedFormPage(otherDB,invoiceLink.token,'private invoice')).status,404);otherDB.close();
 });

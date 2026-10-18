@@ -5,6 +5,8 @@ const options=(...labels)=>labels.map((label,i)=>({id:`option_${i+1}`,label}));
 const contact=()=>[q('text','Your name',{required:true}),q('email','Email address',{required:true})];
 const response='Saves responses only. Does not create clients or projects.';
 export const formTemplates=[
+ {id:'website-contact',name:'Website contact',title:'Write me a quick note.',category:'Sales',description:'A short contact form for your website or an overlay.',intro:'Tell me what you have in mind.',tag:'Website inquiry',behavior:'Matches or creates a client by email and saves the message. Does not create a project.',questions:[
+  q('select','Why are you contacting me?',{required:true,options:options('Work together','Ask a question','Something else')}),q('text','Your name',{required:true,binding:'contact'}),q('email','Your email',{required:true,binding:'email'}),q('textarea','What are you thinking?',{required:true})]},
  {id:'project-inquiry',name:'Project inquiry',category:'Sales',description:'Qualify a new project with scope, budget, and timing.',intro:'Tell us what you need and when you need it.',tag:'Inquiry',behavior:'Matches or creates a client by email and creates a planned project on submission.',questions:[
   q('text','Business or client name',{required:true,binding:'name'}),q('text','Contact name',{required:true,binding:'contact'}),q('email','Email address',{required:true,binding:'email'}),q('text','Project name',{required:true,binding:'project'}),q('textarea','What do you need help with?',{required:true,binding:'scope'}),q('number','Estimated budget (USD)',{min:.01,binding:'budget'}),q('date','Target completion date',{binding:'due'}),q('select','How did you hear about us?',{options:options('Referral','Search engine','Social media','Other')})]},
  {id:'client-onboarding',name:'Client onboarding',category:'Projects',description:'Collect contact details, goals, and working preferences.',intro:'Share the details we need to get started.',tag:'Onboarding',behavior:'Matches or creates a client by email. Does not create a project.',questions:[
@@ -24,6 +26,6 @@ export const formTemplates=[
 ];
 export function formFromTemplate(templateId,settings={}){
  const template=formTemplates.find(t=>t.id===templateId);if(!template)throw Error('Choose a valid form template.');
- return {name:template.name,title:template.name,intro:template.intro,service:settings.service||'Services',tag:template.tag||'',collectBudget:false,collectDate:false,questions:normalizeQuestions(template.questions.map(question=>({...structuredClone(question),id:'q_'+uid(),...(question.options?{options:question.options.map(o=>({...o,id:'o_'+uid()}))}:{})})))};
+ return {name:template.name,title:template.title||template.name,intro:template.intro,service:settings.service||'Services',tag:template.tag||'',collectBudget:false,collectDate:false,questions:normalizeQuestions(template.questions.map(question=>({...structuredClone(question),id:'q_'+uid(),...(question.options?{options:question.options.map(o=>({...o,id:'o_'+uid()}))}:{})})))};
 }
 export function formTemplateCatalog(){return formTemplates.map(({id,name,category,description,behavior,questions})=>({id,name,category,description,behavior,questionCount:questions.length}));}

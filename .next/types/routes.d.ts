@@ -22,8 +22,8 @@ declare global {
 declare namespace VinextRouteTypes {
   type PageRoute = never;
   type LayoutRoute = "/";
-  type RouteHandlerRoute = "/" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/mcp" | "/share/[token]";
-  type AppRoute = "/" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/mcp" | "/share/[token]";
+  type RouteHandlerRoute = "/" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/embed/form/[token]" | "/mcp" | "/share/[token]";
+  type AppRoute = "/" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/embed/form/[token]" | "/mcp" | "/share/[token]";
 
   interface ParamMap {
     "/": {};
@@ -34,6 +34,7 @@ declare namespace VinextRouteTypes {
     "/api/shared/[token]": { token: string; };
     "/api/shared/[token]/files": { token: string; };
     "/api/workspace": {};
+    "/embed/form/[token]": { token: string; };
     "/mcp": {};
     "/share/[token]": { token: string; };
   }
