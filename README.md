@@ -8,6 +8,7 @@ Requires Node 22.13+ (Node 24 recommended). Run `npm run install:ci`, then `npm 
 
 ```sh
 node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_outstanding_otto_octavius.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_warm_sway.sql
 npm run dev -- --port 4173 --hostname 127.0.0.1
 ```
 
@@ -72,4 +73,16 @@ Example custom field action input:
 
 All workflow catalog actions are available via MCP, plus typed field administration, draft editing/issuing, service editing, document responses/revisions, form submission, manual payments, meeting completion, and workflow management. Triggers describe observed state changes: callers cannot fabricate a paid invoice/signature by emitting arbitrary events. MCP discovery contains no private data; all data-bearing calls require authenticated identity. Separate users cannot access each other's workspaces. A Sites service-access bypass token alone does not grant data access.
 
-Remaining prototype boundaries: no payment collection or Stripe connection, no outbound email, no public client access, no real legal e-signatures, no external calendar sync, no background date triggers. Document responses/signatures remain explicitly simulated. AI chat still uses the existing prototype intent parser; adding MCP does not turn chat into a hosted LLM service.
+Remaining prototype boundaries: no payment collection or Stripe connection, no outbound email, no third-party e-signature or signer verification service, no external calendar sync, no background date triggers. Owner preview and MCP document responses remain explicitly simulated. Client-link responses are recorded against the shared version. AI chat still uses the existing prototype intent parser; adding MCP does not turn chat into a hosted LLM service.
+
+## Client links
+
+Published documents, issued invoices, and active forms have a **Share** action. Generate or copy a link, choose 7/30/90 days or no expiry, and revoke it at any time. Documents are pinned to a published version; revision, archive, revocation, or expiry makes that link unavailable. Completed versions remain downloadable. Forms use their current definition and reject submissions from an outdated page. Invoices show the current recorded balance and payment instructions; clients cannot mark invoices paid.
+
+`/share/:token` serves a standalone page without workspace navigation. `/api/shared/:token` returns an explicit allowlist of client-visible fields and accepts only that item's permitted response. Client names, consent, action, version and server timestamp are retained for document responses. Typed signatures record consent; there is no independent identity verification or third-party e-signature service. Owner previews and MCP `document.respond` remain simulations. Client responses run the existing workflows transactionally. Form retries and document retries use idempotency receipts, and concurrent responses cannot produce duplicate invoices.
+
+The D1 `share_links` index stores SHA-256 hashes of 256-bit random tokens; only the owner's authenticated workspace keeps copyable tokens. Revocation is checked against current workspace state on every request. Links are bearer capabilities: anyone given the link can access its item until revoked or expired. Pages disable indexing, referrer transmission and framing. Form submissions have per-link limits. Downloads are self-contained HTML copies; **Print / Save PDF** uses the browser's print renderer and the invoice's saved design.
+
+The Sites audience must permit anonymous requests for these routes. The root workspace still redirects to sign-in; workspace API and MCP record calls require trusted identity and remain scoped to that owner. No platform bypass credential is used in client links.
+
+Agents can create/reuse links with `share.create` (`entity`, `recordId`, optional `expiresInDays`), revoke with `share.revoke` (`id`), and read their owner's links using entity `shareLink`. Returned `path` values are relative to the Thrive site origin.

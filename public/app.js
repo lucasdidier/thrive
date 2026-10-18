@@ -1,3 +1,4 @@
+import {createShareUI} from './share-ui.js';
 import {createWorkspaceSync} from './workspace-sync.js';
 import {createCustomFieldsUI} from './custom-fields-ui.js';
 import {createCatalogUI} from './services-ui.js';
@@ -27,7 +28,7 @@ let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toa
 try{document.documentElement.dataset.theme=localStorage.getItem('thrive-theme')||'dark'}catch{}
 const dialog=document.querySelector('#dialog');
 initCreateMenu();
-function save(){workspaceSync.save();}
+function save(){return workspaceSync.save();}
 function toast(text){const el=document.querySelector('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3500)}
 function btn(text,action,extra='',cls=''){return `<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`}
 const badge=status=>`<span class="badge ${status.replaceAll(' ','-')}"><i></i>${esc(status)}</span>`;
@@ -65,6 +66,7 @@ function portal(id='p1'){return journey.portal(id);}
 function business(){open('Your workspace',`<form id="business-form"><div class="dialog-body"><label class="field">Your name<input name="name" value="${esc(state.settings.name)}" required maxlength="80"></label><label class="field">Business name<input name="business" value="${esc(state.settings.business)}" required maxlength="80"></label><div class="notice">Demo workspace · USD · Changes saved in this browser.</div>${btn('Services & packages','services')}${btn('Payment instructions','payment-settings')}<button type="button" class="text-btn" data-action="reset-preview">Reset sample data</button></div><div class="dialog-footer">${btn('Close','close')}<button class="btn primary" type="submit">Save details</button></div></form>`)}
 function search(){open('Search workspace',`<div class="dialog-body"><input id="global-search" class="filter-input full-width" placeholder="Search clients, projects, documents, or invoices…" aria-label="Search clients, projects, documents, or invoices" autofocus></div><div id="search-results" class="search-results"></div>`);searchResults('')}
 function searchResults(q){const needle=q.toLowerCase();const results=[...state.clients.map(c=>({name:c.name,type:'Client',action:'client',id:c.id})),...state.projects.map(p=>({name:p.name,type:'Project',action:'project',id:p.id})),...state.documents.map(d=>({name:d.title,type:'Document',action:'document',id:d.id})),...state.forms.map(f=>({name:f.name,type:'Form',action:'edit-form',id:f.id})),...state.invoices.map(i=>({name:i.number+' · '+money(i.amount),type:'Invoice',action:'invoice',id:i.id}))].filter(r=>r.name.toLowerCase().includes(needle)).slice(0,10);document.querySelector('#search-results').innerHTML=results.map(r=>`<button class="search-result" data-action="${r.action}" data-id="${r.id}">${icon(r.action==='client'?'clients':r.action==='invoice'?'invoices':r.action==='document'?'documents':r.action==='edit-form'?'forms':'projects')}${esc(r.name)}<small>${r.type}</small></button>`).join('')||'<div class="empty">No matches. Try a client or project name.</div>'}
+const shareUI=createShareUI({getState:()=>state,save,blocked:workspaceSync.isBlocked,open,dialog,btn,esc,toast});
 const chatUI=createChatUI({getState:()=>state,render,save,toast,icon,esc,btn,open,dialog,go});
 const catalogUI=createCatalogUI({getState:()=>state,open,btn,icon,esc,dialog,save,render,toast});
 const billingUI=createBillingUI({getState:()=>state,open,btn,icon,esc,badge,date,dialog,save,render,toast});
@@ -79,7 +81,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('.skip')){e.preventDefault();document.querySelector('#main').focus();return;}
  const el=e.target.closest('[data-action]');if(!el){crm.outsideClick(e);return;}const a=el.dataset.action,id=el.dataset.id;
  try{
- if(customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
+ if(shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
  if(a==='close')dialog.close();
  else if(a==='theme'){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('thrive-theme',t)}catch{}}
  else if(a==='project')projectDetail(id);else if(a==='client')clientDetail(id);else if(a==='invoice')invoiceDetail(id);else if(a==='proposal')proposalDetail(id);

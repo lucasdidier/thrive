@@ -50,7 +50,7 @@ export function publishDocument(s,id){
  if(d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none')throw Error('Service selection requires a response.');}
  if(d.billing){if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan,d.phases);}
  const v={...copy(d),versions:undefined,number:d.versions.length+1,client:copy(s.clients.find(c=>c.id===d.clientId)),business:s.settings.business,status:'published',createdAt:new Date().toISOString()};
- d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();addActivity(s,'Document published for preview',d.title,'document');return v;
+ d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();addActivity(s,'Document published',d.title,'document');return v;
 }
 export function reviseDocument(s,id){const d=getDoc(s,id);ensureOpen(s,d);if(['accepted','signed'].includes(d.status))throw Error('Completed agreements cannot be revised in this prototype.');if(d.status==='draft')return d;d.versions.forEach(v=>{if(v.status==='published')v.status='superseded';});d.status='draft';d.currentVersion=null;return d;}
 export function respondDocument(s,id,number,action,signature={}){

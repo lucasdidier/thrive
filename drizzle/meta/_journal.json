@@ -8,6 +8,13 @@
       "when": 1792318398900,
       "tag": "0000_outstanding_otto_octavius",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792319404054,
+      "tag": "0001_warm_sway",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@ import {catalog,actionCatalog,executeOperation,testWorkflow,records,fieldsFor,in
 import {loadWorkspace,commitWorkspace,readEvents,hashRequest,receiptFor,StoreError} from './store.mjs';
 import {ownerOf,checkOrigin,readBody,json} from './http.mjs';
 import {validateWorkspace} from './validation.mjs';
-const string={type:'string'},revision={type:'integer',minimum:0},limit={type:'integer',minimum:1},scope={enum:Object.keys(catalog().entities).concat(['workflow','customField'])};
+const string={type:'string'},revision={type:'integer',minimum:0},limit={type:'integer',minimum:1},scope={enum:Object.keys(catalog().entities).concat(['workflow','customField','shareLink'])};
 const tool=(name,description,properties={},required=[],write=false)=>({name,description,inputSchema:{type:'object',properties,required,additionalProperties:false},annotations:{readOnlyHint:!write,destructiveHint:write,idempotentHint:!write,openWorldHint:false}});
 export const mcpTools=[
  tool('thrive_get_workspace','Get the current revision, record counts, and initialization status. Open Thrive once to migrate existing browser records.'),
@@ -15,7 +15,7 @@ export const mcpTools=[
  tool('thrive_read_events','Poll committed business events after a cursor. Actual mutations emit these triggers; events cannot be forged.',{after:revision,limit}),
  tool('thrive_list_workflow_runs','Read the latest workflow runs, including failures and loop prevention.',{limit})
 ];
-const allRecords=(s,e)=>e==='workflow'?initWorkflows(s).workflows:e==='customField'?['client','project'].flatMap(entity=>fieldsFor(s,entity,true).map(f=>({...f,entity}))):records(s,e);
+const allRecords=(s,e)=>e==='shareLink'?(s.shareLinks||[]).map(l=>({...l,path:`/share/${l.token}`})):e==='workflow'?initWorkflows(s).workflows:e==='customField'?['client','project'].flatMap(entity=>fieldsFor(s,entity,true).map(f=>({...f,entity}))):records(s,e);
 const eventSummary=events=>events.map(({id,type,entity,recordId,fieldId,value,previousValue})=>({id,type,entity,recordId,fieldId,value,previousValue}));
 export async function callTool(db,owner,name,args){const tool=mcpTools.find(t=>t.name===name);if(!tool)throw Error('Unknown tool.');checkShape(args,tool.inputSchema);if(args.limit>100)throw Error('Limit must be 100 or fewer.');
  const current=await loadWorkspace(db,owner);

@@ -22,13 +22,15 @@ declare global {
 declare namespace VinextRouteTypes {
   type PageRoute = never;
   type LayoutRoute = "/";
-  type RouteHandlerRoute = "/" | "/api/workspace" | "/mcp";
-  type AppRoute = "/" | "/api/workspace" | "/mcp";
+  type RouteHandlerRoute = "/" | "/api/shared/[token]" | "/api/workspace" | "/mcp" | "/share/[token]";
+  type AppRoute = "/" | "/api/shared/[token]" | "/api/workspace" | "/mcp" | "/share/[token]";
 
   interface ParamMap {
     "/": {};
+    "/api/shared/[token]": { token: string; };
     "/api/workspace": {};
     "/mcp": {};
+    "/share/[token]": { token: string; };
   }
 
   interface LayoutSlotMap {

@@ -1,3 +1,4 @@
+import {createShareLink,revokeShareLink,sharePath} from '../public/share-domain.js';
 import {actions,triggers,entities,executeWorkspaceAction,saveWorkflow,testWorkflow,initWorkflows,records,snapshotWorkspace,runWorkflows} from '../public/workflow-domain.js';
 import {saveClient,updateProject,recordManualPayment,approveMilestone,togglePhase} from '../public/domain.js';
 import {saveField,archiveField,setFieldValue,fieldsFor,fieldTypes} from '../public/custom-fields-domain.js';
@@ -8,6 +9,8 @@ import {saveMeetingType,completeMeeting,saveAvailability,saveFollowupEmail} from
 const extra=(id,description,required=[],properties={})=>({id,description,inputSchema:{type:'object',properties,required,additionalProperties:false}});
 const string={type:'string'},object={type:'object'},bool={type:'boolean'},id={type:'string',description:'Existing record ID'},data={type:'object',description:'Record fields; use get_record to inspect the existing shape. Amounts in integer cents unless named otherwise.'},scope={enum:['client','project']};
 export const extraActions=[
+ extra('share.create','Create or reuse a client-only link to a published document, issued invoice, or active form. Returns a relative path; no email is sent.',['entity','recordId'],{entity:{enum:['document','invoice','form']},recordId:id,expiresInDays:{enum:[0,7,30,90]}}),
+ extra('share.revoke','Permanently revoke one client link.',['id'],{id}),
  extra('customField.save','Create or rename a field. Type is immutable. Option IDs remain stable.', ['entity','data'],{entity:scope,id,data:{type:'object',required:['name'],properties:{name:string,type:{enum:Object.keys(fieldTypes)},description:string,options:{type:'array',items:{type:'object',required:['label'],properties:{id,label:string}}}}}}),
  extra('customField.archive','Archive or restore a definition without deleting values.',['entity','id','archived'],{entity:scope,id,archived:bool}),
  extra('customField.set','Set a typed field value. null clears it. Selects use option IDs; currency values use USD decimals.',['entity','recordId','fieldId','value'],{entity:scope,recordId:id,fieldId:id,value:{}}),
@@ -31,6 +34,8 @@ export function checkShape(value,schema,path='input'){if(schema.enum&&!schema.en
 export function performAction(s,type,input,requestId){const spec=actionCatalog().find(a=>a.id===type);if(!spec)throw Error('Unknown action. Read the catalog for supported IDs.');checkShape(input,spec.inputSchema);let result;const {id,data,entity}=input;
  if(actions.some(a=>a.id===type))result=executeWorkspaceAction(s,type,input.targetId,input.config,input.context);
  else switch(type){
+ case'share.create':{const link=createShareLink(s,input);result={...link,path:sharePath(link)};break;}
+ case'share.revoke':result=revokeShareLink(s,id);break;
  case'customField.save':result=saveField(s,entity,data,id);break;case'customField.archive':result=archiveField(s,entity,id,input.archived);break;case'customField.set':result=setFieldValue(s,entity,input.recordId,input.fieldId,input.value);break;
  case'client.update':result=saveClient(s,data,id);break;case'project.update':result=updateProject(s,id,data);break;
  case'invoiceDraft.save':result=saveInvoiceDraft(s,data,id);break;case'invoiceDraft.issue':result=issueInvoiceDraft(s,id);break;case'invoiceDraft.delete':result=deleteInvoiceDraft(s,id);break;case'invoice.payment':result=recordManualPayment(s,id,data,requestId);break;case'invoice.defaults':result=saveInvoiceDefaults(s,data);break;
