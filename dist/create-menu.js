@@ -4,6 +4,7 @@ const objects = [
   ['Document', 'documents', 'new-document'],
   ['Form', 'forms', 'new-form'],
   ['Invoice', 'invoices', 'new-invoice'],
+  ['Service or package', 'tag', 'service-new'],
   ['Meeting', 'calendar', 'booking-preview'],
   ['Meeting type', 'scheduling', 'meeting-type-new'],
   ['Time entry', 'clock', 'log-time'],

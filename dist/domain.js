@@ -91,6 +91,7 @@ export function approveMilestone(s,id,phaseId){
 }
 export function togglePhase(s,id,phaseId){const p=get(s,id);openProject(p);if(!['active','completed'].includes(p.status))throw Error('Record the deposit before starting delivery.');const f=p.phases.find(f=>f.id===phaseId);if(!f)throw Error('Phase not found.');if(p.billingPlan.some(r=>r.phaseId===phaseId))throw Error('Use milestone approval for phases linked to a payment.');f.done=!f.done;p.status=p.phases.every(f=>f.done)?'completed':'active';}
 export function initBilling(s){
+ s.invoiceDrafts??=[];s.services??=[];
  s.settings.paymentInstructions??='';s.settings.invoiceDesign??=defaultInvoiceDesign();
  for(const i of s.invoices){i.clientId??=s.projects.find(p=>p.id===i.projectId)?.clientId||null;i.design??=defaultInvoiceDesign();i.paymentInstructions??='';i.payments??=i.paid>0?[{id:`legacy-${i.id}`,amount:i.paid,date:i.paidAt||null,method:'Previously recorded',reference:'',legacy:true}]:[];}
  return s;

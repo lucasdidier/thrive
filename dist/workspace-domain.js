@@ -1,4 +1,5 @@
 import {uid,today,addActivity,allocatePlan,defaultPlan,acceptProposal,submitInquiry,saveIntake} from './domain.js';
+import {validateOffers,quoteOffers} from './services-domain.js';
 const copy=x=>JSON.parse(JSON.stringify(x)), clean=x=>String(x??'').trim();
 export const responseLabels={acceptance:'Acceptance',signature:'Signature',none:'No response'};
 export const kindLabels={proposal:'Proposal',contract:'Contract',agreement:'Proposal + contract',document:'Document'};
@@ -31,19 +32,22 @@ export function saveDocument(s,id,data){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Create a revision before editing this document.');
  const title=clean(data.title),scope=clean(data.scope),kind=data.kind||d.kind,responseMode=data.responseMode||d.responseMode;
  if(!title||!scope)throw Error('Enter a document title and content.');if(!kindLabels[kind]||!responseLabels[responseMode])throw Error('Choose a valid type and response requirement.');
+ const offers=validateOffers(data.offers??d.offers??[]);if(offers.length&&responseMode==='none')throw Error('Service selection requires acceptance or signature.');const quote=offers.length?quoteOffers(offers):null;
  const billing=!!data.billing,p=s.projects.find(p=>p.id===d.projectId);let phases=copy(d.phases),billingPlan=copy(d.billingPlan),budget=d.budget;
  if(billing){
   if(!p)throw Error('Link a project before enabling billing.');if(responseMode==='none')throw Error('Billing requires acceptance or signature. Turn off billing for an information-only document.');
   if(p.accepted||s.documents.some(x=>x.id!==id&&x.projectId===p.id&&x.billing))throw Error('This project already has a billing agreement.');
   const names=(data.phases||d.phases.map(f=>f.name)).map(clean);if(!names.length||names.length>8||names.some(x=>!x)||new Set(names.map(x=>x.toLowerCase())).size!==names.length)throw Error('Enter one to eight unique delivery phases.');
-  phases=names.map((name,i)=>({id:data.phaseIds?.[i]||d.phases[i]?.id||uid(),name,done:false}));budget=Number(data.budget);billingPlan=allocatePlan(budget,data.rules||d.billingPlan,phases);
+  phases=names.map((name,i)=>({id:data.phaseIds?.[i]||d.phases[i]?.id||uid(),name,done:false}));budget=quote?.amount??Number(data.budget);billingPlan=allocatePlan(budget,data.rules||d.billingPlan,phases);
  }
- Object.assign(d,{title,scope,kind,responseMode,billing,phases,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
+ if(quote)budget=quote.amount;
+ Object.assign(d,{offers,title,scope,kind,responseMode,billing,phases,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
  if(p){if(billing)p.billingDocumentId=id;else if(p.billingDocumentId===id)delete p.billingDocumentId;}
  addActivity(s,'Document draft saved',d.title,'document');return d;
 }
 export function publishDocument(s,id){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Only a draft can be published.');if(!d.title||!clean(d.scope))throw Error('Add document content first.');
+ if(d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none')throw Error('Service selection requires a response.');}
  if(d.billing){if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan,d.phases);}
  const v={...copy(d),versions:undefined,number:d.versions.length+1,client:copy(s.clients.find(c=>c.id===d.clientId)),business:s.settings.business,status:'published',createdAt:new Date().toISOString()};
  d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();addActivity(s,'Document published for preview',d.title,'document');return v;
@@ -59,8 +63,9 @@ export function respondDocument(s,id,number,action,signature={}){
  if(v.responseMode==='acceptance'&&action!=='accept')throw Error('This document requires acceptance, not a signature.');
  // Complete against a copy so invoice validation cannot leave a half-completed agreement.
  const next=copy(s),nd=getDoc(next,id),nv=nd.versions.find(x=>x.number===v.number);
+ if(v.offers?.length){const q=quoteOffers(v.offers,signature.selections);Object.assign(nv,{selections:q.selections,agreedItems:q.items,budget:q.amount});if(v.billing)nv.billingPlan=allocatePlan(q.amount,v.billingPlan,v.phases);Object.assign(nd,{budget:nv.budget,billingPlan:copy(nv.billingPlan),selections:q.selections,agreedItems:q.items});}
  if(v.billing){const p=next.projects.find(p=>p.id===v.projectId);if(!p||p.accepted||p.billingDocumentId!==id)throw Error('The project billing agreement has changed.');
-  Object.assign(p,{budget:v.budget,proposal:v.scope,deliverables:v.deliverables,phases:copy(v.phases),billingPlan:copy(v.billingPlan),deposit:v.billingPlan[0].percent,proposalStatus:'published',accepted:false,currentVersion:v.number,versions:[{...copy(v),name:p.name,status:'published'}],needsPricing:false});
+  Object.assign(p,{budget:nv.budget,proposal:v.scope,deliverables:v.deliverables,phases:copy(v.phases),billingPlan:copy(nv.billingPlan),deposit:nv.billingPlan[0].percent,proposalStatus:'published',accepted:false,currentVersion:v.number,versions:[{...copy(nv),name:p.name,status:'published'}],needsPricing:false});
   acceptProposal(next,p.id,v.number);
  }
  nv.status=nd.status=v.responseMode==='signature'?'signed':'accepted';nv.completedAt=new Date().toISOString();nv.signature=v.responseMode==='signature'?{name:clean(signature.name),simulated:true}:null;nd.updatedAt=today();
