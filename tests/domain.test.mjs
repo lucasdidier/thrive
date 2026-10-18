@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
-import {seed,totals,acceptProposal,generateDeposit,recordPayment,createProject,suggestSetup,publishProposal} from '../dist/domain.js';
+import {seed,totals,acceptProposal,generateDeposit,recordPayment,createProject,suggestSetup,publishProposal} from '../public/domain.js';
 test('acceptance and payment retries never duplicate the deposit or collected amount',()=>{
  const s=seed();const base=totals(s); publishProposal(s,'p4'); const i=acceptProposal(s,'p4',1);
  assert.equal(i.amount,200000);assert.equal(acceptProposal(s,'p4',1).id,i.id);assert.equal(generateDeposit(s,'p4').id,i.id);

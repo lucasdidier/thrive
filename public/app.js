@@ -1,3 +1,5 @@
+import {createWorkspaceSync} from './workspace-sync.js';
+import {createCustomFieldsUI} from './custom-fields-ui.js';
 import {createCatalogUI} from './services-ui.js';
 import {initWorkflows,snapshotWorkspace,runWorkflows} from './workflow-domain.js';
 import {createWorkflowUI} from './workflow-ui.js';
@@ -17,12 +19,15 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const storageKey='thrive-workspace-v1';
 let state;try{state=upgradeWorkspace(migrate(JSON.parse(localStorage.getItem(storageKey))))}catch{state=upgradeWorkspace(seed())}
 initBilling(state);initScheduling(state,Intl.DateTimeFormat().resolvedOptions().timeZone);
-initWorkflows(state);let workflowSnapshot=snapshotWorkspace(state);
+initWorkflows(state);
+const workspaceSync=createWorkspaceSync();
+try{state=await workspaceSync.connect(state);}catch(err){document.querySelector('#main').innerHTML='<div class="crm-empty"><h2>Workspace unavailable</h2><p>Your browser data has been preserved. Reload to reconnect.</p><a class="btn" href="/signin-with-chatgpt?return_to=%2F">Sign in</a></div>';throw err;}
+let workflowSnapshot=snapshotWorkspace(state);
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
 try{document.documentElement.dataset.theme=localStorage.getItem('thrive-theme')||'dark'}catch{}
 const dialog=document.querySelector('#dialog');
 initCreateMenu();
-function save(){runWorkflows(state,workflowSnapshot);workflowSnapshot=snapshotWorkspace(state);try{localStorage.setItem(storageKey,JSON.stringify(state))}catch{toast('Browser storage is unavailable. Changes will last for this session.')}}
+function save(){workspaceSync.save();}
 function toast(text){const el=document.querySelector('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3500)}
 function btn(text,action,extra='',cls=''){return `<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`}
 const badge=status=>`<span class="badge ${status.replaceAll(' ','-')}"><i></i>${esc(status)}</span>`;
@@ -64,15 +69,17 @@ const chatUI=createChatUI({getState:()=>state,render,save,toast,icon,esc,btn,ope
 const catalogUI=createCatalogUI({getState:()=>state,open,btn,icon,esc,dialog,save,render,toast});
 const billingUI=createBillingUI({getState:()=>state,open,btn,icon,esc,badge,date,dialog,save,render,toast});
 const scheduleUI=createSchedulingUI({getState:()=>state,render,save,toast,open,dialog,btn,icon,esc,badge,avatar});
-const crm=createCRM({clientMeetings:scheduleUI.clientMeetings,getState:()=>state,getPage:()=>page,render,save,toast,open,dialog,icon,esc,badge,avatar,date,btn});
+const customFields=createCustomFieldsUI({getState:()=>state,open,dialog,esc,icon,btn,save,render,toast,recordDetail:(e,id)=>e==='client'?crm.clientDetail(id):journey.projectDetail(id),refresh:()=>crm.refreshPanel(),showColumn:(e,id)=>crm.showColumn(e,id)});
+const crm=createCRM({customFields,clientMeetings:scheduleUI.clientMeetings,getState:()=>state,getPage:()=>page,render,save,toast,open,dialog,icon,esc,badge,avatar,date,btn});
 const workspaceUI=createWorkspaceUI({getState:()=>state,getView:()=>({filter,query}),clearList:()=>{filter='all';query='';},open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog,heading,controls,go});
 const workflowUI=createWorkflowUI({getState:()=>state,open,dialog,btn,icon,esc,save,render,toast});
-const journey=createJourneyUI({clientDetail:crm.clientDetail,projectDocuments:workspaceUI.projectDocuments,getState:()=>state,open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog});
+const journey=createJourneyUI({customFields,clientDetail:crm.clientDetail,projectDocuments:workspaceUI.projectDocuments,getState:()=>state,open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog});
+workspaceSync.bind(()=>state,next=>{state=next;workflowSnapshot=snapshotWorkspace(state);},close=>{if(close){dialog.close();crm.resetAll();}render();crm.refreshPanel();});
 document.addEventListener('click',e=>{
  if(e.target.closest('.skip')){e.preventDefault();document.querySelector('#main').focus();return;}
  const el=e.target.closest('[data-action]');if(!el){crm.outsideClick(e);return;}const a=el.dataset.action,id=el.dataset.id;
  try{
- if(catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
+ if(customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
  if(a==='close')dialog.close();
  else if(a==='theme'){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('thrive-theme',t)}catch{}}
  else if(a==='project')projectDetail(id);else if(a==='client')clientDetail(id);else if(a==='invoice')invoiceDetail(id);else if(a==='proposal')proposalDetail(id);
@@ -93,15 +100,15 @@ document.addEventListener('click',e=>{
 document.addEventListener('submit',e=>{
  if(!e.target.closest('dialog')&&!e.target.id.startsWith('crm-')&&e.target.id!=='chat-form'&&e.target.id!=='availability-form')return;e.preventDefault();const f=new FormData(e.target),values=Object.fromEntries(f);
  try{
- if(catalogUI.handleSubmit(e.target,values)||workflowUI.handleSubmit(e.target)||scheduleUI.handleSubmit(e.target,values)||chatUI.handleSubmit(e.target,values)||billingUI.handleSubmit(e.target,values,e.submitter?.value)||crm.handleSubmit(e.target,values)||workspaceUI.handleSubmit(e.target,values,e.submitter?.value)||journey.handleSubmit(e.target,values,e.submitter?.value))return;
+ if(customFields.handleSubmit(e.target,values)||catalogUI.handleSubmit(e.target,values)||workflowUI.handleSubmit(e.target)||scheduleUI.handleSubmit(e.target,values)||chatUI.handleSubmit(e.target,values)||billingUI.handleSubmit(e.target,values,e.submitter?.value)||crm.handleSubmit(e.target,values)||workspaceUI.handleSubmit(e.target,values,e.submitter?.value)||journey.handleSubmit(e.target,values,e.submitter?.value))return;
  if(e.target.id==='project-form'){const p=createProject(state,{...values,budget:Math.round(Number(values.budget)*100)});save();render();projectDetail(p.id);toast('Project created.')}
  if(e.target.id==='time-form'){const hours=Number(values.hours);if(!Number.isFinite(hours)||hours<=0||hours>24||!state.projects.some(p=>p.id===values.projectId))throw new Error('Choose a project and enter between 0.1 and 24 hours.');state.time.push({id:uid(),...values,hours});save();render();dialog.close();toast(`${hours} hours saved to your project.`)}
  if(e.target.id==='setup-form'){const deposit=Number(values.deposit),phases=values.phases.split(',').map(s=>s.trim()).filter(Boolean);if(!Number.isInteger(deposit)||deposit<1||deposit>100||!phases.length||phases.length>8)throw new Error('Choose a deposit from 1–100% and between 1 and 8 phases.');state.settings={...state.settings,deposit,phases,description:setupDraft.description,service:setupDraft.service,review:true};state.workflows[0].enabled=true;addActivity(state,'Workspace defaults updated',`${deposit}% deposit · ${phases.join(', ')}`,'project');save();render();dialog.close();toast('Setup saved. Your next project will use these defaults.')}
  if(e.target.id==='business-form'){if(!values.name.trim()||!values.business.trim())throw new Error('Enter your name and business name.');state.settings={...state.settings,name:values.name.trim(),business:values.business.trim()};save();render();dialog.close();toast('Workspace details saved.')}
  }catch(err){error(err.message)}
 });
-document.addEventListener('input',e=>{if(workflowUI.handleInput(e.target)||billingUI.handleInput(e.target)||scheduleUI.handleInput(e.target)||chatUI.handleInput(e.target)||crm.handleInput(e.target))return;workspaceUI.handleInput(e.target);journey.handleInput(e.target);if(e.target.id==='list-search'){const cursor=e.target.selectionStart;query=e.target.value;render();const input=document.querySelector('#list-search');input.focus();input.setSelectionRange(cursor,cursor)}if(e.target.id==='global-search')searchResults(e.target.value)});
-document.addEventListener('change',e=>{try{if(!workflowUI.handleChange(e.target)&&!billingUI.handleChange(e.target)&&!scheduleUI.handleChange(e.target)&&!crm.handleChange(e.target))workspaceUI.handleChange(e.target)}catch(err){error(err.message)}});
+document.addEventListener('input',e=>{if(customFields.handleInput(e.target)||workflowUI.handleInput(e.target)||billingUI.handleInput(e.target)||scheduleUI.handleInput(e.target)||chatUI.handleInput(e.target)||crm.handleInput(e.target))return;workspaceUI.handleInput(e.target);journey.handleInput(e.target);if(e.target.id==='list-search'){const cursor=e.target.selectionStart;query=e.target.value;render();const input=document.querySelector('#list-search');input.focus();input.setSelectionRange(cursor,cursor)}if(e.target.id==='global-search')searchResults(e.target.value)});
+document.addEventListener('change',e=>{try{if(!customFields.handleChange(e.target)&&!workflowUI.handleChange(e.target)&&!billingUI.handleChange(e.target)&&!scheduleUI.handleChange(e.target)&&!crm.handleChange(e.target))workspaceUI.handleChange(e.target)}catch(err){error(err.message)}});
 document.addEventListener('keydown',e=>{chatUI.keyboard(e);crm.keyboard(e);if(e.key==='/'&&!dialog.open&&!e.target.closest('input,textarea,select,[contenteditable]')){const search=document.querySelector('#crm-search, #list-search, #meeting-search');if(search){e.preventDefault();search.focus();}}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();search()}});
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});
 window.addEventListener('hashchange',()=>{page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();document.querySelector('#main').focus()});

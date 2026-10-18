@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 if(!globalThis.crypto)globalThis.crypto=webcrypto;
-import {baseSeed} from '../dist/seed.js';
-import {seed,migrate,saveClient,archiveClient,createProject,updateProject,archiveProject,reopenProject,saveProposal,publishProposal,reviseProposal,acceptProposal,declineProposal,recordPayment,approveMilestone,togglePhase,allocatePlan,submitInquiry,saveIntake} from '../dist/domain.js';
+import {baseSeed} from '../public/seed.js';
+import {seed,migrate,saveClient,archiveClient,createProject,updateProject,archiveProject,reopenProject,saveProposal,publishProposal,reviseProposal,acceptProposal,declineProposal,recordPayment,approveMilestone,togglePhase,allocatePlan,submitInquiry,saveIntake} from '../public/domain.js';
 const make=s=>createProject(s,{name:'Brand design',clientId:'c1',budget:300000,service:'Design',due:'2026-11-30'});
 const draftData=p=>({scope:'Design a logo and brand guide.',deliverables:'Logo\nBrand guide',budget:p.budget,phases:p.phases.map(f=>f.name),rules:p.billingPlan});
 
