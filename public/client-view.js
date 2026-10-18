@@ -1,9 +1,11 @@
+import {initSelects} from './select-ui.js';
 import {documentPaper} from './document-paper.js';
 import {pricingTable} from './pricing-table.js';
 import {renderQuestions,collectAnswers,uploadFormFile} from './form-fields.js';
 import {invoicePaper} from './invoice-paper.js';
 import {money} from './domain.js';
 import {defaultSelections,quoteOffers} from './services-domain.js';
+initSelects();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const token=location.pathname.split('/').filter(Boolean).at(-1),endpoint=`/api/shared/${encodeURIComponent(token)}`,main=document.querySelector('#client-main');
 const date=value=>new Date(value).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
