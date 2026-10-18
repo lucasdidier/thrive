@@ -174,3 +174,11 @@ Adapted from the time-to-invoice opportunity in the Dubsado/Plutio research note
 ## Shared dropdown controls
 
 Workspace filters, editors, and shared client forms use one themed select component. Long lists include search; all lists support keyboard navigation, typeahead, selected-item checkmarks, and disabled options. Menus fit the viewport and stay above dialogs. Native select values, change events, required validation, and form submission remain the data contract. The Time ledger is directly after Projects in navigation and linked from the dashboard's tracked-time metric.
+
+## Form templates
+
+**Forms → New form** opens a gallery of eight starters: project inquiry, client onboarding, creative brief, website brief, consultation intake, content collection, project feedback, and testimonial request. Filter by Sales, Projects, or Feedback; inspect a read-only preview and submission behavior; then use the template in the existing question editor. **Start from scratch** opens a blank form. Browsing or choosing a template does not save a form; Save form / Save & preview persists a separate editable copy with fresh question and option IDs.
+
+The inquiry starter maps contact email and project details to the CRM. Onboarding matches or creates only a client. All other starters save responses without creating CRM records or approving work. Mappings can be changed through each question's existing More options. Testimonial publication permission is recorded as an answer; no testimonial is published automatically. Existing forms and response snapshots remain unchanged.
+
+The MCP catalog includes `formTemplates` with descriptions, question counts, and submission behavior. `form.from_template` accepts `{templateId}` and creates an editable saved form without sharing it or submitting a response. The existing revision/idempotency protections apply.

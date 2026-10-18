@@ -1,3 +1,4 @@
+import {formTemplates,formFromTemplate,formTemplateCatalog} from '../public/form-templates.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
@@ -32,3 +33,37 @@ test('public form uploads bind to their share, question, revision and submission
 test('files reject unsafe extensions, oversized bytes, stale forms and forged metadata',async()=>{const {db,f,revision,bucket,objects}=await setup();assert.equal((await handleFormUpload(uploadRequest(f,revision,{name:'script.html'}),db,bucket)).status,400);assert.equal((await handleFormUpload(uploadRequest(f,revision,{name:'brief.pdf',bytes:new Uint8Array(uploadLimit+1)}),db,bucket)).status,400);assert.equal((await handleFormUpload(uploadRequest(f,'stale'),db,bucket)).status,409);assert.equal(objects.size,0);await assert.rejects(()=>validateUploadedAnswers(db,'alice',f.id,[{id:'attachment',type:'file',value:[{id:crypto.randomUUID(),name:'forged.pdf',size:1}]}]),/missing/);db.close();});
 test('file storage failures release quota and expired uploads cannot be submitted',async()=>{const {db,f,revision,bucket,link}=await setup(),shared=await resolveShare(db,link.token),broken={...bucket,async put(){throw Error('Unavailable');}};assert.equal((await handleFormUpload(uploadRequest(f,revision),db,broken)).status,502);assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM form_uploads').first()).n,0);const res=await handleFormUpload(uploadRequest(f,revision),db,bucket,shared),{file}=await res.json();await db.prepare('UPDATE form_uploads SET created_at=0').run();await assert.rejects(()=>validateUploadedAnswers(db,'alice',f.id,[{id:'attachment',type:'file',value:[file]}],{shareId:link.id,requestId:'upload-0001',revision}),/expired/);db.close();});
 test('workspace and submission upload quotas reject before storing more files',async()=>{const {db,f,revision,bucket,objects}=await setup(),res=await handleFormUpload(uploadRequest(f,revision),db,bucket);assert.equal(res.status,200);await db.prepare('UPDATE form_uploads SET size=20971520').run();assert.equal((await handleFormUpload(uploadRequest(f,revision),db,bucket)).status,429);await db.prepare('UPDATE form_uploads SET size=524288000').run();assert.equal((await handleFormUpload(uploadRequest(f,revision,{requestId:'other-upload'}),db,bucket)).status,429);assert.equal(objects.size,1);db.close();});
+
+function templateAnswers(f,overrides={}){return Object.fromEntries(f.questions.filter(q=>q.required||overrides[q.binding]!==undefined).map(q=>[q.id,overrides[q.binding]??(q.type==='email'?'template@example.com':q.type==='rating'?5:q.type==='number'?1000:q.type==='multiselect'?[q.options[0].id]:['select','radio'].includes(q.type)?q.options[0].id:'Example answer')]));}
+test('all form starters validate, render read-only previews, and produce independent editable copies',()=>{
+ const snapshot=JSON.stringify(formTemplates);assert.equal(formTemplateCatalog().length,8);
+ for(const t of formTemplates){const a=formFromTemplate(t.id,{service:'Consulting'}),b=formFromTemplate(t.id);assert.equal(a.service,'Consulting');assert.doesNotThrow(()=>normalizeQuestions(a.questions));assert.doesNotThrow(()=>validateFormAnswers(a,templateAnswers(a)));assert.match(renderQuestions(a,{disabled:true}),/disabled/);assert.ok(a.questions.every(q=>!b.questions.some(x=>x.id===q.id)));const choice=a.questions.find(q=>q.options);if(choice){const other=b.questions.find(q=>q.label===choice.label);assert.notEqual(choice.options[0].id,other.options[0].id);choice.options[0].label='Custom option';}a.questions[0].label='My question';assert.notEqual(a.questions[0].label,b.questions[0].label);}
+ assert.equal(JSON.stringify(formTemplates),snapshot);assert.throws(()=>formFromTemplate('unknown'),/template/);
+});
+test('project inquiry template connects a client and unpriced planned project; onboarding reuses that client',()=>{
+ const s=state(),initialClients=s.clients.length,initialProjects=s.projects.length;
+ const inquiry=saveForm(s,formFromTemplate('project-inquiry'));
+ submitForm(s,inquiry.id,{answers:templateAnswers(inquiry,{email:'new-template@example.com',project:'New inquiry'})},'template-inquiry');
+ assert.equal(s.clients.length,initialClients+1);assert.equal(s.projects.length,initialProjects+1);assert.equal(s.projects[0].needsPricing,true);assert.equal(s.projects[0].budget,0);
+ const onboarding=saveForm(s,formFromTemplate('client-onboarding'));submitForm(s,onboarding.id,{answers:templateAnswers(onboarding,{email:'NEW-TEMPLATE@example.com'})},'template-onboarding');
+ assert.equal(s.clients.length,initialClients+1);assert.equal(s.projects.length,initialProjects+1);assert.ok(s.submissions[0].clientId);assert.equal(s.submissions[0].projectId,null);
+});
+test('briefs, content, feedback, testimonials and consultation starters save responses without creating CRM records',()=>{
+ const s=state(),clients=s.clients.length,projects=s.projects.length,invoices=s.invoices.length;
+ for(const t of formTemplates.filter(t=>!['project-inquiry','client-onboarding'].includes(t.id))){const f=saveForm(s,formFromTemplate(t.id));submitForm(s,f.id,{answers:templateAnswers(f)},'template-'+t.id);assert.equal(s.submissions[0].clientId,null);assert.equal(s.submissions[0].projectId,null);}
+ assert.equal(s.clients.length,clients);assert.equal(s.projects.length,projects);assert.equal(s.invoices.length,invoices);assert.equal(s.submissions.length,6);
+});
+test('template forms remain editable and retain response snapshots after later edits',()=>{
+ const s=state(),f=saveForm(s,formFromTemplate('testimonial-request')),consent=f.questions.find(q=>q.type==='radio'),answers=templateAnswers(f);answers[consent.id]=consent.options[2].id;
+ submitForm(s,f.id,{answers},'template-feedback');const before=structuredClone(s),sub=s.submissions[0];
+ saveForm(s,{...f,title:'Custom feedback',questions:f.questions.filter(q=>q.id!==consent.id)},f.id);
+ assert.equal(responseLabel(sub.answers.find(a=>a.id===consent.id)),'No, keep my feedback private');assert.equal(sub.formTitle,'Testimonial request');assert.doesNotThrow(()=>validateWorkspace(s,before));
+});
+test('MCP exposes form starters and creates exactly one form on replay without sharing it',async()=>{
+ const db=database(),initial=state(),count=initial.forms.length;await bootstrap(db,'alice',initial);
+ const catalog=await callTool(db,'alice','thrive_get_catalog',{});assert.equal(catalog.formTemplates.length,8);assert.ok(catalog.actions.some(a=>a.id==='form.from_template'));
+ const args={action:'form.from_template',input:{templateId:'website-brief'},expected_revision:0,request_id:'form-template-001'};
+ const first=await callTool(db,'alice','thrive_execute_action',args),replay=await callTool(db,'alice','thrive_execute_action',args);assert.equal(first.result.id,replay.result.id);
+ const saved=await loadWorkspace(db,'alice');assert.equal(saved.state.forms.length,count+1);assert.equal(saved.state.forms[0].title,'Website brief');assert.equal(saved.state.clients.length,initial.clients.length);assert.equal(saved.state.projects.length,initial.projects.length);assert.deepEqual(saved.state.shareLinks,initial.shareLinks);
+ await assert.rejects(()=>callTool(db,'alice','thrive_execute_action',{...args,input:{templateId:'unknown'},expected_revision:saved.revision,request_id:'form-template-bad'}),/allowed value/);db.close();
+});
