@@ -27,14 +27,7 @@ import {
   CommandMenuEmpty,
   CommandMenuFooter,
 } from "@/components/ui/command-menu";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
+
 
 type Context = {
   getState: () => any;
@@ -396,47 +389,6 @@ function TabStrip({
     </Tabs>
   );
 }
-function SettingsNav({
-  sections,
-}: {
-  sections: { title: string; node: HTMLElement }[];
-}) {
-  const [active, setActive] = useState(0);
-  useLayoutEffect(() => {
-    sections.forEach((s, i) => {
-      s.node.hidden = i !== active;
-    });
-  }, [active, sections]);
-  useEffect(() => {
-    const show = (e: Event) => {
-      const i = sections.findIndex((s) => s.node.contains(e.target as Node));
-      if (i >= 0) setActive(i);
-    };
-    document.addEventListener("invalid", show, true);
-    return () => document.removeEventListener("invalid", show, true);
-  }, [sections]);
-  return (
-    <SidebarProvider persist={false} shortcut={null} width="12rem">
-      <Sidebar collapsible="none">
-        <SidebarContent>
-          <SidebarMenu>
-            {sections.map((s, i) => (
-              <SidebarMenuItem key={s.title}>
-                <SidebarMenuButton
-                  type="button"
-                  isActive={active === i}
-                  onClick={() => setActive(i)}
-                >
-                  {s.title}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-    </SidebarProvider>
-  );
-}
 export function initFluid(ctx: Context) {
   function enhance() {
     for (const [host, root] of roots)
@@ -444,34 +396,6 @@ export function initFluid(ctx: Context) {
         root.unmount();
         roots.delete(host);
       }
-    const settings = document.querySelector<HTMLFormElement>(
-      "#workspace-settings",
-    );
-    if (settings && !handled.has(settings)) {
-      handled.add(settings);
-      settings.closest("dialog")?.classList.add("fluid-settings-dialog");
-      const body = settings.querySelector<HTMLElement>(".dialog-body")!;
-      const sections = Array.from(
-        body.querySelectorAll<HTMLElement>(":scope > .settings-section"),
-      ).map((node) => {
-        const title = node.querySelector("strong")?.textContent || "Settings";
-        node.setAttribute("open", "");
-        node.querySelector("summary")?.setAttribute("hidden", "");
-        const heading = document.createElement("h3");
-        heading.textContent = title;
-        node.prepend(heading);
-        return { title, node };
-      });
-      const links = body.querySelector<HTMLElement>(".settings-links");
-      if (links) sections.push({ title: "Connections & tools", node: links });
-      const shell = document.createElement("div");
-      shell.className = "fluid-settings-shell";
-      const nav = document.createElement("nav");
-      nav.setAttribute("aria-label", "Settings sections");
-      body.before(shell);
-      shell.append(nav, body);
-      mount(nav, <SettingsNav sections={sections} />);
-    }
     document
       .querySelectorAll<HTMLDetailsElement>(
         "#record-client-form .settings-section,#record-project-form .settings-section",
@@ -499,7 +423,7 @@ export function initFluid(ctx: Context) {
       });
     document
       .querySelectorAll<HTMLSelectElement>(
-        "#record-project-form select,#record-client-form select,#workspace-settings select",
+        "#record-project-form select,#record-client-form select,#workspace-settings select,#settings-content select",
       )
       .forEach((source) => {
         if (handled.has(source)) return;
@@ -516,7 +440,7 @@ export function initFluid(ctx: Context) {
       });
     document
       .querySelectorAll<HTMLInputElement>(
-        "#record-project-form input[name=service],#workspace-settings input[name=service],#record-client-form input[name=tag]",
+        "#record-project-form input[name=service],#workspace-settings input[name=service],#record-client-form input[name=tag],#settings-page-form input[name=service]",
       )
       .forEach((source) => {
         if (handled.has(source)) return;

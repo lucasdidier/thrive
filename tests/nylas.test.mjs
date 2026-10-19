@@ -45,3 +45,12 @@ test('form notification delivery is owner-scoped, concurrent-safe, and never res
  await sendNylasNotification(db,'alice',env,'sub-2','account@example.com',message,fail);assert.equal(sends,2);
  assert.equal((await sendNylasNotification(db,'bob',env,'sub-1','other@example.com',message,fake)).status,'failed');assert.equal(sends,2);db.close();
 });
+test('Nylas returns to settings after connecting and rejects arbitrary return destinations',async()=>{
+ const {db}=await setup(false);
+ try {for(const [requested,expected] of [['settings/connections','settings/connections'],['https://example.com','messages'],['settings/unknown','messages']]){
+  const u=new URL((await startNylasOAuth(db,'alice',env,'all',undefined,requested)).url);
+  const fake=async url=>response(url.endsWith('/token')?{grant_id:'grant-alice'}:{data:{id:'grant-alice',email:'owner@example.com',provider:'google',scope:scopes,grant_status:'valid'}});
+  const result=await finishNylasOAuth(db,'alice',env,new URLSearchParams({state:u.searchParams.get('state'),code:'fixture-code'}),fake);
+  assert.equal(result.returnTo,expected);
+ }}finally{db.close();}
+});
