@@ -17,7 +17,6 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { Tabs, TabsList, TabItem } from "@/components/ui/tabs";
 import { ColorPickerPopover } from "@/components/ui/color-picker";
 import { InputCopy } from "@/components/ui/input-copy";
 import {
@@ -344,51 +343,6 @@ function Copy({ source }: { source: HTMLInputElement | HTMLTextAreaElement }) {
     />
   );
 }
-function TabStrip({
-  source,
-  buttons,
-}: {
-  source: HTMLElement;
-  buttons: HTMLButtonElement[];
-}) {
-  const selected = () =>
-    String(
-      Math.max(
-        0,
-        buttons.findIndex(
-          (b) =>
-            b.classList.contains("active") ||
-            b.getAttribute("aria-pressed") === "true" ||
-            b.getAttribute("aria-selected") === "true",
-        ),
-      ),
-    );
-  const [value, setValue] = useState(selected);
-  useEffect(() => {
-    const o = new MutationObserver(() => setValue(selected()));
-    o.observe(source, { subtree: true, attributes: true });
-    return () => o.disconnect();
-  }, [source]);
-  return (
-    <Tabs
-      value={value}
-      onValueChange={(v) => {
-        setValue(v);
-        buttons[Number(v)].click();
-      }}
-    >
-      <TabsList>
-        {buttons.map((b, i) => (
-          <TabItem
-            key={i}
-            value={String(i)}
-            label={b.textContent?.trim() || ""}
-          />
-        ))}
-      </TabsList>
-    </Tabs>
-  );
-}
 export function initFluid(ctx: Context) {
   function enhance() {
     for (const [host, root] of roots)
@@ -496,23 +450,8 @@ export function initFluid(ctx: Context) {
           .forEach((n) => (n.hidden = true));
         mount(host, <Copy source={source} />);
       });
-    document
-      .querySelectorAll<HTMLElement>(
-        ".record-tabs,.section-tabs,.share-tabs,.mail-tabs,.crm-section-tabs",
-      )
-      .forEach((source) => {
-        if (handled.has(source) || source.closest(".fluid-ui")) return;
-        const buttons = Array.from(
-          source.querySelectorAll<HTMLButtonElement>(":scope > button"),
-        );
-        if (buttons.length < 2 || buttons.some((b) => !b.dataset.action))
-          return;
-        handled.add(source);
-        const host = after(source);
-        host.className = "fluid-tab-strip";
-        source.hidden = true;
-        mount(host, <TabStrip source={source} buttons={buttons} />);
-      });
+    // Keep the original tab buttons and their native layout/event handlers.
+
   }
   let pending = false;
   const observer = new MutationObserver((records) => {

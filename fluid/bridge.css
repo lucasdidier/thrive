@@ -95,11 +95,6 @@
   padding: 0;
   border: 0;
 }
-.fluid-tab-strip {
-  padding: 8px 0 12px;
-  overflow-x: auto;
-  flex-shrink: 0;
-}
 .fluid-command-dialog {
   width: min(600px, calc(100vw - 32px));
 }
