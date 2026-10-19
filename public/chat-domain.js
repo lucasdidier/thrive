@@ -1,10 +1,10 @@
-import {uid,money,invoiceStatus,addActivity} from './domain.js';
+import {uid,money as formatMoney,invoiceStatus,addActivity} from './domain.js';
 import {deliveryStatus} from './workspace-domain.js';
 export function initChat(s){s.chat??={threads:[],activeId:null};return s.chat;}
 export function newConversation(s){initChat(s).activeId=null;}
 export function deleteConversation(s,id){const chat=initChat(s);chat.threads=chat.threads.filter(t=>t.id!==id);if(chat.activeId===id)chat.activeId=null;}
 const record=(action,id,label,detail)=>({action,id,label,detail});
-export function answerWorkspace(s,prompt){
+export function answerWorkspace(s,prompt){const money=cents=>formatMoney(cents,s.settings.currency||'USD');
  const q=prompt.trim().toLowerCase(),response={text:'',records:[]};
  const deposit=q.match(/^(?:please )?(?:set|change) (?:my |the )?default deposit to (\d{1,3})\s*%[.!]?$/);
  if(deposit){const value=Number(deposit[1]);if(value<1||value>100)return {...response,text:'Choose a default deposit between 1% and 100%.'};if(value===s.settings.deposit)return {...response,text:`Your default deposit is already ${value}%.`};return {...response,text:'Review this change to your project defaults. Existing projects and agreed terms will stay as they are.',proposal:{kind:'deposit',before:s.settings.deposit,after:value,status:'pending'}};}

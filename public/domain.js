@@ -1,8 +1,9 @@
+import {formatMoney as money} from './currency.js';
 import {defaultInvoiceDesign} from './invoice-design.js';
 import {baseSeed} from './seed.js';
 export const uid=()=>globalThis.crypto.randomUUID();
 export const today=()=>new Date().toISOString().slice(0,10);
-export const money=cents=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:cents%100?2:0,maximumFractionDigits:2}).format(cents/100);
+export {formatMoney as money} from './currency.js';
 export const projectClient=(s,p)=>s.clients.find(c=>c.id===p?.clientId);
 export const invoiceStatus=i=>i.paid>=i.amount?'paid':i.due<today()?'overdue':'outstanding';
 const clean=x=>String(x??'').trim(), clone=x=>JSON.parse(JSON.stringify(x));
@@ -21,12 +22,12 @@ export function allocatePlan(budget,rules,phases){
   const percent=Number(r.percent);if(!Number.isFinite(percent)||percent<=0||percent>100)throw Error('Each payment must be greater than 0% and at most 100%.');
   if(i===0&&r.phaseId)throw Error('The first payment must be the deposit.');
   if(i>0&&(!phases.some(f=>f.id===r.phaseId)||used.has(r.phaseId)))throw Error('Choose a different phase for each milestone payment.');used.add(r.phaseId);
-  const amount=i===rules.length-1?budget-total:Math.round(budget*percent/100);total+=amount;if(amount<=0)throw Error('Each payment must be at least $0.01.');
+  const amount=i===rules.length-1?budget-total:Math.round(budget*percent/100);total+=amount;if(amount<=0)throw Error('Each payment must be at least 0.01.');
   return{id:r.id||uid(),name:clean(r.name)||(i?'Milestone payment':'Deposit'),percent,phaseId:r.phaseId||null,amount};
  });
 }
 export function defaultPlan(budget,deposit,phases){const rest=100-deposit,targets=phases.slice(-2),half=Math.floor(rest*100/2)/100;return allocatePlan(budget,[{id:uid(),name:'Deposit',percent:deposit,phaseId:null},...targets.filter(()=>rest>0).map((f,i)=>({id:uid(),name:i===targets.length-1?'Final payment':'Milestone payment',percent:targets.length===1?rest:i===0?half:rest-half,phaseId:f.id}))],phases);}
-function snapshot(s,p){return{number:p.versions.length+1,name:p.name,client:clone(projectClient(s,p)),business:s.settings.business,scope:p.proposal,deliverables:p.deliverables,budget:p.budget,due:p.due,phases:clone(p.phases),billingPlan:clone(p.billingPlan),createdAt:new Date().toISOString(),status:'published'};}
+function snapshot(s,p){return{number:p.versions.length+1,name:p.name,client:clone(projectClient(s,p)),business:s.settings.business,currency:s.settings.currency||'USD',scope:p.proposal,deliverables:p.deliverables,budget:p.budget,due:p.due,phases:clone(p.phases),billingPlan:clone(p.billingPlan),createdAt:new Date().toISOString(),status:'published'};}
 export function migrate(s){
  if(!s||![1,2].includes(s.version)||!Array.isArray(s.projects))return seed();if(s.version===2)return s;
  s.intake={title:'Project inquiry',intro:'Tell us about your project.',service:'Brand identity',tag:'Website inquiry',collectBudget:true,collectDate:true,question:'',questionRequired:false};s.submissions=[];
@@ -82,7 +83,7 @@ function issue(s,p,r){
  const existing=s.invoices.find(i=>i.projectId===p.id&&i.ruleId===r.id);if(existing)return existing;
  if(s.invoices.filter(i=>i.projectId===p.id&&i.kind!=='manual').reduce((a,i)=>a+i.amount,0)+r.amount>p.budget)throw Error('This invoice would exceed the agreed fee.');
  const v=p.versions.find(v=>v.number===p.currentVersion),c=v?.client||projectClient(s,p);
- const i={id:uid(),number:`INV-${String(Math.max(0,...s.invoices.map(i=>Number(i.number.split('-')[1])||0))+1).padStart(3,'0')}`,projectId:p.id,ruleId:r.id,amount:r.amount,paid:0,due:today(),kind:r.phaseId?'milestone':'deposit',label:r.name,clientName:c.name,clientEmail:c.email,projectName:v?.name||p.name,business:v?.business||s.settings.business,paymentInstructions:s.settings.paymentInstructions||'',payments:[],issued:today(),design:clone(s.settings.invoiceDesign||defaultInvoiceDesign())};s.invoices.unshift(i);addActivity(s,'Invoice created',`${p.name} · ${r.name} · ${money(i.amount)}`,'document');return i;
+ const i={id:uid(),number:`INV-${String(Math.max(0,...s.invoices.map(i=>Number(i.number.split('-')[1])||0))+1).padStart(3,'0')}`,projectId:p.id,ruleId:r.id,amount:r.amount,paid:0,due:today(),kind:r.phaseId?'milestone':'deposit',label:r.name,clientName:c.name,clientEmail:c.email,projectName:v?.name||p.name,business:v?.business||s.settings.business,currency:v?.currency||s.settings.currency||'USD',paymentInstructions:s.settings.paymentInstructions||'',payments:[],issued:today(),design:clone(s.settings.invoiceDesign||defaultInvoiceDesign())};s.invoices.unshift(i);addActivity(s,'Invoice created',`${p.name} · ${r.name} · ${money(i.amount,i.currency)}`,'document');return i;
 }
 export function generateDeposit(s,id){const p=get(s,id);openProject(p);if(!p.accepted)throw Error('Accept the proposal first.');const existing=s.invoices.find(i=>i.projectId===id&&i.kind==='deposit');if(existing)return existing;const r=p.billingPlan.find(r=>!r.phaseId);if(!r)throw Error('No deposit is scheduled.');return issue(s,p,r);}
 export function approveMilestone(s,id,phaseId){
@@ -113,7 +114,7 @@ export function recordManualPayment(s,id,data,key){
  const p=i.projectId?get(s,i.projectId):null;initBilling(s);
  i.payments.push({id:key,amount,date,method,reference,recordedAt:new Date().toISOString()});i.paid+=amount;i.paidAt=i.payments.map(p=>p.date).filter(Boolean).sort().at(-1)||date;
  if(i.paid===i.amount&&i.kind==='deposit'&&p?.status==='awaiting deposit')p.status='active';
- addActivity(s,'Payment recorded',`${i.clientName||projectClient(s,p).name} · ${money(amount)} · ${method}`,'payment');return true;
+ addActivity(s,'Payment recorded',`${i.clientName||projectClient(s,p).name} · ${money(amount,i.currency||s.settings.currency||'USD')} · ${method}`,'payment');return true;
 }
 export function recordPayment(s,id){const i=s.invoices.find(i=>i.id===id);if(!i)throw Error('Invoice not found.');if(i.paid>=i.amount)return false;return recordManualPayment(s,id,{amount:i.amount-i.paid,date:today(),method:'Other',reference:''},`full-payment-${id}`);}
 

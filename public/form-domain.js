@@ -1,7 +1,7 @@
 import {uid} from './domain.js';
 export const questionTypes={text:'Short text',textarea:'Long text',number:'Number',email:'Email',phone:'Phone',url:'Website',date:'Date',time:'Time',radio:'Single choice',select:'Dropdown',multiselect:'Multiple choices',checkbox:'Checkbox',rating:'Rating',file:'File upload'};
 export const choiceTypes=['radio','select','multiselect'];
-export const fieldBindings={name:['Client / business name',['text']],contact:['Contact name',['text']],email:['Client email',['email']],project:['Project name',['text']],scope:['Project scope',['textarea','text']],budget:['Estimated budget (USD)',['number']],due:['Target date',['date']]};
+export const fieldBindings={name:['Client / business name',['text']],contact:['Contact name',['text']],email:['Client email',['email']],project:['Project name',['text']],scope:['Project scope',['textarea','text']],budget:['Estimated budget',['number']],due:['Target date',['date']]};
 export const uploadLimit=5*1024*1024;
 export const fileGroups={any:'.pdf,.txt,.csv,.docx,.xlsx,.pptx,.zip,.png,.jpg,.jpeg,.webp,.gif',documents:'.pdf,.txt,.csv,.docx,.xlsx,.pptx',images:'.png,.jpg,.jpeg,.webp,.gif'};
 const clean=x=>String(x??'').trim(),copy=x=>structuredClone(x);
@@ -11,7 +11,7 @@ export function formQuestions(f){if(Array.isArray(f.questions))return copy(f.que
  {id:'field-email',label:'Email address',type:'email',binding:'email',required:true},
  {id:'field-project',label:'Project name',type:'text',binding:'project',required:true},
  {id:'field-scope',label:'Project scope',type:'textarea',binding:'scope',required:true},
- ...(f.collectBudget?[{id:'field-budget',label:'Estimated budget (USD)',type:'number',binding:'budget',required:false,min:.01}]:[]),
+ ...(f.collectBudget?[{id:'field-budget',label:'Estimated budget',type:'number',binding:'budget',required:false,min:.01}]:[]),
  ...(f.collectDate?[{id:'field-due',label:'Target date',type:'date',binding:'due',required:false}]:[]),
  ...(f.question?[{id:'legacy-answer',label:f.question,type:'textarea',required:!!f.questionRequired}]:[])
  ];}

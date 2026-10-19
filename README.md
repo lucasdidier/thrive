@@ -34,7 +34,7 @@ Actions include archive/restore, pause/enable, invoice-draft deletion, and time-
 
 ## Custom fields
 
-Clients and projects have independent definitions. Use the table's **+** button or **Display → Manage custom fields**. Fields support text, number, currency (USD decimals), date, checkbox, select, multi-select, email, and URL. Values can be edited from table cells or record details, displayed in saved views, searched, filtered, and sorted. New fields appear in default table views. Archived fields and values are retained and can be restored.
+Clients and projects have independent definitions. Use the table's **+** button or **Display → Manage custom fields**. Fields support text, number, currency (workspace currency decimals), date, checkbox, select, multi-select, email, and URL. Values can be edited from table cells or record details, displayed in saved views, searched, filtered, and sorted. New fields appear in default table views. Archived fields and values are retained and can be restored.
 
 Field and option IDs remain stable through renaming. Types are fixed at creation; used options cannot be removed until their values are cleared. Empty values, numeric zero, and unchecked checkboxes are distinct. Custom fields are internal workspace metadata and are not added to client-facing documents/portals.
 
@@ -71,7 +71,7 @@ Tools:
 | `thrive_send_email` / `thrive_check_email_delivery` | Explicit Gmail send and delivery reconciliation |
 | `thrive_create_calendar_event` | Explicit Google event creation and client invitation |
 
-Typical agent sequence: read workspace + catalog, read target records, preview an action, execute at the observed revision with a unique request ID. Retry an uncertain write using the same exact arguments/request ID; after a revision conflict, read and review again with a new request ID. Select/multi-select values use stable option IDs. Money in invoice/project data is integer cents; workflow `config.amount` is a USD decimal string. Custom currency fields use USD decimal numbers.
+Typical agent sequence: read workspace + catalog, read target records, preview an action, execute at the observed revision with a unique request ID. Retry an uncertain write using the same exact arguments/request ID; after a revision conflict, read and review again with a new request ID. Select/multi-select values use stable option IDs. Money in invoice/project data is integer cents; workflow `config.amount` is a workspace currency decimal string. Custom currency fields use workspace currency decimal numbers.
 
 Example custom field action input:
 
@@ -297,3 +297,9 @@ must be created before importing; unknown CSV columns can be explicitly ignored.
 Imports preserve existing records and use the same owner isolation, optimistic
 concurrency, validation, events, and receipts as other MCP mutations. Local test
 fixtures do not establish that an external agent is connected to a live account.
+
+## Signup onboarding
+
+New accounts enter a resumable three-step setup: name and optional business name, country and billing currency; business vertical; then optional setup actions. Six verticals offer editable example services and safe one-click workflows. CSV import uses the existing mapping and review flow. Google Calendar/Gmail uses the existing separate OAuth connection and accurately reports unavailable or connected status; Google sign-in alone does not grant mailbox/calendar access. Users can skip optional actions, return through Getting started, and see a resume prompt until they finish. Existing workspaces are not forced through onboarding.
+
+A workspace uses one of 17 supported two-decimal currencies. Legacy workspaces default to USD. Currency locks once pricing or financial records exist; there is no currency conversion. Invoice/document snapshots and public views preserve the chosen currency. Starter prices are examples in the selected currency and should be reviewed before use.

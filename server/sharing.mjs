@@ -34,7 +34,7 @@ export function clientProjection(state,link){
  const {record}=shareTarget(state,link.entity,link.recordId);
  if(link.entity==='document'){
   const v=record.versions.find(x=>x.number===link.version);
-  const data=pick(v,['design','showPricing','selectionMode','pricingEstimated','title','kind','responseMode','scope','deliverables','terms','number','status','business','budget','billing','createdAt','completedAt','declinedAt']);
+  const data=pick(v,['currency','design','showPricing','selectionMode','pricingEstimated','title','kind','responseMode','scope','deliverables','terms','number','status','business','budget','billing','createdAt','completedAt','declinedAt']);
   data.client=pick(v.client,['name','contact','email']);
   data.offers=(pricingVisible(v)?v.offers||[]:[]).map(o=>pick(o,['id','name','description','rate','billingModel','unit','mode','group','min','max','quantity']));
   data.selections=pricingVisible(v)?v.selections||null:null;
@@ -46,7 +46,7 @@ export function clientProjection(state,link){
   return {entity:'document',data,actions:v.status==='published'?(v.responseMode==='signature'?['sign','decline']:v.responseMode==='acceptance'?['accept','decline']:[]):[]};
  }
  if(link.entity==='invoice'){
-  const data=pick(record,['number','business','clientName','clientEmail','billingAddress','projectName','issued','due','amount','paid','subtotal','taxRate','taxAmount','notes','paymentInstructions','kind','label']);
+  const data=pick(record,['currency','number','business','clientName','clientEmail','billingAddress','projectName','issued','due','amount','paid','subtotal','taxRate','taxAmount','notes','paymentInstructions','kind','label']);
   data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>({...pick(i,['description','quantity','rate','amount','billingModel','unit']),...(i.timeSources?{durationMinutes:i.timeSources.reduce((n,x)=>n+x.minutes,0)}:{})}));
   data.design=pick(record.design,['template','color','logo','issuerDetails','footer']);
   return {entity:'invoice',data:{...data,status:invoiceStatus(record)},actions:[]};
