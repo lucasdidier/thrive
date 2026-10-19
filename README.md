@@ -262,3 +262,11 @@ Drag a card between columns to update client services, form services/tags, proje
 Project moves use the existing acceptance, deposit, phase-completion, and reopening rules. Invoice and document status drops open a review with the existing invoice/document controls: they cannot invent payments, signatures, acceptance, or publication. Other relationship/derived groupings allow manual ordering within a column and direct users to the record for field changes. Failed/stale moves are atomic; pending saves block another drag. Existing search, filters, column visibility, collapsible groups, and opt-in bulk selection work in either layout.
 
 Validation: `tests/kanban.test.mjs` covers saved layouts, empty destinations, custom option identities, service changes, workflow activation, project prerequisites, protected invoice/document state, hidden-card ordering, stale moves, and archived fields. Native browser drag-and-drop, reload persistence, the accessible move control, filtered selection, and the invoice review path are also checked locally.
+
+## Client and project record pages
+
+Both records use a shared panel aligned with the top of the workspace. The list header stays to its left; Expand opens the record across the workspace, and the header contains navigation, Archive/Restore, and contextual New actions. Standard properties and custom field values edit inline with save/cancel and validation. Published pricing and derived totals keep their existing business rules.
+
+Clients can be companies or individuals. Companies expose a contact name; individuals use their own name for downstream communications. Existing clients default to companies. Logos accept PNG, JPEG, or WebP under 2 MB, are resized to 256 pixels, bounded to 150 KB, and saved with the client. They appear in the list and record page.
+
+The record New menu opens Project, Time entry, Message, Document, Form, Meeting, and Invoice creators with the client/project preselected. Time requires a project and limits choices to the client. Forms and meetings retain project associations; forms are still reusable form definitions, not automatically sent assignments. New project client relationships can change inline until linked work exists. Existing delivery, billing, and communication review steps remain in force.

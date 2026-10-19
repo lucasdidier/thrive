@@ -11,6 +11,9 @@ export function validateWorkspace(s,old){
  validateShareLinks(s,old);
  if(!s||typeof s!=='object'||s.workspaceSchema!==3||!s.settings||typeof s.settings.business!=='string'||typeof s.settings.name!=='string')throw Error('Invalid workspace data.');
  for(const key of ['clients','projects','documents','forms','submissions','invoices','time','activity','workflows']){if(!Array.isArray(s[key]))throw Error(`Missing workspace collection: ${key}.`);const ids=new Set();for(const r of s[key]){if(!r||typeof r.id!=='string'||ids.has(r.id))throw Error(`Invalid or duplicate ${key} record.`);ids.add(r.id);}}
+ for(const c of s.clients){if(c.type!==undefined&&!['company','individual'].includes(c.type))throw Error('Invalid client type.');if(c.logo!==undefined&&(typeof c.logo!=='string'||c.logo.length>150000||(c.logo&&!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(c.logo))))throw Error('Invalid client logo.');}
+ for(const m of s.scheduling?.meetings||[])if(m.projectId&&!s.projects.some(p=>p.id===m.projectId&&p.clientId===m.clientId))throw Error('Invalid meeting project.');
+ for(const f of s.forms){if(f.clientId&&!s.clients.some(c=>c.id===f.clientId))throw Error('Invalid form client.');if(f.projectId&&!s.projects.some(p=>p.id===f.projectId&&p.clientId===f.clientId))throw Error('Invalid form project.');}
  for(const c of s.clients)if(c.portal)validatePortal(s,c.id,c.portal);
  validateTimeWorkspace(s,old);
  for(const i of s.invoices.filter(i=>i.items?.some(l=>l.timeSources))){const computed=calculateInvoice(i.items,i.taxRate);for(const key of ['amount','subtotal','taxAmount'])if(i[key]!==computed[key])throw Error('Invoice time totals do not match source entries.');for(let n=0;n<i.items.length;n++)if(i.items[n].amount!==computed.items[n].amount)throw Error('Invoice time line amount is invalid.');}
