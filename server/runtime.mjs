@@ -13,7 +13,7 @@ export async function withRuntime(request,env,handler,{publicAccess=false,contex
  if(!['GET','HEAD'].includes(request.method)&&!request.headers.get('authorization')?.startsWith('Bearer ')){
  if(expected!==user.owner||request.headers.get('origin')!==context.origin)throw new StoreError('Reload your workspace before making changes.',403);
  }
- const headers=new Headers(request.headers);headers.delete('oai-authenticated-user-id');headers.delete('oai-authenticated-user-email');request=new Request(request,{headers});setRequestIdentity(request,user);
+ const headers=new Headers(request.headers);headers.delete('oai-authenticated-user-id');headers.delete('oai-authenticated-user-email');request=new Request(request.url,{method:request.method,headers,body:['GET','HEAD'].includes(request.method)?undefined:request.body,duplex:'half'});setRequestIdentity(request,user);
  }else{const owner=ownerOf(request);user={owner,email:request.headers.get('oai-authenticated-user-email')};if(env.THRIVE_MIGRATION_KEY&&!['GET','HEAD'].includes(request.method))throw new StoreError('Account migration is in progress. Please try again shortly.',503);}
  const response=await handler({request,...backend,user});return context?context.finish(response):response;
  }catch(error){const response=errorResponse(error);return context?context.finish(response):response;}}
