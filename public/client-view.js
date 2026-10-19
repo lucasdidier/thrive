@@ -1,3 +1,4 @@
+import {requestShared} from './shared-request.js';
 import {portalView} from './portal-view.js';
 import {embedOptions} from './form-embed.js';
 import {initSelects} from './select-ui.js';
@@ -27,7 +28,7 @@ let current,choices=[],busy=false,requestId=crypto.randomUUID(),pendingBody=null
 const icons={download:'M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4',print:'M6 9V3h12v6M6 18H3V9h18v9h-3M6 15h12v6H6z',check:'m5 12 4 4L19 6'};
 const icon=name=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${icons[name]}"></path></svg>`;
 const field=(label,name,type='text',extra='')=>`<label class="field">${esc(label)}<input name="${name}" type="${type}" ${extra}></label>`;
-async function request(method='GET',body){const response=await fetch(endpoint,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(20000)});let data;try{data=await response.json();}catch{throw Error('This shared page is unavailable. Please try again.');}if(!response.ok){const error=Error(data.error||'Unable to complete the request.');error.status=response.status;throw error;}return data;}
+const request=(method='GET',body)=>requestShared(endpoint,method,body);
 function downloadBar(status){return `<div class="client-toolbar"><span class="status-badge ${['signed','accepted','paid'].includes(status)?'complete':''}">${esc(status==='published'?'Awaiting response':status)}</span><div class="toolbar-actions"><button class="btn" data-action="download" title="Download an offline HTML copy">${icon('download')}Download copy</button><button class="btn" data-action="print">${icon('print')}Print / Save PDF</button></div></div>`;}
 function offerSection(v,editable){return pricingTable(v,{editable,selections:choices,source:'public'});}
 function billingSection(v){if(!v.billing)return '';return `<section class="document-section"><h2>Payment schedule</h2>${v.billingPlan.map((r,index)=>`<div class="read-line"><span><strong>${esc(r.name)}</strong><small>${esc(r.trigger)} · ${r.percent}%</small></span><strong data-payment="${index}">${money(r.amount)}</strong></div>`).join('')}<p class="muted">Invoices are shared separately with payment instructions.</p></section>`;}
@@ -51,7 +52,7 @@ main.addEventListener('submit',async e=>{e.preventDefault();if(busy)return;const
  }else{controls.forEach(el=>el.disabled=true);body={action,name:values.name,consent:f.elements.consent.checked,...(current.data.offers.length?{selections:choices}:{})};}
  const result=await request('POST',{...body,request_id:requestId});if(action==='submit'){main.innerHTML=`<section class="document-paper submitted" role="status"><div class="success-icon">${icon('check')}</div><h1>Response received</h1><p>Your response has been saved.</p>${embedded?'<button class="btn" data-action="embed-close">Close form</button>':current.portal?`<a class="btn" href="/share/${encodeURIComponent(token)}">Back to client portal</a>`:''}</section>`;main.querySelector('h1').tabIndex=-1;main.querySelector('h1').focus();window.scrollTo(0,0);notifyParent('submitted');}else{current=await request();render();const note=document.createElement('div');note.className='response-success';note.role='status';note.textContent=result.message;main.prepend(note);}pendingBody=null;uploads.clear();}catch(e){error.textContent=e.message;}finally{busy=false;f.removeAttribute('aria-busy');controls.forEach((el,i)=>el.disabled=wasDisabled[i]);}
 });
-main.addEventListener('click',async e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action==='embed-close')notifyParent('close');if(action==='print')window.print();if(action==='download'){
+main.addEventListener('click',async e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action==='retry-load'){await load();return;}if(action==='embed-close')notifyParent('close');if(action==='print')window.print();if(action==='download'){
  const button=e.target.closest('button');button.disabled=true;try{
   const styles=await Promise.all(['/client-view.css','/invoice.css','/documents.css'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('Download unavailable.');return r.text();})));
   const paper=document.querySelector('#shared-paper').cloneNode(true);paper.querySelectorAll('input').forEach(i=>{const text=document.createElement('span');text.textContent=i.type==='checkbox'||i.type==='radio'?(i.checked?'✓':'—'):i.value;i.replaceWith(text);});
@@ -59,6 +60,7 @@ main.addEventListener('click',async e=>{const action=e.target.closest('[data-act
   const url=URL.createObjectURL(new Blob([html],{type:'text/html'})),a=document.createElement('a');a.href=url;a.download=(current.data.title||current.data.number||'document').replace(/[^\p{L}\p{N} _-]/gu,'').slice(0,100)+'.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  }catch(e){alert(e.message);}finally{button.disabled=false;}
  }});
-try{current=await request();render();}catch(e){main.setAttribute('aria-busy','false');main.innerHTML=`<section class="document-paper unavailable"><h1>Link unavailable</h1><p>${esc(e.message)}</p></section>`;}
+async function load(){main.setAttribute('aria-busy','true');const retry=main.querySelector('[data-action="retry-load"]');if(retry)retry.disabled=true;try{current=await request();render();}catch(e){main.setAttribute('aria-busy','false');const title=[401,403].includes(e.status)?'Site access required':e.status===404?'Link unavailable':'Unable to load this page';main.innerHTML=`<section class="document-paper unavailable"><h1>${title}</h1><p>${esc(e.message)}</p>${e.status!==404?'<button class="btn" data-action="retry-load">Try again</button>':''}</section>`;}}
+await load();
 
 notifyParent('ready');
