@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "react", "react-dom"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "./**/*.tsx",
+    "../components/**/*.tsx",
+    "../hooks/**/*.tsx",
+    "../hooks/**/*.ts",
+    "../lib/**/*.tsx",
+    "../lib/**/*.ts"
+  ],
+  "exclude": ["../node_modules", "../worker-configuration.d.ts"]
+}

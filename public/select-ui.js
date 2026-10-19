@@ -22,7 +22,7 @@ function sync(c){
  if(active?.control===c&&(button.disabled||select.closest('dialog')&&!select.closest('dialog').open))close(false);
 }
 function enhance(select){
- if(controls.has(select)||select.multiple||select.size>1||select.dataset.nativeSelect!==undefined)return;
+ if(select.closest("#record-project-form,#record-client-form,#workspace-settings,.fluid-ui")||controls.has(select)||select.multiple||select.size>1||select.dataset.nativeSelect!==undefined)return;
  const label=labelFor(select),wrap=document.createElement('span'),button=document.createElement('button'),value=document.createElement('span');
  wrap.className='thrive-select';button.type='button';button.className='thrive-select-trigger';value.className='thrive-select-value';
  button.setAttribute('role','combobox');button.setAttribute('aria-haspopup','listbox');button.setAttribute('aria-expanded','false');
