@@ -25,7 +25,7 @@ test('time uses whole minutes, saved rates and reversible archive with legacy ho
 test('all invoice groupings preserve cents and distinct hourly rates',()=>{
  const s=state(),a=entry(s,{minutes:1}),b=entry(s,{minutes:1}),c=entry(s,{minutes:31,rate:1999}),ids=[a.id,b.id,c.id];
  for(const groupBy of ['entry','day','description']){const data=timeInvoiceData(s,{entryIds:ids,groupBy,additionalCharge:true}),invoice=calculateInvoice(data.items,8.25);assert.equal(invoice.subtotal,1367);assert.equal(invoice.amount,1480);assert.equal(data.items.length,groupBy==='entry'?3:2);}
- const d=draft(s,ids,'description'),i=issueInvoiceDraft(s,d.id);assert.equal(i.amount,1367);assert.match(invoicePaper(i),/0h 2m/);assert.doesNotMatch(invoicePaper(i),/0\.033333/);validateWorkspace(s);
+ const d=draft(s,ids,'description'),i=issueInvoiceDraft(s,d.id);assert.equal(i.amount,1367);assert.match(invoicePaper(i),/0:02/);assert.doesNotMatch(invoicePaper(i),/0\.033333/);validateWorkspace(s);
 });
 test('time needs a price, one project, billable entries and explicit additional-charge confirmation',()=>{
  const s=state(),a=entry(s),other=entry(s,{projectId:s.projects[1].id}),free=entry(s,{billable:false}),unpriced=entry(s,{rate:0});
@@ -68,5 +68,5 @@ test('many entries can be grouped without changing time or fee agreements',()=>{
 });
 
 test('shared time invoices show exact durations without exposing source record IDs',()=>{
- const s=state(),t=entry(s),d=draft(s,[t.id]),i=issueInvoiceDraft(s,d.id);const view=clientProjection(s,{entity:'invoice',recordId:i.id});assert.equal(view.data.items[0].durationMinutes,61);assert.equal(view.data.items[0].timeSources,undefined);assert.ok(!JSON.stringify(view).includes(t.id));assert.match(invoicePaper(view.data),/1h 1m/);
+ const s=state(),t=entry(s),d=draft(s,[t.id]),i=issueInvoiceDraft(s,d.id);const view=clientProjection(s,{entity:'invoice',recordId:i.id});assert.equal(view.data.items[0].durationMinutes,61);assert.equal(view.data.items[0].timeSources,undefined);assert.ok(!JSON.stringify(view).includes(t.id));assert.match(invoicePaper(view.data),/1:01/);
 });

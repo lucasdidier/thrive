@@ -3,7 +3,7 @@ import {uid,today,addActivity} from './domain.js';
 const clean=x=>String(x??'').trim();
 const validRate=r=>Number.isSafeInteger(r)&&r>=0&&r<=100000000;
 export const timeMinutes=t=>t.minutes??Math.round(Number(t.hours)*60);
-export const timeDuration=t=>{const m=typeof t==='number'?t:timeMinutes(t);return `${Math.floor(m/60)}h ${m%60}m`;};
+export const timeDuration=t=>{const m=typeof t==='number'?t:timeMinutes(t);return `${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`;};
 export const hourlyRate=(s,p)=>p?.hourlyRate??s.settings.hourlyRate??0;
 export const entryRate=(s,t)=>t.rate??hourlyRate(s,s.projects.find(p=>p.id===t.projectId));
 export const timeSources=i=>(i.items||[]).flatMap(l=>l.timeSources||[]);

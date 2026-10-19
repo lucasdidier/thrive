@@ -4,7 +4,7 @@ export const portalSections={documents:'Documents',forms:'Forms',invoices:'Invoi
 export const portalKey=(entity,id,version=null)=>JSON.stringify([entity,id,version]);
 const copy=x=>structuredClone(x);
 const invoiceClient=(s,i)=>i.clientId||s.projects.find(p=>p.id===i.projectId)?.clientId;
-export function portalDefaults(client){return {enabled:false,title:'Client portal',intro:'Your shared documents, invoices, and project updates.',sections:Object.fromEntries(Object.keys(portalSections).map(k=>[k,true])),documents:[],forms:[],invoices:[],projects:[],meetings:[]};}
+export function portalDefaults(client,settings={}){const defaults=settings.portalDefaults||{};return {enabled:false,title:defaults.title||'Client portal',intro:defaults.intro??'Your shared documents, invoices, and project updates.',sections:Object.fromEntries(Object.keys(portalSections).map(k=>[k,defaults.sections?.[k]??false])),documents:[],forms:[],invoices:[],projects:[],meetings:[]};}
 export function portalCandidates(s,clientId){const client=s.clients.find(c=>c.id===clientId);if(!client)throw Error('Client not found.');const projectOpen=id=>!id||s.projects.some(p=>p.id===id&&!p.archived&&p.status!=='cancelled');return {
  documents:s.documents.filter(d=>d.clientId===clientId&&!d.archived&&d.status!=='draft'&&projectOpen(d.projectId)&&d.versions.some(v=>v.number===d.currentVersion&&v.status!=='superseded'&&v.client?.id===clientId)).map(d=>({id:d.id,title:d.title,detail:`Version ${d.currentVersion} · ${d.status}`,version:d.currentVersion})),
  forms:s.forms.filter(f=>f.status==='active'&&!f.archived).map(f=>({id:f.id,title:f.name||f.title,detail:'One response per assignment'})),
@@ -12,7 +12,7 @@ export function portalCandidates(s,clientId){const client=s.clients.find(c=>c.id
  projects:s.projects.filter(p=>p.clientId===clientId&&!p.archived&&p.status!=='cancelled').map(p=>({id:p.id,title:p.name,detail:deliveryStatus(p)})),
  meetings:(s.scheduling?.meetings||[]).filter(m=>m.clientId===clientId).map(m=>({id:m.id,title:m.typeName,detail:`${m.start} · ${m.status}`}))
  };}
-export function savePortal(s,clientId,data){const c=s.clients.find(c=>c.id===clientId&&!c.archived);if(!c)throw Error('Choose an active client.');const old=c.portal||portalDefaults(c),candidates=portalCandidates(s,clientId);if(!data||Object.keys(data).some(k=>!['enabled','title','intro','sections',...Object.keys(portalSections)].includes(k)))throw Error('Invalid portal settings.');
+export function savePortal(s,clientId,data){const c=s.clients.find(c=>c.id===clientId&&!c.archived);if(!c)throw Error('Choose an active client.');const old=c.portal||portalDefaults(c,s.settings),candidates=portalCandidates(s,clientId);if(!data||Object.keys(data).some(k=>!['enabled','title','intro','sections',...Object.keys(portalSections)].includes(k)))throw Error('Invalid portal settings.');
  const portal={...copy(old),...copy(data)};portal.title=String(portal.title||'').trim();portal.intro=String(portal.intro||'').trim();
  for(const section of Object.keys(portalSections)){
  if(!Object.hasOwn(data,section))continue;const values=portal[section];if(!Array.isArray(values)||values.length>200)throw Error('Choose up to 200 records per section.');
@@ -37,7 +37,7 @@ export function portalEntry(s,clientId,key){const entry=portalEntries(s,clientId
 export function portalFormResponse(s,clientId,assignmentId){return s.submissions.find(sub=>sub.clientId===clientId&&sub.portalAssignmentId===assignmentId);}
 // This projection is shared by the owner preview and public API. Never return
 // records wholesale: only the explicitly selected client-facing properties.
-export function portalProjection(s,clientId,{preview=false}={}){const c=preview?s.clients.find(c=>c.id===clientId):portalClient(s,clientId),p=c.portal||portalDefaults(c),entries=portalEntries(s,clientId,{preview});const items=entries.map(e=>{
+export function portalProjection(s,clientId,{preview=false}={}){const c=preview?s.clients.find(c=>c.id===clientId):portalClient(s,clientId),p=c.portal||portalDefaults(c,s.settings),entries=portalEntries(s,clientId,{preview});const items=entries.map(e=>{
  if(e.entity==='document'){const d=s.documents.find(d=>d.id===e.recordId),v=d.versions.find(v=>v.number===e.version),pending=v.status==='published'&&v.responseMode!=='none';return {key:e.key,entity:e.entity,title:v.title,status:pending?'Awaiting '+(v.responseMode==='signature'?'signature':'acceptance'):v.status==='published'?'For information':v.status,detail:`Version ${e.version}`,needsAttention:pending,action:pending?(v.responseMode==='signature'?'Review & sign':'Review document'):'View document'};}
  if(e.entity==='invoice'){const i=s.invoices.find(i=>i.id===e.recordId);return {key:e.key,entity:e.entity,title:i.number,status:invoiceStatus(i),detail:money(i.amount-i.paid,i.currency||s.settings.currency||'USD')+' outstanding',needsAttention:i.paid<i.amount,action:i.paid<i.amount?'Payment instructions':'View invoice'};}
  if(e.entity==='form'){const f=s.forms.find(f=>f.id===e.recordId),response=portalFormResponse(s,clientId,e.assignmentId);return {key:e.key,entity:e.entity,title:f.title,status:response?'Completed':'To complete',detail:response?'Response received':'Requested form',needsAttention:!response,action:response?'View status':'Complete form'};}
