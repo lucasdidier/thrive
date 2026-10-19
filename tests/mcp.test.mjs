@@ -30,3 +30,16 @@ test('time invoice MCP retries replay once and competing drafts cannot double-re
  const issued=await callTool(db,'time-owner','thrive_execute_action',{action:'invoiceDraft.issue',input:{id:first.result.id},expected_revision:2,request_id:'time-invoice-issue'});assert.equal(issued.result.amount,10168);
  const events=await readEvents(db,'time-owner');assert.equal(events.filter(e=>e.type==='time.reserved').length,1);assert.equal(events.filter(e=>e.type==='time.billed').length,1);db.close();
 });
+
+test('CSV MCP import has scoped template/preview, revision guard and replay-safe commits',async()=>{
+ const db=database(),s=state();await bootstrap(db,'import-alice',s);await bootstrap(db,'import-bob',state());
+ const csv='Email,Client type\npat.person@gmail.com,\ncompany@gmail.com,company';
+ const template=await callTool(db,'import-alice','thrive_get_client_import_template',{});assert.equal(template.fields.filter(f=>f.required).length,1);
+ const preview=await callTool(db,'import-alice','thrive_preview_client_import',{csv});assert.equal(preview.summary.ready,2);assert.equal((await loadWorkspace(db,'import-alice')).revision,0);
+ const args={csv,expected_revision:preview.revision,request_id:'import-clients-test'};
+ const result=await callTool(db,'import-alice','thrive_import_clients',args);assert.equal(result.result.imported,2);assert.equal((await callTool(db,'import-alice','thrive_import_clients',args)).replayed,true);
+ assert.equal((await loadWorkspace(db,'import-alice')).state.clients.length,s.clients.length+2);assert.equal((await loadWorkspace(db,'import-bob')).state.clients.length,s.clients.length);
+ await assert.rejects(()=>callTool(db,'import-alice','thrive_import_clients',{...args,request_id:'different-import-id'}),/Workspace changed/);
+ await assert.rejects(()=>callTool(db,'import-alice','thrive_import_clients',{...args,csv:'Email\nother@gmail.com'}),/different operation/);
+ assert.equal((await readEvents(db,'import-alice')).filter(e=>e.type==='client.created').length,2);db.close();
+});

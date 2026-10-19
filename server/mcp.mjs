@@ -1,3 +1,4 @@
+import {clientImportTemplate,previewClientImport} from '../public/client-import-domain.js';
 import {validateWorkspaceFiles} from './form-files.mjs';
 import {catalog,actionCatalog,executeOperation,testWorkflow,records,fieldsFor,initWorkflows,checkShape} from './operations.mjs';
 import {loadWorkspace,commitWorkspace,readEvents,hashRequest,receiptFor,StoreError} from './store.mjs';
@@ -7,6 +8,9 @@ import {googleStatus,listConversations,syncGmail,updateConversation,sendEmail,ch
 const string={type:'string'},revision={type:'integer',minimum:0},limit={type:'integer',minimum:1},scope={enum:Object.keys(catalog().entities).concat(['workflow','customField','shareLink'])};
 const tool=(name,description,properties={},required=[],write=false)=>({name,description,inputSchema:{type:'object',properties,required,additionalProperties:false},annotations:{readOnlyHint:!write,destructiveHint:write,idempotentHint:!write,openWorldHint:false}});
 export const mcpTools=[
+ tool('thrive_get_client_import_template','Get a CSV example and every writable client field, including active custom fields and option labels. Only email is required.'),
+ tool('thrive_preview_client_import','Read CSV text from the user’s attachment and preview inferred clients, errors, and duplicate emails. Does not save. Returns the workspace revision. Up to 500 rows / 2 MB.',{csv:string,mapping:{type:'object'}},['csv']),
+ tool('thrive_import_clients','Import reviewed CSV text, using the same csv and mapping as preview. Requires expected_revision and a unique request_id for safe retries. Skips duplicates; skip_invalid must be explicit to skip errors. Triggers configured client-created workflows; never sends emails.',{csv:string,mapping:{type:'object'},skip_invalid:{type:'boolean'},expected_revision:revision,request_id:string},['csv','expected_revision','request_id'],true),
  tool('thrive_get_connections','Read Google account connection status. Tokens and secrets are never returned.'),
  tool('thrive_list_conversations','Read cached client email threads and delivery receipts. Refresh explicitly to fetch Gmail.'),
  {...tool('thrive_refresh_gmail','Import up to 25 client threads from the last 90 days. Requires a connected Gmail account.',{},[],true),annotations:{readOnlyHint:false,destructiveHint:false,idempotentHint:true,openWorldHint:true}},
@@ -35,6 +39,9 @@ export async function callTool(db,owner,name,args,env={},fetcher=fetch){const to
  if(name==='thrive_get_catalog')return {...catalog(),customFields:current?allRecords(current.state,'customField'):[],revision:current?.revision??null};
  if(!current)throw new StoreError('Open Thrive once to import this browser’s workspace before using record tools.',409);
  const {state,revision}=current;
+ if(name==='thrive_get_client_import_template')return {...clientImportTemplate(state),revision};
+ if(name==='thrive_preview_client_import')return {...previewClientImport(state,args),revision,preview:true};
+ if(name==='thrive_import_clients'){const {expected_revision,request_id,...input}=args;return callTool(db,owner,'thrive_execute_action',{action:'client.import',input,expected_revision,request_id},env,fetcher);}
  if(name==='thrive_list_conversations')return listConversations(db,owner);
  if(name==='thrive_refresh_gmail')return syncGmail(db,owner,env,fetcher);
  if(name==='thrive_update_conversation')return updateConversation(db,owner,args);

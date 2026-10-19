@@ -1,3 +1,4 @@
+import {importClients} from '../public/client-import-domain.js';
 import {savePortal} from '../public/portal-domain.js';
 import {formTemplates,formFromTemplate,formTemplateCatalog} from '../public/form-templates.js';
 import {saveTimeEntry,archiveTimeEntry,saveTimeRates} from '../public/time-domain.js';
@@ -18,6 +19,7 @@ import {saveMeetingType,completeMeeting,saveAvailability,saveFollowupEmail} from
 const extra=(id,description,required=[],properties={})=>({id,description,inputSchema:{type:'object',properties,required,additionalProperties:false}});
 const string={type:'string'},object={type:'object'},bool={type:'boolean'},id={type:'string',description:'Existing record ID'},data={type:'object',description:'Record fields; use get_record to inspect the existing shape. Amounts in integer cents unless named otherwise.'},scope={enum:['client','project']};
 export const extraActions=[
+ extra('client.import','Import a UTF-8 CSV (up to 500 rows). Only email required. Explicit values win; missing names/type/company are inferred. Existing and repeated emails are skipped. Preview first. Emits client-created workflow events.',['csv'],{csv:string,mapping:object,skip_invalid:bool}),
  extra('time.save','Create or edit unreserved time. Whole minutes (1–1440), hourly rate in cents. Rate defaults to project/workspace and is saved with the entry.',['data'],{id,data:{type:'object',required:['projectId','minutes','date','note'],properties:{projectId:id,minutes:{type:'integer',minimum:1},date:string,note:string,rate:{type:'integer',minimum:0},billable:bool}}}),
  extra('time.restore','Restore an archived time entry.',['id'],{id}),
  extra('time.rates','Set the workspace hourly rate, or a project override. Pass null to clear a project override. Existing priced entries keep their rates.',['data'],{projectId:id,data:{type:'object',required:['hourlyRate'],properties:{hourlyRate:{description:'Integer cents, or null to use the workspace rate for a project.'}}}}),
@@ -54,6 +56,7 @@ export function checkShape(value,schema,path='input'){if(schema.enum&&!schema.en
 export function performAction(s,type,input,requestId){const spec=actionCatalog().find(a=>a.id===type);if(!spec)throw Error('Unknown action. Read the catalog for supported IDs.');checkShape(input,spec.inputSchema);let result;const {id,data,entity}=input;
  if(actions.some(a=>a.id===type))result=executeWorkspaceAction(s,type,input.targetId,input.config,input.context);
  else switch(type){
+ case'client.import':result=importClients(s,input);break;
  case'time.save':result=saveTimeEntry(s,data,id);break;
  case'time.restore':result=archiveTimeEntry(s,id,false);break;
  case'time.rates':result=saveTimeRates(s,data,input.projectId);break;

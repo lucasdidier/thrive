@@ -270,3 +270,30 @@ Both records use a shared panel aligned with the top of the workspace. The list 
 Clients can be companies or individuals. Companies expose a contact name; individuals use their own name for downstream communications. Existing clients default to companies. Logos accept PNG, JPEG, or WebP under 2 MB, are resized to 256 pixels, bounded to 150 KB, and saved with the client. They appear in the list and record page.
 
 The record New menu opens Project, Time entry, Message, Document, Form, Meeting, and Invoice creators with the client/project preselected. Time requires a project and limits choices to the client. Forms and meetings retain project associations; forms are still reusable form definitions, not automatically sent assignments. New project client relationships can change inline until linked work exists. Existing delivery, billing, and communication review steps remain in force.
+
+### Client CSV import
+
+Clients → **Import clients** downloads an example CSV containing all writable
+client fields and active custom fields. Only email is required. Upload a UTF-8
+comma/semicolon CSV (500 rows / 2 MB), map headers, and review/edit the suggestions.
+Explicit values win; free/public email domains suggest individuals; business
+domains suggest companies. Names are basic suggestions, not verified identities.
+Duplicate email addresses, including archived clients, are skipped. Invalid rows
+require correction or explicit opt-in to skip. Imports run existing workflows,
+subject to the workspace's 100-action-per-save guard.
+
+**Use with AI · MCP** in the sidebar provides connection instructions, the endpoint,
+and copyable prompts. Agent import tools:
+
+1. `thrive_get_client_import_template` returns fields, formats, options, and CSV.
+2. `thrive_preview_client_import({csv, mapping?})` returns row-level suggestions,
+   errors, skipped duplicates, and the current revision without saving.
+3. `thrive_import_clients({csv, mapping?, skip_invalid?, expected_revision,
+   request_id})` commits reviewed data. Use the same request ID to retry an
+   uncertain response. The equivalent catalog action is `client.import`.
+
+Supply file contents as `csv`, not a filesystem path. New fields/custom definitions
+must be created before importing; unknown CSV columns can be explicitly ignored.
+Imports preserve existing records and use the same owner isolation, optimistic
+concurrency, validation, events, and receipts as other MCP mutations. Local test
+fixtures do not establish that an external agent is connected to a live account.
