@@ -28,7 +28,7 @@ function loader(){
 test('loader isolates message sources, restores focus and scroll, and reuses the open form',()=>{
  const h=loader(),url='https://thrive.example/share/'+token;h.window.ThriveForms.open(url,{theme:'dark',accent:'#94e3d5'});
  const dialog=h.nodes.find(n=>n.tag==='dialog'),frame=h.nodes.find(n=>n.tag==='iframe'),src=frame.src;
- assert.equal(dialog.open,true);assert.equal(h.document.documentElement.style.overflow,'hidden');assert.equal(new URL(src).searchParams.get('parent_origin'),'https://website.example');assert.equal(frame.attributes.sandbox,'allow-scripts allow-same-origin allow-forms');
+ assert.equal(dialog.open,true);assert.equal(h.document.documentElement.style.overflow,'hidden');assert.equal(new URL(src).searchParams.get('parent_origin'),'https://website.example');assert.equal(frame.attributes.sandbox,'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox');
  const message={origin:'https://thrive.example',source:frame.contentWindow,data:{type:'thrive:close',channel:'channel-123'}};
  for(const forged of [{...message,origin:'https://evil.example'},{...message,source:{}},{...message,data:{...message.data,channel:'wrong'}}]){h.events.message(forged);assert.equal(dialog.open,true);}
  h.events.message({...message,data:{...message.data,type:'thrive:submitted',answers:{private:'do not forward'}}});assert.deepEqual(JSON.parse(JSON.stringify(h.docEvents.dispatched.detail)),{url});
@@ -36,4 +36,9 @@ test('loader isolates message sources, restores focus and scroll, and reuses the
  h.window.ThriveForms.open(url,{theme:'dark',accent:'#94e3d5'});assert.equal(frame.src,src);assert.equal(h.nodes.filter(n=>n.tag==='iframe').length,1);
  const api=h.window.ThriveForms;vm.runInNewContext(h.source,h.context);assert.equal(h.window.ThriveForms,api);
  assert.throws(()=>h.window.ThriveForms.open('https://evil.example/share/'+token));assert.throws(()=>h.window.ThriveForms.open('https://thrive.example/api/workspace'));
+});
+
+test('inline embedding uses only a scoped form URL with escaped attributes',()=>{
+ const code=formEmbedSnippet('https://thrive.example',token,{placement:'inline',label:'Contact " us <now>'});
+ assert.ok(code.includes(`/embed/form/${token}?mode=inline`));assert.ok(code.includes('width="100%"'));assert.ok(code.includes('Contact &quot; us &lt;now&gt;'));assert.ok(!code.includes('<script'));assert.ok(code.includes('allow-popups'));
 });

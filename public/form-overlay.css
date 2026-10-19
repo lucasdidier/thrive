@@ -8,3 +8,4 @@ iframe{display:block;box-sizing:border-box;width:100%;height:calc(100% - 48px);b
 dialog[data-theme=dark]{background:#171717;color:#eee;border-color:#333;color-scheme:dark}dialog[data-theme=dark] .bar{border-color:#2b2b2b;color:#aaa}
 @media(prefers-color-scheme:dark){dialog[data-theme=auto]{background:#171717;color:#eee;border-color:#333;color-scheme:dark}dialog[data-theme=auto] .bar{border-color:#2b2b2b;color:#aaa}}
 @media(max-width:480px){dialog{width:calc(100vw - 16px);height:94dvh;max-height:94dvh;border-radius:10px}.bar{padding-left:20px}}
+.bar{color:inherit;border-bottom-color:#8883}

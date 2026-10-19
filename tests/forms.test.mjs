@@ -93,3 +93,21 @@ test('overlay is form-only; submissions use the existing authenticated-origin ch
  const invoice=s.invoices.find(i=>i.number);assert.ok(invoice);const invoiceLink=createShareLink(s,{entity:'invoice',recordId:invoice.id});await bootstrap(otherDB,'owner',s);
  assert.equal((await embeddedFormPage(otherDB,invoiceLink.token,'private invoice')).status,404);otherDB.close();
 });
+
+test('saved form appearance is safe, public, retained on edits, and part of the revision',async()=>{
+ const {formDesign,formPaper}=await import('../public/form-design.js');const s=state(),starter=formFromTemplate('website-contact'),f=saveForm(s,{...starter,design:{...starter.design,branding:false,font:'mono',submitLabel:'Send <note>',footer:'Your message, privately.'}});
+ const before=await formFingerprint(f,s.settings.business),data=publicFormData(f,s.settings.business);
+ assert.equal(data.design.background,'#0d1516');assert.equal(data.design.branding,false);assert.equal(data.design.font,'mono');
+ const paper=formPaper(f,renderQuestions(f));assert.ok(!paper.includes('Built with Thrive'));assert.ok(paper.includes('Send &lt;note&gt;'));assert.ok(paper.includes('placeholder="Alex"'));
+ saveForm(s,{name:f.name,title:f.title,intro:f.intro,questions:f.questions},f.id);assert.equal(f.design.font,'mono');assert.equal(f.design.branding,false);
+ saveForm(s,{...f,design:{...f.design,branding:true,button:'#123456'}},f.id);assert.notEqual(await formFingerprint(f,s.settings.business),before);assert.ok(formPaper(f,'').includes('Built with Thrive'));
+ const safe=formDesign({background:'red;background-image:url(https://evil.example)',font:'</style><script>',radius:'1;display:none',branding:'false'});assert.equal(safe.background,'#ffffff');assert.equal(safe.font,'system');assert.equal(safe.radius,4);assert.equal(safe.branding,true);
+});
+
+test('public contact submissions match case-insensitive email, deduplicate retries, and preserve client details',async()=>{
+ const starter=formFromTemplate('website-contact'),{db,s,f,link}=await setup(starter.questions);const email='new-website-contact@example.com';
+ function answers(name,address){return Object.fromEntries(f.questions.map(q=>[q.id,q.type==='select'?q.options[0].id:q.binding==='contact'?name:q.binding==='email'?address:'A website inquiry.']));}
+ async function submit(key,name,address){return respondToShare(db,link.token,{action:'submit',request_id:key,form_revision:await formFingerprint(f,s.settings.business),data:{answers:answers(name,address)}});}
+ await submit('website-first','New Contact',email);await submit('website-first','New Contact',email);await submit('website-second','Changed Name',email.toUpperCase());
+ const current=(await loadWorkspace(db,'alice')).state,clients=current.clients.filter(c=>c.email.toLowerCase()===email),subs=current.submissions.filter(x=>x.formId===f.id);assert.equal(clients.length,1);assert.equal(clients[0].contact,'New Contact');assert.equal(subs.length,2);assert.ok(subs.every(x=>x.clientId===clients[0].id));assert.ok(subs.every(x=>x.projectId===null));db.close();
+});

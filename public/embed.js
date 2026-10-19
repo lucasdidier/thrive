@@ -10,17 +10,17 @@
   host=document.createElement('div');host.setAttribute('data-thrive-overlay','');root=host.attachShadow({mode:'open'});
   const css=document.createElement('link');css.rel='stylesheet';css.href=origin+'/form-overlay.css';root.append(css);
   dialog=document.createElement('dialog');dialog.setAttribute('aria-label','Contact form');
-  const bar=document.createElement('div');bar.className='bar';const brand=document.createElement('span');brand.textContent='Form · Thrive';
+  const bar=document.createElement('div');bar.className='bar';const brand=document.createElement('span');brand.textContent='Contact form';
   closeButton=document.createElement('button');closeButton.type='button';closeButton.className='close';closeButton.setAttribute('aria-label','Close form');closeButton.textContent='×';closeButton.addEventListener('click',close);bar.append(brand,closeButton);
   status=document.createElement('div');status.className='status';status.setAttribute('role','status');
   const note=document.createElement('span');note.textContent='Loading form…';fallback=document.createElement('a');fallback.textContent='Open form in a new tab ↗';fallback.target='_blank';fallback.rel='noopener noreferrer';status.append(note,fallback);
-  frame=document.createElement('iframe');frame.referrerPolicy='no-referrer';frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms');frame.setAttribute('title','Contact form');
+  frame=document.createElement('iframe');frame.referrerPolicy='no-referrer';frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox');frame.setAttribute('title','Contact form');
   dialog.append(bar,status,frame);root.append(dialog);document.body.append(host);
   dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
   dialog.addEventListener('click',event=>{const r=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom))close();});
   window.addEventListener('message',event=>{
    if(event.origin!==origin||event.source!==frame.contentWindow||event.data?.channel!==channel)return;
-   if(event.data.type==='thrive:ready'){ready=true;clearTimeout(timeout);status.hidden=true;frame.removeAttribute('aria-busy');}
+   if(event.data.type==='thrive:ready'){for(const [key,property]of [['background','backgroundColor'],['text','color']])if(/^#[a-f\d]{6}$/i.test(event.data.appearance?.[key]))dialog.style[property]=event.data.appearance[key];ready=true;clearTimeout(timeout);status.hidden=true;frame.removeAttribute('aria-busy');}
    if(event.data.type==='thrive:close')close();
    if(event.data.type==='thrive:submitted')document.dispatchEvent(new CustomEvent('thrive:submitted',{detail:{url:fallback.href}}));
   });
