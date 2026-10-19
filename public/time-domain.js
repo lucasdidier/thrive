@@ -20,7 +20,7 @@ export function saveTimeEntry(s,data,id){
  if(!note||note.length>200)throw Error('Add a work description of up to 200 characters.');
  if(!validRate(rate))throw Error('Enter a valid hourly rate.');
  if(data.billable!==undefined&&typeof data.billable!=='boolean')throw Error('Billable must be true or false.');
- const t={id:old?.id||uid(),projectId:p.id,minutes,hours:minutes/60,date,note,rate,billable:data.billable??old?.billable??true,archived:false,createdAt:old?.createdAt||new Date().toISOString()};
+ const t={id:old?.id||uid(),projectId:p.id,minutes,hours:minutes/60,date,note,rate,billable:data.billable??old?.billable??p.billable??true,archived:false,createdAt:old?.createdAt||new Date().toISOString()};
  if(old)Object.assign(old,t);else s.time.push(t);addActivity(s,old?'Time entry updated':'Time logged',`${p.name} · ${timeDuration(t)}`,'project');return old||t;
 }
 export function archiveTimeEntry(s,id,archived=true){const t=s.time.find(t=>t.id===id);if(!t)throw Error('Time entry not found.');if(timeClaim(s,id))throw Error('Linked time cannot be archived. Delete its invoice draft or remove its line first.');if(typeof archived!=='boolean')throw Error('Archived must be true or false.');t.archived=archived;return t;}
