@@ -1,3 +1,4 @@
+import {notifyFormResponse} from './form-notifications.mjs';
 import {portalProjection,portalEntry,portalFormResponse} from '../public/portal-domain.js';
 import {validateDocumentDesign,pricingVisible} from '../public/document-design.js';
 import {validQuantity} from '../public/pricing.js';
@@ -70,14 +71,15 @@ function validateInput(body,entity){
   if(body.selections!==undefined&&(!Array.isArray(body.selections)||body.selections.length>20||body.selections.some(s=>!s||typeof s.id!=='string'||s.id.length>100||!validQuantity(s.quantity))))throw new StoreError('Check your service selections.');
  }
 }
-export async function respondToShare(db,token,body,item=null){
+export async function respondToShare(db,token,body,item=null,{env,notify=notifyFormResponse}={}){
+ const deliver=async(owner,state,key)=>{if(!env)return;const sub=state.submissions.find(s=>s.key===key);if(sub)try{await notify(db,owner,sub.id,env);}catch{console.warn("Form notification could not be delivered; response remains saved.");}};
  for(let attempt=0;attempt<3;attempt++){
   const current=await resolveSharedResource(db,token,item),{state,link,owner,revision,portalContext}=current;
   if(link.entity==='portal')throw new StoreError('Choose an item in the client portal.',405);
   if(link.entity==='invoice')throw new StoreError('Invoices are read-only.',405);
   validateInput(body,link.entity);
   const key=`share:${link.id}:${(await hashRequest(portalContext?[portalContext.key,body.request_id]:body.request_id)).slice(0,32)}`,hash=await hashRequest(body),prior=await receiptFor(db,owner,key,hash);
-  if(prior)return {ok:prior.ok,message:prior.message,replayed:true};
+  if(prior){if(link.entity==='form')await deliver(owner,state,`${link.recordId}:${key}`);return {ok:prior.ok,message:prior.message,replayed:true};}
   if(portalContext&&link.entity==='form'&&portalFormResponse(state,portalContext.clientId,portalContext.assignmentId))throw new StoreError('This form has already been completed.',409);
   if(portalContext&&link.entity==='form'&&body.data.answers===undefined)throw new StoreError('Reload this form and complete its questions.');
   if(link.entity==='form'&&body.form_revision!==await hashRequest(clientProjection(state,link).data))throw new StoreError('This form has changed. Reload before submitting your request.',409);
@@ -98,12 +100,12 @@ export async function respondToShare(db,token,body,item=null){
   }
   const events=[];runWorkflows(next,before,e=>events.push(e));validateWorkspace(next,state);
   const result={ok:true,message:link.entity==='form'?'Your request has been received.':body.action==='decline'?'Document declined.':body.action==='sign'?'Document signed.':'Document accepted.'};
-  try{const saved=await commitWorkspace(db,owner,revision,next,key,hash,result,events);return {ok:saved.ok,message:saved.message};}catch(e){if(e.status!==409||attempt===2)throw e;}
+  try{const saved=await commitWorkspace(db,owner,revision,next,key,hash,result,events);if(link.entity==='form')await deliver(owner,next,`${link.recordId}:${key}`);return {ok:saved.ok,message:saved.message};}catch(e){if(e.status!==409||attempt===2)throw e;}
  }
 }
-export async function handleShared(request,db,token){try{
+export async function handleShared(request,db,token,env){try{
  const item=new URL(request.url).searchParams.get('item');
  if(request.method==='GET'){const {state,link,portalContext}=await resolveSharedResource(db,token,item);const result=clientProjection(state,link);if(link.entity==='form'){result.formRevision=await hashRequest(result.data);if(portalContext&&portalFormResponse(state,portalContext.clientId,portalContext.assignmentId)){result.actions=[];result.completed=true;}}if(portalContext)result.portal={title:state.clients.find(c=>c.id===portalContext.clientId).portal.title};return json(result);}
- if(request.method==='POST'){checkOrigin(request);const scope=await resolveSharedResource(db,token,item),limit=scope.link.entity==='form'?600000:20000;if(Number(request.headers.get('content-length'))>limit)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,limit),item));}
+ if(request.method==='POST'){checkOrigin(request);const scope=await resolveSharedResource(db,token,item),limit=scope.link.entity==='form'?600000:20000;if(Number(request.headers.get('content-length'))>limit)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,limit),item,{env}));}
  return json({error:'Method not allowed.'},405);
  }catch(e){return errorResponse(e);}}

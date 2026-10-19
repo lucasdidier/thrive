@@ -33,3 +33,15 @@ test('Nylas request options work in the hosting runtime and never follow redirec
  try{const result=await mf.dispatchFetch('http://localhost');assert.equal(result.status,200);assert.deepEqual(await result.json(),{redirect:'manual',method:'POST'});}finally{await mf.dispose();}
  for(const status of [301,302,303,307,308]){let calls=0;await assert.rejects(()=>nylasRequest(env,'/connect/token',{method:'POST',body:'{}'},async(url,options)=>{calls++;assert.equal(options.redirect,'manual');return new Response(null,{status,headers:{Location:'https://untrusted.example'}});}),/unexpected redirect/);assert.equal(calls,1);}
 });
+
+test('form notification delivery is owner-scoped, concurrent-safe, and never resends an uncertain delivery',async()=>{
+ const {sendNylasNotification}=await import('../server/nylas.mjs');
+ const {db}=await setup();let sends=0;const message={subject:'New response',body:'View in Thrive'};
+ const fake=async(url,opts)=>{const body=JSON.parse(opts.body);assert.equal(body.to[0].email,'account@example.com');assert.equal(body.is_plaintext,true);sends++;return response({data:{id:'notification-1'}});};
+ await Promise.all([sendNylasNotification(db,'alice',env,'sub-1','account@example.com',message,fake),sendNylasNotification(db,'alice',env,'sub-1','account@example.com',message,fake)]);
+ assert.equal(sends,1);assert.equal((await sendNylasNotification(db,'alice',env,'sub-1','account@example.com',message,fake)).status,'sent');
+ const fail=async()=>{sends++;throw Error('timeout');};
+ assert.equal((await sendNylasNotification(db,'alice',env,'sub-2','account@example.com',message,fail)).status,'unknown');
+ await sendNylasNotification(db,'alice',env,'sub-2','account@example.com',message,fail);assert.equal(sends,2);
+ assert.equal((await sendNylasNotification(db,'bob',env,'sub-1','other@example.com',message,fake)).status,'failed');assert.equal(sends,2);db.close();
+});

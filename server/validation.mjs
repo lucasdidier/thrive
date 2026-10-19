@@ -13,6 +13,7 @@ export function validateWorkspace(s,old){
  validateShareLinks(s,old);
  if(!s||typeof s!=='object'||s.workspaceSchema!==3||!s.settings||typeof s.settings.business!=='string'||typeof s.settings.name!=='string')throw Error('Invalid workspace data.');
  validateCurrency(s,old);validateOnboarding(s);
+ if(s.settings.formEmailNotifications!==undefined&&typeof s.settings.formEmailNotifications!=='boolean')throw Error('Invalid form notification setting.');
  for(const key of ['clients','projects','documents','forms','submissions','invoices','time','activity','workflows']){if(!Array.isArray(s[key]))throw Error(`Missing workspace collection: ${key}.`);const ids=new Set();for(const r of s[key]){if(!r||typeof r.id!=='string'||ids.has(r.id))throw Error(`Invalid or duplicate ${key} record.`);ids.add(r.id);}}
  for(const c of s.clients){if(c.type!==undefined&&!['company','individual'].includes(c.type))throw Error('Invalid client type.');if(c.logo!==undefined&&(typeof c.logo!=='string'||c.logo.length>150000||(c.logo&&!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(c.logo))))throw Error('Invalid client logo.');}
  for(const m of s.scheduling?.meetings||[])if(m.projectId&&!s.projects.some(p=>p.id===m.projectId&&p.clientId===m.clientId))throw Error('Invalid meeting project.');
