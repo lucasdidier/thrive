@@ -1,5 +1,5 @@
 import {validateWorkspaceFiles} from '../../../server/form-files.mjs';
-import {validateGoogleBookings,validateCommunicationChanges} from '../../../server/google.mjs';
+import {validateGoogleBookings,validateCommunicationChanges} from '../../../server/communication-provider.mjs';
 import {env} from 'cloudflare:workers';
 import {withRuntime} from '../../../server/runtime.mjs';
 import {accountsEnabled} from '../../../server/auth.mjs';

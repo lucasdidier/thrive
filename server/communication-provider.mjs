@@ -1,0 +1,14 @@
+import * as google from './google.mjs';
+import * as nylas from './nylas.mjs';
+export {listConversations,updateConversation,validateCommunicationChanges} from './google.mjs';
+export const usesNylas=env=>env.THRIVE_COMMUNICATIONS_PROVIDER==='nylas'||!!env.NYLAS_CLIENT_ID;
+export const googleStatus=(db,owner,env)=>usesNylas(env)?nylas.nylasStatus(db,owner,env):google.googleStatus(db,owner,env);
+export const startGoogleOAuth=(db,owner,env,mode,fetcher,returnTo,provider)=>usesNylas(env)?nylas.startNylasOAuth(db,owner,env,mode,fetcher,returnTo,provider):google.startGoogleOAuth(db,owner,env,mode,fetcher);
+export const disconnectGoogle=(db,owner,env,fetcher)=>usesNylas(env)?nylas.disconnectNylas(db,owner,env,fetcher):google.disconnectGoogle(db,owner,env,fetcher);
+export const syncGmail=(db,owner,env,fetcher)=>usesNylas(env)?nylas.syncNylas(db,owner,env,fetcher):google.syncGmail(db,owner,env,fetcher);
+export const sendEmail=(db,owner,env,id,hash,fetcher)=>usesNylas(env)?nylas.sendNylasEmail(db,owner,env,id,hash,fetcher):google.sendEmail(db,owner,env,id,hash,fetcher);
+export const checkEmailDelivery=(db,owner,env,id,fetcher)=>usesNylas(env)?nylas.checkNylasDelivery(db,owner,env,id,fetcher):google.checkEmailDelivery(db,owner,env,id,fetcher);
+export const calendarBusy=(db,owner,env,start,end,fetcher)=>usesNylas(env)?nylas.nylasBusy(db,owner,env,start,end,fetcher):google.calendarBusy(db,owner,env,start,end,fetcher);
+export const createCalendarEvent=(db,owner,env,id,hash,fetcher)=>usesNylas(env)?nylas.createNylasEvent(db,owner,env,id,hash,fetcher):google.createCalendarEvent(db,owner,env,id,hash,fetcher);
+export const validateGoogleBookings=(db,owner,env,before,after,fetcher)=>usesNylas(env)?nylas.validateNylasBookings(db,owner,env,before,after,fetcher):google.validateGoogleBookings(db,owner,env,before,after,fetcher);
+export {checkNylasEvent,cancelNylasEvent} from './nylas.mjs';

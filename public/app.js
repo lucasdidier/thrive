@@ -93,7 +93,7 @@ const chatUI=createChatUI({getState:()=>state,render,save,toast,icon,esc,btn,ope
 const catalogUI=createCatalogUI({getState:()=>state,open,btn,icon,esc,dialog,save,render,toast});
 const billingUI=createBillingUI({getState:()=>state,open,btn,icon,esc,badge,date,dialog,save,render,toast});
 const timeUI=createTimeUI({bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
-const scheduleUI=createSchedulingUI({bulk,listView,calendarAvailability:messagesUI.calendarAvailability,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog,btn,icon,esc,badge,avatar});
+const scheduleUI=createSchedulingUI({bulk,listView,calendarAvailability:messagesUI.calendarAvailability,cancelCalendar:messagesUI.cancelCalendar,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog,btn,icon,esc,badge,avatar});
 const recordPanel=createRecordPanel({getState:()=>state,esc,icon,btn,avatar,save,render,toast,dialog,detail:(entity,id,opening=true)=>entity==='client'?crm.clientDetail(id,opening):journey.projectDetail(id,opening)});
 const customFields=createCustomFieldsUI({getState:()=>state,open,dialog,esc,icon,btn,save,render,toast,recordDetail:(e,id)=>e==='client'?crm.clientDetail(id):journey.projectDetail(id),refresh:()=>recordPanel.refresh(true),showColumn:(e,id)=>crm.showColumn(e,id)});
 const crm=createCRM({recordPanel,bulk,listView,communicationActions:messagesUI.contextActions,customFields,clientMeetings:scheduleUI.clientMeetings,getState:()=>state,getPage:()=>page,render,save,toast,open,dialog,icon,esc,badge,avatar,date,btn});
@@ -144,4 +144,4 @@ dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoun
 window.addEventListener('hashchange',()=>{recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();document.querySelector('#main').focus()});
 render();
 
-const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')){toast(googleResult.get('google_error')||'Google connected. Open Messages to refresh conversations.');history.replaceState(null,'',location.pathname+location.hash);}
+const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Messages to load client conversations.');history.replaceState(null,'',location.pathname+location.hash);}
