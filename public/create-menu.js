@@ -18,7 +18,7 @@ export function createMenu(icon) {
   return `<div class="create-menu-wrap">
     <button type="button" class="btn primary" id="create-trigger" popovertarget="create-menu" aria-haspopup="menu" aria-expanded="false">${icon('plus')}New${icon('down')}</button>
     <div id="create-menu" class="create-menu" popover="auto" role="menu" aria-label="Create new">
-      ${[['Client work',[0,1,11,12,2,3,4,10]],['Money',[5,6]],['Time',[7,8,9]]].map(([group,indices])=>`<div class="create-menu-group">${group}</div>${indices.map(i=>{const [label,symbol,action]=objects[i];return `<button type="button" class="crm-menu-item" role="menuitem" data-action="${action}">${icon(symbol)}<span>${label}</span></button>`;}).join('')}`).join('')}
+      ${[['Client work',[0,1,11,12,3,4,10]],['Money',[5,6]],['Time',[7,8,9]]].map(([group,indices])=>`<div class="create-menu-group">${group}</div>${indices.map(i=>{const [label,symbol,action]=objects[i];return `<button type="button" class="crm-menu-item" role="menuitem" data-action="${action}">${icon(symbol)}<span>${label}</span></button>`;}).join('')}`).join('')}
     </div>
   </div>`;
 }

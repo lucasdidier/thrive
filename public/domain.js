@@ -11,7 +11,7 @@ const get=(s,id)=>{const p=s.projects.find(p=>p.id===id);if(!p)throw Error('Proj
 const openProject=p=>{if(p.archived||p.status==='cancelled')throw Error('Restore or reopen the project first.');};
 const draftOnly=p=>{openProject(p);if(p.accepted)throw Error('Accepted commercial terms cannot be changed.');if(p.proposalStatus!=='draft')throw Error('Create a revision before editing published terms.');};
 const validDate=d=>!d||(/^\d{4}-\d{2}-\d{2}$/.test(d)&&!isNaN(new Date(d))&&new Date(d).toISOString().slice(0,10)===d);
-export function addActivity(s,text,detail,kind='project'){s.activity.unshift({id:uid(),text,detail,kind,createdAt:new Date().toISOString(),time:'Just now'});}
+export function addActivity(s,text,detail,kind='project',metadata={}){s.activity.unshift({...metadata,id:uid(),text,detail,kind,createdAt:new Date().toISOString(),time:'Just now'});}
 export function totals(s){return{paid:s.invoices.reduce((a,i)=>a+i.paid,0),outstanding:s.invoices.reduce((a,i)=>a+i.amount-i.paid,0),hours:s.time.filter(t=>!t.archived).reduce((a,t)=>a+t.hours,0),active:s.projects.filter(p=>!p.archived&&p.status==='active').length};}
 export function allocatePlan(budget,rules,phases){
  if(!Number.isSafeInteger(budget)||budget<1)throw Error('Enter a project fee greater than zero.');

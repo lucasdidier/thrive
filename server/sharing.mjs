@@ -1,3 +1,4 @@
+import {documentLabel} from '../public/document-labels.js';
 import {notifyFormResponse} from './form-notifications.mjs';
 import {portalProjection,portalEntry,portalFormResponse} from '../public/portal-domain.js';
 import {validateDocumentDesign,pricingVisible} from '../public/document-design.js';
@@ -96,10 +97,10 @@ export async function respondToShare(db,token,body,item=null,{env,notify=notifyF
    v.response={action:body.action,name:body.name.trim(),consent:body.consent===true,at,source:'client-link',linkId:link.id};
    if(body.action==='decline')v.declinedAt=at;
    if(body.action==='sign')v.signature={name:body.name.trim(),simulated:false};
-   const activity=next.activity.find(a=>a.text==='Document signed (demo)');if(activity&&body.action==='sign')activity.text='Document signed';
+   const activity=next.activity.find(a=>a.documentId===d.id&&a.text.endsWith(' signed (demo)'));if(activity&&body.action==='sign')activity.text=activity.text.replace(' (demo)','');
   }
   const events=[];runWorkflows(next,before,e=>events.push(e));validateWorkspace(next,state);
-  const result={ok:true,message:link.entity==='form'?'Your request has been received.':body.action==='decline'?'Document declined.':body.action==='sign'?'Document signed.':'Document accepted.'};
+  const result={ok:true,message:link.entity==='form'?'Your request has been received.':`${documentLabel(next.documents.find(d=>d.id===link.recordId))} ${body.action==='decline'?'declined':body.action==='sign'?'signed':'accepted'}.`};
   try{const saved=await commitWorkspace(db,owner,revision,next,key,hash,result,events);if(link.entity==='form')await deliver(owner,next,`${link.recordId}:${key}`);return {ok:saved.ok,message:saved.message};}catch(e){if(e.status!==409||attempt===2)throw e;}
  }
 }

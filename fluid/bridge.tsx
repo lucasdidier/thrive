@@ -537,7 +537,7 @@ export function initFluid(ctx: Context) {
         button.remove();
       };
       const items = [
-        ...["client", "project", "proposal", "contract", "document", "form"].map((kind) => ({
+        ...["client", "project", "proposal", "contract", "form"].map((kind) => ({
           value: "new-" + kind,
           label: "New " + kind,
           group: "Create",
@@ -552,7 +552,6 @@ export function initFluid(ctx: Context) {
           "projects",
           "time",
           "messages",
-          "documents",
           "forms",
           "scheduling",
           "invoices",
@@ -579,7 +578,7 @@ export function initFluid(ctx: Context) {
               .map((r: any) => ({
                 value: type + "-" + r.id,
                 label: r.name || r.title || r.number,
-                group: type[0].toUpperCase() + type.slice(1),
+                group: type === "documents" ? (r.kind === "proposal" ? "Proposals" : ["contract", "agreement"].includes(r.kind) ? "Contracts" : "Reference material") : type[0].toUpperCase() + type.slice(1),
                 onSelect: () =>
                   action(
                     (

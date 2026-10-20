@@ -1,3 +1,4 @@
+import {documentLabel} from './document-labels.js';
 import {formDesign} from './form-design.js';
 import {templateContent,defaultDocumentDesign,validateDocumentDesign,pricingVisible} from './document-design.js';
 import {hasTimePricing} from './pricing.js';
@@ -7,6 +8,7 @@ import {validateOffers,quoteOffers,applySelectionMode} from './services-domain.j
 const copy=x=>JSON.parse(JSON.stringify(x)), clean=x=>String(x??'').trim();
 export const responseLabels={acceptance:'Acceptance',signature:'Signature',none:'No response'};
 export const kindLabels={proposal:'Proposal',contract:'Contract',agreement:'Proposal + contract',document:'Document'};
+const documentActivity=(s,d,action)=>addActivity(s,`${documentLabel(d)} ${action}`,d.title,'document',{documentId:d.id,documentKind:d.kind});
 export const deliveryStatus=p=>['inquiry','proposal','declined'].includes(p.status)?'planned':p.status;
 const getDoc=(s,id)=>{const d=s.documents.find(d=>d.id===id);if(!d)throw Error('Document not found.');return d;};
 const getForm=(s,id)=>{const f=s.forms.find(f=>f.id===id);if(!f)throw Error('Form not found.');return f;};
@@ -31,7 +33,7 @@ export function createDocument(s,data){
  const phases=copy(p?.phases||s.settings.phases.map(name=>({id:uid(),name,done:false}))),budget=p?.budget||0;
  const d={id:uid(),currency:p?.currency||s.settings.currency||'USD',design,templateId:data.templateId||null,showPricing:data.showPricing??true,selectionMode:data.selectionMode||'advanced',title:clean(data.title)||starter.title||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance',clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document'&&data.showPricing!==false&&!['time-agreement','retainer'].includes(data.templateId),budget,phases,billingPlan:copy(p?.billingPlan||[]),scope:data.scope??p?.proposal??'',deliverables:data.deliverables||'',terms:data.terms||'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
  if(d.billing){p.billingDocumentId=d.id;if(budget&&!d.billingPlan.length)d.billingPlan=defaultPlan(budget,s.settings.deposit,phases);}
- s.documents.unshift(d);addActivity(s,'Document created',d.title,'document');return d;
+ s.documents.unshift(d);documentActivity(s,d,'created');return d;
 }
 export function saveDocument(s,id,data){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Create a revision before editing this document.');
@@ -49,14 +51,14 @@ export function saveDocument(s,id,data){
  if(quote)budget=quote.amount;
  Object.assign(d,{offers,showPricing,selectionMode,design,title,scope,kind,responseMode,billing,phases,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
  if(p){if(billing)p.billingDocumentId=id;else if(p.billingDocumentId===id)delete p.billingDocumentId;}
- addActivity(s,'Document draft saved',d.title,'document');return d;
+ documentActivity(s,d,'draft saved');return d;
 }
 export function publishDocument(s,id){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Only a draft can be published.');if(!d.title||!clean(d.scope))throw Error('Add document content first.');
  if(pricingVisible(d)&&d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none'&&d.offers.some(o=>o.mode!=='required'||o.min!==o.max))throw Error('Selectable services require a response.');}
  if(d.billing){if(!pricingVisible(d)||hasTimePricing(d.offers||[]))throw Error('Automatic project billing needs visible, fixed-fee pricing.');if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan,d.phases);}
  const v={...copy(d),versions:undefined,number:d.versions.length+1,client:copy(s.clients.find(c=>c.id===d.clientId)),business:s.settings.business,currency:s.projects.find(p=>p.id===d.projectId)?.currency||s.settings.currency||'USD',status:'published',createdAt:new Date().toISOString()};
- d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();addActivity(s,'Document published',d.title,'document');return v;
+ d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();documentActivity(s,d,'published');return v;
 }
 export function reviseDocument(s,id){const d=getDoc(s,id);ensureOpen(s,d);if(['accepted','signed'].includes(d.status))throw Error('Completed agreements cannot be revised in this prototype.');if(d.status==='draft')return d;d.versions.forEach(v=>{if(v.status==='published')v.status='superseded';});d.status='draft';d.currentVersion=null;return d;}
 export function deleteDocumentDraft(s,id){
@@ -65,13 +67,13 @@ export function deleteDocumentDraft(s,id){
  if(s.projects.some(p=>p.accepted&&p.billingDocumentId===id))throw Error('This document belongs to a completed billing agreement.');
  for(const p of s.projects)if(p.billingDocumentId===id)delete p.billingDocumentId;
  s.documents=s.documents.filter(d=>d.id!==id);
- addActivity(s,'Document draft deleted',d.title,'document');
+ documentActivity(s,d,'draft deleted');
 }
 export function respondDocument(s,id,number,action,signature={}){
  const d=getDoc(s,id);ensureOpen(s,d);const v=d.versions.find(v=>v.number===Number(number));if(!v||d.currentVersion!==v.number)throw Error('This document version is no longer available.');
  if(['accepted','signed'].includes(v.status)){if(action==='decline')throw Error('A completed document cannot be declined.');return d;}
  if(v.status!=='published'||v.responseMode==='none')throw Error('This document does not accept a response.');
- if(action==='decline'){v.status=d.status='declined';addActivity(s,'Document declined',d.title,'document');return d;}
+ if(action==='decline'){v.status=d.status='declined';documentActivity(s,d,'declined');return d;}
  if(!['accept','sign'].includes(action))throw Error('Invalid response.');
  if(v.responseMode==='signature'&&(action!=='sign'||!clean(signature.name)||!signature.consent))throw Error('Enter your full name and confirm the signature simulation.');
  if(v.responseMode==='acceptance'&&action!=='accept')throw Error('This document requires acceptance, not a signature.');
@@ -83,7 +85,7 @@ export function respondDocument(s,id,number,action,signature={}){
   acceptProposal(next,p.id,v.number);
  }
  nv.status=nd.status=v.responseMode==='signature'?'signed':'accepted';nv.completedAt=new Date().toISOString();nv.signature=v.responseMode==='signature'?{name:clean(signature.name),simulated:true}:null;nd.updatedAt=today();
- addActivity(next,v.responseMode==='signature'?'Document signed (demo)':'Document accepted',nd.title,'document');Object.assign(s,next);return getDoc(s,id);
+ documentActivity(next,nd,v.responseMode==='signature'?'signed (demo)':'accepted');Object.assign(s,next);return getDoc(s,id);
 }
 export function archiveDocument(s,id){const d=getDoc(s,id);d.archived=!d.archived;return d;}
 export function saveForm(s,data,id){
