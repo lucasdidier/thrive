@@ -1,1 +1,2 @@
-export const workspaceSections=[['overview','Home'],['clients','Clients'],['projects','Projects'],['time','Time'],['messages','Emails'],['documents','Documents'],['forms','Forms'],['scheduling','Scheduling'],['invoices','Invoices'],['workflows','Workflows']];
+export const sidebarGroups=[['Workspace',[['overview','Home'],['projects','Projects'],['clients','Clients']]],['Business',[['proposals','Proposals'],['contracts','Contracts'],['invoices','Invoices'],['documents','Documents']]],['Communication',[['messages','Emails'],['scheduling','Scheduling'],['time','Time']]],['Tools',[['forms','Forms'],['workflows','Workflows']]]];
+export const workspaceSections=sidebarGroups.flatMap(([,sections])=>sections);

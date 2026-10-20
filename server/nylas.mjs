@@ -69,3 +69,15 @@ export async function clientNylasEmails(db,owner,env,clientId,{cursor='',message
  const current=await nylasConnection(db,owner);if(current?.grant_id!==api.account.grant_id)throw new StoreError('The connected account changed. Refresh to continue.',409);
  return {...result,account:api.account.email,clientId:client.id};
 }
+
+// Read the connected primary calendar without importing private event details into workspace state.
+export async function listNylasEvents(db,owner,env,start,end,cursor,fetcher=fetch){
+ if(!Number.isFinite(Date.parse(start))||!Number.isFinite(Date.parse(end))||Date.parse(end)<=Date.parse(start)||Date.parse(end)-Date.parse(start)>32*86400000)throw new StoreError('Choose a calendar range of up to 32 days.');
+ if(cursor!=null&&(typeof cursor!=='string'||cursor.length>4096))throw new StoreError('Invalid calendar page.');
+ const api=await service(db,owner,env,'calendar',fetcher);
+ const query=new URLSearchParams({calendar_id:'primary',start:String(Math.floor(Date.parse(start)/1000)),end:String(Math.ceil(Date.parse(end)/1000)),limit:'100',show_cancelled:'false',expand_recurring:'true'});
+ if(cursor)query.set('page_token',cursor);
+ const r=await api.call('/events?'+query);
+ const events=list(r.data).filter(e=>e.status!=='cancelled').map(e=>{const w=e.when||{},allDay=!!(w.date||w.start_date);return {id:e.id,title:e.title||'Untitled event',location:e.location||'',allDay,start:allDay?w.date||w.start_date:new Date((w.start_time??w.time)*1000).toISOString(),end:allDay?w.end_date||w.date:new Date((w.end_time??w.time)*1000).toISOString()};});
+ return {events,nextCursor:r.next_cursor||null};
+}
