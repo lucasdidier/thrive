@@ -279,18 +279,28 @@ function Disclosure({
   initial: boolean;
 }) {
   const [value, setValue] = useState(initial ? "section" : "");
+  const [currentSummary, setCurrentSummary] = useState(
+    body.dataset.summary || summary,
+  );
   useEffect(() => {
     const invalid = () => setValue("section");
+    const observer = new MutationObserver(() =>
+      setCurrentSummary(body.dataset.summary || summary),
+    );
+    observer.observe(body, { attributes: true, attributeFilter: ["data-summary"] });
     body.addEventListener("invalid", invalid, true);
-    return () => body.removeEventListener("invalid", invalid, true);
-  }, [body]);
+    return () => {
+      observer.disconnect();
+      body.removeEventListener("invalid", invalid, true);
+    };
+  }, [body, summary]);
   return (
     <Accordion className="w-full" value={value} onValueChange={setValue}>
       <AccordionItem value="section">
         <AccordionTrigger>
           <span className="fluid-section-label">
             <span className="fluid-section-title">{title}</span>
-            <span className="fluid-section-summary">{summary}</span>
+            <span className="fluid-section-summary">{currentSummary}</span>
           </span>
         </AccordionTrigger>
         <AccordionContent>
