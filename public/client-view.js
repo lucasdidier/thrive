@@ -56,7 +56,7 @@ main.addEventListener('submit',async e=>{e.preventDefault();if(busy)return;const
 });
 main.addEventListener('click',async e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action==='retry-load'){await load();return;}if(action==='embed-close')notifyParent('close');if(action==='print')window.print();if(action==='download'){
  const button=e.target.closest('button');button.disabled=true;try{
-  const styles=await Promise.all(['/client-view.css','/invoice.css','/documents.css'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('Download unavailable.');return r.text();})));
+  const styles=await Promise.all(['/typography.css','/client-view.css','/invoice.css','/documents.css'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('Download unavailable.');return r.text();})));
   const paper=document.querySelector('#shared-paper').cloneNode(true);paper.querySelectorAll('input').forEach(i=>{const text=document.createElement('span');text.textContent=i.type==='checkbox'||i.type==='radio'?(i.checked?'✓':'—'):i.value;i.replaceWith(text);});
   const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:"><title>${esc(current.data.title||current.data.number)}</title><style>${styles.join('\n').replace(/@import[^;]+;/g,'')}</style></head><body><main>${paper.outerHTML}</main></body></html>`;
   const url=URL.createObjectURL(new Blob([html],{type:'text/html'})),a=document.createElement('a');a.href=url;a.download=(current.data.title||current.data.number||'document').replace(/[^\p{L}\p{N} _-]/gu,'').slice(0,100)+'.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);

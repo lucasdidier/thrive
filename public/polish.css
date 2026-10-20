@@ -1,5 +1,5 @@
 /* Native typography, restrained cobalt interactions, and shared workspace rhythm. */
-:root{--system-font:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-family:var(--system-font);--accent:#82aaff;--accent-text:#101e3b;--link:#91b4ff;--muted:#a5aab4;--faint:#9299a5;--focus:#82aaff}
+:root{font-family:var(--system-font);--accent:#82aaff;--accent-text:#101e3b;--link:#91b4ff;--muted:#a5aab4;--faint:#9299a5;--focus:#82aaff}
 :root[data-theme=light]{--accent:#2563eb;--accent-text:#fff;--link:#245fda;--muted:#606875;--faint:#727b89;--focus:#2563eb}
 body{font-size:12px;line-height:1.45}button,input,textarea,select,.fluid-ui,.inline-editor input,.inline-editor select{font-family:var(--system-font)}
 .page-heading h1,.dialog-body h1,.setup-intro h1,.settings-page h1,.onboarding-page h1,.invoice-total,.stat-value,.brand{font-family:var(--system-font);font-weight:600;letter-spacing:-.025em}

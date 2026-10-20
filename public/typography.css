@@ -1,0 +1,7 @@
+/* Shared by the workspace, account pages, client pages, and embed chrome. */
+:root,:host{
+ --system-font:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ --system-mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+ font-family:var(--system-font);
+}
+input::file-selector-button{font:inherit}

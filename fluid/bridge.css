@@ -7,7 +7,7 @@
   --primary-foreground: #fff;
   --destructive: #dc2626;
   --ring: var(--accent);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--system-font);
   font-optical-sizing: auto;
   color: var(--foreground);
   font-size: 13px;
@@ -143,13 +143,6 @@
 }
 .fluid-ui [data-base-ui-focus-guard] {
   padding: 0;
-}
-@font-face {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("/fonts/InterVariable.woff2") format("woff2");
 }
 .fluid-ui input[aria-hidden="true"] {
   display: none !important;

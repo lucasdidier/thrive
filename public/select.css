@@ -2,7 +2,7 @@
 .thrive-select{display:inline-flex;position:relative;min-width:0;max-width:100%;vertical-align:middle;flex-wrap:wrap}
 .thrive-select[hidden]{display:none!important}
 select.thrive-native-select{position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;opacity:0!important;clip-path:inset(50%);pointer-events:none}
-.thrive-select .thrive-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;min-width:0;min-height:35px;margin:0;padding:7px 10px;border:1px solid var(--line,#e5e5e5);border-radius:5px;background:var(--input,var(--card,#fff));color:var(--text,#252525);font:400 12px/1.45 'DM Sans',sans-serif;text-align:left;cursor:pointer;box-shadow:0 1px 2px #00000005;transition:border-color .12s,background .12s}
+.thrive-select .thrive-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;min-width:0;min-height:35px;margin:0;padding:7px 10px;border:1px solid var(--line,#e5e5e5);border-radius:5px;background:var(--input,var(--card,#fff));color:var(--text,#252525);font:400 12px/1.45 var(--system-font);text-align:left;cursor:pointer;box-shadow:0 1px 2px #00000005;transition:border-color .12s,background .12s}
 .thrive-select-trigger:hover:not(:disabled){border-color:var(--faint,#888);background:var(--card,#fff)}
 .thrive-select-trigger[aria-expanded=true]{background:var(--card,#fff);border-color:var(--muted,#777)}
 .thrive-select-trigger:focus-visible{outline:2px solid var(--accent,#42685b);outline-offset:2px}
@@ -16,7 +16,7 @@ select.thrive-native-select{position:absolute!important;width:1px!important;heig
 .crm-popover .thrive-select-trigger,.time-filters .thrive-select-trigger,.messages-filters .thrive-select-trigger{min-height:30px;padding:5px 9px;font-size:12px}
 .fb-add>.thrive-select{flex:1}.messages-toolbar .thrive-select,.message-relations .thrive-select{max-width:180px}.schedule-filter .thrive-select{max-width:130px}
 .time-filters .thrive-select{min-width:145px;max-width:240px}
-.thrive-select-popover{position:fixed;inset:auto;margin:0;padding:4px;border:1px solid var(--line,#e5e5e5);border-radius:7px;background:var(--card,#fff);color:var(--text,#252525);font:400 12px/1.45 'DM Sans',sans-serif;box-shadow:0 6px 24px #0002,0 1px 3px #0002;overflow:hidden;box-sizing:border-box;z-index:1000}
+.thrive-select-popover{position:fixed;inset:auto;margin:0;padding:4px;border:1px solid var(--line,#e5e5e5);border-radius:7px;background:var(--card,#fff);color:var(--text,#252525);font:400 12px/1.45 var(--system-font);box-shadow:0 6px 24px #0002,0 1px 3px #0002;overflow:hidden;box-sizing:border-box;z-index:1000}
 .thrive-select-popover:popover-open{display:flex;flex-direction:column}
 .thrive-select-popover::backdrop{background:transparent}
 .thrive-select-search{display:flex;align-items:center;gap:8px;flex:none;border-bottom:1px solid var(--line,#e5e5e5);padding:5px 7px 9px;margin:0 -4px 4px;color:var(--muted,#777)}
