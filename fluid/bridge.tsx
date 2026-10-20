@@ -324,6 +324,7 @@ function Color({
       hideAlpha
       value={value}
       triggerLabel={labelFor(source)}
+      triggerClassName={source.closest(".settings-page") ? "settings-color-trigger" : undefined}
       format="hex"
       swatches={[
         "#3f6236",
