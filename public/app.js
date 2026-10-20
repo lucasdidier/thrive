@@ -1,3 +1,4 @@
+import {displayInitials} from './attention-domain.js';
 import {documentLabel} from './document-labels.js';
 import {icon} from './app-icons.js';
 import {initSidebarUI} from './sidebar-ui.js';
@@ -61,7 +62,7 @@ function save(){return workspaceSync.save();}
 function toast(text){const el=document.querySelector('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3500)}
 function btn(text,action,extra='',cls=''){return `<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`}
 const badge=status=>`<span class="badge ${status.replaceAll(' ','-')}"><i></i>${esc(status)}</span>`;
-const avatar=c=>`<span class="avatar ${c?.color||'sage'}">${c?.logo&&/^data:image\/(png|jpeg|webp);base64,/.test(c.logo)?`<img src="${esc(c.logo)}" alt="">`:esc(c?.initials||'?')}</span>`;
+const avatar=c=>`<span class="avatar ${c?.color||'sage'}">${c?.logo&&/^data:image\/(png|jpeg|webp);base64,/.test(c.logo)?`<img src="${esc(c.logo)}" alt="">`:esc(displayInitials(c))}</span>`;
 const date=s=>s?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'No date';
 function go(p){if(page===p){filter='all';query='';render()}else location.hash=p}
 function open(title,html,{drawer=!/[?]$|^Approve milestone$|^Search workspace$/.test(title),footer=''}={}){if(settingsPage?.present(title,html,{footer}))return;dialog.className=drawer?'drawer':'';dialog.scrollTop=0;dialog.innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${title}</h2><button class="icon-btn" data-action="close" aria-label="Close dialog">${icon('close')}</button></div>${html}${footer?`<div class="dialog-footer">${footer}</div>`:''}`;if(!dialog.open)dialog.showModal();dialog.scrollTop=0}
@@ -125,7 +126,7 @@ document.addEventListener('click',e=>{
  const el=e.target.closest('[data-action]');if(!el){listView.outsideClick(e);crm.outsideClick(e);return;}const a=el.dataset.action,id=el.dataset.id;
  try{
  if(a==='ci-done'&&page==='onboarding'){dialog.close();render();return;}
- if(notificationsUI.click(a)||settingsPage.click(a,el)||settingsUI.click(a,el)||onboardingUI.handleClick(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
+ if(notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||onboardingUI.handleClick(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
  if(a==='signout'){if(workspaceSync.isPending())throw Error('Finish syncing your changes before signing out.');signOut().catch(err=>toast(err.message));return;}
  if(account.enabled&&['reset-preview','reset-data'].includes(a))throw Error('Sample data reset is only available in the demo.');
  if(a==='close')dialog.close();
