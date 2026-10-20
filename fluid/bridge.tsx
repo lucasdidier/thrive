@@ -42,7 +42,7 @@ function mount(host: HTMLElement, element: React.ReactNode) {
   const root = createRoot(host);
   roots.set(host, root);
   root.render(
-    <FluidProvider shape="rounded" size="default" icons={untitleduiIcons}>
+    <FluidProvider shape="rounded" size="compact" icons={untitleduiIcons}>
       {element}
     </FluidProvider>,
   );
@@ -527,7 +527,7 @@ export function initFluid(ctx: Context) {
         button.remove();
       };
       const items = [
-        ...["client", "project", "document", "form"].map((kind) => ({
+        ...["client", "project", "proposal", "contract", "document", "form"].map((kind) => ({
           value: "new-" + kind,
           label: "New " + kind,
           group: "Create",
@@ -535,6 +535,9 @@ export function initFluid(ctx: Context) {
         })),
         ...[
           "overview",
+          "notifications",
+          "proposals",
+          "contracts",
           "clients",
           "projects",
           "time",
@@ -549,7 +552,7 @@ export function initFluid(ctx: Context) {
           label:
             page === "overview"
               ? "Home"
-              : page[0].toUpperCase() + page.slice(1),
+              : page === "messages" ? "Emails" : page[0].toUpperCase() + page.slice(1),
           group: "Navigate",
           onSelect: () => action("navigate", undefined, page),
         })),
