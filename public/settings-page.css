@@ -38,3 +38,14 @@ body:has(.page-heading h1) .topbar-title h1,body:has(.settings-page) .topbar-tit
 .project-page .record-property{grid-template-columns:90px minmax(0,1fr);gap:10px}.project-page .record-property .editable-cell>span,.project-page .record-property .relation-pill{white-space:normal;overflow-wrap:anywhere}.project-page .record-relation{flex-wrap:wrap}.project-page .record-identity-text>span{display:none}.project-page .page-heading>div:first-child{min-width:0}.project-page .page-heading h1{overflow-wrap:anywhere}
 
 .nav-label{display:flex;align-items:center;justify-content:space-between}.nav-label>a{display:grid;place-items:center;width:24px;height:24px;border-radius:4px}.nav-label>a:hover{background:var(--hover)}.nav-label>a svg{width:13px;height:13px}
+
+/* Compact, connected history shared by client activity and notifications. */
+.timeline-event{position:relative;display:grid;grid-template-columns:21px minmax(0,1fr) auto;column-gap:10px;align-items:start;padding:10px 0;border:0;min-height:58px}
+.timeline-event:not(:last-child)::after{content:"";position:absolute;left:10px;top:33px;bottom:-8px;width:1px;background:var(--line);pointer-events:none}
+.timeline-event>.timeline-marker{position:relative;width:21px;height:21px;display:grid;place-items:center;border-radius:50%;background:var(--hover);color:var(--faint)}
+.timeline-event .timeline-marker svg{width:9.75px;height:9.75px}
+.timeline-event .timeline-content{min-width:0;padding-top:1px}.timeline-event .timeline-content strong{display:block;font-size:12px;font-weight:500;line-height:19px;overflow-wrap:anywhere}
+.timeline-event .timeline-content p{font-size:12px;line-height:18px;color:var(--muted);margin:2px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.timeline-event .timeline-content p:empty{display:none}
+.timeline-event>time{justify-self:end;text-align:right;white-space:nowrap;font-size:10px;color:var(--faint);line-height:21px;padding-left:6px}
+.timeline-marker.is-unread::after{content:"";position:absolute;top:0;right:0;width:5px;height:5px;background:var(--accent);border:1px solid var(--bg);border-radius:50%}
+@media(max-width:450px){.timeline-event{column-gap:8px}.timeline-event>time{max-width:85px;white-space:normal}}
