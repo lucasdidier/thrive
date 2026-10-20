@@ -131,6 +131,7 @@
   width: 100%;
 }
 .field .fluid-ui input[role="combobox"] {
+  margin: 0;
   border: 0;
   background: transparent;
   padding: 0;

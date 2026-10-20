@@ -6,3 +6,10 @@
 @media print{body:has(.invoice-preview-dialog[open]) .invoice-sheet{margin:0!important;border:0;box-shadow:none;min-height:0;width:100%;font-size:12px;print-color-adjust:exact;-webkit-print-color-adjust:exact}.invoice-preview-dialog .invoice-sheet footer small{display:none}.invoice-sheet .sheet-header,.sheet-meta,.sheet-totals,.sheet-bottom section,.invoice-sheet tr{break-inside:avoid}.sheet-lines thead{display:table-header-group}.invoice-sheet{overflow:visible}.template-outline{outline:none}.template-rail{border-left:12px solid var(--invoice-accent)!important}}
 
 @media(min-width:1001px){.invoice-preview-pane{position:sticky;top:68px;align-self:start;max-height:calc(100vh - 170px);overflow:auto}}
+
+/* The invoice editor lives in a drawer, so layout follows its width. */
+dialog.drawer.invoice-workbench-dialog{width:min(1320px,100vw);max-width:100vw;container-type:inline-size}
+.invoice-workbench{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}
+.invoice-preview-pane{min-width:0}.invoice-editor-controls .field-row{grid-template-columns:repeat(2,minmax(0,1fr))}.invoice-editor-controls .field{min-width:0}
+@container(max-width:900px){.invoice-workbench{grid-template-columns:minmax(0,1fr)}.invoice-editor-controls{border-right:0}.invoice-preview-pane{border-top:1px solid var(--line)}}
+@container(max-width:500px){.invoice-editor-controls .field-row{grid-template-columns:minmax(0,1fr)}.invoice-item-edit{grid-template-columns:minmax(0,1fr) 85px 36px}.invoice-item-edit .item-description{grid-column:1/-1}.invoice-editor-controls,.invoice-preview-pane{padding:16px}.sheet-header,.sheet-meta{gap:12px;flex-wrap:wrap}.invoice-sheet{padding:18px}.sheet-lines{table-layout:fixed;width:100%}.sheet-lines th,.sheet-lines td{white-space:normal;overflow-wrap:anywhere;padding-inline:4px}}

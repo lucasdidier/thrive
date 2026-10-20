@@ -1,0 +1,1 @@
+export const workspaceSections=[['overview','Home'],['clients','Clients'],['projects','Projects'],['time','Time'],['messages','Messages'],['documents','Documents'],['forms','Forms'],['scheduling','Scheduling'],['invoices','Invoices'],['workflows','Workflows']];

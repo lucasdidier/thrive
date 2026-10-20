@@ -1,4 +1,4 @@
-.settings-main{padding:0!important;overflow:hidden!important;min-height:0}
+.settings-main{max-width:none;width:100%;margin:0;padding:0!important;overflow:hidden!important;min-height:0}
 .settings-page{display:grid;grid-template-columns:240px minmax(0,1fr);height:100%;min-height:calc(100dvh - 60px);background:var(--bg)}
 .settings-navigation{border-right:1px solid var(--line);padding:24px 14px;background:var(--card);overflow-y:auto;height:calc(100dvh - 60px);position:sticky;top:0}
 .settings-navigation>h2{font-size:16px;margin:0 12px 18px;font-weight:600}
@@ -36,3 +36,5 @@ body:has(.page-heading h1) .topbar-title h1,body:has(.settings-page) .topbar-tit
 .date-picker{position:fixed;inset:auto;margin:0;width:300px;max-width:calc(100vw - 16px);padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);box-shadow:var(--shadow)}.date-picker header,.date-picker footer{display:flex;justify-content:space-between;align-items:center;gap:8px}.date-picker button{min-width:36px;min-height:36px;border-radius:6px}.date-picker button:hover,.date-picker [aria-pressed=true]{background:var(--hover)}.date-picker-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px;margin:12px 0}.date-picker-grid>span{font-size:12px;color:var(--muted)}input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
 @media(min-width:851px){.project-page .record-detail-layout{grid-template-columns:320px minmax(0,1fr)}}
 .project-page .record-property{grid-template-columns:90px minmax(0,1fr);gap:10px}.project-page .record-property .editable-cell>span,.project-page .record-property .relation-pill{white-space:normal;overflow-wrap:anywhere}.project-page .record-relation{flex-wrap:wrap}.project-page .record-identity-text>span{display:none}.project-page .page-heading>div:first-child{min-width:0}.project-page .page-heading h1{overflow-wrap:anywhere}
+
+.nav-label{display:flex;align-items:center;justify-content:space-between}.nav-label>a{display:grid;place-items:center;width:24px;height:24px;border-radius:4px}.nav-label>a:hover{background:var(--hover)}.nav-label>a svg{width:13px;height:13px}
