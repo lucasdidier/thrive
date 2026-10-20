@@ -26,7 +26,10 @@ export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
   const invalid=[...form.elements].find(el=>el.willValidate&&!el.validity.valid&&(all||panels[current].contains(el)));
   if(!invalid)return true;
   const i=panels.findIndex(p=>p.contains(invalid));if(i>=0)show(i);
-  for(let parent=invalid.parentElement;parent&&parent!==form;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
+  for(let parent=invalid.parentElement;parent&&parent!==form;parent=parent.parentElement){
+   if(parent.tagName==='DETAILS')parent.open=true;
+   if(parent.classList.contains('line-item-options')){parent.hidden=false;parent.parentElement.querySelector('.line-more')?.setAttribute('aria-expanded','true');}
+  }
   invalid.reportValidity();
   const label=invalid.getAttribute('aria-label')||[...(invalid.labels?.[0]?.childNodes||[])].filter(n=>n.nodeType===3).map(n=>n.textContent.trim()).filter(Boolean).join(' ')||'This field';
   if(error)error.textContent=`${label}: ${invalid.validationMessage}`;

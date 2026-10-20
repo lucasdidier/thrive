@@ -48,7 +48,7 @@ export function clientProjection(state,link){
  }
  if(link.entity==='invoice'){
   const data=pick(record,['currency','number','business','clientName','clientEmail','billingAddress','projectName','issued','due','amount','paid','subtotal','taxRate','taxAmount','notes','paymentInstructions','kind','label']);
-  data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>({...pick(i,['description','quantity','rate','amount','billingModel','unit']),...(i.timeSources?{durationMinutes:i.timeSources.reduce((n,x)=>n+x.minutes,0)}:{})}));
+  data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>({...pick(i,['description','details','quantity','rate','amount','billingModel','unit']),...(i.timeSources?{durationMinutes:i.timeSources.reduce((n,x)=>n+x.minutes,0)}:{})}));
   data.design=pick(record.design,['template','color','logo','issuerDetails','footer']);
   return {entity:'invoice',data:{...data,status:invoiceStatus(record)},actions:[]};
  }
