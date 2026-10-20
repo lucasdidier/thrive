@@ -83,9 +83,25 @@ body{font-size:13px;line-height:1.5}
 .dash-widgets>.dash-card{min-height:212px;display:flex;flex-direction:column}
 .dash-add.btn{width:28px;min-height:28px;padding:5px;border-color:transparent;background:transparent;color:var(--muted)}
 .dash-add.btn:hover,.dash-add.btn:focus-visible{background:var(--hover);color:var(--text)}
-.dash-empty{flex:1;min-height:148px;padding:20px 16px 28px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px}
-.dash-empty p{margin:0;color:var(--muted);font-size:12px}
-.dash-empty .text-btn{border:0;background:transparent;padding:0;min-height:28px;font-size:12px;font-weight:500;box-shadow:none}
+/* Empty states share a clear hierarchy and the standard secondary button. */
+.dash-empty{flex:1;min-height:164px;padding:16px 20px 24px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:16px}
+.dash-empty-copy{max-width:310px}
+.dash-widgets .dash-empty{justify-content:flex-start;padding-top:20px}
+.dash-widgets .dash-empty-copy{min-height:64px}
+.dash-empty h3{margin:0 0 6px;color:var(--text);font-size:13px;font-weight:500;line-height:1.5}
+.dash-empty p{margin:0;color:var(--muted);font-size:12px;line-height:1.6;text-wrap:pretty}
+.dash-empty .btn{min-height:34px;padding:7px 12px;font-size:12px;line-height:18px}
+.dash-card:has(>.dash-empty) .dash-add{display:none}
+.dash-empty-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid var(--line);border-radius:10px;background:var(--hover);color:var(--muted)}
+.dash-empty-icon svg{width:18px;height:18px}
+.dash-calendar-empty:has(.dash-empty),.dash-activity-empty{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:22px 20px;text-align:center}
+.dash-calendar-empty .dash-empty,.dash-activity-empty .dash-empty{flex:none;min-height:0;align-items:center;padding:0;gap:16px}
+.dash-activity-feed:has(.dash-activity-empty),.dash-activity-feed:has(.dash-feed-status){display:flex;padding:0}
+.dash-feed-status{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:var(--muted);font-size:12px}
+.dash-feed-status p{margin:0}
+.dash-chart-caption{align-items:center;gap:12px}
+.dash-chart-caption .btn{font-size:11px;padding:6px 10px}
+
 .dash-metric{padding:16px}
 .dash-metric>span{font-size:12px}
 .dash-metric strong,.dash-time-total strong,.dash-form-total strong,.dash-invoice-total strong{font-variant-numeric:tabular-nums;letter-spacing:-.025em}
@@ -119,7 +135,7 @@ body{font-size:13px;line-height:1.5}
 .dash-activity-feed .timeline-content p{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dash-activity-feed .timeline-event{gap:12px;padding:12px 0}
 .dash-activity-feed .timeline-event time{flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums}
-.dash-activity-feed>.btn{border:0;padding-left:0;color:var(--link);background:transparent}
+.dash-activity-feed>.dash-activity-all{margin-top:8px;font-size:12px;min-height:34px}
 
 /* Contact inspector: predictable columns and no mid-address word wrapping. */
 .record-identity h1{font-family:var(--system-font);font-weight:600;line-height:1.3}

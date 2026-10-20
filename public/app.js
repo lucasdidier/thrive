@@ -107,7 +107,7 @@ const billingUI=createBillingUI({getState:()=>state,open,btn,icon,esc,badge,date
 const timeUI=createTimeUI({bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
 const scheduleUI=createSchedulingUI({getPage:()=>page,bulk,listView,calendarAvailability:messagesUI.calendarAvailability,cancelCalendar:messagesUI.cancelCalendar,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog:settingsSurface,btn,icon,esc,badge,avatar});
 const notificationsUI=createNotificationsUI({getState:()=>state,getPage:()=>page,render,save,open,btn,icon,esc,toast});
-const dashboard=createDashboard({recentActivity:()=>notificationsUI.recent(),getState:()=>state,getPage:()=>page,render,icon,esc,btn});
+const dashboard=createDashboard({recentActivity:emptyHTML=>notificationsUI.recent(4,emptyHTML),getState:()=>state,getPage:()=>page,render,icon,esc,btn});
 const tagsUI=createTagsUI({getState:()=>state,esc,save,toast});
 const recordPanel=createRecordPanel({tags:tagsUI,getState:()=>state,esc,icon,btn,avatar,save,render,toast,dialog,detail:(entity,id,opening=true)=>entity==='client'?crm.clientDetail(id,opening):journey.projectDetail(id,opening)});
 const customFields=createCustomFieldsUI({getState:()=>state,open,dialog,esc,icon,btn,save,render,toast,recordDetail:(e,id)=>e==='client'?crm.clientDetail(id):journey.projectDetail(id),refresh:()=>recordPanel.refresh(true),showColumn:(e,id)=>crm.showColumn(e,id)});
