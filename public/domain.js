@@ -11,7 +11,7 @@ const get=(s,id)=>{const p=s.projects.find(p=>p.id===id);if(!p)throw Error('Proj
 const openProject=p=>{if(p.archived||p.status==='cancelled')throw Error('Restore or reopen the project first.');};
 const draftOnly=p=>{openProject(p);if(p.accepted)throw Error('Accepted commercial terms cannot be changed.');if(p.proposalStatus!=='draft')throw Error('Create a revision before editing published terms.');};
 const validDate=d=>!d||(/^\d{4}-\d{2}-\d{2}$/.test(d)&&!isNaN(new Date(d))&&new Date(d).toISOString().slice(0,10)===d);
-export function addActivity(s,text,detail,kind='project'){s.activity.unshift({id:uid(),text,detail,kind,time:'Just now'});}
+export function addActivity(s,text,detail,kind='project'){s.activity.unshift({id:uid(),text,detail,kind,createdAt:new Date().toISOString(),time:'Just now'});}
 export function totals(s){return{paid:s.invoices.reduce((a,i)=>a+i.paid,0),outstanding:s.invoices.reduce((a,i)=>a+i.amount-i.paid,0),hours:s.time.filter(t=>!t.archived).reduce((a,t)=>a+t.hours,0),active:s.projects.filter(p=>!p.archived&&p.status==='active').length};}
 export function allocatePlan(budget,rules,phases){
  if(!Number.isSafeInteger(budget)||budget<1)throw Error('Enter a project fee greater than zero.');
@@ -114,7 +114,7 @@ export function recordManualPayment(s,id,data,key){
  const p=i.projectId?get(s,i.projectId):null;initBilling(s);
  i.payments.push({id:key,amount,date,method,reference,recordedAt:new Date().toISOString()});i.paid+=amount;i.paidAt=i.payments.map(p=>p.date).filter(Boolean).sort().at(-1)||date;
  if(i.paid===i.amount&&i.kind==='deposit'&&p?.status==='awaiting deposit')p.status='active';
- addActivity(s,'Payment recorded',`${i.clientName||projectClient(s,p).name} · ${money(amount,i.currency||s.settings.currency||'USD')} · ${method}`,'payment');return true;
+ addActivity(s,i.paid>=i.amount?'Invoice paid':'Payment recorded',`${i.clientName||projectClient(s,p).name} · ${money(amount,i.currency||s.settings.currency||'USD')} · ${method}`,'payment');return true;
 }
 export function recordPayment(s,id){const i=s.invoices.find(i=>i.id===id);if(!i)throw Error('Invoice not found.');if(i.paid>=i.amount)return false;return recordManualPayment(s,id,{amount:i.amount-i.paid,date:today(),method:'Other',reference:''},`full-payment-${id}`);}
 
