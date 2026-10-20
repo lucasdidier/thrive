@@ -410,6 +410,7 @@ export function initFluid(ctx: Context) {
       if (handled.has(source)) return;
       handled.add(source);
       const host = after(source);
+      host.classList.add("fluid-tags");
       source.hidden = true;
       mount(
         host,

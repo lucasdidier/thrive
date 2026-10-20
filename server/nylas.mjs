@@ -22,7 +22,7 @@ export async function finishNylasOAuth(db,owner,env,params,fetcher=fetch){config
 async function service(db,owner,env,mode,fetcher){config(env);const account=await nylasConnection(db,owner);if(!account||!capabilities(account.provider,JSON.parse(account.scopes))[mode])throw new StoreError(`Connect ${mode==='gmail'?'email':'your calendar'} through Nylas first.`,409);return {account,call:(path,opts)=>nylasRequest(env,'/grants/'+encodeURIComponent(account.grant_id)+path,opts,fetcher)};}
 export async function disconnectNylas(db,owner,env,fetcher=fetch){const c=await nylasConnection(db,owner);if(c){try{await nylasRequest(env,'/grants/'+encodeURIComponent(c.grant_id),{method:'DELETE'},fetcher);}catch(e){if(e.providerStatus!==404)throw new StoreError('Nylas could not confirm disconnection. Your account is still linked; retry when available.',502);}}await db.batch([db.prepare('DELETE FROM nylas_connections WHERE owner_id=?').bind(owner),db.prepare('DELETE FROM nylas_oauth_states WHERE owner_id=?').bind(owner),db.prepare("DELETE FROM mail_threads WHERE owner_id=? AND id LIKE 'nylas:%'").bind(owner)]);return {disconnected:true,revoked:true};}
 const list=x=>Array.isArray(x)?x:[];
-const emails=m=>[...list(m.from),...list(m.to),...list(m.cc)].map(p=>String(p.email||'').toLowerCase());
+const emails=m=>[...list(m.from),...list(m.to),...list(m.cc),...list(m.bcc)].map(p=>String(p.email||'').toLowerCase());
 const addresses=x=>list(x).map(p=>p.name?`${p.name} <${p.email}>`:p.email).join(', ').slice(0,2000);
 export function plainBody(value){return String(value||'').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<(?:br|\/p|\/div)\s*\/?>/gi,'\n').replace(/<[^>]*>/g,'').replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').slice(0,30000);}
 export async function syncNylas(db,owner,env,fetcher=fetch){const {state}=await loadWorkspace(db,owner)||{};if(!state)throw new StoreError('Initialize your workspace first.',409);const api=await service(db,owner,env,'gmail',fetcher),clients=state.clients.filter(c=>!c.archived&&validEmail(c.email)),known=[...new Set(clients.map(c=>c.email.toLowerCase()))].slice(0,100),threads=new Map();for(let offset=0;offset<known.length&&threads.size<25;offset+=25){const q=new URLSearchParams({any_email:known.slice(offset,offset+25).join(','),received_after:String(Math.floor(Date.now()/1000)-90*86400),limit:'50'});const found=await api.call('/messages?'+q);for(const m of list(found.data)){if(!m.id||!m.thread_id||!emails(m).some(e=>known.includes(e)))continue;const id='nylas:'+m.thread_id;if(!threads.has(id)&&threads.size>=25)continue;if(!threads.has(id))threads.set(id,[]);threads.get(id).push(m);}}
@@ -53,4 +53,19 @@ export async function sendNylasNotification(db,owner,env,submissionId,to,message
   if(!sent?.id)throw Error('Missing delivery confirmation');
   return finish(db,owner,id,'sent',{...info,nylasMessageId:sent.id});
  }catch(e){return finish(db,owner,id,[400,401,403,404,422,429].includes(e.providerStatus)?'failed':'unknown',{...info,error:'Email delivery was not confirmed. The form response is saved in Thrive.'});}
+}
+
+// Read the connected mailbox directly for one owned client, with no date cutoff.
+export async function clientNylasEmails(db,owner,env,clientId,{cursor='',messageId=''}={},fetcher=fetch){
+ const {state}=await loadWorkspace(db,owner)||{},client=state?.clients?.find(c=>c.id===clientId);
+ if(!client)throw new StoreError('Client not found.',404);
+ if(!validEmail(client.email))throw new StoreError('Add a valid email address to this client.');
+ if(typeof cursor!=='string'||cursor.length>4000||typeof messageId!=='string'||messageId.length>2000)throw new StoreError('Invalid email page.');
+ const api=await service(db,owner,env,'gmail',fetcher),address=client.email.toLowerCase();
+ const normalize=m=>({id:m.id,subject:String(m.subject||'(No subject)').slice(0,2000),from:addresses(m.from),to:addresses(m.to),cc:addresses(m.cc),date:Number.isFinite(m.date)?new Date(m.date*1000).toISOString():'',body:plainBody(m.body||m.snippet),direction:list(m.from).some(p=>p.email?.toLowerCase()===api.account.email.toLowerCase())?'outgoing':'incoming'});
+ let result;
+ if(messageId){const r=await api.call('/messages/'+encodeURIComponent(messageId));if(!r.data?.id||!emails(r.data).includes(address))throw new StoreError('Email not found for this client.',404);result={message:normalize(r.data)};}
+ else{const query=new URLSearchParams({any_email:client.email,limit:'20',...(cursor?{page_token:cursor}:{})});const r=await api.call('/messages?'+query);result={messages:list(r.data).filter(m=>m.id&&!m.draft&&emails(m).includes(address)).map(normalize),nextCursor:r.next_cursor||null};}
+ const current=await nylasConnection(db,owner);if(current?.grant_id!==api.account.grant_id)throw new StoreError('The connected account changed. Refresh to continue.',409);
+ return {...result,account:api.account.email,clientId:client.id};
 }
