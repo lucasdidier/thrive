@@ -59,6 +59,14 @@ export function publishDocument(s,id){
  d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();addActivity(s,'Document published',d.title,'document');return v;
 }
 export function reviseDocument(s,id){const d=getDoc(s,id);ensureOpen(s,d);if(['accepted','signed'].includes(d.status))throw Error('Completed agreements cannot be revised in this prototype.');if(d.status==='draft')return d;d.versions.forEach(v=>{if(v.status==='published')v.status='superseded';});d.status='draft';d.currentVersion=null;return d;}
+export function deleteDocumentDraft(s,id){
+ const d=getDoc(s,id);
+ if(d.status!=='draft'||d.versions.length)throw Error('Published documents cannot be deleted. Archive the document to keep its history.');
+ if(s.projects.some(p=>p.accepted&&p.billingDocumentId===id))throw Error('This document belongs to a completed billing agreement.');
+ for(const p of s.projects)if(p.billingDocumentId===id)delete p.billingDocumentId;
+ s.documents=s.documents.filter(d=>d.id!==id);
+ addActivity(s,'Document draft deleted',d.title,'document');
+}
 export function respondDocument(s,id,number,action,signature={}){
  const d=getDoc(s,id);ensureOpen(s,d);const v=d.versions.find(v=>v.number===Number(number));if(!v||d.currentVersion!==v.number)throw Error('This document version is no longer available.');
  if(['accepted','signed'].includes(v.status)){if(action==='decline')throw Error('A completed document cannot be declined.');return d;}

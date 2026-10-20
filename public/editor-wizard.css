@@ -1,0 +1,72 @@
+.editor-wizard{display:flex;flex-direction:column;min-height:0}
+.editor-steps{display:flex;gap:8px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--card);flex-shrink:0}
+.editor-steps button{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;border:0;border-radius:6px;background:transparent;padding:8px;color:var(--muted);font:500 12px/18px var(--system-font);cursor:pointer}
+.editor-steps button:hover{background:var(--hover);color:var(--text)}
+.editor-steps button[aria-current]{color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 94%)}
+.editor-steps button>span{width:21px;height:21px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:11px}
+.editor-steps button[aria-current]>span{background:var(--accent);border-color:var(--accent);color:white}
+.editor-wizard [hidden]{display:none!important}
+.editor-wizard [data-editor-step]{outline:none;min-width:0}
+.editor-wizard [data-editor-step]>h3{font-size:16px;font-weight:600;margin:0 0 6px;color:var(--text)}
+.editor-wizard .step-intro{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 24px}
+.editor-wizard>.document-workbench,.editor-wizard>.invoice-workbench{flex:1;min-height:0;overflow:auto;align-items:start}
+.editor-wizard .document-controls,.editor-wizard .invoice-editor-controls{padding:24px;min-height:460px}
+.editor-wizard .document-live-pane,.editor-wizard .invoice-preview-pane{position:sticky;top:0;align-self:start;max-height:none;padding:24px;background:var(--bg)}
+.editor-wizard .dialog-footer{gap:8px;flex-shrink:0}
+.editor-progress{margin-right:auto;color:var(--muted);font-size:11px;white-space:nowrap}
+.editor-wizard .invoice-items-editor{border-top:0;margin-top:0;padding-top:0}
+.editor-wizard .invoice-items-editor>h3{display:none}
+.editor-wizard .invoice-template-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 24px}
+.editor-wizard .template-mini{height:76px}
+.editor-wizard .template-card{padding:9px}
+.editor-wizard .template-card strong{font-size:11px;margin-top:8px}
+.editor-wizard .template-card small{display:none}
+.editor-wizard .template-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.editor-wizard .design-adjustments{padding:16px 0;border-block:1px solid var(--line);margin:18px 0}
+.editor-wizard .design-adjustments>summary{font-size:12px;font-weight:500;cursor:pointer;color:var(--text)}
+.editor-wizard .design-adjustments>summary small{display:block;font-size:11px;color:var(--muted);font-weight:400;margin:5px 0 0 16px}
+.editor-wizard .design-adjustments[open]>summary{margin-bottom:20px}
+.editor-wizard .document-branding{margin:0;padding:0;border:0}
+.editor-wizard .invoice-brand-controls{border:0;padding:0}
+.editor-wizard .invoice-brand-controls>h3{display:none}
+.design-summary{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--hover);font-size:12px}
+.design-summary img{width:32px;height:32px;object-fit:contain}
+.design-summary>i{width:24px;height:24px;border-radius:50%;background:var(--invoice-accent);box-shadow:inset 0 0 0 1px #0001;flex-shrink:0}
+.design-summary small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+.editor-review{margin:20px 0}
+.editor-review>div{display:flex;justify-content:space-between;gap:24px;padding:14px 0;border-bottom:1px solid var(--line);font-size:12px}
+.editor-review dt{color:var(--muted);flex-shrink:0}
+.editor-review dd{text-align:right;margin:0;overflow-wrap:anywhere}
+.editor-review-note{padding:14px 16px;border-radius:8px;background:var(--hover);font-size:12px;line-height:1.65}
+.editor-review-note strong{display:block;margin-bottom:4px}
+.editor-wizard .response-picker{margin-top:24px}
+.editor-wizard .field input[type=color]{width:100%;height:36px;min-height:36px;padding:4px}
+.editor-wizard .field textarea[rows="2"]{min-height:72px}
+.record-actions-popover{position:fixed;inset:auto;margin:0;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);padding:6px;width:250px;max-width:calc(100vw - 24px);box-shadow:0 8px 30px #0002;z-index:100}
+.record-actions-popover button{display:flex;align-items:center;gap:10px;border:0;background:transparent;color:inherit;text-align:left;width:100%;padding:10px;border-radius:5px;font:inherit;font-size:12px;cursor:pointer}
+.record-actions-popover button:hover{background:var(--hover)}
+.record-actions-popover button svg{width:15px;height:15px}
+.record-actions-popover button.destructive{color:var(--danger,#b42318)}
+.record-actions-popover p{font-size:11px;line-height:1.5;color:var(--muted);padding:8px 10px;margin:3px 0;border-top:1px solid var(--line)}
+.record-list-actions{width:32px;height:32px;opacity:.65}
+tr:hover .record-list-actions,.record-list-actions:focus-visible,.record-list-actions[aria-expanded=true]{opacity:1}
+@media(max-width:1050px){
+ .editor-wizard:not([data-editor-last=true]) .document-live-pane,.editor-wizard:not([data-editor-last=true]) .invoice-preview-pane{display:none}
+ .editor-wizard .document-workbench,.editor-wizard .invoice-workbench{display:block}
+ .editor-wizard .document-live-pane,.editor-wizard .invoice-preview-pane{position:static}
+ .editor-wizard .document-controls,.editor-wizard .invoice-editor-controls{border-right:0;min-height:0}
+}
+@media(max-width:600px){
+ .editor-steps{padding:12px;gap:2px}
+ .editor-steps button{flex-direction:column;font-size:11px;gap:5px;padding:5px 3px}
+ .editor-wizard .document-controls,.editor-wizard .invoice-editor-controls{padding:20px 16px}
+ .editor-wizard .dialog-footer{padding:12px;flex-wrap:wrap}
+ .editor-progress{flex-basis:100%;font-size:10px}
+ .editor-wizard .invoice-template-grid{gap:8px}
+ .editor-wizard .document-live-pane,.editor-wizard .invoice-preview-pane{padding:12px}
+}
+
+.editor-wizard #offer-editor-list:not([data-selection-mode=advanced]) .offer-quantities .field:has([data-offer=min]),.editor-wizard #offer-editor-list:not([data-selection-mode=advanced]) .offer-quantities .field:has([data-offer=max]){display:none}
+.editor-wizard .offer-edit{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--card)}
+.editor-wizard .offer-edit .field-row:has([data-offer=mode]){grid-template-columns:minmax(0,1fr)}
+.editor-wizard .editor-section:first-child{margin-top:0;padding-top:0;border-top:0}
