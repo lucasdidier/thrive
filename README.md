@@ -4,7 +4,7 @@ A workspace for independent service businesses: clients, projects, proposals and
 
 This repository is for running **your own Thrive instance**. Bring your own hosting, database, and optional integrations. There is no shared hosted demo or connection to the author's accounts.
 
-> Early software: review and test it with your own data before relying on it for daily operations. This repository is private for now; an open-source license has not yet been selected. Third-party licenses are retained.
+> Early software: review and test it with your own data before relying on it for daily operations. Thrive is available under the [MIT license](LICENSE). Third-party licenses are retained.
 
 ## Choose your setup
 
@@ -40,7 +40,40 @@ Follow the [self-hosting guide](docs/self-hosting.md) for:
 4. Optionally connecting your own Nylas application for email, calendar, and booking pages.
 5. Verifying access control, backups, and the features you enable.
 
-The [coding-agent setup prompt](docs/agent-setup.md) is ready to paste into your preferred coding agent.
+## Get started with a coding agent
+
+Copy this prompt into Codex, Claude Code, Cursor, GitHub Copilot, or another coding agent with terminal access. It works even if you haven't cloned the repository yet:
+
+```text
+Help me install and run Thrive from https://github.com/lucasdidier/thrive.
+
+Clone the repository into a new folder if it is not already checked out. Read
+README.md, docs/self-hosting.md, and docs/agent-setup.md, then follow the detailed
+setup prompt in docs/agent-setup.md.
+
+Start with the local-only preview unless I ask for a hosted deployment. Inspect
+my environment, use Node.js 22.13+ (24 recommended), install the locked dependencies,
+run the tests, build the app, and initialize a fresh local database if needed.
+Preserve any existing database and user changes. Start the preview on 127.0.0.1
+and give me its local URL. This preview needs no Supabase or Nylas account.
+
+If I request hosting, help me use my own Cloudflare Workers and Supabase project,
+with HTTPS and authentication. If I request email, calendar, or booking pages,
+help me configure my own Nylas application and connect my own mailbox/calendar.
+Follow the standalone deployment instructions; don't deploy the local mock auth.
+
+Ask only for missing decisions or account access when needed. Have me enter
+secrets through secure local prompts or provider settings, never in chat or
+tracked files. Don't overwrite existing data, send email, issue invitations,
+or publish a deployment/booking page without my authorization.
+
+Finish with the URL, what was verified, and any remaining setup steps. Do not
+claim that external integrations work unless you actually verified them.
+```
+
+For a hosted setup from the outset, add “Deploy to my Cloudflare account using my
+own Supabase project” to the prompt. The [detailed agent prompt](docs/agent-setup.md)
+includes preferences for your domain, account access, and optional integrations.
 
 ## What's included
 
@@ -77,6 +110,11 @@ npm run build:self-hosted
 
 Builds generate ignored `dist/` and `public/fluid/` assets. Keep dependency versions pinned through the committed lockfile. Read [historical feature notes](docs/feature-notes.md) for implementation detail; the setup guide takes precedence over old deployment notes.
 
-## Before sharing publicly
+## License and credentials
 
-Choose an open-source license and review the bundled third-party notices. Keeping a repository private does not make it open source. Never commit `.dev.vars`, `.env` files, service/API keys, workspace exports, real client information, share tokens, or local database state.
+Thrive is licensed under the [MIT license](LICENSE), copyright © 2026 Lucas Didier.
+Bundled third-party assets retain their own license notices.
+
+Never commit `.dev.vars`, `.env` files, service/API keys, workspace exports, real
+client information, share tokens, or local database state. See the
+[secret audit](docs/secret-audit.md) for the scope and results of the pre-publication check.

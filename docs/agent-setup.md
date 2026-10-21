@@ -3,7 +3,8 @@
 Copy the block below into your coding agent while working in this repository. Replace the bracketed preferences. Use your own accounts, not the author's deployment.
 
 ```text
-Help me set up my own Thrive instance from this repository.
+Help me set up my own Thrive instance from https://github.com/lucasdidier/thrive.
+Clone into a new directory if needed; preserve any existing checkout and data.
 
 My target: [local preview / Cloudflare Workers with Supabase]
 My domain: [my HTTPS domain / use my workers.dev domain]
