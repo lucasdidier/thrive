@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "thrive-self-hosted",
+  "main": "build/self-hosted-worker.ts",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "vars": {
+    "THRIVE_AUTH_MODE": "supabase",
+    "THRIVE_DATA_BACKEND": "supabase",
+    "THRIVE_APP_URL": "https://thrive.example.com",
+    "SUPABASE_URL": "https://your-project.supabase.co",
+    "THRIVE_GOOGLE_LOGIN": "false",
+    "THRIVE_MICROSOFT_LOGIN": "false",
+    "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
+    "NYLAS_REGION": "eu",
+    "NYLAS_ENVIRONMENT": "sandbox",
+    "NYLAS_REDIRECT_URI": "https://thrive.example.com/api/nylas/callback"
+  }
+}

@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {activityFeed,isRead,activityKey,timelineHTML} from '../public/activity-feed.js';
+import {appendMissingActivity} from '../public/activity-audit.js';
+import {documentActivityPresentation} from '../public/document-labels.js';
+import {seed} from '../public/domain.js';
+import {upgradeWorkspace,createDocument,publishDocument,respondDocument,deleteDocumentDraft} from '../public/workspace-domain.js';
+import {crmRecords} from '../public/crm-domain.js';
+import {workspaceSections} from '../public/sidebar-sections.js';
+const state=()=>({activity:[],settings:{},clients:[],documents:[],crm:{notes:[]}});
+test('notifications contain attention updates, not manual edits or email drafts',()=>{const s=state();s.activity=['Invoice paid','Meeting booked','Form submitted','Document accepted','Document signed','Client created','Client updated','Document draft saved','Workspace settings updated','Email draft created','Project created'].map((text,i)=>({id:String(i),text,kind:text.startsWith('Email')?'mail':'project'}));assert.deepEqual(activityFeed(s,[],true).map(n=>n.text),s.activity.slice(0,5).map(n=>n.text));assert.equal(activityFeed(s).length,11);});
+test('only explicitly flagged latest replies notify; imported history and sent mail stay in activity',()=>{const s=state(),threads=[{id:'thread',messages:[{id:'1',direction:'outgoing',date:'2026-10-20T11:00:00Z'},{id:'2',direction:'incoming',date:'2026-10-20T12:00:00Z',subject:'Reply'}]}];assert.equal(activityFeed(s,threads,true).length,0);s.settings.emailFollowUps={thread:{messageId:'2',status:'reply'}};const rows=activityFeed(s,threads,true);assert.equal(rows.length,1);assert.equal(rows[0].text,'Needs reply');s.settings.readNotifications=[activityKey(rows[0])];assert.equal(isRead(s,activityFeed(s,threads,true)[0]),true);threads[0].messages.push({id:'3',direction:'incoming',date:'2026-10-20T13:00:00Z'});assert.equal(activityFeed(s,threads,true).length,0);assert.equal(activityFeed(s,threads).length,3);s.settings.emailFollowUps.thread={messageId:'3',status:'reply'};assert.equal(isRead(s,activityFeed(s,threads,true)[0]),false);});
+test('legacy read markers are preserved and shared timeline escapes content',()=>{const s=state(),n={id:'a',text:'<bad>',detail:'<script>',time:'Today'};s.settings.readNotifications=[JSON.stringify([n.text,n.detail,n.time])];assert.ok(isRead(s,n));const html=timelineHTML([n],{state:s,esc:v=>String(v||'').replaceAll('<','&lt;'),icon:()=>'',notifications:true});assert.ok(html.includes('timeline-marker'));assert.ok(html.includes('&lt;script>'));assert.ok(!html.includes('is-unread'));});
+test('audit adds missing manual changes without duplicating existing domain events or read-state changes',()=>{const before=state();before.clients=[{id:'c',name:'Client'}];const after=structuredClone(before);after.clients[0].name='Renamed';after.settings.readNotifications=['a'];after.crm.notes=[{id:'n',body:'Private note',clientId:'c'}];appendMissingActivity(before,after,'2026-10-20T12:00:00Z');assert.equal(after.activity.length,2);assert.ok(after.activity.every(n=>n.createdAt==='2026-10-20T12:00:00Z'));assert.ok(!after.activity.some(n=>n.detail.includes('Private')));const next=structuredClone(after);next.settings.readNotifications.push('b');appendMissingActivity(after,next);assert.equal(next.activity.length,2);const changed=structuredClone(next);changed.clients[0].contact='New';changed.activity.unshift({id:'specific',text:'Client updated',detail:'Renamed',kind:'client'});appendMissingActivity(next,changed);assert.equal(changed.activity.length,3);});
+test('historic proposal and contract events render typed labels without changing read markers',()=>{
+ const s=state();s.documents=[{id:'p',kind:'proposal',title:'Scope',versions:[]},{id:'c',kind:'contract',title:'Renamed NDA',versions:[{title:'NDA'}]}];
+ const events=[{text:'Document accepted',detail:'Scope',time:'Today'},{id:'signed',text:'Document signed',detail:'NDA',time:'Today'}];
+ s.settings.readNotifications=events.map(activityKey);
+ const before=JSON.stringify(events);
+ const html=timelineHTML(events,{state:s,esc:String,icon:x=>`[${x}]`,notifications:true});
+ assert.match(html,/Proposal accepted/);assert.match(html,/Contract signed/);assert.match(html,/\[signature\]/);assert.doesNotMatch(html,/is-unread/);
+ assert.equal(JSON.stringify(events),before);
+ assert.equal(documentActivityPresentation(s,{text:'Client updated',detail:'Scope',kind:'client'}).kind,'client');
+ s.documents.push({id:'other',kind:'contract',title:'Scope'});
+ assert.equal(documentActivityPresentation(s,events[0]).text,'Document accepted');
+ assert.equal(documentActivityPresentation(s,{...events[0],documentId:'p'}).text,'Proposal accepted');
+});
+test('new events retain type and identity through deletion and notify for signatures',()=>{
+ const s=upgradeWorkspace(seed());s.activity=[];
+ const p=createDocument(s,{clientId:'c1',kind:'proposal',title:'A proposal'});deleteDocumentDraft(s,p.id);
+ assert.equal(s.activity[0].text,'Proposal draft deleted');assert.equal(s.activity[0].documentId,p.id);
+ const c=createDocument(s,{clientId:'c1',kind:'contract',title:'NDA',scope:'Confidentiality terms'});publishDocument(s,c.id);respondDocument(s,c.id,1,'sign',{name:'Client',consent:true});
+ assert.equal(s.activity[0].text,'Contract signed (demo)');assert.equal(s.activity[0].documentKind,'contract');
+ assert.ok(activityFeed(s,[],true).some(n=>n.text==='Contract signed (demo)'));
+});
+test('audit uses specific types for updates and deletions, and agreements remain in Contracts',()=>{
+ const before=state();before.documents=[{id:'c',kind:'contract',title:'NDA'}];
+ const after=structuredClone(before);after.documents[0].scope='Changed';appendMissingActivity(before,after);
+ assert.equal(after.activity[0].text,'Contract updated');assert.equal(after.activity[0].documentId,'c');
+ const removed=structuredClone(after);removed.documents=[];appendMissingActivity(after,removed);
+ assert.equal(removed.activity[0].text,'Contract deleted');assert.equal(removed.activity[0].documentKind,'contract');
+ const s=upgradeWorkspace(seed());const agreement=createDocument(s,{clientId:'c1',kind:'agreement',title:'Combined agreement'});
+ assert.ok(crmRecords(s,'contracts').some(r=>r.id===agreement.id));
+ assert.ok(!workspaceSections.some(([id])=>id==='documents'));
+});

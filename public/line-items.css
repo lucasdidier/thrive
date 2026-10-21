@@ -1,0 +1,49 @@
+.line-table-heading,.editor-wizard .line-item-row{display:grid;grid-template-columns:minmax(140px,1fr) 76px 52px 72px 28px;gap:10px;align-items:start}
+.line-table-heading{font-size:10px;font-weight:500;color:var(--muted);border-bottom:1px solid var(--line);padding:0 0 10px}
+.line-table-heading>span:not(:first-child){text-align:right}
+.editor-wizard .line-item-row{padding:16px 0;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}
+.editor-wizard .line-item-row input:not(.fluid-source),.editor-wizard .line-item-row textarea{font:400 12px/1.5 var(--system-font);color:var(--text);padding:6px 5px;border:1px solid transparent;background:transparent;border-radius:5px;box-shadow:none;outline:none;margin:0;width:100%;min-width:0}
+.editor-wizard .line-item-row input:not(.fluid-source):hover,.editor-wizard .line-item-row textarea:hover{background:var(--hover)}
+.editor-wizard .line-item-row input:not(.fluid-source):focus,.editor-wizard .line-item-row textarea:focus{background:var(--input);border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent),transparent 90%)}
+.editor-wizard .line-item-row input[aria-invalid=true]{border-color:var(--danger,#b42318)}
+.editor-wizard .line-item-row input[readonly]{color:var(--muted)}
+.editor-wizard .line-item-row .line-item-title>input{font-weight:500;padding-left:5px}
+.editor-wizard .line-item-row .line-item-title>textarea{font-size:11px;color:var(--muted);min-height:29px;height:auto;field-sizing:content;max-height:160px;resize:vertical}
+.line-item-title{min-width:0}
+.line-source-note{font-size:9px;color:var(--muted);display:block;line-height:1.5;padding:3px 5px 0}
+.line-source-note:empty{display:none}
+.line-number{min-width:0;text-align:right}
+.editor-wizard .line-number input{text-align:right;appearance:textfield}
+.line-number input::-webkit-inner-spin-button,.line-number input::-webkit-outer-spin-button{appearance:none;margin:0}
+.line-number small{display:block;color:var(--muted);font-size:9px;padding:2px 5px 0}
+.line-mobile-label{display:none}
+.line-item-total{text-align:right;font-size:12px;font-weight:600;line-height:18px;padding:7px 0;overflow-wrap:anywhere}
+.line-more{width:28px;height:30px;opacity:.6}
+.line-more:hover,.line-more:focus-visible,.line-more[aria-expanded=true]{opacity:1}
+.line-item-options{grid-column:1/-1;padding:14px 16px;background:var(--hover);border-radius:6px}
+.editor-wizard .line-item-options .field{margin-bottom:12px}
+.editor-wizard .line-item-options .field>input{border-color:var(--line);background:var(--input);height:36px}
+.line-option-actions{display:flex;justify-content:flex-end;gap:8px}
+.line-option-actions .destructive{color:var(--danger,#b42318)}
+#offer-editor-list:not([data-selection-mode=advanced]) .line-selection-settings{display:none}
+.invoice-items-editor>.btn,#document-pricing-fields>.btn{margin-top:12px}
+.service-suggestions{position:fixed;inset:auto;margin:0;padding:5px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);box-shadow:0 8px 28px #0002;max-height:300px;overflow-y:auto;font-family:var(--system-font);z-index:10}
+.service-suggestions [role=option]{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;padding:10px;border-radius:5px}
+.service-suggestions [role=option]:hover,.service-suggestions [aria-selected=true]{background:var(--hover)}
+.service-suggestions strong{font-size:12px;font-weight:500;overflow-wrap:anywhere}
+.service-suggestions small{font-size:10px;color:var(--muted);display:block;margin-top:3px}
+.service-option-rate{text-align:right;font-size:11px;white-space:nowrap}
+.service-create-option{display:flex;gap:10px;align-items:center;color:var(--accent)}
+.service-create-option>span:first-child{font-size:18px}
+.service-suggestions p{font-size:12px;color:var(--muted);margin:8px}
+.sheet-line-details{display:block;white-space:pre-wrap;color:#777;font-size:10px;line-height:1.6;margin-top:5px}
+@media(max-width:600px){
+ .line-table-heading{display:none}
+ .editor-wizard .line-item-row{grid-template-columns:minmax(0,1fr) 60px minmax(70px,1fr) 28px;gap:8px;padding:14px 0}
+ .line-item-title{grid-column:1/4;grid-row:1}
+ .line-more{grid-column:4;grid-row:1}
+ .line-number{grid-row:2}
+ .line-item-total{grid-column:3;grid-row:2;align-self:center}
+ .line-mobile-label{display:block;text-align:right;font-size:10px;color:var(--muted);padding:0 5px}
+ .line-item-options{grid-row:3}
+}

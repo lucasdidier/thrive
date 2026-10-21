@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {emptyWorkspace} from '../server/account-workspace.mjs';
+import {validateWorkspace} from '../server/validation.mjs';
+import {saveProjectSettings,saveClientSettings} from '../public/record-settings.js';
+import {createManualInvoice} from '../public/invoice-domain.js';
+import {moneyGroups} from '../public/currency.js';
+const fresh=()=>emptyWorkspace({name:'Alex',email:'alex@example.com'});
+const input={name:'Website',clientId:'__new',clientName:'Jo',clientEmail:'jo@example.com',clientType:'individual',budgetType:'none',phases:'Design\nBuild',hourlyRate:'',tags:['UX']};
+test('inline client and project creation is atomic, matches email, and persists options',()=>{const s=fresh();const before=JSON.stringify(s);assert.throws(()=>saveProjectSettings(s,{...input,name:''}));assert.equal(JSON.stringify(s),before);const p=saveProjectSettings(s,input);assert.equal(s.clients.length,1);assert.equal(p.needsPricing,true);assert.deepEqual(p.tags,['UX']);assert.equal(p.phases.length,2);assert.equal(p.hourlyRate,null);saveProjectSettings(s,{...input,clientEmail:'JO@example.com'});assert.equal(s.clients.length,1);validateWorkspace(s);});
+test('project currency and rate flow to invoices and become locked after billing',()=>{const s=fresh(),p=saveProjectSettings(s,{...input,currency:'EUR',hourlyRate:'95',budgetType:'fixed',budget:'1500'});assert.equal(p.hourlyRate,9500);const i=createManualInvoice(s,{clientId:p.clientId,projectId:p.id,issued:'2026-10-19',due:'2026-11-19',items:[{description:'Work',quantity:1,rate:10000}],taxRate:0},'test-invoice');assert.equal(i.currency,'EUR');const before=structuredClone(s);validateWorkspace(s);s.projects[0].currency='GBP';assert.throws(()=>validateWorkspace(s,before),/currency/);});
+test('foreign currency requires an explicit hourly rate and client defaults persist',()=>{const s=fresh();assert.throws(()=>saveProjectSettings(s,{...input,currency:'EUR'}),/project hourly rate/);const c=saveClientSettings(s,{name:'Jo',email:'jo@example.com',type:'individual',hourlyRate:'80',currency:'EUR'});assert.equal(c.hourlyRate,8000);assert.equal(c.currency,'EUR');});
+test('mixed currency summaries keep currencies separate',()=>{const s=fresh();assert.match(moneyGroups(s,[{currency:'USD',amount:10000},{currency:'EUR',amount:20000}],r=>r.amount),/\$100.*€200/);});

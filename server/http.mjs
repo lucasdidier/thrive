@@ -1,0 +1,8 @@
+import {StoreError} from './store.mjs';
+export const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
+const identities=new WeakMap();
+export function setRequestIdentity(request,user){identities.set(request,user);}
+export function ownerOf(request){if(identities.has(request))return identities.get(request).owner;const id=request.headers.get('oai-authenticated-user-id');if(!id||!request.headers.get('oai-authenticated-user-email'))throw new StoreError('Sign in to access this workspace.',401);return id;}
+export function checkOrigin(request){const origin=request.headers.get('Origin');if(origin&&origin!==new URL(request.url).origin)throw new StoreError('Cross-origin requests are not allowed.',403);}
+export async function readBody(request,maxBytes=8_100_000){if(!request.headers.get('content-type')?.includes('application/json'))throw new StoreError('Send application/json.',415);const reader=request.body?.getReader();if(!reader)throw new StoreError('Request body required.');const chunks=[];let length=0;while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>maxBytes){await reader.cancel();throw new StoreError('Request is too large.',413);}chunks.push(value);}const raw=new Uint8Array(length);let offset=0;for(const c of chunks){raw.set(c,offset);offset+=c.length;}try{return JSON.parse(new TextDecoder().decode(raw),(key,value)=>{if(['__proto__','prototype','constructor'].includes(key))throw Error('Unsupported key.');return value;});}catch{throw new StoreError('Invalid JSON.');}}
+export function errorResponse(error){return json({error:error instanceof StoreError||error instanceof Error?error.message:'Request failed.'},error.status||400);}

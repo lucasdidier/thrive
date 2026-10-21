@@ -1,0 +1,51 @@
+/* Shared progressive editors and searchable tags. */
+.profile-edit{display:flex;align-items:center;gap:10px;min-width:0;flex:1;text-align:left;background:none;border:0;color:inherit;padding:0;cursor:pointer}.profile-edit>span:last-child{min-width:0}.profile-edit small{display:block;overflow:hidden;text-overflow:ellipsis}.settings-tabs{display:flex;gap:8px;padding:16px 24px;border-bottom:1px solid var(--line)}.settings-stack{display:flex;flex-direction:column;gap:18px}.settings-stack>.field{margin:0}.settings-section{border:1px solid var(--line);border-radius:10px;background:var(--card)}.settings-section>summary{display:flex;align-items:center;gap:12px;padding:18px;cursor:pointer;list-style:none}.settings-section>summary::-webkit-details-marker{display:none}.settings-section>summary span{margin-left:auto;font-size:12px;color:var(--muted)}.settings-section>summary svg{width:16px;height:16px;transition:transform .15s}.settings-section[open]>summary svg{transform:rotate(180deg)}.settings-section-body{padding:4px 18px 18px}.settings-section fieldset{border:0;padding:0;margin:0;min-width:0}.settings-links{display:grid;gap:1px}.settings-links>button{display:flex;align-items:center;justify-content:space-between;padding:17px 6px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:inherit;cursor:pointer}.settings-links small{display:block;color:var(--muted);margin-top:5px}.settings-links svg{width:18px;height:18px}.rate-summary{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}.rate-summary svg{width:18px;height:18px}#inline-client{border:1px solid var(--line);border-radius:8px;padding:18px}#inline-client[hidden]{display:none}.tag-picker{position:relative;min-width:180px;max-width:100%;margin-top:8px}.tag-picker>summary{list-style:none;display:flex;flex-wrap:wrap;gap:6px;min-height:38px;padding:5px 8px;border:1px solid transparent;border-radius:7px;cursor:pointer;font-size:14px}.tag-picker>summary::-webkit-details-marker{display:none}.tag-picker[open]>summary,.tag-picker>summary:hover{border-color:var(--accent,#426339)}.tag-chip{display:inline-flex;padding:4px 12px;border-radius:20px;background:color-mix(in srgb,var(--tag-color) 20%,transparent);color:var(--text);font-size:13px;font-weight:500}.tag-popover{position:absolute;top:calc(100% + 8px);left:0;z-index:50;width:280px;max-width:calc(100vw - 64px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px #0002;overflow:hidden}.tag-search{width:100%;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;padding:14px!important;background:transparent;color:inherit}.tag-options{max-height:240px;overflow:auto;padding:5px}.tag-options button{display:flex;align-items:center;gap:12px;width:100%;padding:10px;border:0;border-radius:5px;background:none;color:inherit;text-align:left;cursor:pointer}.tag-options button:hover{background:var(--hover,#8881)}.tag-options button span{flex:1}.tag-options i{width:10px;height:10px;border-radius:4px;flex-shrink:0}.record-identity-text .tag-picker{max-width:300px}.settings-stack .tag-picker{margin-top:-12px}.settings-stack .tag-picker>summary{border-color:var(--line)}
+
+/* Full-page record view: persistent properties beside the working area. */
+.record-detail-sidebar,.record-detail-main{min-width:0}
+.record-static-value{font-size:12px;color:var(--text)!important}
+.record-content-heading{display:flex;align-items:center;gap:8px;padding:13px 24px;border-bottom:1px solid var(--line);min-height:44px}
+.record-content-heading h2{font:500 12px/1.5 var(--system-font);margin:0}
+.record-content-heading>svg{width:14px;height:14px;color:var(--muted)}
+.record-expanded .record-panel-scroll{padding:0;overflow:hidden;min-height:0;display:flex}
+.record-expanded .record-detail-layout{display:grid;grid-template-columns:350px minmax(0,1fr);width:100%;min-height:0;flex:1}
+.record-expanded .record-detail-sidebar{overflow-y:auto;overscroll-behavior:contain;border-right:1px solid var(--line);padding-bottom:24px;background:var(--card)}
+.record-expanded .record-detail-main{overflow-y:auto;overscroll-behavior:contain;background:var(--bg)}
+.record-expanded .record-identity{padding:26px 20px 24px;align-items:flex-start}
+.record-expanded .record-identity h1{font-size:20px;overflow-wrap:anywhere}
+.record-expanded .record-identity-text{min-width:0;flex:1}
+.record-expanded .record-properties{padding:0 20px 20px;max-width:none;gap:9px}
+.record-expanded .record-property{grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:start;min-height:32px}
+.record-expanded .record-property>span{padding-top:5px}
+.record-expanded .record-property .editable-cell>span{white-space:normal;overflow-wrap:anywhere}
+.record-expanded .record-property .record-relation{min-width:0;flex-wrap:wrap}
+.record-expanded .record-property .relation-pill{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.record-expanded .record-context-actions{padding:20px;border-top:1px solid var(--line);gap:8px;flex-wrap:wrap}
+.record-expanded .record-tabs,.record-expanded .record-content-heading{position:sticky;top:0;z-index:2;background:var(--bg);padding-left:28px;padding-right:28px;min-height:51px}
+.record-expanded .record-tabs{gap:24px}
+.record-expanded .record-tab-body{padding:24px 28px;max-width:1100px}
+.record-expanded .project-record-content{padding:20px 28px 32px;max-width:1100px}
+.record-expanded .record-section{border:1px solid var(--line);border-radius:7px;padding:16px 18px;margin-bottom:18px;background:var(--card)}
+.record-expanded .record-section .record-empty{margin:20px 0;color:var(--muted)}
+.record-expanded .record-section>header{margin-bottom:10px}
+.record-expanded .project-record-content .summary-grid{margin-top:0}
+.record-expanded .project-record-content .section{padding:20px 0;margin-top:0}
+.record-expanded .record-note{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:18px}
+.record-expanded .record-detail-sidebar .tags-picker{max-width:100%}
+@media(min-width:651px) and (max-width:1100px){
+ .record-expanded .record-detail-layout{grid-template-columns:280px minmax(0,1fr)}
+ .record-expanded .record-properties{padding-left:16px;padding-right:16px}
+ .record-expanded .record-property{grid-template-columns:85px minmax(0,1fr);gap:8px}
+ .record-expanded .record-tab-body,.record-expanded .project-record-content{padding:20px}
+}
+@media(max-width:800px){
+ .record-expanded .record-panel-scroll{display:block;overflow-y:auto}
+ .record-expanded .record-detail-layout{display:block}
+ .record-expanded .record-detail-sidebar{overflow:visible;border-right:0;border-bottom:1px solid var(--line);padding-bottom:0}
+ .record-expanded .record-detail-main{overflow:visible}
+ .record-expanded .record-tabs,.record-expanded .record-content-heading{position:static;padding-left:18px;padding-right:18px}
+ .record-expanded .record-tab-body,.record-expanded .project-record-content{padding:18px}
+ .record-expanded .record-properties{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+ .record-expanded .record-manage-fields{grid-column:1/-1}
+}
+@media(max-width:520px){.record-expanded .record-properties{grid-template-columns:1fr}.record-expanded .record-property{grid-template-columns:100px minmax(0,1fr)}}

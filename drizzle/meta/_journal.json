@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792318398900,
+      "tag": "0000_outstanding_otto_octavius",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792319404054,
+      "tag": "0001_warm_sway",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792320466504,
+      "tag": "0002_chunky_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792321448854,
+      "tag": "0003_gorgeous_microchip",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792409700000,
+      "tag": "0004_nylas",
+      "breakpoints": true
+    }
+  ]
+}

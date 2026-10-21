@@ -1,0 +1,63 @@
+import {createClient} from '@supabase/supabase-js';
+import {StoreError,encodeState,decodeState,hashRequest} from './store.mjs';
+const tableNames=['nylas_connections','nylas_oauth_states','workspaces','receipts','events','share_links','form_uploads','google_connections','google_oauth_states','mail_threads','provider_operations'];
+const normalize=q=>q.replace(/\s+/g,' ').trim();
+const object=(keys,values)=>Object.fromEntries(keys.split(',').map((k,i)=>[k,values[i]]));
+const hex=bytes=>'\\x'+Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+const bytes=value=>Uint8Array.from(value.slice(2).match(/../g)||[],s=>parseInt(s,16));
+export function supabaseURL(env){const url=new URL(env.SUPABASE_URL||'');if(url.protocol!=='https:'&&!(url.protocol==='http:'&&['127.0.0.1','localhost'].includes(url.hostname)))throw new StoreError('Configure a secure Supabase URL.',503);if(url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw new StoreError('Invalid Supabase URL.',503);return url.origin;}
+export function adminClient(env,fetcher=fetch){const key=env.SUPABASE_SECRET_KEY||env.SUPABASE_SERVICE_ROLE_KEY;if(!key)throw new StoreError('Supabase server credentials are not configured.',503);return createClient(supabaseURL(env),key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:fetcher}});}
+async function checked(query){const {data,error}=await query;if(error){if(error.code==='PT409')throw new StoreError(error.message,409);throw new StoreError('Database request failed. Please retry.',503);}return data;}
+export class SupabaseDatabase{
+ constructor(client){this.kind='supabase';this.client=client;}
+ table(name){if(!tableNames.includes(name))throw Error('Unknown table.');return this.client.from('thrive_'+name);}
+ rpc(name,args){return checked(this.client.rpc('thrive_'+name,args));}
+ async loadWorkspace(owner){const row=await checked(this.table('workspaces').select('revision,state,updated_at').eq('owner_id',owner).maybeSingle());return row?{revision:row.revision,state:await decodeState(bytes(row.state)),updatedAt:row.updated_at}:null;}
+ async bootstrap(owner,state){const links=await shareIndex(state);await this.rpc('bootstrap',{p_owner:owner,p_state:hex(await encodeState(state)),p_links:links});return this.loadWorkspace(owner);}
+ async receiptFor(owner,id,hash){const row=await checked(this.table('receipts').select('hash,result').eq('owner_id',owner).eq('request_id',id).maybeSingle());if(row&&row.hash!==hash)throw new StoreError('This request ID was used for a different operation.',409);return row?JSON.parse(row.result):null;}
+ async commitWorkspace(owner,expected,state,requestId,hash,result,events){return this.rpc('commit',{p_owner:owner,p_expected:expected,p_state:hex(await encodeState(state)),p_request_id:requestId,p_hash:hash,p_result:result,p_links:await shareIndex(state),p_events:events.map(e=>({type:e.type,entity:e.entity,record_id:e.recordId,detail:{eventId:e.id,fieldId:e.fieldId,value:e.value,previousValue:e.previousValue}}))});}
+ async readEvents(owner,after,limit){const rows=await checked(this.table('events').select('*').eq('owner_id',owner).gt('id',after).order('id').limit(limit));return rows.map(r=>({...r,...JSON.parse(r.detail),detail:undefined}));}
+ prepare(sql){const handler=queries.get(normalize(sql));if(!handler)throw new StoreError('Unsupported database operation.',503);let args=[];const execute=()=>handler(this,args);return {bind(...values){args=values;return this;},async first(){return (await execute())[0]||null;},async all(){return {results:await execute()};},async run(){const rows=await execute();return {meta:{changes:rows.length}};},_sql:normalize(sql),_args:()=>args};}
+ async batch(statements){const nylas=['DELETE FROM nylas_connections WHERE owner_id=?','DELETE FROM nylas_oauth_states WHERE owner_id=?',"DELETE FROM mail_threads WHERE owner_id=? AND id LIKE 'nylas:%'"];if(statements.length===3&&statements.every((s,i)=>s._sql===nylas[i]&&s._args()[0]===statements[0]._args()[0])){await this.rpc('disconnect_nylas',{p_owner:statements[0]._args()[0]});return statements.map(()=>({meta:{changes:1}}));}const expected=['DELETE FROM google_connections WHERE owner_id=?','DELETE FROM google_oauth_states WHERE owner_id=?','DELETE FROM mail_threads WHERE owner_id=?'];if(statements.length!==3||statements.some((s,i)=>s._sql!==expected[i]||s._args()[0]!==statements[0]._args()[0]))throw new StoreError('Unsupported database transaction.',503);await this.rpc('disconnect_google',{p_owner:statements[0]._args()[0]});return statements.map(()=>({meta:{changes:1}}));}
+}
+async function shareIndex(state){return Promise.all((state.shareLinks||[]).map(async link=>({token_hash:await hashRequest(link.token),share_id:link.id})));}
+// Exact query registry keeps existing domain operations portable. No caller SQL is
+// ever sent to Postgres; each entry becomes a parameterized SDK operation.
+const queries=new Map();
+const register=(sql,fn)=>queries.set(normalize(sql),fn);
+const select=(db,t,cols,filters)=>{let q=db.table(t).select(cols);for(const [k,v]of Object.entries(filters))q=q.eq(k,v);return q;};
+const update=(db,t,data,filters)=>{let q=db.table(t).update(data);for(const [k,v]of Object.entries(filters))q=q.eq(k,v);return q.select();};
+const remove=(db,t,filters)=>{let q=db.table(t).delete();for(const [k,v]of Object.entries(filters))q=q.eq(k,v);return q.select();};
+register('SELECT owner_id,share_id FROM share_links WHERE token_hash=?',(d,[hash])=>checked(select(d,'share_links','owner_id,share_id',{token_hash:hash})));
+register("UPDATE form_uploads SET status='ready' WHERE id=? AND owner_id=?",(d,[id,owner])=>checked(update(d,'form_uploads',{status:'ready'},{id,owner_id:owner})));
+register('DELETE FROM form_uploads WHERE id=? AND owner_id=?',(d,[id,owner])=>checked(remove(d,'form_uploads',{id,owner_id:owner})));
+register("SELECT * FROM form_uploads WHERE id=? AND owner_id=? AND form_id=? AND question_id=? AND status='ready'",(d,[id,owner,form,question])=>checked(select(d,'form_uploads','*',{id,owner_id:owner,form_id:form,question_id:question,status:'ready'})));
+register("SELECT * FROM form_uploads WHERE id=? AND owner_id=? AND status='ready'",(d,[id,owner])=>checked(select(d,'form_uploads','*',{id,owner_id:owner,status:'ready'})));
+register('INSERT INTO form_uploads(id,owner_id,form_id,question_id,request_id,share_id,form_revision,name,size,object_key,status,created_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,? WHERE (SELECT COALESCE(SUM(size),0) FROM form_uploads WHERE owner_id=?) + ? <= 524288000 AND (SELECT COALESCE(SUM(size),0) FROM form_uploads WHERE owner_id=? AND request_id=?) + ? <= 20971520 AND (SELECT COUNT(*) FROM form_uploads WHERE owner_id=? AND share_id=? AND created_at>?) < 100',async(d,a)=>(await d.rpc('reserve_upload',{p_upload:object('id,owner_id,form_id,question_id,request_id,share_id,form_revision,name,size,object_key,status,created_at',a)}))?[{}]:[]);
+register('SELECT * FROM google_connections WHERE owner_id=?',(d,[owner])=>checked(select(d,'google_connections','*',{owner_id:owner})));
+register('DELETE FROM google_oauth_states WHERE expires_at<?',(d,[at])=>checked(d.table('google_oauth_states').delete().lt('expires_at',at).select()));
+register('INSERT INTO google_oauth_states(hash,owner_id,payload,expires_at) VALUES(?,?,?,?)',(d,a)=>checked(d.table('google_oauth_states').insert(object('hash,owner_id,payload,expires_at',a)).select()));
+register('DELETE FROM google_oauth_states WHERE hash=? AND owner_id=? AND expires_at>? RETURNING *',(d,[hash,owner,at])=>checked(d.table('google_oauth_states').delete().eq('hash',hash).eq('owner_id',owner).gt('expires_at',at).select()));
+register('INSERT INTO google_connections(owner_id,account_sub,email,scopes,tokens,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(owner_id) DO UPDATE SET account_sub=excluded.account_sub,email=excluded.email,scopes=excluded.scopes,tokens=excluded.tokens,updated_at=excluded.updated_at',(d,a)=>checked(d.table('google_connections').upsert(object('owner_id,account_sub,email,scopes,tokens,updated_at',a),{onConflict:'owner_id'}).select()));
+register('UPDATE google_connections SET tokens=?,updated_at=? WHERE owner_id=? AND tokens=?',(d,[tokens,at,owner,old])=>checked(update(d,'google_connections',{tokens,updated_at:at},{owner_id:owner,tokens:old})));
+for(const table of ['google_connections','google_oauth_states','mail_threads'])register(`DELETE FROM ${table} WHERE owner_id=?`,(d,[owner])=>checked(remove(d,table,{owner_id:owner})));
+register('SELECT * FROM mail_threads WHERE owner_id=? ORDER BY updated_at DESC LIMIT 200',(d,[owner])=>checked(select(d,'mail_threads','*',{owner_id:owner}).order('updated_at',{ascending:false}).limit(200)));
+register('SELECT id,status,result,updated_at FROM provider_operations WHERE owner_id=? ORDER BY updated_at DESC',(d,[owner])=>checked(select(d,'provider_operations','id,status,result,updated_at',{owner_id:owner}).order('updated_at',{ascending:false})));
+register('SELECT client_id FROM mail_threads WHERE owner_id=? AND id=?',(d,[owner,id])=>checked(select(d,'mail_threads','client_id',{owner_id:owner,id})));
+register('INSERT INTO mail_threads(owner_id,id,client_id,data,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(owner_id,id) DO UPDATE SET data=excluded.data,updated_at=excluded.updated_at',async(d,a)=>{await d.rpc('sync_thread',{p_thread:object('owner_id,id,client_id,data,updated_at',a)});return [{}];});
+register('UPDATE google_connections SET last_sync=? WHERE owner_id=?',(d,[at,owner])=>checked(update(d,'google_connections',{last_sync:at},{owner_id:owner})));
+for(const table of ['mail_threads','provider_operations'])register(`SELECT * FROM ${table} WHERE owner_id=? AND id=?`,(d,[owner,id])=>checked(select(d,table,'*',{owner_id:owner,id})));
+register('UPDATE mail_threads SET client_id=?,project_id=?,archived=? WHERE owner_id=? AND id=?',(d,[client,project,archived,owner,id])=>checked(update(d,'mail_threads',{client_id:client,project_id:project,archived},{owner_id:owner,id})));
+register('UPDATE provider_operations SET status=?,result=?,updated_at=? WHERE owner_id=? AND id=?',(d,[status,result,at,owner,id])=>checked(update(d,'provider_operations',{status,result,updated_at:at},{owner_id:owner,id})));
+register('INSERT OR IGNORE INTO provider_operations(owner_id,id,hash,status,result,updated_at) VALUES(?,?,?,?,?,?)',(d,a)=>checked(d.table('provider_operations').upsert(object('owner_id,id,hash,status,result,updated_at',a),{onConflict:'owner_id,id',ignoreDuplicates:true}).select()));
+export const supportedSupabaseQueries=()=>[...queries.keys()];
+export function supabaseBucket(client){const bucket=client.storage.from('thrive-files');return {async put(key,body){const {error}=await bucket.upload(key,body,{contentType:'application/octet-stream',upsert:false});if(error)throw new StoreError('File upload failed.',502);},async get(key){const {data,error}=await bucket.download(key);if(error)return null;return {body:data.stream()};},async delete(key){const {error}=await bucket.remove([key]);if(error)throw new StoreError('Unable to remove file.',502);}};}
+
+register('SELECT * FROM nylas_connections WHERE owner_id=?',(d,[owner])=>checked(select(d,'nylas_connections','*',{owner_id:owner})));
+register('DELETE FROM nylas_oauth_states WHERE expires_at<?',(d,[at])=>checked(d.table('nylas_oauth_states').delete().lt('expires_at',at).select()));
+register('INSERT INTO nylas_oauth_states(hash,owner_id,payload,expires_at) VALUES(?,?,?,?)',(d,a)=>checked(d.table('nylas_oauth_states').insert(object('hash,owner_id,payload,expires_at',a)).select()));
+register('DELETE FROM nylas_oauth_states WHERE hash=? AND owner_id=? AND expires_at>? RETURNING *',(d,[hash,owner,at])=>checked(d.table('nylas_oauth_states').delete().eq('hash',hash).eq('owner_id',owner).gt('expires_at',at).select()));
+register('INSERT INTO nylas_connections(owner_id,grant_id,email,provider,scopes,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(owner_id) DO UPDATE SET grant_id=excluded.grant_id,email=excluded.email,provider=excluded.provider,scopes=excluded.scopes,updated_at=excluded.updated_at',(d,a)=>checked(d.table('nylas_connections').upsert(object('owner_id,grant_id,email,provider,scopes,updated_at',a),{onConflict:'owner_id'}).select()));
+register('UPDATE nylas_connections SET last_sync=? WHERE owner_id=?',(d,[at,owner])=>checked(update(d,'nylas_connections',{last_sync:at},{owner_id:owner})));
+for(const table of ['nylas_connections','nylas_oauth_states'])register(`DELETE FROM ${table} WHERE owner_id=?`,(d,[owner])=>checked(remove(d,table,{owner_id:owner})));
+register("DELETE FROM mail_threads WHERE owner_id=? AND id LIKE 'nylas:%'",(d,[owner])=>checked(d.table('mail_threads').delete().eq('owner_id',owner).like('id','nylas:%').select()));

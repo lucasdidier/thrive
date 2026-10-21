@@ -1,0 +1,40 @@
+/* One dropdown surface for workspace filters, editors, and shared forms. */
+.thrive-select{display:inline-flex;position:relative;min-width:0;max-width:100%;vertical-align:middle;flex-wrap:wrap}
+.thrive-select[hidden]{display:none!important}
+select.thrive-native-select{position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;opacity:0!important;clip-path:inset(50%);pointer-events:none}
+.thrive-select .thrive-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;min-width:0;min-height:35px;margin:0;padding:7px 10px;border:1px solid var(--line,#e5e5e5);border-radius:5px;background:var(--input,var(--card,#fff));color:var(--text,#252525);font:400 12px/1.45 var(--system-font);text-align:left;cursor:pointer;box-shadow:0 1px 2px #00000005;transition:border-color .12s,background .12s}
+.thrive-select-trigger:hover:not(:disabled){border-color:var(--faint,#888);background:var(--card,#fff)}
+.thrive-select-trigger[aria-expanded=true]{background:var(--card,#fff);border-color:var(--muted,#777)}
+.thrive-select-trigger:focus-visible{outline:2px solid var(--accent,#42685b);outline-offset:2px}
+.thrive-select-trigger:disabled{cursor:not-allowed;opacity:.45}
+.thrive-select-trigger.is-placeholder{color:var(--muted,#777)}
+.thrive-select-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.thrive-select-chevron{display:flex;flex:none;color:var(--faint,#888)}
+.thrive-select-chevron svg,.thrive-select-check svg,.thrive-select-search svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.field>.thrive-select{width:100%;margin-top:5px}
+.field>.thrive-select .thrive-select-trigger{font-size:13px;min-height:37px}
+.crm-popover .thrive-select-trigger,.time-filters .thrive-select-trigger,.messages-filters .thrive-select-trigger{min-height:30px;padding:5px 9px;font-size:12px}
+.fb-add>.thrive-select{flex:1}.messages-toolbar .thrive-select,.message-relations .thrive-select{max-width:180px}.schedule-filter .thrive-select{max-width:130px}
+.time-filters .thrive-select{min-width:145px;max-width:240px}
+.thrive-select-popover{position:fixed;inset:auto;margin:0;padding:4px;border:1px solid var(--line,#e5e5e5);border-radius:7px;background:var(--card,#fff);color:var(--text,#252525);font:400 12px/1.45 var(--system-font);box-shadow:0 6px 24px #0002,0 1px 3px #0002;overflow:hidden;box-sizing:border-box;z-index:1000}
+.thrive-select-popover:popover-open{display:flex;flex-direction:column}
+.thrive-select-popover::backdrop{background:transparent}
+.thrive-select-search{display:flex;align-items:center;gap:8px;flex:none;border-bottom:1px solid var(--line,#e5e5e5);padding:5px 7px 9px;margin:0 -4px 4px;color:var(--muted,#777)}
+.thrive-select-search>span{display:flex;margin-left:4px}
+.thrive-select-search input{flex:1;min-width:0;width:100%;padding:3px 0;border:0;background:none;color:var(--text,#252525);font:inherit;border-radius:0;outline:none;box-shadow:none}
+.thrive-select-search input::placeholder{color:var(--faint,#888)}
+.thrive-select-search input:focus-visible{outline:none}
+.thrive-select-options{overflow:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--line,#ddd) transparent;overscroll-behavior:contain;padding:0;max-height:inherit}
+.thrive-select-option{display:flex;align-items:center;gap:12px;min-height:31px;padding:7px 9px;border-radius:4px;cursor:pointer;user-select:none}
+.thrive-select-option>span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
+.thrive-select-option.is-active{background:var(--hover,#f0f0ef)}
+.thrive-select-option[aria-disabled=true]{opacity:.4;cursor:not-allowed}
+.thrive-select-check{display:flex;flex:none;width:14px;color:var(--text,#252525)}
+.thrive-select-group{font-size:10px;color:var(--faint,#888);font-weight:500;padding:10px 9px 4px}
+.thrive-select-empty{padding:18px 9px;text-align:center;color:var(--muted,#777)}
+.thrive-select-trigger[aria-invalid=true]{border-color:#bf5c5c}
+.thrive-select-error{width:100%;font-size:11px;color:#bf5c5c;margin-top:5px}
+.crm-popover,.create-menu{border-radius:7px;box-shadow:0 6px 24px #0002,0 1px 3px #0002}
+.crm-menu-item{min-height:31px;border-radius:4px}
+@media(max-width:600px){.time-filters .thrive-select{min-width:130px;max-width:190px}.thrive-select-option{min-height:36px}.thrive-select-popover{max-width:calc(100vw - 16px)}}
+@media(prefers-reduced-motion:reduce){.thrive-select-trigger{transition:none}}

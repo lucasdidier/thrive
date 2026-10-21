@@ -1,0 +1,8 @@
+import React from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import * as icons from '@untitledui/icons';
+import {writeFile,copyFile} from 'node:fs/promises';
+const names={copy:'Copy01',sidebar:'LayoutLeft',notifications:'Bell01',expand:'Expand01',collapse:'Minimize01',more:'DotsHorizontal',time:'ClockStopwatch',messages:'Mail01',scheduling:'CalendarDate',chat:'MessageChatSquare',home:'HomeLine',table:'Table',board:'Columns03',filter:'FilterLines',sort:'SwitchVertical01',tag:'Tag01',status:'Clock',edit:'Edit03',up:'ChevronUp',note:'File02',documents:'File06',forms:'ClipboardCheck',signature:'PenTool02',leaf:'LayersTwo01',overview:'Grid01',clients:'Users01',projects:'FolderClosed',invoices:'Receipt',workflows:'GitBranch01',plus:'Plus',arrow:'ArrowRight',chevron:'ChevronRight',down:'ChevronDown',search:'SearchMd',sparkles:'Stars02',clock:'Clock',check:'Check',close:'XClose',sun:'Sun',settings:'Sliders04',money:'CurrencyDollar',download:'Download01',mail:'Mail01',external:'LinkExternal01',calendar:'Calendar',info:'InfoCircle'};
+const output={};for(const [key,name] of Object.entries(names)){if(!icons[name])throw Error('Missing icon '+name);output[key]=renderToStaticMarkup(React.createElement(icons[name],{size:24,strokeWidth:1.7})).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');}
+await writeFile('public/app-icons.js','// Generated from @untitledui/icons (MIT). See icons-LICENSE.txt.\nconst icons='+JSON.stringify(output)+';\nexport const icon=(name,cls="")=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${icons[name]||icons.projects}</svg>`;\n');
+await copyFile('node_modules/@untitledui/icons/LICENSE','public/icons-LICENSE.txt');
