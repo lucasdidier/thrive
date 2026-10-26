@@ -7,7 +7,7 @@ let sequence=0;
 export function serviceNameField(value,attributes,esc){
  return `<input data-service-name role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" placeholder="Type or search services…" value="${esc(value)}" ${attributes}>`;
 }
-export function lineTableHeading(){return '<div class="line-table-heading" aria-hidden="true"><span>Service / item</span><span>Rate</span><span>Qty</span><span>Total</span><span></span></div>';}
+export function lineTableHeading(){return '<div class="line-table-heading" aria-hidden="true"><span>Service / item</span><span>Unit type</span><span>Rate</span><span>Qty</span><span>Total</span><span></span></div>';}
 
 export function attachServiceEntry(form,{getState,esc,onSelect,onCreate}){
  let input=null,options=[],active=-1;

@@ -1,8 +1,11 @@
+import {closeLineItemMenus,openLineItemMenu} from './line-item-menu.js';
 // Keep every step mounted so preview, custom controls, and FormData share one draft.
 export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
  const panels=[...form.querySelectorAll('[data-editor-step]')],footer=form.querySelector('.dialog-footer');
  let current=initial;
  form.noValidate=true;form.classList.add('editor-wizard');
+ const modal=form.closest('dialog');if(modal){modal.classList.remove('drawer');modal.classList.add('editor-modal');}
+ form.querySelector('.document-workbench,.invoice-workbench')?.addEventListener('scroll',()=>closeLineItemMenus(form),{passive:true});
  const nav=document.createElement('nav');nav.className='editor-steps';nav.setAttribute('aria-label','Editing steps');
  nav.innerHTML=steps.map((label,i)=>`<button type="button" data-editor-go="${i}" aria-controls="${form.id}-step-${i}"><span>${i+1}</span>${label}</button>`).join('');
  form.prepend(nav);
@@ -14,6 +17,7 @@ export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
  footer.prepend(progress);footer.insertBefore(back,final);footer.append(next);
  const error=form.querySelector('.form-error');
  function show(index,focus=true){
+  closeLineItemMenus(form);
   current=Math.max(0,Math.min(steps.length-1,index));form.dataset.editorCurrent=current;form.dataset.editorLast=current===steps.length-1;
   panels.forEach((p,i)=>p.hidden=i!==current);
   nav.querySelectorAll('button').forEach((b,i)=>{if(i===current)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
@@ -28,7 +32,7 @@ export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
   const i=panels.findIndex(p=>p.contains(invalid));if(i>=0)show(i);
   for(let parent=invalid.parentElement;parent&&parent!==form;parent=parent.parentElement){
    if(parent.tagName==='DETAILS')parent.open=true;
-   if(parent.classList.contains('line-item-options')){parent.hidden=false;parent.parentElement.querySelector('.line-more')?.setAttribute('aria-expanded','true');}
+   if(parent.classList.contains('line-item-options')){openLineItemMenu(parent.parentElement.querySelector('.line-more'));}
   }
   invalid.reportValidity();
   const label=invalid.getAttribute('aria-label')||[...(invalid.labels?.[0]?.childNodes||[])].filter(n=>n.nodeType===3).map(n=>n.textContent.trim()).filter(Boolean).join(' ')||'This field';

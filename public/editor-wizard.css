@@ -1,3 +1,7 @@
+dialog.editor-modal[open]{display:flex;flex-direction:column;overflow:hidden;width:calc(100vw - 32px);max-width:1800px;height:calc(100dvh - 32px);max-height:calc(100dvh - 32px);margin:auto;border:1px solid var(--line);border-radius:12px;padding:0}
+dialog.editor-modal>.dialog-head{position:relative;flex:none}
+dialog.editor-modal>.editor-wizard{flex:1;min-height:0;overflow:hidden}
+dialog.editor-modal .document-workbench,dialog.editor-modal .invoice-workbench{grid-template-columns:minmax(580px,1.1fr) minmax(0,1fr)}
 .editor-wizard{display:flex;flex-direction:column;min-height:0}
 .editor-steps{display:flex;gap:8px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--card);flex-shrink:0}
 .editor-steps button{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;border:0;border-radius:6px;background:transparent;padding:8px;color:var(--muted);font:500 12px/18px var(--system-font);cursor:pointer}
@@ -50,13 +54,14 @@
 .record-actions-popover p{font-size:11px;line-height:1.5;color:var(--muted);padding:8px 10px;margin:3px 0;border-top:1px solid var(--line)}
 .record-list-actions{width:32px;height:32px;opacity:.65}
 tr:hover .record-list-actions,.record-list-actions:focus-visible,.record-list-actions[aria-expanded=true]{opacity:1}
-@media(max-width:1050px){
+@media(max-width:1199px){
  .editor-wizard:not([data-editor-last=true]) .document-live-pane,.editor-wizard:not([data-editor-last=true]) .invoice-preview-pane{display:none}
  .editor-wizard .document-workbench,.editor-wizard .invoice-workbench{display:block}
  .editor-wizard .document-live-pane,.editor-wizard .invoice-preview-pane{position:static}
  .editor-wizard .document-controls,.editor-wizard .invoice-editor-controls{border-right:0;min-height:0}
 }
 @media(max-width:600px){
+ dialog.editor-modal[open]{width:100vw;height:100dvh;max-height:100dvh;border-radius:0;border:0}
  .editor-steps{padding:12px;gap:2px}
  .editor-steps button{flex-direction:column;font-size:11px;gap:5px;padding:5px 3px}
  .editor-wizard .document-controls,.editor-wizard .invoice-editor-controls{padding:20px 16px}
@@ -69,4 +74,4 @@ tr:hover .record-list-actions,.record-list-actions:focus-visible,.record-list-ac
 .editor-wizard #offer-editor-list:not([data-selection-mode=advanced]) .offer-quantities .field:has([data-offer=min]),.editor-wizard #offer-editor-list:not([data-selection-mode=advanced]) .offer-quantities .field:has([data-offer=max]){display:none}
 .editor-wizard .offer-edit{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--card)}
 .editor-wizard .offer-edit .field-row:has([data-offer=mode]){grid-template-columns:minmax(0,1fr)}
-.editor-wizard .editor-section:first-child{margin-top:0;padding-top:0;border-top:0}
+.editor-wizard [data-editor-step]>.editor-section:first-child{margin-top:0;padding-top:0;border-top:0}
