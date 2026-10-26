@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FluidProvider } from "@/lib/fluid-provider";
 import { untitleduiIcons } from "@/lib/icons-untitledui";
@@ -11,12 +11,6 @@ import {
   ComboboxItem,
   ComboboxEmpty,
 } from "@/components/ui/combobox";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { ColorPickerPopover } from "@/components/ui/color-picker";
 import { InputCopy } from "@/components/ui/input-copy";
 import {
@@ -88,13 +82,6 @@ function useSource(
     };
   }, [source]);
   return source.value;
-}
-function Slot({ node }: { node: HTMLElement }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    ref.current?.append(node);
-  }, [node]);
-  return <div className="legacy-slot" ref={ref} />;
 }
 function labelFor(source: HTMLElement) {
   const label = source.closest("label")?.cloneNode(true) as HTMLElement | null;
@@ -267,49 +254,6 @@ function Tags({
     </Combobox>
   );
 }
-function Disclosure({
-  body,
-  title,
-  summary,
-  initial,
-}: {
-  body: HTMLElement;
-  title: string;
-  summary: string;
-  initial: boolean;
-}) {
-  const [value, setValue] = useState(initial ? "section" : "");
-  const [currentSummary, setCurrentSummary] = useState(
-    body.dataset.summary || summary,
-  );
-  useEffect(() => {
-    const invalid = () => setValue("section");
-    const observer = new MutationObserver(() =>
-      setCurrentSummary(body.dataset.summary || summary),
-    );
-    observer.observe(body, { attributes: true, attributeFilter: ["data-summary"] });
-    body.addEventListener("invalid", invalid, true);
-    return () => {
-      observer.disconnect();
-      body.removeEventListener("invalid", invalid, true);
-    };
-  }, [body, summary]);
-  return (
-    <Accordion className="w-full" value={value} onValueChange={setValue}>
-      <AccordionItem value="section">
-        <AccordionTrigger>
-          <span className="fluid-section-label">
-            <span className="fluid-section-title">{title}</span>
-            <span className="fluid-section-summary">{currentSummary}</span>
-          </span>
-        </AccordionTrigger>
-        <AccordionContent>
-          <Slot node={body} />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-}
 function Color({
   source,
   container,
@@ -324,6 +268,7 @@ function Color({
       hideAlpha
       value={value}
       triggerLabel={labelFor(source)}
+      triggerShowValue={!source.matches("[data-status-color]")}
       triggerClassName={source.closest(".settings-page") ? "settings-color-trigger" : undefined}
       format="hex"
       swatches={[
@@ -361,31 +306,6 @@ export function initFluid(ctx: Context) {
         root.unmount();
         roots.delete(host);
       }
-    document
-      .querySelectorAll<HTMLDetailsElement>(
-        "#record-client-form .settings-section,#record-project-form .settings-section",
-      )
-      .forEach((source) => {
-        if (handled.has(source)) return;
-        handled.add(source);
-        const title = source.querySelector("summary strong")?.textContent || "";
-        const summary = source.querySelector("summary span")?.textContent || "";
-        const body = source.querySelector<HTMLElement>(
-          ".settings-section-body",
-        )!;
-        const host = after(source);
-        host.className = "fluid-disclosure";
-        source.remove();
-        mount(
-          host,
-          <Disclosure
-            body={body}
-            title={title}
-            summary={summary}
-            initial={source.open}
-          />,
-        );
-      });
     document
       .querySelectorAll<HTMLSelectElement>(
         "#record-project-form select,#record-client-form select,#workspace-settings select,#settings-content select",

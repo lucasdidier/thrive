@@ -1,0 +1,87 @@
+/* Shared record controls and expandable content surfaces. */
+#main:focus,#client-panel:focus{outline:none}
+.has-record-panel .workspace{margin-right:0}
+.record-panel{box-shadow:-12px 0 36px #0002}
+.record-relation{min-width:0}
+.relation-pill{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.project-page .record-detail-layout{grid-template-columns:minmax(260px,29%) minmax(0,1fr)}
+.project-page .record-detail-sidebar{padding-top:12px;min-width:0}
+.record-property{min-height:40px;align-items:start}
+.record-property>span:first-child{padding-top:8px}
+.record-value{min-height:34px;min-width:0;align-items:center}
+.tag-picker{min-width:0;max-width:100%}
+.tag-picker>summary{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:34px;padding:5px 7px;list-style:none}
+.tag-picker>summary::-webkit-details-marker{display:none}
+.tag-picker>summary:after{flex:0 0 auto}
+.tag-chip{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.status-picker{position:relative;display:inline-block;max-width:100%}
+.status-picker summary{list-style:none;cursor:pointer}
+.status-picker summary::-webkit-details-marker{display:none}
+.status-choice{display:flex;align-items:center;gap:7px;min-height:34px;padding:5px 9px;border-radius:6px;background:var(--hover);font-size:12px;font-weight:500;white-space:nowrap}
+.status-choice svg{width:13px;height:13px;color:var(--muted)}
+.status-choice i,.status-menu button i{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--status-color)}
+.status-menu{position:absolute;top:calc(100% + 6px);left:0;width:260px;max-width:calc(100vw - 40px);z-index:20;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:0 10px 30px #0002}
+.status-menu input{width:100%;margin:0 0 6px;padding:9px;background:var(--input);border:1px solid var(--line);border-radius:6px;color:var(--text);font:inherit}
+.status-menu button,.status-menu a{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border-radius:5px;text-align:left;font-size:12px;color:var(--text)}
+.status-menu button[hidden]{display:none}
+.status-menu button:hover,.status-menu button[aria-pressed=true]{background:var(--hover)}
+.status-menu button svg{margin-left:auto;width:15px;height:15px}
+.status-menu a{border-top:1px solid var(--line);border-radius:0;margin-top:6px;color:var(--muted)}
+.status-menu a svg{width:16px;height:16px}
+.status-setting-row{display:grid;grid-template-columns:36px minmax(100px,1fr) auto repeat(3,32px);gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.status-setting-row input{min-width:0;width:100%}
+.status-setting-row span{font-size:12px;color:var(--muted)}
+.status-color-label input{width:32px;height:32px;padding:2px}
+.expandable-card,.billing-card{border:1px solid var(--line);border-radius:12px;margin:20px 0;background:var(--card);overflow:visible}
+.expandable-card>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;list-style:none;cursor:pointer}
+.expandable-card>summary::-webkit-details-marker{display:none}
+.expandable-card>summary>span{min-width:0;display:grid;gap:5px}
+.expandable-card>summary strong{font-size:13px;font-weight:550;color:var(--text)}
+.expandable-card>summary small{font-size:12px;color:var(--muted);line-height:1.5}
+.expandable-card>summary>svg{width:17px;height:17px;color:var(--muted);flex-shrink:0;transition:transform .16s ease-out}
+.expandable-card[open]>summary>svg{transform:rotate(90deg)}
+.expandable-card[open]>summary{border-bottom:1px solid var(--line)}
+.expandable-card-body{padding:20px;min-width:0}
+.billing-card>.editor-section{padding:20px;margin:0;border:0}
+.payment-trigger{font-size:12px;line-height:1.5;color:var(--muted);padding-top:25px}
+.branding-link{display:inline-flex;align-items:center;gap:7px;margin:12px 0 0;font-size:13px}
+.branding-link svg{width:15px;height:15px;flex:none}
+.fee-structures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0 24px}
+.fee-structures button{padding:14px 12px;min-width:0;border:1px solid var(--line);border-radius:8px;text-align:left;background:var(--card)}
+.fee-structures button[aria-pressed=true]{border-color:var(--accent);background:var(--hover)}
+.fee-structures strong{display:block;font-size:12px;margin-bottom:6px}
+.fee-structures small{display:block;font-size:11px;color:var(--muted);line-height:1.5}
+.package-editor{border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:20px;min-width:0}
+.package-editor>header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-bottom:20px}
+.package-editor>header>input{font-size:16px;font-weight:550;min-width:0;width:100%;border:1px solid transparent;background:transparent;color:var(--text);padding:6px}
+.package-editor>header>input:hover,.package-editor>header>input:focus{background:var(--hover);border-color:var(--line)}
+.package-editor>header>textarea{grid-column:1/-1;resize:vertical;width:100%;min-width:0;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit;font-size:12px}
+.package-actions{display:flex;gap:2px;align-items:center}
+.package-actions .icon-btn{width:28px;min-height:32px;padding:5px}
+.package-totals{display:grid;gap:10px;margin:20px 0 0 auto;max-width:280px;font-size:12px}
+.package-totals>div{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.package-totals>div:last-child{border-top:1px solid var(--line);padding-top:12px;font-weight:600}
+.package-totals label{display:flex;align-items:center;gap:8px}
+.package-totals input{width:65px;min-width:0;padding:5px;border:1px solid var(--line);background:var(--input);color:var(--text);border-radius:5px}
+.line-rate-basis{margin-top:3px;min-width:0}
+.line-rate-basis .thrive-select-button{min-height:28px;padding:4px;font-size:10px;border-color:transparent;background:transparent;gap:3px}
+.line-rate-basis .thrive-select{min-width:0;width:100%}
+.line-rate-basis select{font:inherit;font-size:11px;color:var(--muted);background:transparent;max-width:100%;border:0;padding:4px}
+.doc-price-row.doc-package{border:1px solid #dce1dd;border-radius:10px;padding:18px;margin:14px 0}
+.doc-package-content{grid-column:1/-1;min-width:0;margin-top:12px}
+.doc-package-content table{width:100%;border-collapse:collapse;font-size:11px}
+.doc-package-content th{font-weight:500;color:#646b67;text-align:right;padding:10px 6px;border-bottom:1px solid #dde2de}
+.doc-package-content th:first-child,.doc-package-content td:first-child{text-align:left;width:50%}
+.doc-package-content td{text-align:right;padding:12px 6px;border-bottom:1px solid #e5e8e5;vertical-align:top}
+.doc-package-content td p{font-size:10px;white-space:pre-wrap;margin:5px 0;color:#646b67}
+.doc-package-totals{max-width:260px;margin:15px 0 0 auto}
+.doc-package-totals p{display:flex;justify-content:space-between;gap:20px;font-size:11px}
+.doc-package-totals p:last-child{font-size:12px;border-top:1px solid #dde2de;padding-top:10px}
+@media(max-width:900px){.project-page .record-detail-layout{grid-template-columns:minmax(0,1fr)}.project-page .record-detail-sidebar{border-right:0}.status-menu{z-index:30}}
+@media(max-width:600px){.fee-structures{grid-template-columns:1fr}.fee-structures button{display:flex;align-items:center;justify-content:space-between;gap:14px}.fee-structures strong{margin:0}.package-editor{padding:12px}.package-editor>header{grid-template-columns:1fr}.package-actions{grid-row:1;justify-content:flex-end}.status-setting-row{grid-template-columns:32px minmax(80px,1fr) repeat(3,30px);gap:4px}.status-setting-row>span{display:none}.status-menu button,.status-menu a{min-height:44px}.expandable-card-body{padding:16px}.record-property{grid-template-columns:92px minmax(0,1fr)}.package-actions .icon-btn{width:36px;min-height:40px}}
+@media(prefers-reduced-motion:reduce){.expandable-card>summary>svg{transition:none}}
+
+.status-color-label .settings-color-trigger{width:32px;height:32px;padding:7px;gap:0;justify-content:center}
+.status-color-label .settings-color-trigger>span.tabular-nums{display:none}
+
+.status-menu{max-height:min(420px,60vh);overflow-y:auto}

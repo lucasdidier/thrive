@@ -16,7 +16,7 @@ export function invoiceServiceLines(state,id){
 export function resolveNewServices(state,lines,{invoice=false}={}){
  const staged=structuredClone(state);
  const result=lines.map(line=>{
-  const {createService,...item}=line;if(!createService)return item;
+  if(line.packageItems)return {...line,packageItems:resolveNewServices(staged,line.packageItems)};const {createService,...item}=line;if(!createService)return item;
   const name=String(invoice?item.description:item.name).trim();
   let service=(staged.services||[]).find(s=>!s.archived&&key(s.name)===key(name));
   if(!service){
@@ -26,7 +26,7 @@ export function resolveNewServices(state,lines,{invoice=false}={}){
   }
   return {...item,serviceId:service.id,serviceVersion:service.version,...(!invoice?{items:serviceItems(staged,service.id)}:{})};
  });
- if(lines.some(l=>l.createService)){state.services=staged.services;state.activity=staged.activity;}
+ if(lines.some(l=>l.createService||l.packageItems)){state.services=staged.services;state.activity=staged.activity;}
  return result;
 }
 export {serviceRate};

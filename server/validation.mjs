@@ -1,3 +1,5 @@
+import {validateInvoiceDefaults} from '../public/invoice-defaults.js';
+import {saveProjectStatuses} from '../public/project-status.js';
 import {validateCurrency} from '../public/currency.js';
 import {validateOnboarding} from '../public/onboarding-domain.js';
 import {validatePortal} from '../public/portal-domain.js';
@@ -12,7 +14,8 @@ import {validateEmailDraft} from '../public/communications-domain.js';
 export function validateWorkspace(s,old){
  validateShareLinks(s,old);
  if(!s||typeof s!=='object'||s.workspaceSchema!==3||!s.settings||typeof s.settings.business!=='string'||typeof s.settings.name!=='string')throw Error('Invalid workspace data.');
- validateCurrency(s,old);validateOnboarding(s);
+ if(s.settings.invoiceDefaults)validateInvoiceDefaults(s.settings.invoiceDefaults);
+ validateCurrency(s,old);validateOnboarding(s);if(s.settings.projectStatuses)saveProjectStatuses(s,s.settings.projectStatuses);
  if(s.settings.portalDefaults){const p=s.settings.portalDefaults;if(typeof p.title!=='string'||!p.title.trim()||p.title.length>100||typeof p.intro!=='string'||p.intro.length>1000||!p.sections||['documents','forms','invoices','projects','meetings'].some(k=>typeof p.sections[k]!=='boolean'))throw Error('Invalid workspace portal defaults.');}
  if(s.settings.emailFollowUps!==undefined){const choices=s.settings.emailFollowUps;if(!choices||typeof choices!=='object'||Array.isArray(choices)||Object.keys(choices).length>2000)throw Error('Invalid email reply preferences.');for(const [id,choice]of Object.entries(choices)){if(!id||id.length>512||!choice||typeof choice.messageId!=='string'||!choice.messageId||choice.messageId.length>512||!['reply','done'].includes(choice.status))throw Error('Invalid email reply preference.');}}
  if(s.settings.formEmailNotifications!==undefined&&typeof s.settings.formEmailNotifications!=='boolean')throw Error('Invalid form notification setting.');
@@ -30,7 +33,7 @@ export function validateWorkspace(s,old){
  for(const x of s.services||[])pricingBasis(x);
  for(const f of s.forms)if(f.questions!==undefined)normalizeQuestions(f.questions);
  for(const sub of s.submissions){if(sub.answers!==undefined&&(!Array.isArray(sub.answers)||sub.answers.length>50))throw Error('Invalid form answers.');const previous=old?.submissions.find(x=>x.id===sub.id);if(previous?.answers&&JSON.stringify(previous)!==JSON.stringify(sub))throw Error('Saved form responses cannot be rewritten.');}
- for(const p of s.projects)if(!s.clients.some(c=>c.id===p.clientId)||!Array.isArray(p.phases)||!Array.isArray(p.billingPlan))throw Error('Invalid project relationship.');
+ for(const p of s.projects)if(!s.clients.some(c=>c.id===p.clientId)||!Array.isArray(p.billingPlan))throw Error('Invalid project relationship.');
  if(s.emailDrafts!==undefined){if(!Array.isArray(s.emailDrafts)||s.emailDrafts.length>1000)throw Error('Invalid email draft collection.');const ids=new Set();for(const d of s.emailDrafts){validateEmailDraft(s,d);if(ids.has(d.id))throw Error('Duplicate email draft.');ids.add(d.id);}}
  for(const d of old?.documents||[])for(const v of d.versions||[]){const n=s.documents.find(x=>x.id===d.id)?.versions?.find(x=>x.number===v.number);if(!n)throw Error('Published document versions cannot be deleted.');for(const key of ['currency','design','templateId','showPricing','selectionMode','title','kind','responseMode','clientId','projectId','billing','phases','scope','deliverables','terms','offers','client','business','due','createdAt'])if(JSON.stringify(n[key])!==JSON.stringify(v[key]))throw Error('Published content is immutable. Create a new document revision.');if(v.completedAt)for(const key of ['selections','agreedItems','budget','billingPlan','pricingEstimated','status','completedAt'])if(JSON.stringify(n[key])!==JSON.stringify(v[key]))throw Error('Agreed services and pricing are immutable.');}
  for(const i of s.invoices){if(!Number.isSafeInteger(i.amount)||i.amount<0||!Number.isSafeInteger(i.paid)||i.paid<0||i.paid>i.amount)throw Error('Invalid invoice balance.');}

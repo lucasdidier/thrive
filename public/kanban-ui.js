@@ -1,10 +1,11 @@
+import {projectStatus} from './project-status.js';
 import {boardDefaults,boardActions,boardFields,boardGroups,boardMoveHint,moveBoardCard} from './kanban-domain.js';
 
 export function createKanbanUI({getState,save,blocked,open,dialog,render,toast,esc,icon,bulk,context,groupHeader,isCollapsed}){
  let drag=null,move=null;
  const current=()=>context();
  const enabled=()=>!!current()?.board&&!!boardDefaults[current().scope];
- const groups=()=>boardGroups(getState(),current().scope,current().config,current().fields||current().columns,current().list,current().rows);
+ const groups=()=>boardGroups(getState(),current().scope,current().config,current().fields||current().columns,current().list,current().rows).map(g=>current().scope==='projects'&&current().config.groupBy==='status'?{...g,label:projectStatus(getState(),{status:g.label}).name}:g);
  const availableFields=()=>boardFields(current().fields||current().columns);
  function normalize(){if(!enabled())return;const c=current().config;if(c.layout==='board'&&!availableFields().some(f=>f.key===c.groupBy))c.groupBy=boardDefaults[current().scope];}
  function layoutControl(){if(!enabled())return '';return `<div class="layout-switch" aria-label="View layout">${[['table','Table'],['board','Board']].map(([layout,label])=>`<button data-action="board-layout" data-layout="${layout}" aria-label="${label} view" aria-pressed="${(current().config.layout||'table')===layout}">${icon(layout)}</button>`).join('')}</div>`;}

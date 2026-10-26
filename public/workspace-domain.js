@@ -1,3 +1,6 @@
+import {workspaceBranding} from './workspace-branding.js';
+import {upgradeProjects} from './project-migration.js';
+import {normalizedProjectStatus} from './project-status.js';
 import {documentLabel} from './document-labels.js';
 import {formDesign} from './form-design.js';
 import {templateContent,defaultDocumentDesign,validateDocumentDesign,pricingVisible} from './document-design.js';
@@ -9,54 +12,53 @@ const copy=x=>JSON.parse(JSON.stringify(x)), clean=x=>String(x??'').trim();
 export const responseLabels={acceptance:'Acceptance',signature:'Signature',none:'No response'};
 export const kindLabels={proposal:'Proposal',contract:'Contract',agreement:'Proposal + contract',document:'Document'};
 const documentActivity=(s,d,action)=>addActivity(s,`${documentLabel(d)} ${action}`,d.title,'document',{documentId:d.id,documentKind:d.kind});
-export const deliveryStatus=p=>['inquiry','proposal','declined'].includes(p.status)?'planned':p.status;
+export const deliveryStatus=p=>normalizedProjectStatus(p.status);
 const getDoc=(s,id)=>{const d=s.documents.find(d=>d.id===id);if(!d)throw Error('Document not found.');return d;};
 const getForm=(s,id)=>{const f=s.forms.find(f=>f.id===id);if(!f)throw Error('Form not found.');return f;};
 const ensureOpen=(s,d)=>{if(d.archived)throw Error('Restore the document first.');const p=s.projects.find(p=>p.id===d.projectId);if(p?.archived||p?.status==='cancelled')throw Error('Restore or reopen the linked project first.');};
 export function upgradeWorkspace(s){
- if(s.workspaceSchema===3)return s;
+ if(s.workspaceSchema===3)return upgradeProjects(s);
  s.forms=[{...copy(s.intake),id:'form-inquiry',name:s.intake.title,status:'active',createdAt:today()}];
  s.submissions.forEach(x=>{x.formId??='form-inquiry';const p=s.projects.find(p=>p.id===x.projectId);x.formTitle??=s.intake.title;x.scope??=p?.inquiry?.scope||'';x.question??=p?.inquiry?.question||'';x.answer??=p?.inquiry?.answer||'';});
  s.documents=s.projects.map(p=>{
-  const d={id:`doc-${p.id}`,title:p.name,kind:'proposal',responseMode:'acceptance',clientId:p.clientId,projectId:p.id,billing:true,scope:p.proposal,deliverables:p.deliverables||'',terms:'',budget:p.budget,phases:copy(p.phases),billingPlan:copy(p.billingPlan),due:p.due,status:p.proposalStatus,archived:false,currentVersion:p.currentVersion,createdAt:today(),updatedAt:today()};
-  d.versions=p.versions.map(v=>({...copy(d),versions:undefined,number:v.number,title:v.name,scope:v.scope,deliverables:v.deliverables,client:copy(v.client),business:v.business,budget:v.budget,phases:copy(v.phases),billingPlan:copy(v.billingPlan),due:v.due,status:v.status,createdAt:v.createdAt,completedAt:p.acceptedAt||null}));
+  const d={id:`doc-${p.id}`,title:p.name,kind:'proposal',responseMode:'acceptance',clientId:p.clientId,projectId:p.id,billing:true,scope:p.proposal,deliverables:p.deliverables||'',terms:'',budget:p.budget,billingPlan:copy(p.billingPlan),due:p.due,status:p.proposalStatus,archived:false,currentVersion:p.currentVersion,createdAt:today(),updatedAt:today()};
+  d.versions=p.versions.map(v=>({...copy(d),versions:undefined,number:v.number,title:v.name,scope:v.scope,deliverables:v.deliverables,client:copy(v.client),business:v.business,budget:v.budget,billingPlan:copy(v.billingPlan),due:v.due,status:v.status,createdAt:v.createdAt,completedAt:p.acceptedAt||null}));
   p.billingDocumentId=d.id;return d;
  });
  const deposit=s.workflows.find(w=>w.id==='w1');if(deposit)deposit.description='Billing document completed → deposit invoice → delivery';
- s.workspaceSchema=3;return s;
+ s.workspaceSchema=3;return upgradeProjects(s);
 }
 export function createDocument(s,data){
  const client=s.clients.find(c=>c.id===data.clientId&&!c.archived);if(!client)throw Error('Choose an active client.');
  const p=data.projectId?s.projects.find(p=>p.id===data.projectId):null;if(data.projectId&&(!p||p.clientId!==client.id||p.archived||p.status==='cancelled'))throw Error('Choose an active project for this client.');
  const starter=data.templateId?templateContent(data.templateId,{business:s.settings.business,client:client.name}):{};data={...starter,...data};const design=validateDocumentDesign(data.design||defaultDocumentDesign(s));
  const kind=data.kind||'proposal';if(!kindLabels[kind])throw Error('Choose a document type.');
- const phases=copy(p?.phases||s.settings.phases.map(name=>({id:uid(),name,done:false}))),budget=p?.budget||0;
- const d={id:uid(),currency:p?.currency||s.settings.currency||'USD',design,templateId:data.templateId||null,showPricing:data.showPricing??true,selectionMode:data.selectionMode||'advanced',title:clean(data.title)||starter.title||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance',clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document'&&data.showPricing!==false&&!['time-agreement','retainer'].includes(data.templateId),budget,phases,billingPlan:copy(p?.billingPlan||[]),scope:data.scope??p?.proposal??'',deliverables:data.deliverables||'',terms:data.terms||'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
- if(d.billing){p.billingDocumentId=d.id;if(budget&&!d.billingPlan.length)d.billingPlan=defaultPlan(budget,s.settings.deposit,phases);}
+ const budget=p?.budget||0;
+ const d={id:uid(),currency:p?.currency||s.settings.currency||'USD',design,templateId:data.templateId||null,showPricing:data.showPricing??true,selectionMode:data.selectionMode||'advanced',title:clean(data.title)||starter.title||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance',clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document'&&data.showPricing!==false&&!['time-agreement','retainer'].includes(data.templateId),budget,billingPlan:copy(p?.billingPlan||[]),scope:data.scope??p?.proposal??'',deliverables:data.deliverables||'',terms:data.terms||'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
+ if(d.billing){p.billingDocumentId=d.id;if(budget&&!d.billingPlan.length)d.billingPlan=defaultPlan(budget,s.settings.deposit);}
  s.documents.unshift(d);documentActivity(s,d,'created');return d;
 }
 export function saveDocument(s,id,data){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Create a revision before editing this document.');
  const title=clean(data.title),scope=clean(data.scope),kind=data.kind||d.kind,responseMode=data.responseMode||d.responseMode;
  if(!title||!scope)throw Error('Enter a document title and content.');if(!kindLabels[kind]||!responseLabels[responseMode])throw Error('Choose a valid type and response requirement.');
- if(data.showPricing!==undefined&&typeof data.showPricing!=='boolean')throw Error('Pricing visibility must be on or off.');const showPricing=data.showPricing??pricingVisible(d),selectionMode=data.selectionMode||d.selectionMode||'advanced',design=validateDocumentDesign(data.design||d.design||defaultDocumentDesign(s)),offers=validateOffers(applySelectionMode(data.offers??d.offers??[],selectionMode)),visibleOffers=showPricing?offers:[];if(visibleOffers.some(o=>o.mode!=='required'||o.min!==o.max)&&responseMode==='none')throw Error('Selectable services require acceptance or signature.');const quote=visibleOffers.length?quoteOffers(visibleOffers):null;
- const billing=!!data.billing,p=s.projects.find(p=>p.id===d.projectId);let phases=copy(d.phases),billingPlan=copy(d.billingPlan),budget=d.budget;
+ if(data.showPricing!==undefined&&typeof data.showPricing!=='boolean')throw Error('Pricing visibility must be on or off.');const showPricing=data.showPricing??pricingVisible(d),selectionMode=data.selectionMode||d.selectionMode||'advanced',design=validateDocumentDesign(workspaceBranding(s,data.design||d.design)),offers=validateOffers(applySelectionMode(data.offers??d.offers??[],selectionMode)),visibleOffers=showPricing?offers:[];if(visibleOffers.some(o=>o.mode!=='required'||o.min!==o.max)&&responseMode==='none')throw Error('Selectable services require acceptance or signature.');const quote=visibleOffers.length?quoteOffers(visibleOffers):null;
+ const billing=!!data.billing,p=s.projects.find(p=>p.id===d.projectId);let billingPlan=copy(d.billingPlan),budget=d.budget;
  if(billing){
   if(!showPricing)throw Error('Show pricing before enabling project billing.');if(hasTimePricing(visibleOffers))throw Error('Time & materials are estimates. Turn off automatic project billing and invoice actual quantities.');
   if(!p)throw Error('Link a project before enabling billing.');if(responseMode==='none')throw Error('Billing requires acceptance or signature. Turn off billing for an information-only document.');
   if(p.accepted||s.documents.some(x=>x.id!==id&&x.projectId===p.id&&x.billing))throw Error('This project already has a billing agreement.');
-  const names=(data.phases||d.phases.map(f=>f.name)).map(clean);if(!names.length||names.length>8||names.some(x=>!x)||new Set(names.map(x=>x.toLowerCase())).size!==names.length)throw Error('Enter one to eight unique delivery phases.');
-  phases=names.map((name,i)=>({id:data.phaseIds?.[i]||d.phases[i]?.id||uid(),name,done:false}));budget=quote?.amount??Number(data.budget);billingPlan=allocatePlan(budget,data.rules||d.billingPlan,phases);
+  budget=quote?.amount??Number(data.budget);billingPlan=allocatePlan(budget,data.rules||d.billingPlan);
  }
  if(quote)budget=quote.amount;
- Object.assign(d,{offers,showPricing,selectionMode,design,title,scope,kind,responseMode,billing,phases,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
+ Object.assign(d,{offers,showPricing,selectionMode,design,title,scope,kind,responseMode,billing,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
  if(p){if(billing)p.billingDocumentId=id;else if(p.billingDocumentId===id)delete p.billingDocumentId;}
  documentActivity(s,d,'draft saved');return d;
 }
 export function publishDocument(s,id){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Only a draft can be published.');if(!d.title||!clean(d.scope))throw Error('Add document content first.');
  if(pricingVisible(d)&&d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none'&&d.offers.some(o=>o.mode!=='required'||o.min!==o.max))throw Error('Selectable services require a response.');}
- if(d.billing){if(!pricingVisible(d)||hasTimePricing(d.offers||[]))throw Error('Automatic project billing needs visible, fixed-fee pricing.');if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan,d.phases);}
+ if(d.billing){if(!pricingVisible(d)||hasTimePricing(d.offers||[]))throw Error('Automatic project billing needs visible, fixed-fee pricing.');if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan);}
  const v={...copy(d),versions:undefined,number:d.versions.length+1,client:copy(s.clients.find(c=>c.id===d.clientId)),business:s.settings.business,currency:s.projects.find(p=>p.id===d.projectId)?.currency||s.settings.currency||'USD',status:'published',createdAt:new Date().toISOString()};
  d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();documentActivity(s,d,'published');return v;
 }
@@ -79,9 +81,9 @@ export function respondDocument(s,id,number,action,signature={}){
  if(v.responseMode==='acceptance'&&action!=='accept')throw Error('This document requires acceptance, not a signature.');
  // Complete against a copy so invoice validation cannot leave a half-completed agreement.
  const next=copy(s),nd=getDoc(next,id),nv=nd.versions.find(x=>x.number===v.number);
- if(pricingVisible(v)&&v.offers?.length){const q=quoteOffers(v.offers,signature.selections);Object.assign(nv,{selections:q.selections,agreedItems:q.items,budget:q.amount,pricingEstimated:q.estimated});if(v.billing)nv.billingPlan=allocatePlan(q.amount,v.billingPlan,v.phases);Object.assign(nd,{pricingEstimated:nv.pricingEstimated,budget:nv.budget,billingPlan:copy(nv.billingPlan),selections:q.selections,agreedItems:q.items});}
+ if(pricingVisible(v)&&v.offers?.length){const q=quoteOffers(v.offers,signature.selections);Object.assign(nv,{selections:q.selections,agreedItems:q.items,budget:q.amount,pricingEstimated:q.estimated});if(v.billing)nv.billingPlan=allocatePlan(q.amount,v.billingPlan);Object.assign(nd,{pricingEstimated:nv.pricingEstimated,budget:nv.budget,billingPlan:copy(nv.billingPlan),selections:q.selections,agreedItems:q.items});}
  if(v.billing){const p=next.projects.find(p=>p.id===v.projectId);if(!p||p.accepted||p.billingDocumentId!==id)throw Error('The project billing agreement has changed.');
-  Object.assign(p,{budget:nv.budget,proposal:v.scope,deliverables:v.deliverables,phases:copy(v.phases),billingPlan:copy(nv.billingPlan),deposit:nv.billingPlan[0].percent,proposalStatus:'published',accepted:false,currentVersion:v.number,versions:[{...copy(nv),name:p.name,status:'published'}],needsPricing:false});
+  Object.assign(p,{budget:nv.budget,proposal:v.scope,deliverables:v.deliverables,billingPlan:copy(nv.billingPlan),deposit:nv.billingPlan[0].percent,proposalStatus:'published',accepted:false,currentVersion:v.number,versions:[{...copy(nv),name:p.name,status:'published'}],needsPricing:false});
   acceptProposal(next,p.id,v.number);
  }
  nv.status=nd.status=v.responseMode==='signature'?'signed':'accepted';nv.completedAt=new Date().toISOString();nv.signature=v.responseMode==='signature'?{name:clean(signature.name),simulated:true}:null;nd.updatedAt=today();

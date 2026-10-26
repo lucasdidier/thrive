@@ -13,6 +13,7 @@ import {validateWorkspace} from './validation.mjs';
 import {loadWorkspace,hashRequest,receiptFor,commitWorkspace,StoreError} from './store.mjs';
 import {json,checkOrigin,readBody,errorResponse} from './http.mjs';
 const pick=(object,keys)=>Object.fromEntries(keys.filter(k=>object?.[k]!==undefined).map(k=>[k,object[k]]));
+const publicOffer=o=>({...pick(o,['id','name','description','rate','amount','billingModel','unit','mode','group','min','max','quantity','taxRate','subtotal','taxAmount']),...(o.packageItems?{packageItems:o.packageItems.map(i=>pick(i,['id','name','description','rate','amount','billingModel','unit','quantity']))}:{})});
 const unavailable=()=>new StoreError('This link is unavailable. Ask the sender for a new link.',404);
 export async function resolveShare(db,token){
  if(!validShareToken(token))throw unavailable();
@@ -38,18 +39,18 @@ export function clientProjection(state,link){
   const v=record.versions.find(x=>x.number===link.version);
   const data=pick(v,['currency','design','showPricing','selectionMode','pricingEstimated','title','kind','responseMode','scope','deliverables','terms','number','status','business','budget','billing','createdAt','completedAt','declinedAt']);
   data.client=pick(v.client,['name','contact','email']);
-  data.offers=(pricingVisible(v)?v.offers||[]:[]).map(o=>pick(o,['id','name','description','rate','billingModel','unit','mode','group','min','max','quantity']));
+  data.offers=(pricingVisible(v)?v.offers||[]:[]).map(publicOffer);
   data.selections=pricingVisible(v)?v.selections||null:null;
-  data.agreedItems=(pricingVisible(v)?v.agreedItems||[]:[]).map(o=>pick(o,['name','description','quantity','rate','amount','billingModel','unit']));
+  data.agreedItems=(pricingVisible(v)?v.agreedItems||[]:[]).map(publicOffer);
   if(v.design)data.design=validateDocumentDesign(v.design);if(!pricingVisible(v)){delete data.budget;data.billing=false;}
-  data.billingPlan=(pricingVisible(v)?v.billingPlan||[]:[]).map(r=>({...pick(r,['name','percent','amount']),trigger:r.phaseId?`${v.phases.find(p=>p.id===r.phaseId)?.name||'Milestone'} approved`:'On completion'}));
+  data.billingPlan=(pricingVisible(v)?v.billingPlan||[]:[]).map(r=>({...pick(r,['name','percent','amount']),trigger:r.trigger==='manual'?'Issued by the owner':'On completion'}));
   data.response=v.response?pick(v.response,['name','action','at','consent']):null;
   data.signature=v.signature?pick(v.signature,['name','simulated']):null;
   return {entity:'document',data,actions:v.status==='published'?(v.responseMode==='signature'?['sign','decline']:v.responseMode==='acceptance'?['accept','decline']:[]):[]};
  }
  if(link.entity==='invoice'){
   const data=pick(record,['currency','number','business','clientName','clientEmail','billingAddress','projectName','issued','due','amount','paid','subtotal','taxRate','taxAmount','notes','paymentInstructions','kind','label']);
-  data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>({...pick(i,['description','details','quantity','rate','amount','billingModel','unit']),...(i.timeSources?{durationMinutes:i.timeSources.reduce((n,x)=>n+x.minutes,0)}:{})}));
+  data.items=(record.items||[{description:record.label||record.kind,quantity:1,rate:record.amount,amount:record.amount}]).map(i=>({...pick(i,['description','details','quantity','rate','amount','billingModel','unit','packageItems','taxRate','subtotal','taxAmount']),...(i.timeSources?{durationMinutes:i.timeSources.reduce((n,x)=>n+x.minutes,0)}:{})}));
   data.design=pick(record.design,['template','color','logo','issuerDetails','footer']);
   return {entity:'invoice',data:{...data,status:invoiceStatus(record)},actions:[]};
  }
