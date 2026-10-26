@@ -4,6 +4,13 @@ import {json,readBody,errorResponse} from './http.mjs';
 import {supabaseURL} from './supabase-store.mjs';
 export const accountsEnabled=env=>env.THRIVE_AUTH_MODE==='supabase';
 export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,providers:{google:enabled&&env.THRIVE_GOOGLE_LOGIN==='true',microsoft:enabled&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
+// Supabase can return to its configured Site URL when a callback URL is not
+// allowlisted. Complete that same PKCE exchange before checking the session.
+export async function accountHome(request,env,html,{contextFactory=authContext}={}){
+ const params=new URL(request.url).searchParams;
+ if(params.has('code')||params.has('error'))return authCallback(request,env,{contextFactory});
+ let context;try{context=contextFactory(request,env);if(!await verifiedAccount(context,request))return context.finish(new Response(null,{status:303,headers:{Location:'/auth/sign-in'}}));return context.finish(new Response(html,{headers:{'Content-Type':'text/html; charset=utf-8'}}));}catch{return new Response('Account service unavailable. Please try again later.',{status:503,headers:{'Cache-Control':'no-store'}});}
+}
 export function appOrigin(env){let url;try{url=new URL(env.THRIVE_APP_URL);}catch{throw new StoreError('The account service needs its application URL configured.',503);}if(url.username||url.password||url.pathname!=='/'||url.search||url.hash||(url.protocol!=='https:'&&!(['localhost','127.0.0.1'].includes(url.hostname)&&url.protocol==='http:')))throw new StoreError('The account service URL is invalid.',503);return url.origin;}
 export function authContext(request,env,fetcher=fetch){
  if(!accountsEnabled(env))throw new StoreError('Account signup is not enabled yet.',503);
