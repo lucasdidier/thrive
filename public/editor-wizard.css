@@ -75,3 +75,12 @@ tr:hover .record-list-actions,.record-list-actions:focus-visible,.record-list-ac
 .editor-wizard .offer-edit{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--card)}
 .editor-wizard .offer-edit .field-row:has([data-offer=mode]){grid-template-columns:minmax(0,1fr)}
 .editor-wizard [data-editor-step]>.editor-section:first-child{margin-top:0;padding-top:0;border-top:0}
+
+/* Shared overflow actions in record footers and list rows. */
+.more-actions{display:inline-flex;flex:none;align-items:center}
+.more-actions-trigger{width:36px;min-width:36px;height:36px;padding:8px}
+.more-actions-menu:popover-open{display:block}
+.more-actions-menu{max-height:calc(100dvh - 24px);overflow-y:auto;white-space:normal}
+.more-actions-menu button.btn{display:flex;justify-content:flex-start;width:100%;margin:0;border:0;background:transparent;color:var(--text);font-weight:400}
+.more-actions-menu button.btn:hover,.more-actions-menu button.btn:focus-visible{background:var(--hover)}
+.more-actions-menu button.destructive{color:var(--danger,#b42318)}
