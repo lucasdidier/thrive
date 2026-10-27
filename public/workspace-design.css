@@ -2,7 +2,7 @@
    Client document colors remain independent. Dense rows use 8–12px gaps;
    sections use 24–32px. Keep this file after legacy surface styles. */
 @font-face{font-family:Thrive Inter;src:url('/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-display:swap}
-:root{--system-font:'Thrive Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--bg:#171a18;--card:#1c201d;--side:#141714;--input:#1a1e1b;--hover:#272e29;--text:#edf0eb;--muted:#a7b0a9;--faint:#9ca69e;--line:#343c36;--accent:#9bc3ae;--link:#a4ceb8;--accent-text:#182b21;--focus:var(--accent);--surface-selected:color-mix(in srgb,var(--accent),transparent 89%);--warning:#e9bc77;--radius-control:7px;--radius-surface:12px}
+:root{--system-font:'Thrive Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--bg:#171a18;--card:#1c201d;--side:#141714;--input:#1a1e1b;--hover:#272e29;--text:#edf0eb;--muted:#a7b0a9;--faint:#9ca69e;--line:#343c36;--accent:#9bc3ae;--link:#a4ceb8;--accent-text:#182b21;--focus:var(--accent);--surface-selected:color-mix(in srgb,var(--accent),transparent 89%);--warning:#e9bc77;--radius-control:7px;--radius-surface:12px;--ease-out:cubic-bezier(0.23,1,0.32,1)}
 :root[data-theme=light]{--bg:#fff;--card:#fff;--side:#f6f7f4;--input:#fafbf8;--hover:#f0f3ee;--text:#252c27;--muted:#626d65;--faint:#6b756d;--line:#e2e7e0;--accent:#42685b;--link:#365f50;--accent-text:#fff;--warning:#91601b}
 body{font-family:var(--system-font);font-size:13px;line-height:1.55;font-optical-sizing:auto}
 ::selection{background:var(--surface-selected);color:var(--text)}
@@ -227,3 +227,23 @@ main:focus:not(:focus-visible){outline:none}
 @media(max-width:900px){.dashboard-work-grid{grid-template-columns:minmax(0,1fr)}.dashboard-agenda{order:0}.messages-layout{grid-template-columns:minmax(220px,35%) minmax(0,1fr)}.record-expanded .record-detail-layout{grid-template-columns:1fr}.project-page .record-detail-layout{grid-template-columns:1fr}.dashboard-recent .account-timeline{grid-template-columns:1fr}.page-heading{flex-wrap:wrap}.heading-actions{justify-content:flex-start}}
 @media(max-width:750px){.settings-page{display:block;height:auto}.settings-page .settings-content{container-type:normal;padding:24px 18px}.branding-layout{grid-template-columns:minmax(0,1fr)}.branding-preview{position:static;max-width:440px;margin-bottom:20px}}
 @media(max-width:650px){body{font-size:14px}.page-heading h1,.dashboard-heading h1{font-size:24px}.sidebar .nav a{min-height:36px}.page-heading p{font-size:13px}.heading-actions{width:100%}.btn{min-height:38px}.field input:not([type=checkbox]):not([type=radio]),.field select,.field textarea,.settings-page .field>input,.settings-page .field>textarea{font-size:16px}.messages-layout{grid-template-columns:minmax(0,1fr)}.messages-list{max-height:300px;border-right:0;border-bottom:1px solid var(--line)}.message-detail-head{padding:18px}.message-history{padding:18px}.messages-page .crm-section-tabs{gap:18px}.list-toolbar-actions{flex-wrap:wrap;justify-content:flex-start}.list-toolbar-wrap.is-compact .list-toolbar{flex-wrap:wrap;gap:8px}.list-toolbar-wrap.is-compact .list-search{flex-basis:100%}.dashboard-work-grid{gap:24px}.attention-row{gap:10px}.attention-row-icon{display:none}.attention-row-copy strong{font-size:13px}.attention-row-value{max-width:38%}.attention-group-heading>strong{font-size:19px}.dashboard-history .dash-metrics{grid-template-columns:1fr 1fr;gap:16px}.dashboard-history .dash-metric{padding:8px 0;border:0}.record-section:has(>.record-empty){flex-wrap:wrap;gap:0 16px}.record-section:has(>.record-empty)>.record-empty{font-size:11px}.next-step .btn{min-height:38px}.settings-savebar{padding-block:14px!important}.feed-toolbar{gap:12px}.feed-explanation{line-height:1.7}.feed-group .timeline-event{gap:10px}.feed-group .timeline-event time{max-width:70px;text-align:right}.mail-triage-menu>div{right:auto;left:0}}
+
+/* Press feedback stays still, including when activated from the keyboard. */
+.btn:active:not(:disabled),.icon-btn:active:not(:disabled),.thrive-select-trigger:active:not(:disabled){box-shadow:inset 0 0 0 1px var(--muted);filter:brightness(.94);transition:none}
+.fluid-select-error{display:block;margin:6px 0 0;color:#b94a48;font-size:12px;line-height:1.5}
+[data-theme=dark] .fluid-select-error{color:#f0a4a2}
+:is(#record-project-form,#record-client-form,#workspace-settings,#settings-content) .fluid-ui [role=group]:has(input[aria-invalid=true]){box-shadow:0 0 0 1px #b94a48}
+.bulk-check-target{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer}
+.bulk-check-target:has(:disabled){cursor:not-allowed}
+@media(pointer:coarse){
+  .workspace :is(.btn,.icon-btn,.crm-tool,.crm-menu-item,.thrive-select-trigger,.thrive-select-option),.sidebar :is(button,.nav a),dialog :is(.btn,.icon-btn,.crm-menu-item,.thrive-select-trigger,.thrive-select-option),.thrive-select-popover .thrive-select-option,.create-menu .crm-menu-item,.bulk-floating :is(.btn,.icon-btn,.bulk-link){min-height:44px}
+  .workspace .icon-btn,dialog .icon-btn,.bulk-floating .icon-btn{min-width:44px}
+  :is(#record-project-form,#record-client-form,#workspace-settings,#settings-content) .fluid-ui [role=group]:has(input[role=combobox]){min-height:44px;height:auto}
+  .fluid-ui [role=option],.fluid-ui [data-slot=command-menu-item]{min-height:44px;height:auto}
+  .bulk-check-target,.bulk-card-check{min-width:44px;min-height:44px}
+  .crm-table :is(th,td).bulk-cell{padding:0!important;min-width:44px;width:44px}
+  .bulk-card-check{left:0;top:0;display:flex;align-items:center;justify-content:center}
+  .bulk-message-row>.bulk-card-check{padding:8px 0 0}
+  .bulk-card-wrap:has(.bulk-card-check) .board-card{padding-left:48px}
+  .bulk-list-select-all{min-height:44px}
+}

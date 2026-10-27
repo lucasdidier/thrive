@@ -1,6 +1,8 @@
+import {createPersistenceUI} from './persistence-ui.js';
 import {fieldsFor,fieldById,fieldTypes,saveField,archiveField,setFieldValue,fieldDisplay} from './custom-fields-domain.js';
 export function createCustomFieldsUI(ctx){
  const {getState:S,open,dialog,esc,icon,btn,save,render,toast}=ctx;let origin=null,optionRows=[];
+ const persist=createPersistenceUI(ctx);
  const scopeLabel=e=>e==='client'?'Clients':'Projects';
  function properties(entity,r){const fields=fieldsFor(S(),entity);return fields.map(f=>`<div class="record-property"><span title="${esc(f.description)}">${icon(fieldTypes[f.type][1])}${esc(f.name)}</span><div class="record-value">${cell(entity,r,f)}</div></div>`).join('')+`<button class="text-btn record-manage-fields" data-action="cf-manage" data-entity="${entity}" data-record="${r.id}">${icon('settings')}Manage fields</button>`;}
  function cell(entity,r,f){const value=fieldDisplay(f,r.customFields?.[f.id]);return `<button class="editable-cell custom-cell" data-action="cf-value" data-entity="${entity}" data-id="${f.id}" data-record="${r.id}" aria-label="Edit ${esc(f.name)} for ${esc(r.name)}"><span class="${value?'':'muted'}">${value?esc(value):'—'}</span>${icon('edit')}</button>`;}
@@ -21,18 +23,31 @@ export function createCustomFieldsUI(ctx){
  if(a==='cf-manage'){if(el.dataset.record)remember(el);else if(el.closest('.crm-page'))origin=null;manage(e);}
  else if(a==='cf-add'||a==='cf-edit'){if(el.closest('.crm-page'))origin=null;edit(e,id);}
  else if(a==='cf-back')back();
- else if(a==='cf-archive'){archiveField(S(),e,id,el.dataset.archived==='true');save();render();manage(e);toast(el.dataset.archived==='true'?'Field archived. Values preserved.':'Field restored.');}
+ else if(a==='cf-archive'){void persist(el,()=>archiveField(S(),e,id,el.dataset.archived==='true'),()=>{render();manage(e);toast(el.dataset.archived==='true'?'Field archived. Values preserved.':'Field restored.');});}
  else if(a==='cf-value'){origin=null;valueEditor(e,el.dataset.record,id,el);}
  else if(a==='cf-inline-cancel'){render();ctx.refresh();}
- else if(a==='cf-clear'){setFieldValue(S(),e,el.dataset.record,id,null);save();render();ctx.refresh();toast('Value cleared.');}
+ else if(a==='cf-clear'){void persist(el,()=>setFieldValue(S(),e,el.dataset.record,id,null),()=>{render();ctx.refresh();toast('Value cleared.');});}
  else if(a==='cf-option-add'){optionRows.push({label:''});drawOptions();document.querySelector('#cf-option-rows')?.lastElementChild?.querySelector('input').focus();}
  else if(a==='cf-option-remove'){optionRows.splice(Number(el.dataset.index),1);drawOptions();}
  return true;}
  function handleInput(el){if(el.dataset.cfOption!==undefined){optionRows[Number(el.dataset.cfOption)].label=el.value;return true;}if(el.closest('#cf-definition-form')&&el.name==='name'){document.querySelector('#cf-preview-label').textContent=el.value||'Field name';return true;}return false;}
  function handleChange(el){if(el.id!=='cf-type')return false;document.querySelector('#cf-options').hidden=!['select','multiselect'].includes(el.value);document.querySelector('#cf-preview-value').textContent=fieldTypes[el.value][0];if(!optionRows.length&&['select','multiselect'].includes(el.value)){optionRows=[{label:''}];drawOptions();}return true;}
- function handleSubmit(form,v){if(!form.id.startsWith('cf-'))return false;try{const e=form.dataset.entity,id=form.dataset.id;
- if(form.id==='cf-definition-form'){const f=saveField(S(),e,{...v,type:id?fieldById(S(),e,id).type:v.type,options:optionRows},id||undefined);ctx.showColumn(e,f.id);save();render();manage(e);toast(id?'Field updated.':'Field created.');}
- else if(form.id==='cf-value-form'){const f=fieldById(S(),e,id);let value=v.value;if(f.type==='multiselect')value=new FormData(form).getAll('value');else if(value==='')value=null;else if(['number','currency'].includes(f.type))value=Number(value);else if(f.type==='checkbox')value=value==='true';setFieldValue(S(),e,form.dataset.record,id,value);save();render();ctx.refresh();toast('Field updated.');}
- }catch(err){form.querySelector('.form-error').textContent=err.message;}return true;}
+ function handleSubmit(form,v){
+  if(!['cf-definition-form','cf-value-form'].includes(form.id))return false;
+  const e=form.dataset.entity,existing=!!form.dataset.id;
+  void persist(form,()=>{
+   const id=form.dataset.id;
+   if(form.id==='cf-definition-form'){
+    const f=saveField(S(),e,{...v,type:id?fieldById(S(),e,id).type:v.type,options:optionRows},id||undefined);
+    form.dataset.id=f.id;optionRows=structuredClone(f.options);return f;
+   }
+   const f=fieldById(S(),e,id);let value=v.value;
+   if(f.type==='multiselect')value=new FormData(form).getAll('value');else if(value==='')value=null;else if(['number','currency'].includes(f.type))value=Number(value);else if(f.type==='checkbox')value=value==='true';
+   setFieldValue(S(),e,form.dataset.record,id,value);
+  },field=>{
+   if(form.id==='cf-definition-form'){ctx.showColumn(e,field.id);render();manage(e);toast(existing?'Field updated.':'Field created.');}
+   else{render();ctx.refresh();toast('Field updated.');}
+  },{form:true});return true;
+ }
  return {properties,cell,handleClick,handleInput,handleChange,handleSubmit};
 }

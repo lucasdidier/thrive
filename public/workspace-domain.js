@@ -38,17 +38,27 @@ export function createDocument(s,data){
  if(d.billing){p.billingDocumentId=d.id;if(budget&&!d.billingPlan.length)d.billingPlan=defaultPlan(budget,s.settings.deposit);}
  s.documents.unshift(d);documentActivity(s,d,'created');return d;
 }
-export function saveDocument(s,id,data){
+export function validateDraftOffers(input=[]){
+ if(!Array.isArray(input)||input.length>20)throw Error('Use up to 20 service options.');
+ const ids=new Set();return input.map(raw=>{
+  if(!raw||typeof raw!=='object'||!/^[-\w]{1,100}$/.test(raw.id)||ids.has(raw.id))throw Error('Service options must have unique identifiers.');ids.add(raw.id);
+  const item=copy(raw);for(const key of ['name','description','group']){item[key]=String(item[key]??'');if(item[key].length>(key==='description'?2000:key==='group'?60:100))throw Error('Service text is too long.');}
+  for(const key of ['rate','quantity','min','max']){item[key]=Number(raw[key]??0);if(!Number.isFinite(item[key])||Math.abs(item[key])>100000000)throw Error('Enter a valid service number.');}
+  if(item.packageItems){if(item.packageItems.some(x=>x.packageItems))throw Error('Packages cannot contain another package.');item.packageItems=validateDraftOffers(item.packageItems);}
+  return item;
+ });
+}
+export function saveDocument(s,id,data,{draft=false}={}){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Create a revision before editing this document.');
  const title=clean(data.title),scope=clean(data.scope),kind=data.kind||d.kind,responseMode=data.responseMode||d.responseMode;
- if(!title||!scope)throw Error('Enter a document title and content.');if(!kindLabels[kind]||!responseLabels[responseMode])throw Error('Choose a valid type and response requirement.');
- if(data.showPricing!==undefined&&typeof data.showPricing!=='boolean')throw Error('Pricing visibility must be on or off.');const showPricing=data.showPricing??pricingVisible(d),selectionMode=data.selectionMode||d.selectionMode||'advanced',design=validateDocumentDesign(workspaceBranding(s,data.design||d.design)),offers=validateOffers(applySelectionMode(data.offers??d.offers??[],selectionMode)),visibleOffers=showPricing?offers:[];if(visibleOffers.some(o=>o.mode!=='required'||o.min!==o.max)&&responseMode==='none')throw Error('Selectable services require acceptance or signature.');const quote=visibleOffers.length?quoteOffers(visibleOffers):null;
+ if(!draft&&(!title||!scope))throw Error('Enter a document title and content.');if(!kindLabels[kind]||!responseLabels[responseMode])throw Error('Choose a valid type and response requirement.');
+ if(data.showPricing!==undefined&&typeof data.showPricing!=='boolean')throw Error('Pricing visibility must be on or off.');const showPricing=data.showPricing??pricingVisible(d),selectionMode=data.selectionMode||d.selectionMode||'advanced',design=validateDocumentDesign(workspaceBranding(s,data.design||d.design)),offers=(draft?validateDraftOffers:validateOffers)(applySelectionMode(data.offers??d.offers??[],selectionMode)),visibleOffers=showPricing?offers:[];if(!draft&&visibleOffers.some(o=>o.mode!=='required'||o.min!==o.max)&&responseMode==='none')throw Error('Selectable services require acceptance or signature.');let quote=null;try{quote=visibleOffers.length?quoteOffers(visibleOffers):null;}catch(error){if(!draft)throw error;}
  const billing=!!data.billing,p=s.projects.find(p=>p.id===d.projectId);let billingPlan=copy(d.billingPlan),budget=d.budget;
  if(billing){
   if(!showPricing)throw Error('Show pricing before enabling project billing.');if(hasTimePricing(visibleOffers))throw Error('Time & materials are estimates. Turn off automatic project billing and invoice actual quantities.');
   if(!p)throw Error('Link a project before enabling billing.');if(responseMode==='none')throw Error('Billing requires acceptance or signature. Turn off billing for an information-only document.');
   if(p.accepted||s.documents.some(x=>x.id!==id&&x.projectId===p.id&&x.billing))throw Error('This project already has a billing agreement.');
-  budget=quote?.amount??Number(data.budget);billingPlan=allocatePlan(budget,data.rules||d.billingPlan);
+  budget=quote?.amount??Number(data.budget);if(!Number.isFinite(budget))budget=0;if(draft){billingPlan=copy(data.rules||d.billingPlan);}else billingPlan=allocatePlan(budget,data.rules||d.billingPlan);
  }
  if(quote)budget=quote.amount;
  Object.assign(d,{offers,showPricing,selectionMode,design,title,scope,kind,responseMode,billing,billingPlan,budget,deliverables:clean(data.deliverables),terms:clean(data.terms),updatedAt:today()});
@@ -58,7 +68,7 @@ export function saveDocument(s,id,data){
 export function publishDocument(s,id){
  const d=getDoc(s,id);ensureOpen(s,d);if(d.status!=='draft')throw Error('Only a draft can be published.');if(!d.title||!clean(d.scope))throw Error('Add document content first.');
  if(pricingVisible(d)&&d.offers?.length){quoteOffers(d.offers);if(d.responseMode==='none'&&d.offers.some(o=>o.mode!=='required'||o.min!==o.max))throw Error('Selectable services require a response.');}
- if(d.billing){if(!pricingVisible(d)||hasTimePricing(d.offers||[]))throw Error('Automatic project billing needs visible, fixed-fee pricing.');if(d.responseMode==='none')throw Error('Billing requires a response.');allocatePlan(d.budget,d.billingPlan);}
+ if(d.billing){if(!pricingVisible(d)||hasTimePricing(d.offers||[]))throw Error('Automatic project billing needs visible, fixed-fee pricing.');if(d.responseMode==='none')throw Error('Billing requires a response.');d.billingPlan=allocatePlan(d.budget,d.billingPlan);}
  const v={...copy(d),versions:undefined,number:d.versions.length+1,client:copy(s.clients.find(c=>c.id===d.clientId)),business:s.settings.business,currency:s.projects.find(p=>p.id===d.projectId)?.currency||s.settings.currency||'USD',status:'published',createdAt:new Date().toISOString()};
  d.versions.push(v);d.currentVersion=v.number;d.status='published';d.updatedAt=today();documentActivity(s,d,'published');return v;
 }

@@ -1,3 +1,4 @@
+import {createPersistenceUI} from './persistence-ui.js';
 import {projectStatus} from './project-status.js';
 import {projectNextStep} from './attention-domain.js';
 import {timeMinutes} from './time-domain.js';
@@ -6,8 +7,8 @@ import {money,projectClient,invoiceStatus,saveClient,archiveClient,updateProject
 
 export function createJourneyUI(ctx){
  const {getState:S,open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog}=ctx;
+ const persist=createPersistenceUI(ctx);
  const project=id=>S().projects.find(p=>p.id===id);
- const commit=message=>{save();render();if(message)toast(message);};
  const field=(label,name,value='',extra='')=>`<label class="field">${label}<input name="${name}" value="${esc(value)}" ${extra}></label>`;
  const note=text=>`<div class="notice">${text}</div>`;
  const err='<div class="form-error" role="alert"></div>';
@@ -29,20 +30,24 @@ export function createJourneyUI(ctx){
  function clientDetail(id){if(ctx.clientDetail)return ctx.clientDetail(id);const s=S(),c=s.clients.find(c=>c.id===id);open('Client',`<div class="dialog-body"><div class="detail-client">${avatar(c)}${esc(c.tag)} ${c.archived?badge('archived'):''}</div><h1>${esc(c.name)}</h1><p>${esc(c.contact)} · ${esc(c.email)}</p><div class="action-row">${btn('Edit client','edit-client',`data-id="${id}"`)}${btn(c.archived?'Restore client':'Archive','archive-client',`data-id="${id}"`)}</div><section class="section"><h3>Projects</h3>${s.projects.filter(p=>p.clientId===id).map(p=>`<button class="list-line full-width" data-action="project" data-id="${p.id}"><span>${esc(p.name)}</span>${badge(p.archived?'archived':deliveryStatus(p))}</button>`).join('')||'<p class="muted">No projects yet.</p>'}</section>${!c.archived?`<div class="action-row">${btn(icon('plus')+'New project','new-project',`data-client="${id}"`,'primary')}</div>`:''}</div>`,{drawer:true});}
  function clientForm(id){const c=S().clients.find(c=>c.id===id)||{};open(id?'Edit client':'New client',`<form id="client-form" data-id="${id||''}"><div class="dialog-body">${field('Client or business name','name',c.name,'required maxlength="100"')}<label class="field">Client type<select name="type" id="client-type"><option value="company" ${c.type!=='individual'?'selected':''}>Company</option><option value="individual" ${c.type==='individual'?'selected':''}>Individual</option></select></label><div id="client-contact-field" ${c.type==='individual'?'hidden':''}>${field('Contact name','contact',c.contact,`${c.type==='individual'?'':'required'} maxlength="100"`)}</div>${field('Email address','email',c.email,'type="email" required')}${field('Service','tag',c.tag,'maxlength="60"')}${field('Tags','tags',(c.tags||[]).join(', '),'maxlength="1200" placeholder="e.g. Qualified, Retainer"')}<p class="hint">Separate tags with commas.</p><p class="hint">Issued invoices and published proposals keep their original client details.</p>${err}</div><div class="dialog-footer">${btn('Cancel','close')}<button class="btn primary" type="submit">${id?'Save client':'Add client'}</button></div></form>`);}
  function editProject(id){const p=project(id);open('Edit project',`<form id="project-edit-form" data-id="${id}"><div class="dialog-body">${field('Project name','name',p.name,'required maxlength="100"')}${field('Service','service',p.service,'maxlength="80"')}${field('Target date','due',p.due,'type="date"')}<label class="field">Status<select name="status">${[...new Set([p.status,...(p.accepted?['active','completed','cancelled']:['cancelled'])])].map(st=>`<option value="${st}" ${p.status===st?'selected':''}>${['inquiry','proposal','declined'].includes(st)?'Planned':st[0].toUpperCase()+st.slice(1)}</option>`).join('')}</select></label>${note(p.accepted?'Agreed scope, fees, and payment terms are preserved in Documents.':'Edit scope, fees, and payment terms in the linked billing document.')}${err}</div><div class="dialog-footer">${btn('Cancel','project',`data-id="${id}"`)}<button class="btn primary" type="submit">Save project</button></div></form>`);}
- function handleClick(a,el){if(a==='issue-scheduled-payment'){issueScheduledPayment(S(),el.dataset.id,el.dataset.rule);commit('Invoice created.');projectDetail(el.dataset.id);return true;}const id=el.dataset.id;
+ function handleClick(a,el){if(a==='issue-scheduled-payment'){void persist(el,()=>issueScheduledPayment(S(),el.dataset.id,el.dataset.rule),()=>{render();projectDetail(el.dataset.id);toast('Invoice created.');});return true;}const id=el.dataset.id;
   if(a==='edit-client')clientForm(id);
-  else if(a==='archive-client'){const c=S().clients.find(c=>c.id===id);if(c.archived){archiveClient(S(),id);commit('Client restored.');clientDetail(id);}else open('Archive client?',`<div class="dialog-body"><p>Hide ${esc(c.name)} from the active client list. Existing projects, documents, and invoices remain available. You can restore this client later.</p></div>`,{footer:btn('Cancel','client',`data-id="${id}"`)+btn('Archive client','archive-client-confirm',`data-id="${id}"`)});}
-  else if(a==='archive-client-confirm'){archiveClient(S(),id);commit('Client archived.');clientDetail(id);}
+  else if(a==='archive-client'){const c=S().clients.find(c=>c.id===id);if(c.archived){void persist(el,()=>archiveClient(S(),id),()=>{render();clientDetail(id);toast('Client restored.');});}else open('Archive client?',`<div class="dialog-body"><p>Hide ${esc(c.name)} from the active client list. Existing projects, documents, and invoices remain available. You can restore this client later.</p></div>`,{footer:btn('Cancel','client',`data-id="${id}"`)+btn('Archive client','archive-client-confirm',`data-id="${id}"`)});}
+  else if(a==='archive-client-confirm'){void persist(el,()=>archiveClient(S(),id),()=>{render();clientDetail(id);toast('Client archived.');});}
   else if(a==='edit-project')editProject(id);
-  else if(a==='archive-project'){const p=project(id);if(p.archived){archiveProject(S(),id);commit('Project restored.');projectDetail(id);}else open('Archive project?',`<div class="dialog-body"><p>Hide ${esc(p.name)} from active project lists and pause its delivery actions. Existing invoices remain payable. You can restore it later.</p></div>`,{footer:btn('Cancel','project',`data-id="${id}"`)+btn('Archive project','archive-project-confirm',`data-id="${id}"`)});}
-  else if(a==='archive-project-confirm'){archiveProject(S(),id);commit('Project archived.');projectDetail(id);}
-  else if(a==='reopen-project'){reopenProject(S(),id);commit('Project reopened.');projectDetail(id);}
+  else if(a==='archive-project'){const p=project(id);if(p.archived){void persist(el,()=>archiveProject(S(),id),()=>{render();projectDetail(id);toast('Project restored.');});}else open('Archive project?',`<div class="dialog-body"><p>Hide ${esc(p.name)} from active project lists and pause its delivery actions. Existing invoices remain payable. You can restore it later.</p></div>`,{footer:btn('Cancel','project',`data-id="${id}"`)+btn('Archive project','archive-project-confirm',`data-id="${id}"`)});}
+  else if(a==='archive-project-confirm'){void persist(el,()=>archiveProject(S(),id),()=>{render();projectDetail(id);toast('Project archived.');});}
+  else if(a==='reopen-project'){void persist(el,()=>reopenProject(S(),id),()=>{render();projectDetail(id);toast('Project reopened.');});}
   else return false;return true;
  }
- function handleSubmit(form,v,intent){const id=form.dataset.id;
-  if(form.id==='client-form'){const c=saveClient(S(),v,id||undefined);commit(id?'Client updated.':'Client created.');clientDetail(c.id);}
-  else if(form.id==='project-edit-form'){updateProject(S(),id,v);commit('Project updated.');projectDetail(id);}
-  else return false;return true;
+ function handleSubmit(form,v,intent){
+  if(!['client-form','project-edit-form'].includes(form.id))return false;
+  const existing=!!form.dataset.id;
+  void persist(form,()=>{
+   if(form.id==='client-form'){const c=saveClient(S(),v,form.dataset.id||undefined);form.dataset.id=c.id;return c.id;}
+   updateProject(S(),form.dataset.id,v);return form.dataset.id;
+  },id=>{render();if(form.id==='client-form'){clientDetail(id);toast(existing?'Client updated.':'Client created.');}else{projectDetail(id);toast('Project updated.');}},{form:true});
+  return true;
  }
  function handleChange(el){if(el.id!=='client-type')return false;const individual=el.value==='individual',host=dialog.querySelector('#client-contact-field');host.hidden=individual;host.querySelector('input').required=!individual;return true;}
  function handleInput(){}

@@ -25,8 +25,10 @@ export function openLineItemMenu(button){
  panel.showPopover();
  const anchor=button.getBoundingClientRect(),width=panel.offsetWidth,gap=6;
  panel.style.left=`${Math.max(12,Math.min(innerWidth-width-12,anchor.right-width))}px`;
- panel.style.top=`${anchor.bottom+gap}px`;
- panel.style.maxHeight=`${Math.max(80,innerHeight-anchor.bottom-gap-12)}px`;
+ const below=Math.max(0,innerHeight-anchor.bottom-gap-12),above=Math.max(0,anchor.top-gap-12);
+ const flip=panel.scrollHeight>below&&above>below,available=flip?above:below;
+ panel.style.maxHeight=`${available}px`;
+ panel.style.top=`${Math.max(12,flip?anchor.top-gap-Math.min(panel.scrollHeight,available):anchor.bottom+gap)}px`;
  button.setAttribute('aria-expanded','true');
  panel.querySelector('.line-option-actions button:not(:disabled)')?.focus({preventScroll:true});
 }

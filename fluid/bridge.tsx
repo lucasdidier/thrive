@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FluidProvider } from "@/lib/fluid-provider";
 import { untitleduiIcons } from "@/lib/icons-untitledui";
@@ -103,18 +103,43 @@ function Picker({
   container: HTMLElement;
 }) {
   const value = useSource(source);
+  const errorId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const invalid = (event: Event) => {
+      event.preventDefault();
+      setError(source.validationMessage);
+      // Only the first invalid field receives focus on a multi-error submit.
+      queueMicrotask(() => {
+        const first = source.form?.querySelector("input:invalid,select:invalid,textarea:invalid");
+        if (!first || first === source) inputRef.current?.focus();
+      });
+    };
+    const clear = () => { if (source.validity.valid) setError(""); };
+    source.addEventListener("invalid", invalid);
+    source.addEventListener("change", clear);
+    source.addEventListener("input", clear);
+    return () => {
+      source.removeEventListener("invalid", invalid);
+      source.removeEventListener("change", clear);
+      source.removeEventListener("input", clear);
+    };
+  }, [source]);
+  const describedBy = [source.getAttribute("aria-describedby"), error ? errorId : ""].filter(Boolean).join(" ");
   const items = Array.from(source.options).map((o) => ({
     value: o.value || "__empty",
     label: o.textContent || "",
   }));
   return (
+    <>
     <Combobox
       items={items}
       value={value || "__empty"}
       disabled={source.matches(":disabled")}
       onValueChange={(v) => emit(source, v === "__empty" ? "" : v)}
     >
-      <ComboboxInput aria-label={labelFor(source)} />
+      <ComboboxInput ref={inputRef} aria-label={labelFor(source)} aria-required={source.required} aria-invalid={error ? true : undefined} aria-describedby={describedBy || undefined} />
       <ComboboxContent container={container}>
         <ComboboxList>
           {(item: any) => (
@@ -126,6 +151,8 @@ function Picker({
         <ComboboxEmpty>No matches</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
+    {error && <span id={errorId} className="fluid-select-error" role="alert">{error}</span>}
+    </>
   );
 }
 function Service({
@@ -318,9 +345,6 @@ export function initFluid(ctx: Context) {
         source.classList.add("fluid-source");
         source.setAttribute("aria-hidden", "true");
         source.tabIndex = -1;
-        source.addEventListener("invalid", () =>
-          host.querySelector("input")?.focus(),
-        );
         mount(host, <Picker source={source} container={portal(source)} />);
       });
     document
@@ -413,6 +437,8 @@ export function initFluid(ctx: Context) {
     "invalid",
     (e) => {
       const target = e.target as HTMLElement;
+      // The Picker owns its visible error and first-invalid-field focus.
+      if (target.matches("select.fluid-source")) return;
       if (target.offsetParent === null) {
         e.preventDefault();
         requestAnimationFrame(() => {

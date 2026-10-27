@@ -1,3 +1,4 @@
+import {createPersistenceUI} from './persistence-ui.js';
 import {expandableCard} from './expandable-card.js';
 import {currencies,currencyCode,currencyLocked,formatMoney} from './currency.js';
 import {countries} from './onboarding-domain.js';
@@ -7,6 +8,7 @@ import {defaultInvoiceDesign,validateInvoiceDesign} from './invoice-design.js';
 import {commercialLocked,saveProjectSettings,saveClientSettings} from './record-settings.js';
 export function createSettingsUI(ctx){
  const {getState:S,open,dialog,esc,btn,icon,save,render,toast,tags}=ctx;
+ const persist=createPersistenceUI(ctx);
  const field=(label,name,value='',extra='')=>`<label class="field">${label}<input name="${name}" value="${esc(value??'')}" ${extra}></label>`;
  const select=(label,name,opts,value)=>`<label class="field">${label}<select name="${name}">${opts.map(([v,l])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(l)}</option>`).join('')}</select></label>`;
  const area=(label,name,value='',extra='')=>`<label class="field">${label}<textarea name="${name}" rows="3" ${extra}>${esc(value)}</textarea></label>`;
@@ -20,7 +22,16 @@ export function createSettingsUI(ctx){
  function updateBudget(){const form=dialog.querySelector('#record-project-form');if(!form)return;const type=form.elements.budgetType.value;form.elements.budget.closest('label').hidden=type!=='fixed';form.elements.deposit.closest('label').hidden=type!=='fixed';form.elements.budgetHours.closest('label').hidden=type!=='hours';sectionSummary(form.elements.budgetType,form.elements.budgetType.selectedOptions[0].textContent);const rate=form.elements.hourlyRate.value;sectionSummary(form.elements.hourlyRate,formatMoney(rate===''?S().settings.hourlyRate||0:Math.round(Number(rate)*100),form.elements.currency.value)+' / hour · '+(rate===''?'Workspace default':'Custom rate'));}
  function change(el){const f=el.closest('#record-project-form');if(!f)return false;if(el.name==='clientId'){const inline=f.querySelector('#inline-client');inline.hidden=el.value!=='__new';inline.disabled=inline.hidden;if(!f.dataset.id){const c=S().clients.find(c=>c.id===el.value);f.elements.currency.value=c?.currency||currencyCode(S());f.elements.hourlyRate.value=c?.hourlyRate==null?'':c.hourlyRate/100;}}updateBudget();return true;}
  function click(a,el){if(tags.click(a,el))return true;if(a==='new-project')project(el.dataset.client);else if(a==='edit-project')project(null,el.dataset.id);else if(a==='new-client')client();else if(a==='edit-client')client(el.dataset.id);else if(a.startsWith('settings-')){dialog.close();ctx.go(a.slice(9));}else return false;return true;}
- async function submit(form,v){try{if(form.id==='record-project-form'){const p=saveProjectSettings(S(),{...v,tags:tags.read(form),billable:form.elements.billable.checked},form.dataset.id||undefined);await save();render();dialog.close();ctx.projectDetail(p.id);toast('Project saved.');return;}else if(form.id==='record-client-form'){const c=saveClientSettings(S(),{...v,tags:tags.read(form)},form.dataset.id||undefined);await save();render();dialog.close();ctx.clientDetail(c.id);toast('Client saved.');return;}else return;await save();render();dialog.close();toast('Settings saved.');}catch(e){const host=form.querySelector('.form-error');if(host)host.textContent=e.message;else toast(e.message);}}
+ function submit(form,v){return persist(form,()=>{
+  if(form.id==='record-project-form'){
+   const p=saveProjectSettings(S(),{...v,clientId:v.clientId==='__new'&&form.dataset.createdClientId?form.dataset.createdClientId:v.clientId,tags:tags.read(form),billable:form.elements.billable.checked},form.dataset.id||undefined);
+   form.dataset.id=p.id;
+   // A newly created inline client must be reused if this save needs retrying.
+   if(v.clientId==='__new')form.dataset.createdClientId=p.clientId;
+   return p;
+  }
+  const c=saveClientSettings(S(),{...v,tags:tags.read(form)},form.dataset.id||undefined);form.dataset.id=c.id;return c;
+ },record=>{render();dialog.close();if(form.id==='record-project-form')ctx.projectDetail(record.id);else ctx.clientDetail(record.id);toast(form.id==='record-project-form'?'Project saved.':'Client saved.');},{form:true});}
  function handleSubmit(form,v){if(!['record-project-form','record-client-form'].includes(form.id))return false;void submit(form,v);return true;}
  return{click,change,handleSubmit};
 }

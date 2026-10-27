@@ -1,3 +1,4 @@
+import {createPersistenceUI} from './persistence-ui.js';
 import {moreActions} from './more-actions.js';
 import {projectStatus,projectStatuses} from './project-status.js';
 import {documentRecordActions} from './record-actions.js';
@@ -8,6 +9,7 @@ import {deliveryStatus} from './workspace-domain.js';
 import {schemaFor,crmSchemas,initCRM,viewsFor,defaultConfig,saveCRMView,deleteCRMView,crmRecords,queryCRM,addClientNote,updateClientNote,deleteClientNote,editClientField} from './crm-domain.js';
 export function createCRM(ctx){
  const {bulk,listView,getState:S,getPage,render,save,toast,open,dialog,icon,esc,badge,avatar,date,btn}=ctx;
+ const persist=createPersistenceUI(ctx);
  const clone=x=>JSON.parse(JSON.stringify(x));
  let editingNote=null,deletedNote=null;
  let knownFields={},drafts={},searches={},menu=null,formsTab='forms',panelId=null,panelTab='activity',panelIds=[],returnFocus=null;
@@ -86,15 +88,15 @@ export function createCRM(ctx){
  else if(a==='crm-discard'){drafts[entity()].config=clone(currentView().config);render();}
  else if(a==='crm-save-as')saveViewDialog();
  else if(a==='crm-rename')saveViewDialog('rename');
- else if(a==='crm-save-view'){const v=currentView();if(v.builtIn)saveViewDialog();else{saveCRMView(S(),entity(),v.name,config(),v.id);save();render();toast('View saved.');}}
+ else if(a==='crm-save-view'){const v=currentView();if(v.builtIn)saveViewDialog();else{void persist(el,()=>saveCRMView(S(),entity(),v.name,config(),v.id),()=>{render();toast('View saved.');});}}
  else if(a==='crm-delete-view'){const v=currentView();menu=null;render();open('Delete view?',`<div class="dialog-body"><p>Delete “${esc(v.name)}”? Your records will remain unchanged.</p></div>`,{footer:btn('Cancel','close')+btn('Delete view','crm-confirm-delete','','primary')});}
- else if(a==='crm-confirm-delete'){deleteCRMView(S(),entity(),currentView().id);delete drafts[entity()];menu=null;dialog.close();save();render();toast('View deleted.');}
+ else if(a==='crm-confirm-delete'){const e=entity(),id=currentView().id;void persist(el,()=>deleteCRMView(S(),e,id),()=>{delete drafts[e];menu=null;dialog.close();render();toast('View deleted.');});}
  else if(a==='crm-forms-tab'){formsTab=el.dataset.tab;menu=null;render();}
  else if(a==='crm-close-panel')closePanel();
  else if(a==='crm-note-edit'){editingNote=el.dataset.id;drawPanel();panelRoot().querySelector('textarea')?.focus();}
  else if(a==='crm-note-cancel'){editingNote=null;drawPanel();}
- else if(a==='crm-note-delete'){deleteClientNote(S(),panelId,el.dataset.id);deletedNote=el.dataset.id;editingNote=null;save();drawPanel();}
- else if(a==='crm-note-undo'){deleteClientNote(S(),panelId,el.dataset.id,true);deletedNote=null;save();drawPanel();}
+ else if(a==='crm-note-delete'){const client=panelId;void persist(el,()=>deleteClientNote(S(),client,el.dataset.id),()=>{deletedNote=el.dataset.id;editingNote=null;drawPanel();});}
+ else if(a==='crm-note-undo'){const client=panelId;void persist(el,()=>deleteClientNote(S(),client,el.dataset.id,true),()=>{deletedNote=null;drawPanel();});}
  else if(a==='crm-record-tab'){panelTab=el.dataset.tab;drawPanel();}
  else if(a==='crm-prev-client'||a==='crm-next-client'){const i=panelIds.indexOf(panelId)+(a==='crm-next-client'?1:-1);if(panelIds[i]){panelId=panelIds[i];panelTab='activity';drawPanel();}}
  else if(a==='crm-edit-field'){inlineEdit(el);}
@@ -103,11 +105,23 @@ export function createCRM(ctx){
  }
  function handleChange(el){if(el.dataset.cfFilterOp||el.dataset.cfFilterValue){const key=el.dataset.cfFilterOp||el.dataset.cfFilterValue,old=config().filters[key]||{op:'contains',value:''};if(el.dataset.cfFilterOp)old.op=el.value;else old.value=el.value;config().filters[key]=old;render();return true;}if(el.dataset.crmFilter){config().filters[el.dataset.crmFilter]=el.value;render();return true;}if(el.dataset.crmColumn){const c=config();c.columns=el.checked?[...c.columns,el.dataset.crmColumn]:c.columns.filter(x=>x!==el.dataset.crmColumn);render();return true;}if(el.id==='crm-sort-field'){config().sort=el.value;render();return true;}if(el.id==='crm-sort-direction'){config().direction=el.value;render();return true;}if(el.id==='crm-density'){config().density=el.value;render();return true;}return false;}
  function handleInput(el){if(el.id!=='crm-search')return false;const pos=el.selectionStart;searches[entity()]=el.value;render();const input=document.querySelector('#crm-search');input.focus();input.setSelectionRange(pos,pos);return true;}
- function handleSubmit(f,v){if(!f.id.startsWith('crm-'))return false;try{
- if(f.id==='crm-save-view-form'){const old=currentView(),view=saveCRMView(S(),entity(),v.name,config(),f.dataset.mode==='rename'?old.id:undefined);drafts[entity()]={id:view.id,config:clone(view.config)};menu=null;save();dialog.close();render();toast('View saved.');}
- else if(f.id==='crm-inline-form'){editClientField(S(),f.dataset.id,f.dataset.key,v.value);save();render();drawPanel();toast('Client updated.');}
- else if(f.id==='crm-note-form'){if(f.dataset.note)updateClientNote(S(),f.dataset.id,f.dataset.note,v.body);else addClientNote(S(),f.dataset.id,v.body);editingNote=null;save();drawPanel();toast('Note saved.');}
- }catch(err){const target=f.querySelector('.form-error');if(target)target.textContent=err.message;else throw err;}return true;}
+ function handleSubmit(f,v){
+  if(!['crm-save-view-form','crm-inline-form','crm-note-form'].includes(f.id))return false;
+  const e=entity();
+  void persist(f,()=>{
+   if(f.id==='crm-save-view-form'){
+    const old=currentView(),view=saveCRMView(S(),e,v.name,config(),f.dataset.savedViewId||(f.dataset.mode==='rename'?old.id:undefined));
+    f.dataset.savedViewId=view.id;return view;
+   }
+   if(f.id==='crm-inline-form')editClientField(S(),f.dataset.id,f.dataset.key,v.value);
+   else if(f.dataset.note)updateClientNote(S(),f.dataset.id,f.dataset.note,v.body);
+   else f.dataset.note=addClientNote(S(),f.dataset.id,v.body).id;
+  },view=>{
+   if(f.id==='crm-save-view-form'){drafts[e]={id:view.id,config:clone(view.config)};menu=null;dialog.close();render();toast('View saved.');}
+   else if(f.id==='crm-inline-form'){render();drawPanel();toast('Client updated.');}
+   else{editingNote=null;drawPanel();toast('Note saved.');}
+  },{form:true});return true;
+ }
  function outsideClick(e){if(menu&&!e.target.closest('.crm-toolbar-wrap')&&!dialog.open){menu=null;render();}}
  function keyboard(e){if(e.key==='Escape'&&!dialog.open){if(e.target.closest('#crm-inline-form')){e.preventDefault();render();drawPanel();}else if(menu){menu=null;render();}else if(panelId){closePanel();}}}
  function showColumn(e,id){const key=e==='client'?'clients':'projects';if(drafts[key]&&!drafts[key].config.columns.includes(id))drafts[key].config.columns.push(id);else if(!drafts[key]){const base=clone(viewsFor(S(),key)[0].config);if(!base.columns.includes(id))base.columns.push(id);drafts[key]={id:'all',config:base};}}

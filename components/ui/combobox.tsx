@@ -380,7 +380,7 @@ const ALWAYS_HIGHLIGHT = "always" as unknown as boolean;
 const fieldVariants = cva(
   [
     "group flex items-center ring-1 cursor-text",
-    "transition-all duration-80",
+    "transition-[color,background-color,border-color,border-radius,box-shadow,opacity] duration-80",
     "data-[disabled]:opacity-50 data-[disabled]:pointer-events-none",
   ],
   {

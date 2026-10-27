@@ -13,7 +13,7 @@ export function createListViewUI({render,esc,icon,bulk,dialog,getState,save,bloc
  function query(scope,rows,config){return queryList(rows,config,searches[scope]||'');}
  function close(){menu='';}
  function reset(){kanban.reset();current=null;menu='';}
- function refresh(focus){render();if(focus){const target=document.querySelector(focus);target?.focus();if(target?.tagName==='SELECT')queueMicrotask(()=>target.parentElement?.querySelector('.thrive-select-trigger')?.focus());}}
+ function refresh(focus){render();if(focus&&typeof document!=='undefined'){const target=typeof focus==='function'?focus():document.querySelector(focus);target?.focus();if(target?.tagName==='SELECT')queueMicrotask(()=>target.parentElement?.querySelector('.thrive-select-trigger')?.focus());}}
  function changed(focus){current.onChange?.();refresh(focus);}
  function options(values,value){return values.map(([v,label])=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(label)}</option>`).join('');}
  function control(name,label,symbol,active){return `<button class="crm-tool ${active?'applied':''}" data-action="view-menu" data-menu="${name}" aria-expanded="${menu===name}" aria-controls="view-popup">${icon(symbol)}<span>${label}</span></button>`;}
@@ -44,13 +44,13 @@ export function createListViewUI({render,esc,icon,bulk,dialog,getState,save,bloc
  function handleClick(a,el){if(a.startsWith('board-')){close();current?.onMenu?.();return kanban.handleClick(a,el);}if(!a.startsWith('view-')||!current)return false;
   if(a==='view-menu'){menu=menu===el.dataset.menu?'':el.dataset.menu;current.onMenu?.();refresh(menu?'#view-popup select, #view-popup input, #view-popup button':`[data-menu="${el.dataset.menu}"]`);return true;}
   if(a==='view-close'){const old=menu;close();refresh(`[data-action=view-menu][data-menu=${old}]`);return true;}
-  if(a==='view-group-toggle'){const set=collapsed[current.scope]??=new Set();set.has(el.dataset.group)?set.delete(el.dataset.group):set.add(el.dataset.group);refresh();return true;}
+  if(a==='view-group-toggle'){const set=collapsed[current.scope]??=new Set();set.has(el.dataset.group)?set.delete(el.dataset.group):set.add(el.dataset.group);refresh(()=>[...document.querySelectorAll('[data-action=view-group-toggle]')].find(button=>button.dataset.group===el.dataset.group));return true;}
   if(a==='view-clear-filter')delete cfg().filters[el.dataset.key];
   else if(a==='view-clear-filters')cfg().filters={};
   else if(a==='view-clear-sort')cfg().sort='';
   else if(a==='view-clear-group'){cfg().groupBy='';if(cfg().layout==='board')cfg().layout='table';}
   else if(a==='view-clear'){Object.assign(cfg(),viewDefaults(current.columns));if(cfg().layout==='board')cfg().layout='table';collapsed[current.scope]=new Set();searches[current.scope]='';}
-  else if(a==='view-header-sort'){const c=cfg(),key=el.dataset.key;c.direction=c.sort===key&&c.direction==='asc'?'desc':'asc';c.sort=key;}
+  else if(a==='view-header-sort'){const c=cfg(),key=el.dataset.key;c.direction=c.sort===key&&c.direction==='asc'?'desc':'asc';c.sort=key;changed(()=>[...document.querySelectorAll('[data-action=view-header-sort]')].find(button=>button.dataset.key===key));return true;}
   changed();return true;
  }
  function handleChange(el){if(!current)return false;const c=cfg();let selector='';

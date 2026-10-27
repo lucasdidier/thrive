@@ -1,3 +1,4 @@
+import {createDialogDraftGuard} from './dialog-draft-guard.js';
 import {toggleMoreActions} from './more-actions.js';
 import {displayInitials} from './attention-domain.js';
 import {documentLabel} from './document-labels.js';
@@ -56,17 +57,19 @@ if(account.enabled&&needsOnboarding(state)&&!location.hash.startsWith('#settings
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
 try{document.documentElement.dataset.theme=localStorage.getItem('thrive-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch{}
 const dialog=document.querySelector('#dialog');
+const draftGuard=createDialogDraftGuard(dialog);
 let settingsPage;
 const settingsSurface=new Proxy(dialog,{get(target,key){const surface=!target.open&&settingsPage?.isActive()?document.querySelector('#settings-content')||target:target;if(key==='close')return ()=>{if(target.open)target.close();};const value=Reflect.get(surface,key,surface);return typeof value==='function'?value.bind(surface):value;}});
 initCreateMenu();initDatePicker();
 function save(){return workspaceSync.save();}
+async function saveThen(after){try{await save();if(workspaceSync.isBlocked())return;after();}catch(err){error(err.message);}}
 function toast(text){const el=document.querySelector('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3500)}
 function btn(text,action,extra='',cls=''){return `<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`}
 const badge=status=>`<span class="badge ${status.replaceAll(' ','-')}"><i></i>${esc(status)}</span>`;
 const avatar=c=>`<span class="avatar ${c?.color||'sage'}">${c?.logo&&/^data:image\/(png|jpeg|webp);base64,/.test(c.logo)?`<img src="${esc(c.logo)}" alt="">`:esc(displayInitials(c))}</span>`;
 const date=s=>s?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'No date';
 function go(p){if(page===p){filter='all';query='';render()}else location.hash=p}
-function open(title,html,{drawer=!/[?]$|^Approve milestone$|^Search workspace$/.test(title),footer=''}={}){if(settingsPage?.present(title,html,{footer}))return;dialog.className=drawer?'drawer':'';dialog.scrollTop=0;dialog.innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${title}</h2><button class="icon-btn" data-action="close" aria-label="Close dialog">${icon('close')}</button></div>${html}${footer?`<div class="dialog-footer">${footer}</div>`:''}`;if(!dialog.open)dialog.showModal();dialog.scrollTop=0}
+function open(title,html,{drawer=!/[?]$|^Approve milestone$|^Search workspace$/.test(title),footer=''}={}){if(settingsPage?.present(title,html,{footer}))return;if(!dialog.open)draftGuard.clear();dialog.className=drawer?'drawer':'';dialog.scrollTop=0;dialog.innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${title}</h2><button class="icon-btn" data-action="close" aria-label="Close dialog">${icon('close')}</button></div>${html}${footer?`<div class="dialog-footer">${footer}</div>`:''}`;if(!dialog.open)dialog.showModal();dialog.scrollTop=0;draftGuard.track()}
 function error(message){const e=(dialog.open?dialog:document.querySelector('#settings-content')||dialog).querySelector('.form-error');if(e)e.textContent=message;else toast(message)}
 function heading(title,description,action,eyebrow=''){return `<div class="page-heading"><div>${eyebrow?`<div class="eyebrow">${eyebrow}</div>`:''}<h1>${title}</h1><p>${description}</p></div>${action||''}</div>`}
 function shell(){
@@ -104,24 +107,29 @@ const shareUI=createShareUI({getState:()=>state,save,blocked:workspaceSync.isBlo
 document.addEventListener('thrive-share-form',e=>shareUI.show('form',e.detail.id,'embed'));
 const portalUI=createPortalUI({getState:()=>state,open,dialog,btn,esc,save,blocked:workspaceSync.isBlocked,toast,share:shareUI.show});
 const chatUI=createChatUI({getState:()=>state,render,save,toast,icon,esc,btn,open,dialog,go});
-const catalogUI=createCatalogUI({getState:()=>state,open,btn,icon,esc,dialog:settingsSurface,save,render,toast});
-const billingUI=createBillingUI({getState:()=>state,open,btn,icon,esc,badge,date,dialog:settingsSurface,save,render,toast});
-const timeUI=createTimeUI({bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
+const catalogUI=createCatalogUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,btn,icon,esc,dialog:settingsSurface,save,render,toast});
+const billingUI=createBillingUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,btn,icon,esc,badge,date,dialog:settingsSurface,save,render,toast});
+const timeUI=createTimeUI({blocked:workspaceSync.isBlocked,bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
 const scheduleUI=createSchedulingUI({getPage:()=>page,bulk,listView,calendarAvailability:messagesUI.calendarAvailability,cancelCalendar:messagesUI.cancelCalendar,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog:settingsSurface,btn,icon,esc,badge,avatar});
 const notificationsUI=createNotificationsUI({getState:()=>state,getPage:()=>page,render,save,open,btn,icon,esc,toast});
 const dashboard=createDashboard({recentActivity:emptyHTML=>notificationsUI.recent(4,emptyHTML),getState:()=>state,getPage:()=>page,render,icon,esc,btn});
 const tagsUI=createTagsUI({getState:()=>state,esc,save,toast});
-const recordPanel=createRecordPanel({tags:tagsUI,getState:()=>state,esc,icon,btn,avatar,save,render,toast,dialog,detail:(entity,id,opening=true)=>entity==='client'?crm.clientDetail(id,opening):journey.projectDetail(id,opening)});
-const customFields=createCustomFieldsUI({getState:()=>state,open,dialog,esc,icon,btn,save,render,toast,recordDetail:(e,id)=>e==='client'?crm.clientDetail(id):journey.projectDetail(id),refresh:()=>recordPanel.refresh(true),showColumn:(e,id)=>crm.showColumn(e,id)});
-const crm=createCRM({clientEmails:messagesUI.clientEmails,mountClientPortal:portalUI.mountClient,recordPanel,bulk,listView,communicationActions:messagesUI.contextActions,customFields,clientMeetings:scheduleUI.clientMeetings,getState:()=>state,getPage:()=>page,render,save,toast,open,dialog,icon,esc,badge,avatar,date,btn});
-const workspaceUI=createWorkspaceUI({getState:()=>state,getView:()=>({filter,query}),clearList:()=>{filter='all';query='';},open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog,heading,controls,go});
-const workflowUI=createWorkflowUI({bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast});
-const journey=createJourneyUI({projectEmails:messagesUI.projectEmails,recordPanel,communicationActions:messagesUI.contextActions,customFields,clientDetail:crm.clientDetail,projectDocuments:workspaceUI.projectDocuments,getState:()=>state,open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog});
+const recordPanel=createRecordPanel({blocked:workspaceSync.isBlocked,tags:tagsUI,getState:()=>state,esc,icon,btn,avatar,save,render,toast,dialog,detail:(entity,id,opening=true)=>entity==='client'?crm.clientDetail(id,opening):journey.projectDetail(id,opening)});
+const customFields=createCustomFieldsUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,dialog,esc,icon,btn,save,render,toast,recordDetail:(e,id)=>e==='client'?crm.clientDetail(id):journey.projectDetail(id),refresh:()=>recordPanel.refresh(true),showColumn:(e,id)=>crm.showColumn(e,id)});
+const crm=createCRM({blocked:workspaceSync.isBlocked,clientEmails:messagesUI.clientEmails,mountClientPortal:portalUI.mountClient,recordPanel,bulk,listView,communicationActions:messagesUI.contextActions,customFields,clientMeetings:scheduleUI.clientMeetings,getState:()=>state,getPage:()=>page,render,save,toast,open,dialog,icon,esc,badge,avatar,date,btn});
+const workspaceUI=createWorkspaceUI({blocked:workspaceSync.isBlocked,getState:()=>state,getView:()=>({filter,query}),clearList:()=>{filter='all';query='';},open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog,heading,controls,go});
+const workflowUI=createWorkflowUI({blocked:workspaceSync.isBlocked,bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast});
+const journey=createJourneyUI({blocked:workspaceSync.isBlocked,projectEmails:messagesUI.projectEmails,recordPanel,communicationActions:messagesUI.contextActions,customFields,clientDetail:crm.clientDetail,projectDocuments:workspaceUI.projectDocuments,getState:()=>state,open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog});
 const onboardingUI=createOnboardingUI({getState:()=>state,save,render,go,toast,esc,icon,blocked:()=>workspaceSync.isPending(),importClients:()=>clientImport.handleClick('ci-start',{dataset:{}}),connections:messagesUI.connections});
-const settingsUI=createSettingsUI({getState:()=>state,open,dialog,esc,btn,icon,save,render,toast,tags:tagsUI,email:account.user?.email,go,projectDetail:id=>journey.projectDetail(id),clientDetail:id=>crm.clientDetail(id)});
+const settingsUI=createSettingsUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,dialog,esc,btn,icon,save,render,toast,tags:tagsUI,email:account.user?.email,go,projectDetail:id=>journey.projectDetail(id),clientDetail:id=>crm.clientDetail(id)});
 settingsPage=createSettingsPage({getState:()=>state,esc,icon,btn,save,render,toast,isBlocked:workspaceSync.isBlocked,email:account.user?.email,closeDialog:()=>dialog.close(),load:async id=>{if(id==='services')catalogUI.handleClick('services',{dataset:{}});else if(id==='payments')billingUI.handleClick('payment-settings',{dataset:{}});else if(id==='invoices')billingUI.handleClick('invoice-templates',{dataset:{}});else if(id==='connections')await messagesUI.connections();else if(id==='mcp')clientImport.handleClick('mcp-guide',{dataset:{}});else if(id==='scheduling')document.querySelector('#settings-content').innerHTML=scheduleUI.settingsPage();}});
 const fluidUI=initFluid({getState:()=>state,save,toast,open,dialog});
 workspaceSync.bind(()=>state,next=>{state=upgradeWorkspace(next);workflowSnapshot=snapshotWorkspace(state);},close=>{if(close){dialog.close();crm.resetAll();}render();recordPanel.refresh();});
+document.addEventListener('click',e=>{
+ const el=e.target.closest('button[data-action],a[href]');if(!el||!dialog.open)return;
+ const leaving=el.matches('a[href]')||['signout','navigate'].includes(el.dataset.action)||(el.closest('#dialog')&&/^(Cancel|Back to (invoice|draft)|Close|Done)$/.test(el.textContent.trim()));
+ if(leaving&&el.dataset.action!=='close'&&!draftGuard.canLeave()){e.preventDefault();e.stopImmediatePropagation();}
+},true);
 document.addEventListener('click',e=>{
  if(e.target.closest('.skip')){e.preventDefault();document.querySelector('#main').focus();return;}
  const el=e.target.closest('[data-action]');if(!el){listView.outsideClick(e);crm.outsideClick(e);return;}const a=el.dataset.action,id=el.dataset.id;
@@ -131,20 +139,20 @@ document.addEventListener('click',e=>{
  if(notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||onboardingUI.handleClick(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
  if(a==='signout'){if(workspaceSync.isPending())throw Error('Finish syncing your changes before signing out.');signOut().catch(err=>toast(err.message));return;}
  if(account.enabled&&['reset-preview','reset-data'].includes(a))throw Error('Sample data reset is only available in the demo.');
- if(a==='close')dialog.close();
+ if(a==='close'){if(draftGuard.canLeave())dialog.close();}
  else if(a==='theme'){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('thrive-theme',t)}catch{}}
  else if(a==='project')projectDetail(id);else if(a==='client')clientDetail(id);else if(a==='invoice')invoiceDetail(id);else if(a==='proposal')proposalDetail(id);
  else if(a==='new-project')projectForm(el.dataset.client);else if(a==='new-client')clientForm();else if(a==='setup')setup();else if(a==='business')business();
  else if(a==='filter'){filter=el.dataset.filter;render()}
- else if(a==='navigate'){dialog.close();go(el.dataset.page)}
- else if(a==='deposit'){const invoice=generateDeposit(state,id);save();render();invoiceDetail(invoice.id);toast('Deposit invoice ready.')}
- else if(a==='toggle-workflow'){const w=state.workflows.find(w=>w.id===id);w.enabled=!w.enabled;save();render();toast(w.enabled?'Deposit workflow enabled.':'Deposit workflow paused. You can still create invoices manually.')}
+ else if(a==='navigate'){if(draftGuard.canLeave()){dialog.close();go(el.dataset.page)}}
+ else if(a==='deposit'){const invoice=generateDeposit(state,id);void saveThen(()=>{render();invoiceDetail(invoice.id);toast('Deposit invoice ready.');})}
+ else if(a==='toggle-workflow'){const w=state.workflows.find(w=>w.id===id);w.enabled=!w.enabled;void saveThen(()=>{render();toast(w.enabled?'Deposit workflow enabled.':'Deposit workflow paused. You can still create invoices manually.');})}
  else if(a==='workflow')workflowDetail(id);
  else if(a==='suggest'){const text=document.querySelector('#setup-prompt').value.trim();if(text.length<10)throw new Error('Describe your services and payment terms.');setupDraft=suggestSetup(text);setupPreview()}
  else if(a==='example'){document.querySelector('#setup-prompt').value=({design:'I’m a brand designer. I take 50% upfront, work in discovery, design, and handoff, and review every proposal.',web:'I build websites. I take a 40% deposit and work through discovery, design, development, and launch.',consult:'I’m a strategy consultant. I take 30% upfront, then move through discovery, strategy, and recommendations.'})[el.dataset.kind]}
  else if(a==='search')search();
  else if(a==='reset-preview')open('Reset the demo?', '<div class="dialog-body"><p>This restores the original sample workspace and removes changes made in this browser. Your appearance preference is kept.</p></div>',{footer:btn('Keep my changes','close')+btn('Reset sample data','reset-data','','primary')});
- else if(a==='reset-data'){state=initBilling(upgradeWorkspace(seed()));initScheduling(state,Intl.DateTimeFormat().resolvedOptions().timeZone);scheduleUI.reset();crm.resetAll();chatUI.reset();workflowUI.reset();initWorkflows(state);workflowSnapshot=snapshotWorkspace(state);save();dialog.close();render();toast('Sample data restored.')}
+ else if(a==='reset-data'){state=initBilling(upgradeWorkspace(seed()));initScheduling(state,Intl.DateTimeFormat().resolvedOptions().timeZone);scheduleUI.reset();crm.resetAll();chatUI.reset();workflowUI.reset();initWorkflows(state);workflowSnapshot=snapshotWorkspace(state);void saveThen(()=>{dialog.close();render();toast('Sample data restored.');})}
  else if(a==='export'){const rows=[['Invoice','Client','Project',`Amount ${currencyCode(state)}`,`Paid ${currencyCode(state)}`,'Due','Status'],...state.invoices.map(i=>{const p=state.projects.find(p=>p.id===i.projectId);return [i.number,i.clientName||projectClient(state,p)?.name||'',i.projectName||p?.name||'',(i.amount/100).toFixed(2),(i.paid/100).toFixed(2),i.due,invoiceStatus(i)]})];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const link=document.createElement('a');link.href=url;link.download='thrive-invoices.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Your invoice export is ready.')}
  }catch(err){error(err.message)}
 });
@@ -154,16 +162,16 @@ document.addEventListener('submit',e=>{
  if(!e.target.closest('dialog,#client-panel,#settings-content,.project-page')&&!e.target.id.startsWith('crm-')&&!e.target.id.startsWith('cf-')&&e.target.id!=='chat-form'&&e.target.id!=='availability-form'&&!e.target.id.startsWith('onboarding-'))return;e.preventDefault();const f=new FormData(e.target),values=Object.fromEntries(f);
  try{
  if(settingsPage.handleSubmit(e.target,values)||settingsUI.handleSubmit(e.target,values)||onboardingUI.handleSubmit(e.target,values)||clientImport.handleSubmit(e.target,values)||recordPanel.handleSubmit(e.target,values)||portalUI.handleSubmit(e.target,e.submitter)||timeUI.handleSubmit(e.target,values)||formsUI.handleSubmit(e.target,e.submitter?.value)||messagesUI.handleSubmit(e.target,values,e.submitter?.value)||customFields.handleSubmit(e.target,values)||catalogUI.handleSubmit(e.target,values)||workflowUI.handleSubmit(e.target)||scheduleUI.handleSubmit(e.target,values)||chatUI.handleSubmit(e.target,values)||billingUI.handleSubmit(e.target,values,e.submitter?.value)||crm.handleSubmit(e.target,values)||workspaceUI.handleSubmit(e.target,values,e.submitter?.value)||journey.handleSubmit(e.target,values,e.submitter?.value))return;
- if(e.target.id==='project-form'){const p=createProject(state,{...values,budget:Math.round(Number(values.budget)*100)});save();render();projectDetail(p.id);toast('Project created.')}
+ if(e.target.id==='project-form'){const p=state.projects.find(p=>p.id===e.target.dataset.createdId)||createProject(state,{...values,budget:Math.round(Number(values.budget)*100)});e.target.dataset.createdId=p.id;void saveThen(()=>{render();projectDetail(p.id);toast('Project created.');})}
 
- if(e.target.id==='business-form'){if(!values.name.trim())throw new Error('Enter your name.');state.settings={...state.settings,name:values.name.trim(),business:values.business.trim()||values.name.trim(),businessName:values.business.trim()};save();render();dialog.close();toast('Workspace details saved.')}
+ if(e.target.id==='business-form'){if(!values.name.trim())throw new Error('Enter your name.');state.settings={...state.settings,name:values.name.trim(),business:values.business.trim()||values.name.trim(),businessName:values.business.trim()};void saveThen(()=>{render();dialog.close();toast('Workspace details saved.');})}
  }catch(err){error(err.message)}
 });
 document.addEventListener('input',e=>{if(settingsPage.input(e.target))return;if(listView.handleInput(e.target)||messagesUI.handleInput(e.target)||customFields.handleInput(e.target)||workflowUI.handleInput(e.target)||billingUI.handleInput(e.target)||scheduleUI.handleInput(e.target)||chatUI.handleInput(e.target)||crm.handleInput(e.target))return;workspaceUI.handleInput(e.target);journey.handleInput(e.target);if(e.target.id==='list-search'){const cursor=e.target.selectionStart;query=e.target.value;render();const input=document.querySelector('#list-search');input.focus();input.setSelectionRange(cursor,cursor)}if(e.target.id==='global-search')searchResults(e.target.value)});
 document.addEventListener('change',e=>{settingsPage.input(e.target);try{if(!settingsUI.change(e.target)&&!onboardingUI.handleChange(e.target)&&!clientImport.handleChange(e.target)&&!recordPanel.handleChange(e.target)&&!journey.handleChange(e.target)&&!listView.handleChange(e.target)&&!bulk.handleChange(e.target)&&!timeUI.handleChange(e.target)&&!catalogUI.handleChange(e.target)&&!formsUI.handleChange(e.target)&&!messagesUI.handleChange(e.target)&&!customFields.handleChange(e.target)&&!workflowUI.handleChange(e.target)&&!billingUI.handleChange(e.target)&&!scheduleUI.handleChange(e.target)&&!crm.handleChange(e.target))workspaceUI.handleChange(e.target)}catch(err){error(err.message)}});
-document.addEventListener('keydown',e=>{if(listView.keyboard(e)||bulk.keyboard(e)||recordPanel.keyboard(e))return;chatUI.keyboard(e);crm.keyboard(e);if(e.key==='/'&&!dialog.open&&!e.target.closest('input,textarea,select,[contenteditable]')){const search=document.querySelector('#crm-search, #list-search, #meeting-search');if(search){e.preventDefault();search.focus();}}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();search()}});
-dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});
-window.addEventListener('hashchange',()=>{if(!settingsPage.guardHash())return;clearTimeout(toastTimer);document.querySelector('#toast').classList.remove('show');document.querySelector('#toast').textContent='';dialog.close();recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();document.querySelector('#main').focus()});
+document.addEventListener('keydown',e=>{if(listView.keyboard(e)||bulk.keyboard(e)||recordPanel.keyboard(e))return;chatUI.keyboard(e);crm.keyboard(e);if(e.key==='/'&&!dialog.open&&!e.target.closest('input,textarea,select,[contenteditable]')){const search=document.querySelector('#crm-search, #list-search, #meeting-search');if(search){e.preventDefault();search.focus();}}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(draftGuard.canLeave())search()}});
+dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){if(draftGuard.canLeave())dialog.close()}}});
+window.addEventListener('hashchange',event=>{if(document.querySelector('#rp-inline-form,#cf-value-form,#crm-inline-form')){history.replaceState(null,'',event.oldURL);toast('Save or cancel the current edit before navigating.');return;}if(!draftGuard.canLeave()){history.replaceState(null,'',event.oldURL);return;}if(!settingsPage.guardHash())return;clearTimeout(toastTimer);document.querySelector('#toast').classList.remove('show');document.querySelector('#toast').textContent='';dialog.close();recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();document.querySelector('#main').focus()});
 render();
 
 const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Emails to load client conversations.');history.replaceState(null,'',location.pathname+location.hash);}
