@@ -8,7 +8,7 @@ export async function withRuntime(request,env,handler,{publicAccess=false,contex
  const backend=dataBackend(env);if(publicAccess)return await handler({request,...backend,user:null});
  let user;
  if(accountsEnabled(env)){
- context=contextFactory(request,env);user=await verifiedAccount(context,request);if(!user)throw new StoreError('Sign in to access this workspace.',401);
+ context=contextFactory(request,env);user=await verifiedAccount(context,request,env);if(!user)throw new StoreError('Sign in to access this workspace.',401);
  const expected=request.headers.get('x-thrive-account');if(expected&&expected!==user.owner)throw new StoreError('Your account changed in another tab. Reload to continue.',409);
  if(!['GET','HEAD'].includes(request.method)&&!request.headers.get('authorization')?.startsWith('Bearer ')){
  if(expected!==user.owner||request.headers.get('origin')!==context.origin)throw new StoreError('Reload your workspace before making changes.',403);

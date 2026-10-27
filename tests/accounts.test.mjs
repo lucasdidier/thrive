@@ -54,3 +54,20 @@ test('OAuth fallback to the home URL exchanges PKCE, persists cookies and opens 
  const anonymous=await accountHome(new Request('https://thrive.test/'),env,'workspace',{contextFactory:factory});
  assert.equal(anonymous.headers.get('location'),'/auth/sign-in');
 });
+
+test('owner-only mode blocks account creation and every non-Google login action before calling the provider',async()=>{
+ const settings={...env,THRIVE_OWNER_EMAIL:'owner@example.com'};
+ for(const action of ['signup','signin','forgot','reset','resend','confirm']){const m=mock();const r=await handleAuth(request({action,email:settings.THRIVE_OWNER_EMAIL}),settings,{contextFactory:m.factory});assert.equal(r.status,403,action);assert.equal(m.calls.length,0);}
+ const r=await handleAuth(new Request('https://thrive.test/api/auth'),settings,{contextFactory:mock().factory});const config=await r.json();assert.equal(config.ownerOnly,true);assert.equal(config.providers.microsoft,false);assert.equal(config.user,null);
+});
+test('owner-only verification rejects other emails, unverified email and non-Google identities on every workspace request',async()=>{
+ const settings={...env,THRIVE_OWNER_EMAIL:'owner@example.com'};
+ const owner={...user,email:'owner@example.com',email_confirmed_at:'2026-10-01',app_metadata:{provider:'google'}};
+ for(const candidate of [{...owner,email:'other@gmail.com'},{...owner,email_confirmed_at:null},{...owner,app_metadata:{provider:'email'}},owner]){
+ const m=mock({getUser:async()=>({data:{user:candidate},error:null})});const r=await withRuntime(new Request('https://thrive.test/api/workspace'),settings,async()=>json({ok:true}),{contextFactory:m.factory});assert.equal(r.status,candidate===owner?200:401);
+ }
+});
+test('owner-only callback signs out unauthorized users instead of opening a workspace',async()=>{
+ let signedOut=false;const m=mock({exchangeCodeForSession:async()=>({data:{},error:null}),signOut:async()=>{signedOut=true;return {error:null};}});
+ const r=await authCallback(new Request('https://thrive.test/auth/callback?code=test'),{...env,THRIVE_OWNER_EMAIL:'owner@example.com'},{contextFactory:m.factory});assert.equal(signedOut,true);assert.equal(r.headers.get('location'),'/auth/sign-in?error=link');
+});
