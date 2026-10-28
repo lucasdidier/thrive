@@ -1,3 +1,4 @@
+import {resetPagePosition} from './page-navigation.js';
 import {createWorkspaceManager,workspaceRequest} from './workspace-manager.js';
 import {readImageUpload} from './image-upload.js';
 import {sidebarHeader,sidebarFooter} from './sidebar-content.js';
@@ -37,7 +38,7 @@ import {createCustomFieldsUI} from './custom-fields-ui.js';
 import {createCatalogUI} from './services-ui.js';
 import {initWorkflows,snapshotWorkspace,runWorkflows} from './workflow-domain.js';
 import {createWorkflowUI} from './workflow-ui.js';
-import {createMenu,initCreateMenu} from './create-menu.js';
+import {initCreateMenu} from './create-menu.js';
 import {initScheduling} from './scheduling-domain.js';
 import {createSchedulingUI} from './scheduling-ui.js';
 import {createChatUI} from './chat-ui.js';
@@ -47,6 +48,7 @@ import {upgradeWorkspace,deliveryStatus} from './workspace-domain.js';
 import {createWorkspaceUI} from './workspace-ui.js';
 import {createJourneyUI} from './journey-ui.js';
 import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,createProject,acceptProposal,generateDeposit,suggestSetup,addActivity,migrate} from './domain.js';
+history.scrollRestoration='manual';
 initSelects();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
@@ -90,7 +92,7 @@ function shell(){
  if(focused?.action){const buttons=[...document.querySelectorAll('#sidebar [data-action]')];(buttons.find(b=>b.dataset.action===focused.action&&b.dataset.step===focused.step)||document.querySelector('[popovertarget=getting-started-menu]'))?.focus();}
  const navStrip=document.querySelector('#sidebar .nav');if(navStrip&&matchMedia('(max-width:650px)').matches){navStrip.scrollLeft=navScroll;const selected=navStrip.querySelector('[aria-current=page]');if(selected){const a=selected.getBoundingClientRect(),b=navStrip.getBoundingClientRect();if(a.left<b.left)navStrip.scrollLeft+=a.left-b.left;else if(a.right>b.right)navStrip.scrollLeft+=a.right-b.right;}}
  const primary={proposals:['New proposal','new-proposal'],contracts:['New contract','new-contract'],time:['Log time','log-time'],messages:['Compose email','mail-new'],clients:['New client','new-client'],projects:['New project','new-project'],forms:['New form','new-form'],workflows:['New workflow','wf-new'],scheduling:['New event type','meeting-type-new']};
- document.querySelector('#topbar').innerHTML=`<div class="topbar-title">${icon((page.startsWith('settings')||page.startsWith('account/'))?'settings':page==='overview'?'home':page==='proposals'?'documents':page==='contracts'?'signature':page)}<h1>${(page.startsWith('settings')||page.startsWith('account/'))?(page.startsWith('account/')?'Account settings':'Workspace settings'):page==='chat'?(chatUI.active()?esc(chatUI.active().title):'New chat'):page.startsWith('projects/')?'Projects':nav.find(n=>n[0]===page)?.[1]||'Home'}</h1>${page==='chat'?'<span class="chat-preview-label">Preview</span>':''}</div><div class="top-actions">${page==='overview'?createMenu(icon):''}${page==='chat'?btn(icon('plus')+'New chat','chat-new')+(chatUI.active()?btn('Delete','chat-delete','','subtle'):''):''}${page==='time'?btn('Hourly rates','time-rates'):''}${page==='clients'?btn('Import clients','ci-start'):''}${page==='messages'?btn('Connections','mail-connections'):''}${page==='projects'?btn(icon('clock')+'Log time','log-time','','subtle'):''}${primary[page]?btn(icon('plus')+primary[page][0],primary[page][1],'','primary'):page==='invoices'?btn(icon('download')+'Export CSV','export')+btn(icon('plus')+'New invoice','new-invoice','','primary'):''}<button class="icon-btn mobile-search" data-action="search" aria-label="Search workspace">${icon('search')}</button></div>`;
+ document.querySelector('#topbar').innerHTML=`<div class="topbar-title">${icon((page.startsWith('settings')||page.startsWith('account/'))?'settings':page==='overview'?'home':page==='proposals'?'documents':page==='contracts'?'signature':page)}<h1>${(page.startsWith('settings')||page.startsWith('account/'))?(page.startsWith('account/')?'Account settings':'Workspace settings'):page==='chat'?(chatUI.active()?esc(chatUI.active().title):'New chat'):page.startsWith('projects/')?'Projects':nav.find(n=>n[0]===page)?.[1]||'Home'}</h1>${page==='chat'?'<span class="chat-preview-label">Preview</span>':''}</div><div class="top-actions">${page==='chat'?btn(icon('plus')+'New chat','chat-new')+(chatUI.active()?btn('Delete','chat-delete','','subtle'):''):''}${page==='time'?btn('Hourly rates','time-rates'):''}${page==='clients'?btn('Import clients','ci-start'):''}${page==='messages'?btn('Connections','mail-connections'):''}${page==='projects'?btn(icon('clock')+'Log time','log-time','','subtle'):''}${primary[page]?btn(icon('plus')+primary[page][0],primary[page][1],'','primary'):page==='invoices'?btn(icon('download')+'Export CSV','export')+btn(icon('plus')+'New invoice','new-invoice','','primary'):''}<button class="icon-btn mobile-search" data-action="search" aria-label="Search workspace">${icon('search')}</button></div>`;
 }
 function overview(){return dashboard.page();}
 
@@ -190,7 +192,7 @@ document.addEventListener('input',e=>{if(settingsPage.input(e.target))return;if(
 document.addEventListener('change',e=>{settingsPage.input(e.target);try{if(!settingsUI.change(e.target)&&!clientImport.handleChange(e.target)&&!recordPanel.handleChange(e.target)&&!journey.handleChange(e.target)&&!listView.handleChange(e.target)&&!bulk.handleChange(e.target)&&!timeUI.handleChange(e.target)&&!catalogUI.handleChange(e.target)&&!formsUI.handleChange(e.target)&&!messagesUI.handleChange(e.target)&&!customFields.handleChange(e.target)&&!workflowUI.handleChange(e.target)&&!billingUI.handleChange(e.target)&&!scheduleUI.handleChange(e.target)&&!crm.handleChange(e.target))workspaceUI.handleChange(e.target)}catch(err){error(err.message)}});
 document.addEventListener('keydown',e=>{if(listView.keyboard(e)||bulk.keyboard(e)||recordPanel.keyboard(e))return;chatUI.keyboard(e);crm.keyboard(e);if(e.key==='/'&&!dialog.open&&!e.target.closest('input,textarea,select,[contenteditable]')){const search=document.querySelector('#crm-search, #list-search, #meeting-search');e.preventDefault();if(search)search.focus();else if(draftGuard.canLeave())window.setTimeout(()=>document.querySelector('.sidebar-search')?.click(),0);}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(draftGuard.canLeave())search()}});
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){if(draftGuard.canLeave())dialog.close()}}});
-window.addEventListener('hashchange',event=>{if(!recordPanel.canLeaveInline()){history.replaceState(null,'',event.oldURL);return;}if(document.querySelector('#rp-inline-form,#cf-value-form,#crm-inline-form')){history.replaceState(null,'',event.oldURL);toast('Save or cancel the current edit before navigating.');return;}if(!draftGuard.canLeave()){history.replaceState(null,'',event.oldURL);return;}if(!settingsPage.guardHash())return;clearTimeout(toastTimer);document.querySelector('#toast').classList.remove('show');document.querySelector('#toast').textContent='';dialog.close();recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();if(!page.startsWith('clients/'))document.querySelector('#main').focus()});
+window.addEventListener('hashchange',event=>{if(!recordPanel.canLeaveInline()){history.replaceState(null,'',event.oldURL);return;}if(document.querySelector('#rp-inline-form,#cf-value-form,#crm-inline-form')){history.replaceState(null,'',event.oldURL);toast('Save or cancel the current edit before navigating.');return;}if(!draftGuard.canLeave()){history.replaceState(null,'',event.oldURL);return;}if(!settingsPage.guardHash())return;clearTimeout(toastTimer);document.querySelector('#toast').classList.remove('show');document.querySelector('#toast').textContent='';dialog.close();recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();if(!page.startsWith('clients/'))resetPagePosition()});
 let checkingConnection=false;
 document.addEventListener('toggle',async event=>{
  if(event.target.id!=='getting-started-menu'||event.newState!=='open'||checkingConnection)return;
@@ -201,6 +203,7 @@ document.addEventListener('toggle',async event=>{
  finally{checkingConnection=false;}
 },true);
 render();
+resetPagePosition({focus:false});
 
 const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Emails to load client conversations.');for(const key of ['google_connected','google_error','nylas_connected','nylas_error'])googleResult.delete(key);history.replaceState(null,'',location.pathname+(googleResult.size?'?'+googleResult:'')+location.hash);}
 
