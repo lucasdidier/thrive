@@ -1,0 +1,67 @@
+/* The rail and its hover preview share one layout. Only the visible surface
+   and label opacity change; icon coordinates and the page gutter stay fixed. */
+@media (min-width:651px) {
+ :root[data-sidebar-collapsed=true] .sidebar {
+  width:228px;padding-left:8px;padding-right:8px;cursor:default;
+  clip-path:inset(0 164px 0 0);box-shadow:none;z-index:40;
+ }
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar {clip-path:inset(0)}
+ :root[data-sidebar-collapsed=true] .sidebar::after {
+  content:'';position:absolute;top:0;bottom:0;left:63px;width:1px;
+  background:var(--line);pointer-events:none;
+ }
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar::after {transform:translateX(164px)}
+ :root[data-sidebar-collapsed=true] .sidebar-workspace {position:relative;justify-content:flex-start}
+ :root[data-sidebar-collapsed=true] .sidebar-toggle {position:absolute;left:7px;width:34px;transition:none}
+ :root[data-sidebar-collapsed=true] .sidebar-toggle svg {transition:none;transform:rotate(180deg)}
+ :root[data-sidebar-collapsed=true] .sidebar .workspace-switch {
+  display:flex;flex:1;max-width:none;margin-left:48px;padding:4px 5px;opacity:1;pointer-events:auto;
+ }
+ :root[data-sidebar-collapsed=true] .workspace-switch .initial {display:grid;width:20px;height:20px;flex:none}
+ :root[data-sidebar-collapsed=true] .sidebar-quick-tools {display:flex;align-items:stretch;margin:10px 0;gap:0}
+ :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search {
+  width:100%;min-height:34px;flex:1;justify-content:flex-start;padding:6px 16px;gap:16px;
+  border-color:transparent;box-shadow:none;background:transparent;
+ }
+ :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search:hover {background:var(--hover)}
+ :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search>span {display:block;flex:1}
+ :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search kbd {display:block}
+ :root[data-sidebar-collapsed=true] .sidebar .nav a {
+  justify-content:flex-start;gap:16px;padding:7px 16px;min-height:34px;
+ }
+ :root[data-sidebar-collapsed=true] .sidebar .nav a>svg {width:16px;height:16px;flex:none}
+ :root[data-sidebar-collapsed=true] .nav-item-label,
+ :root[data-sidebar-collapsed=true] .sidebar-promo-label {display:flex;max-width:none;flex:1}
+ :root[data-sidebar-collapsed=true] .sidebar-bottom .setup-link {
+  justify-content:flex-start;gap:16px;padding:8px 16px;
+ }
+ :root[data-sidebar-collapsed=true] .sidebar-bottom .setup-link>svg {width:16px;height:16px;flex:none}
+ :root[data-sidebar-collapsed=true] .getting-started-wrap {padding:5px 5px 0}
+ :root[data-sidebar-collapsed=true] .getting-started-trigger {
+  width:100%;min-height:32px;justify-content:flex-start;padding:5px 6px;gap:14px;
+  overflow:visible;background:transparent;
+ }
+ :root[data-sidebar-collapsed=true] .getting-started-trigger::after {inset:1.5px auto auto 1.5px;width:35px;height:29px}
+ :root[data-sidebar-collapsed=true] .getting-started-orbit {left:0;width:38px;height:32px;aspect-ratio:auto}
+ :root[data-sidebar-collapsed=true] .getting-started-count {order:-1;flex:none;width:26px;text-align:center}
+ :root[data-sidebar-collapsed=true] .getting-started-label {display:block;white-space:nowrap}
+ :root[data-sidebar-collapsed=true] .sidebar-theme {margin:10px 5px 0;flex-direction:column;padding:3px;border:0;background:transparent}
+ :root[data-sidebar-collapsed=true] .sidebar-theme button {justify-content:flex-start;gap:17px;padding:0 9px}
+ :root[data-sidebar-collapsed=true] .sidebar-theme button svg {flex:none}
+ :root[data-sidebar-collapsed=true] .sidebar-theme span {display:block}
+ :root[data-sidebar-collapsed=true] .sidebar-account {flex-direction:row;gap:4px;align-items:center;padding-top:8px}
+ :root[data-sidebar-collapsed=true] .sidebar-photo-upload {margin:0 0 0 6px}
+ :root[data-sidebar-collapsed=true] .sidebar-account .account-trigger {width:auto;min-height:44px;padding:5px 4px;justify-content:flex-start}
+ :root[data-sidebar-collapsed=true] .account-identity {display:block}
+ :root[data-sidebar-collapsed=true] .sidebar .nav a {clip-path:inset(0 163px 0 0 round 7px)}
+ :root[data-sidebar-collapsed=true] .sidebar-theme button {clip-path:inset(0 169px 0 0 round 5px)}
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] :is(.sidebar .nav a,.sidebar-theme button) {clip-path:inset(0 round 7px)}
+ :root[data-sidebar-collapsed=true] :is(.workspace-switch,.sidebar-search>span,.sidebar-search kbd,.nav-item-label,.sidebar-promo-label,.getting-started-label,.sidebar-theme span,.account-trigger) {opacity:0}
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] :is(.workspace-switch,.sidebar-search>span,.sidebar-search kbd,.nav-item-label,.sidebar-promo-label,.getting-started-label,.sidebar-theme span,.account-trigger) {opacity:1}
+}
+@media (min-width:651px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+ :root[data-sidebar-collapsed=true][data-input-modality=pointer] .sidebar {transition:clip-path 180ms var(--ease-out)}
+ :root[data-sidebar-collapsed=true][data-input-modality=pointer] .sidebar::after {transition:transform 180ms var(--ease-out)}
+ :root[data-sidebar-collapsed=true][data-input-modality=pointer] :is(.sidebar .nav a,.sidebar-theme button) {transition:clip-path 180ms var(--ease-out)}
+ :root[data-sidebar-collapsed=true][data-input-modality=pointer] :is(.workspace-switch,.sidebar-search>span,.sidebar-search kbd,.nav-item-label,.sidebar-promo-label,.getting-started-label,.sidebar-theme span,.account-trigger) {transition:opacity 140ms var(--ease-out)}
+}

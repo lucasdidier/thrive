@@ -30,5 +30,28 @@ test('hover previews a collapsed sidebar without changing the saved preference',
  globalThis.document={documentElement:root,querySelector:()=>null,getElementById:()=>sidebar,addEventListener(){}};
  globalThis.localStorage={getItem:()=> 'true',setItem:(...args)=>writes.push(args)};
  globalThis.matchMedia=()=>({matches:true});
- try{initSidebarUI('hover');listeners.pointerenter({pointerType:'mouse'});assert.equal(root.dataset.sidebarCollapsed,'false');assert.equal(root.dataset.sidebarPeek,'true');listeners.pointerleave();assert.equal(root.dataset.sidebarCollapsed,'true');assert.equal(root.dataset.sidebarPeek,'false');assert.equal(writes.length,0);listeners.pointerenter({pointerType:'touch'});assert.equal(root.dataset.sidebarCollapsed,'true');}finally{Object.assign(globalThis,original);}
+ try{initSidebarUI('hover');listeners.pointerenter({pointerType:'mouse'});assert.equal(root.dataset.sidebarCollapsed,'true');assert.equal(root.dataset.sidebarPeek,'true');listeners.pointerleave();assert.equal(root.dataset.sidebarCollapsed,'true');assert.equal(root.dataset.sidebarPeek,'false');assert.equal(writes.length,0);listeners.pointerenter({pointerType:'touch'});assert.equal(root.dataset.sidebarCollapsed,'true');}finally{Object.assign(globalThis,original);}
+});
+
+
+test('hover exit keeps an open menu visible and keyboard focus reveals clipped controls',()=>{
+ const original={document:globalThis.document,localStorage:globalThis.localStorage,matchMedia:globalThis.matchMedia};
+ const listeners={},root={dataset:{}},control={},outside={};let menuOpen=false;
+ const sidebar={addEventListener(type,fn){listeners[type]=fn;},contains(node){return node===control;}};
+ globalThis.document={documentElement:root,activeElement:outside,querySelector:()=>menuOpen?{}:null,getElementById:()=>sidebar,addEventListener(){}};
+ globalThis.localStorage={getItem:()=> 'true',setItem(){throw new Error('Preview must not persist');}};
+ globalThis.matchMedia=()=>({matches:true});
+ try{
+  initSidebarUI('hover');
+  listeners.pointerenter({pointerType:'mouse'});menuOpen=true;listeners.pointerleave();
+  assert.equal(root.dataset.sidebarPeek,'true');
+  menuOpen=false;listeners.pointerleave();assert.equal(root.dataset.sidebarPeek,'false');
+  root.dataset.inputModality='keyboard';document.activeElement=control;listeners.focusin();
+  assert.equal(root.dataset.sidebarPeek,'true');
+  listeners.pointerleave();assert.equal(root.dataset.sidebarPeek,'true');
+  listeners.focusout({relatedTarget:outside});assert.equal(root.dataset.sidebarPeek,'false');
+  assert.equal(root.dataset.sidebarCollapsed,'true');
+  root.dataset.inputModality='keyboard';listeners.pointerenter({pointerType:'mouse'});
+  assert.equal(root.dataset.inputModality,'pointer');
+ }finally{Object.assign(globalThis,original);}
 });
