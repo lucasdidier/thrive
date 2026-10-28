@@ -15,7 +15,7 @@ import {createDashboard} from './dashboard-ui.js';
 import {workspaceSections,sidebarGroups} from './sidebar-sections.js';
 import {initDatePicker} from './date-picker.js';
 import {createSettingsPage,settingsSection} from './settings-page.js';
-import {initFluid} from './fluid/bridge.js';
+import {initFluid} from './fluid/bridge.js?v=workflow-pickers-1';
 import {createSettingsUI} from './settings-ui.js';
 import {createTagsUI} from './tags-ui.js';
 
