@@ -85,3 +85,13 @@
 
 .status-menu{max-height:min(420px,60vh);overflow-y:auto}
 @media(max-width:600px){.editor-wizard .billing-card>.editor-section{padding:16px}.editor-wizard .payment-rule{grid-template-columns:minmax(0,1fr) 80px 24px;padding:12px;gap:10px 8px}.package-editor{padding:12px}.package-editor>header{grid-template-columns:minmax(0,1fr)}.package-actions{grid-row:1;justify-content:flex-end}.fee-structures button{padding:12px 8px}}
+
+/* Keep linked document metadata aligned with its title, not button-center aligned. */
+.project-document-row{display:flex;align-items:center;gap:16px;width:100%;min-height:64px;padding:14px 0;text-align:left}
+.project-document-row>span:not(.badge){flex:1;min-width:0;line-height:1.5;overflow-wrap:anywhere}
+.project-document-row .linked-document-type{display:block;margin-top:4px;text-align:left;font-size:12px;font-weight:400;line-height:1.5;color:var(--muted)}
+.project-document-row>.badge{flex:none;white-space:nowrap}
+.project-record-content .section{padding-top:0;margin-top:24px}
+.project-record-content .section-heading{margin-bottom:8px}
+.project-record-content .summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:650px){.project-document-row{gap:12px;align-items:flex-start}.project-document-row>.badge{margin-top:2px}}
