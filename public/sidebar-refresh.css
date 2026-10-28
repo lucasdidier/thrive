@@ -3,14 +3,12 @@
 .sidebar .workspace-switch:focus-visible,.sidebar .account-trigger:focus-visible{outline:2px solid var(--muted);outline-offset:2px}
 .sidebar .workspace-switch[aria-expanded=true]{background:var(--hover)}
 .sidebar-quick-tools{display:flex;gap:6px;margin:12px 0 18px;flex:none}
-.sidebar-quick-actions,.sidebar-quick-tools .sidebar-search{display:flex;align-items:center;gap:7px;min-height:34px;margin:0;padding:6px 8px;background:var(--card);border:1px solid var(--line);border-radius:7px;color:var(--text);font-size:11px;line-height:18px;box-shadow:0 1px 2px #00000009}
-.sidebar-quick-actions{flex:1;min-width:0;text-align:left}
-.sidebar-quick-actions>span{white-space:nowrap;flex:1}
-.sidebar-quick-actions svg,.sidebar-quick-tools .sidebar-search svg{width:14px;height:14px;color:var(--muted)}
+.sidebar-quick-tools .sidebar-search{display:flex;align-items:center;gap:7px;min-height:34px;margin:0;padding:6px 8px;background:var(--card);border:1px solid var(--line);border-radius:7px;color:var(--text);font-size:11px;line-height:18px;box-shadow:0 1px 2px #00000009}
+.sidebar-quick-tools .sidebar-search{flex:1;min-width:0;text-align:left}
+.sidebar-quick-tools .sidebar-search>span{white-space:nowrap;flex:1}
+.sidebar-quick-tools .sidebar-search svg{width:14px;height:14px;color:var(--muted)}
 .sidebar-quick-tools kbd{font:10px var(--system-font);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 3px;white-space:nowrap;line-height:17px}
-.sidebar-quick-tools .sidebar-search{width:34px;justify-content:center;flex:none;padding:6px}
-.sidebar-quick-tools .sidebar-search kbd{display:none}
-.sidebar-quick-actions:hover,.sidebar-quick-tools .sidebar-search:hover{background:var(--hover);border-color:var(--faint)}
+.sidebar-quick-tools .sidebar-search:hover{background:var(--hover);border-color:var(--faint)}
 .sidebar-account{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
 .account-trigger{width:100%;min-height:44px;display:flex;align-items:center;gap:9px;padding:5px 6px;text-align:left;border-radius:7px}
 .account-trigger:hover,.account-trigger[aria-expanded=true]{background:var(--hover)}
@@ -64,17 +62,18 @@
  :root{--record-sidebar:228px}.sidebar{width:228px}.workspace{margin-left:228px}
  .sidebar .workspace-switch{max-width:none}
  [data-sidebar-collapsed=true] .sidebar-quick-tools{flex-direction:column;align-items:center;gap:5px;margin:10px 0}
- [data-sidebar-collapsed=true] .sidebar-quick-actions{width:34px;flex:none;justify-content:center}
- [data-sidebar-collapsed=true] .sidebar-quick-actions>span,[data-sidebar-collapsed=true] .sidebar-quick-actions kbd,[data-sidebar-collapsed=true] .account-identity,[data-sidebar-collapsed=true] .account-trigger>svg,[data-sidebar-collapsed=true] .getting-started-label{display:none}
+ [data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search{width:34px;flex:none;justify-content:center}
+ [data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search>span,[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search kbd,[data-sidebar-collapsed=true] .account-identity,[data-sidebar-collapsed=true] .account-trigger>svg,[data-sidebar-collapsed=true] .getting-started-label{display:none}
  [data-sidebar-collapsed=true] .account-trigger{justify-content:center;padding:5px 0}
  [data-sidebar-collapsed=true] .getting-started-wrap{padding:5px 0 0}
  [data-sidebar-collapsed=true] .getting-started-trigger{padding:5px;width:38px;min-height:32px}
  [data-sidebar-collapsed=true] .sidebar-account{padding-top:8px}
 }
 @media(max-width:650px){
- .sidebar-quick-tools{position:absolute;right:12px;top:8px;margin:0}.sidebar-quick-actions{display:none}
+ .sidebar-quick-tools{position:absolute;right:12px;top:8px;margin:0}
  .sidebar-workspace{padding-right:44px;height:40px}
- .sidebar-quick-tools .sidebar-search{display:flex;width:40px;min-height:40px}
+ .sidebar-quick-tools .sidebar-search{display:flex;width:40px;min-height:40px;justify-content:center;flex:none;padding:6px}
+ .sidebar-quick-tools .sidebar-search>span,.sidebar-quick-tools .sidebar-search kbd{display:none}
  .sidebar-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 0 9px;border-top:1px solid var(--line);margin-top:0}
  .sidebar-bottom .sidebar-ai{display:none}
  .sidebar-account{order:-1;border:0;padding:0;margin:0;min-width:0;max-width:53%;flex:1}
