@@ -125,7 +125,7 @@ const chatUI=createChatUI({getState:()=>state,render,save,toast,icon,esc,btn,ope
 const catalogUI=createCatalogUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,btn,icon,esc,dialog:settingsSurface,save,render,toast});
 const billingUI=createBillingUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,btn,icon,esc,badge,date,dialog:settingsSurface,save,render,toast});
 const timeUI=createTimeUI({blocked:workspaceSync.isBlocked,bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
-const scheduleUI=createSchedulingUI({getPage:()=>page,bulk,listView,calendarAvailability:messagesUI.calendarAvailability,cancelCalendar:messagesUI.cancelCalendar,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog:settingsSurface,btn,icon,esc,badge,avatar});
+const scheduleUI=createSchedulingUI({createClient:prefill=>journey.clientForm(undefined,prefill),viewClient:id=>journey.clientDetail(id),getPage:()=>page,bulk,listView,calendarAvailability:messagesUI.calendarAvailability,cancelCalendar:messagesUI.cancelCalendar,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog:settingsSurface,btn,icon,esc,badge,avatar});
 const notificationsUI=createNotificationsUI({getState:()=>state,getPage:()=>page,render,save,open,btn,icon,esc,toast});
 const dashboard=createDashboard({recentActivity:emptyHTML=>notificationsUI.recent(4,emptyHTML),getState:()=>state,getPage:()=>page,render,icon,esc,btn});
 const tagsUI=createTagsUI({getState:()=>state,esc,save,toast});
