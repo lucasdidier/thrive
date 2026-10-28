@@ -1,3 +1,5 @@
+import {createWorkspaceManager,workspaceRequest} from './workspace-manager.js';
+import {readImageUpload} from './image-upload.js';
 import {sidebarHeader,sidebarFooter} from './sidebar-content.js';
 import {gettingStartedSteps,rememberGettingStarted,skipGettingStarted} from './getting-started.js';
 import {initDrawerMotion} from './drawer-motion.js';
@@ -48,13 +50,14 @@ import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,crea
 initSelects();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
-const storageKey='thrive-workspace-v1'+(account.enabled?':'+account.user.owner:'');
+const storageKey='thrive-workspace-v1'+(account.enabled?':'+account.user.owner:'')+(account.workspaceId!=='default'?':workspace:'+account.workspaceId:'');
 const sidebarUI=initSidebarUI(storageKey);
 let state;try{state=upgradeWorkspace(migrate(JSON.parse(localStorage.getItem(storageKey))))}catch{state=upgradeWorkspace(seed())}
 initBilling(state);initScheduling(state,Intl.DateTimeFormat().resolvedOptions().timeZone);
 initWorkflows(state);
 const workspaceSync=createWorkspaceSync(account);
 try{state=upgradeWorkspace(await workspaceSync.connect(state));}catch(err){document.querySelector('#main').innerHTML=`<div class="crm-empty"><h2>Workspace unavailable</h2><p>Your browser data has been preserved. Reload to reconnect.</p><a class="btn" href="${account.enabled?'/auth/sign-in':'/signin-with-chatgpt?return_to=%2F'}">Sign in</a></div>`;throw err;}
+try{Object.assign(account,await workspaceRequest());Object.assign(state.settings,account.profile);}catch{account.workspaces=[];}
 let workflowSnapshot=snapshotWorkspace(state);
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
 try{document.documentElement.dataset.theme=localStorage.getItem('thrive-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch{}
@@ -81,7 +84,7 @@ function shell(){
  const focused=document.activeElement?.closest('#sidebar')?{action:document.activeElement.dataset.action,step:document.activeElement.dataset.step}:null;
  const navScroll=document.querySelector('#sidebar .nav')?.scrollLeft||0;
  const nav=workspaceSections.filter(([id])=>state.settings.sidebarSections?.[id]!==false);
- document.querySelector('#sidebar').innerHTML=`${sidebarHeader(state,{esc,icon,shortcut:/Mac|iPhone|iPad/.test(navigator.platform)?'⌘ K':'Ctrl K'})}<div class="nav-label">Workspace<a href="#settings/sidebar" aria-label="Customize sidebar" title="Customize sidebar">${icon('settings')}</a></div><nav class="nav" aria-label="Main navigation">${sidebarGroups.map(([label,items])=>{const shown=items.filter(([id])=>nav.some(n=>n[0]===id));return shown.length?`<div class="nav-group">${shown.map(([id,label])=>`<a href="#${id}" title="${label}" aria-label="${label}" class="${(page===id||page.startsWith(id+'/'))?'active':''}" ${page===id||page.startsWith(id+'/')?'aria-current="page"':''}>${icon(id==='overview'?'home':id==='proposals'?'documents':id==='contracts'?'signature':id)}<span class="nav-item-label">${label}</span></a>`).join('')}</div>`:'';}).join('')}</nav>${sidebarFooter(state,{esc,icon,account,connection:checklistConnection})}`;
+ document.querySelector('#sidebar').innerHTML=`${sidebarHeader(state,{esc,icon,account,shortcut:/Mac|iPhone|iPad/.test(navigator.platform)?'⌘ K':'Ctrl K'})}<div class="nav-label">Workspace<a href="#settings/sidebar" aria-label="Customize sidebar" title="Customize sidebar">${icon('settings')}</a></div><nav class="nav" aria-label="Main navigation">${sidebarGroups.map(([label,items])=>{const shown=items.filter(([id])=>nav.some(n=>n[0]===id));return shown.length?`<div class="nav-group">${shown.map(([id,label])=>`<a href="#${id}" title="${label}" aria-label="${label}" class="${(page===id||page.startsWith(id+'/'))?'active':''}" ${page===id||page.startsWith(id+'/')?'aria-current="page"':''}>${icon(id==='overview'?'home':id==='proposals'?'documents':id==='contracts'?'signature':id)}<span class="nav-item-label">${label}</span></a>`).join('')}</div>`:'';}).join('')}</nav>${sidebarFooter(state,{esc,icon,account,connection:checklistConnection})}`;
  sidebarUI.sync();
  if(openPopover)document.getElementById(openPopover)?.showPopover();
  if(focused?.action){const buttons=[...document.querySelectorAll('#sidebar [data-action]')];(buttons.find(b=>b.dataset.action===focused.action&&b.dataset.step===focused.step)||document.querySelector('[popovertarget=getting-started-menu]'))?.focus();}
@@ -133,7 +136,9 @@ const workflowUI=createWorkflowUI({blocked:workspaceSync.isBlocked,bulk,listView
 const journey=createJourneyUI({blocked:workspaceSync.isBlocked,projectEmails:messagesUI.projectEmails,recordPanel,communicationActions:messagesUI.contextActions,customFields,clientDetail:crm.clientDetail,projectDocuments:workspaceUI.projectDocuments,getState:()=>state,open,btn,icon,esc,badge,avatar,date,save,render,toast,dialog});
 
 const settingsUI=createSettingsUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,dialog,esc,btn,icon,save,render,toast,tags:tagsUI,email:account.user?.email,go,projectDetail:id=>journey.projectDetail(id),clientDetail:id=>crm.clientDetail(id)});
-settingsPage=createSettingsPage({getState:()=>state,esc,icon,btn,save,render,toast,isBlocked:workspaceSync.isBlocked,email:account.user?.email,accountEnabled:account.enabled,closeDialog:()=>dialog.close(),load:async id=>{if(id==='services')catalogUI.handleClick('services',{dataset:{}});else if(id==='payments')billingUI.handleClick('payment-settings',{dataset:{}});else if(id==='invoices')billingUI.handleClick('invoice-templates',{dataset:{}});else if(id==='connections')await messagesUI.connections();else if(id==='mcp')clientImport.handleClick('mcp-guide',{dataset:{}});else if(id==='scheduling')document.querySelector('#settings-content').innerHTML=scheduleUI.settingsPage();}});
+const workspaceManager=createWorkspaceManager({account,getState:()=>state,open,esc,btn,toast,isPending:workspaceSync.isPending,onCreated:()=>{draftGuard.clear();dialog.close();},canLeave:()=>!dialog.open||draftGuard.canLeave()});
+async function saveProfile(profile){const result=await workspaceRequest('PATCH',profile);account.profile=result.profile;Object.assign(state.settings,result.profile);}
+settingsPage=createSettingsPage({saveProfile,getState:()=>state,esc,icon,btn,save,render,toast,isBlocked:workspaceSync.isBlocked,email:account.user?.email,accountEnabled:account.enabled,closeDialog:()=>dialog.close(),load:async id=>{if(id==='services')catalogUI.handleClick('services',{dataset:{}});else if(id==='payments')billingUI.handleClick('payment-settings',{dataset:{}});else if(id==='invoices')billingUI.handleClick('invoice-templates',{dataset:{}});else if(id==='connections')await messagesUI.connections();else if(id==='mcp')clientImport.handleClick('mcp-guide',{dataset:{}});else if(id==='scheduling')document.querySelector('#settings-content').innerHTML=scheduleUI.settingsPage();}});
 const fluidUI=initFluid({getState:()=>state,save,toast,open,dialog});
 workspaceSync.bind(()=>state,next=>{state=upgradeWorkspace(next);workflowSnapshot=snapshotWorkspace(state);},close=>{if(close){dialog.close();crm.resetAll();}render();recordPanel.refresh();});
 document.addEventListener('click',e=>{
@@ -145,6 +150,8 @@ document.addEventListener('click',e=>{
  if(e.target.closest('.skip')){e.preventDefault();document.querySelector('#main').focus();return;}
  const el=e.target.closest('[data-action]');if(!el){listView.outsideClick(e);crm.outsideClick(e);return;}const a=el.dataset.action,id=el.dataset.id;
  try{
+ if(workspaceManager.click(a,el))return;
+ if(a==='sidebar-theme'){const theme=el.dataset.theme;document.documentElement.dataset.theme=theme;localStorage.setItem('thrive-theme',theme);document.querySelectorAll('[data-action=sidebar-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===theme)));return;}
  if(a==='gs-open'){const step=gettingStartedSteps.find(x=>x.id===el.dataset.step);document.querySelector('#getting-started-menu')?.hidePopover();if(step?.page)go(step.page);else if(step){const b=document.createElement('button');b.dataset.action=step.action;document.body.append(b);b.click();b.remove();}return;}
  if(a==='gs-skip'||a==='gs-undo'){skipGettingStarted(state,el.dataset.step,a==='gs-undo');void saveThen(()=>{toast(a==='gs-undo'?'Step restored.':'Step skipped. You can come back to it anytime.');});return;}
  if(a==='more-actions'){toggleMoreActions(el);return;}
@@ -195,4 +202,7 @@ document.addEventListener('toggle',async event=>{
 },true);
 render();
 
-const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Emails to load client conversations.');history.replaceState(null,'',location.pathname+location.hash);}
+const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Emails to load client conversations.');for(const key of ['google_connected','google_error','nylas_connected','nylas_error'])googleResult.delete(key);history.replaceState(null,'',location.pathname+(googleResult.size?'?'+googleResult:'')+location.hash);}
+
+document.addEventListener('submit',e=>{if(e.target.id==='create-workspace-form'){e.preventDefault();e.stopImmediatePropagation();workspaceManager.submit(e.target);}},true);
+document.addEventListener('change',e=>{if(e.target.id!=='sidebar-profile-photo'||!e.target.files[0])return;if(document.body.hasAttribute('data-settings-dirty')){toast('Save or reset your settings before updating your photo here.');e.target.value='';return;}const input=e.target;input.disabled=true;void(async()=>{try{await saveProfile({name:state.settings.name,profilePhoto:await readImageUpload(input.files[0],{square:true})});await save();shell();toast('Profile photo updated.');}catch(error){toast(error.message);}finally{input.disabled=false;input.value='';}})();});
