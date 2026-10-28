@@ -18,7 +18,7 @@ export const settingsSections=[
  {id:'appearance',group:'Personal',name:'Appearance',icon:'sun',description:'Choose how Thrive looks on this device.',keywords:'theme dark light system'},
  {id:'workspace',group:'Workspace',name:'General',icon:'home',description:'Business details and default currency.',keywords:'business name country currency vertical'},
  {id:'rates',group:'Workspace',name:'Hourly rates & project defaults',icon:'clock',description:'Starting rates and deposits for new projects.',keywords:'hourly billable budget deposit'},
- {id:'project-statuses',group:'Workspace',name:'Project statuses',icon:'status',description:'Customize the names, colors, and order used across projects.',keywords:'status stage planned progress completed cancelled'},
+ {id:'project-statuses',group:'Workspace',name:'Project statuses',icon:'projects',description:'Customize the names, colors, and order used across projects.',keywords:'status stage planned progress completed cancelled'},
  {id:'branding',group:'Workspace',name:'Branding',icon:'edit',description:'One brand for proposals, contracts, and invoices.',keywords:'logo color accent footer business address'},
  {id:'portal',group:'Workspace',name:'Client portal',icon:'clients',description:'Defaults for new client portals.',keywords:'portal branding domain welcome sections sharing'},
  {id:'notifications',group:'Workspace',name:'Notifications',icon:'mail',description:'Choose which updates reach your inbox.',keywords:'form response email alert'},
