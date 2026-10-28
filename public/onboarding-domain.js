@@ -7,6 +7,7 @@ const countryNames=new Intl.DisplayNames(['en'],{type:'region'});
 export const countries=countryCodes.map(code=>[code,countryNames.of(code)]).sort((a,b)=>a[1].localeCompare(b[1]));
 export const suggestedCurrency=country=>({US:'USD',GB:'GBP',CA:'CAD',AU:'AUD',NZ:'NZD',CH:'CHF',SE:'SEK',NO:'NOK',DK:'DKK',PL:'PLN',BR:'BRL',IN:'INR',SG:'SGD',HK:'HKD',ZA:'ZAR',MX:'MXN'}[country]||('AT BE CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK'.split(' ').includes(country)?'EUR':null));
 export const needsOnboarding=s=>!!s.settings.onboarding&&!s.settings.onboarding.completedAt;
+export const requiresOnboarding=s=>needsOnboarding(s)&&['profile','vertical'].includes(s.settings.onboarding.step||'profile');
 export function saveOnboardingProfile(s,data){
  const name=String(data.name||'').trim(),businessName=String(data.businessName||'').trim(),country=String(data.country||''),currency=String(data.currency||'');
  if(!name||name.length>80||businessName.length>80)throw Error('Enter your name and keep names under 80 characters.');

@@ -51,7 +51,8 @@ export function createListViewUI({render,esc,icon,bulk,dialog,getState,save,bloc
   else if(a==='view-clear-group'){cfg().groupBy='';if(cfg().layout==='board')cfg().layout='table';}
   else if(a==='view-clear'){Object.assign(cfg(),viewDefaults(current.columns));if(cfg().layout==='board')cfg().layout='table';collapsed[current.scope]=new Set();searches[current.scope]='';}
   else if(a==='view-header-sort'){const c=cfg(),key=el.dataset.key;c.direction=c.sort===key&&c.direction==='asc'?'desc':'asc';c.sort=key;changed(()=>[...document.querySelectorAll('[data-action=view-header-sort]')].find(button=>button.dataset.key===key));return true;}
-  changed();return true;
+  const menuName=a.includes('sort')?'sort':a.includes('group')?'group':'filter';
+  changed(()=>document.querySelector('.list-query-chips .filter-chip')||document.querySelector(menu?'#view-popup button':`[data-action=view-menu][data-menu=${menuName}]`)||document.querySelector('#view-search'));return true;
  }
  function handleChange(el){if(!current)return false;const c=cfg();let selector='';
   if(el.dataset.viewSetting){c[el.dataset.viewSetting]=el.value;if(el.dataset.viewSetting==='groupBy'){collapsed[current.scope]=new Set();if(c.layout==='board'&&!el.value)c.layout='table';}selector=`[data-view-setting="${el.dataset.viewSetting}"]`;}

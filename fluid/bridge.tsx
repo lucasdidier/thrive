@@ -1,3 +1,4 @@
+import {recordSearchFields} from "../public/record-search.js";
 import React, { useState, useEffect, useId, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FluidProvider } from "@/lib/fluid-provider";
@@ -524,7 +525,7 @@ export function initFluid(ctx: Context) {
               .filter((r: any) => !r.archived)
               .map((r: any) => ({
                 value: type + "-" + r.id,
-                label: r.name || r.title || r.number,
+                ...recordSearchFields(state, type, r),
                 group: type === "documents" ? (r.kind === "proposal" ? "Proposals" : ["contract", "agreement"].includes(r.kind) ? "Contracts" : "Reference material") : type[0].toUpperCase() + type.slice(1),
                 onSelect: () =>
                   action(

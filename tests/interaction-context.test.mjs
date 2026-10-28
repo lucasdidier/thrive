@@ -61,7 +61,7 @@ test('editor context distinguishes repeated disclosures and identical fields in 
 });
 test('inline record edit blocks panel close, record navigation and Escape until explicit cancel/save',()=>{
  const messages=[];let navigated=false,prevented=false;
- globalThis.document={addEventListener(){},querySelector:()=>({id:'rp-inline-form'})};
+ globalThis.document={addEventListener(){},querySelector:selector=>selector==='#rp-inline-form,#cf-value-form,#crm-inline-form'?{id:'rp-inline-form'}:null};
  const panel=createRecordPanel({dialog:{open:false},toast:m=>messages.push(m),detail(){navigated=true;}});
  assert.equal(panel.handleClick('rp-close',{}),true);
  assert.equal(panel.handleClick('rp-navigate',{dataset:{entity:'client',id:'c2'}}),true);

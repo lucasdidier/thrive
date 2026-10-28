@@ -235,6 +235,22 @@ main:focus:not(:focus-visible){outline:none}
 :is(#record-project-form,#record-client-form,#workspace-settings,#settings-content) .fluid-ui [role=group]:has(input[aria-invalid=true]){box-shadow:0 0 0 1px #b94a48}
 .bulk-check-target{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer}
 .bulk-check-target:has(:disabled){cursor:not-allowed}
+/* The record panel lives outside .workspace and native dialog. */
+@media(pointer:coarse),(max-width:650px){
+  #client-panel :is(.btn,.icon-btn,.crm-menu-item,.editable-cell,summary,[role=tab]){min-height:44px}
+  #client-panel .icon-btn{min-width:44px;width:44px;height:44px}
+}
+@media(max-width:650px){
+  #client-panel .record-panel-head{height:auto;min-height:100px;flex-wrap:wrap;gap:0;padding:8px 12px}
+  #client-panel .record-breadcrumb{max-width:100%;width:100%;min-height:32px}
+  #client-panel .record-header-actions{width:100%;justify-content:flex-end;gap:4px}
+  #client-panel .record-header-actions .record-create{margin-right:auto}
+}
+/* Only pointer-initiated creation drawers move; keyboard and reduced motion stay instant. */
+dialog.drawer[data-pointer-motion]{opacity:0;transform:translateX(14px);transition:opacity 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1),display 140ms allow-discrete,overlay 140ms allow-discrete}
+dialog.drawer[data-pointer-motion][open]{opacity:1;transform:translateX(0);transition-duration:200ms}
+@starting-style{dialog.drawer[data-pointer-motion][open]{opacity:0;transform:translateX(14px)}}
+@media(prefers-reduced-motion:reduce){dialog.drawer[data-pointer-motion]{opacity:1;transform:none;transition:none}}
 @media(pointer:coarse){
   .workspace :is(.btn,.icon-btn,.crm-tool,.crm-menu-item,.thrive-select-trigger,.thrive-select-option),.sidebar :is(button,.nav a),dialog :is(.btn,.icon-btn,.crm-menu-item,.thrive-select-trigger,.thrive-select-option),.thrive-select-popover .thrive-select-option,.create-menu .crm-menu-item,.bulk-floating :is(.btn,.icon-btn,.bulk-link){min-height:44px}
   .workspace .icon-btn,dialog .icon-btn,.bulk-floating .icon-btn{min-width:44px}
