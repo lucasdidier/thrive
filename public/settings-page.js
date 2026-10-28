@@ -27,7 +27,7 @@ export const settingsSections=[
  {id:'invoice-defaults',group:'Business',name:'Invoice defaults',icon:'invoices',description:'Payment terms and tax for new invoice drafts.',keywords:'due date days terms tax percentage'},
  {id:'invoices',group:'Business',name:'Invoice templates',icon:'invoices',description:'Set the default design for your invoices.',keywords:'layout template design'},
  {id:'sidebar',group:'Workspace',name:'Sidebar',icon:'settings',description:'Choose which sections appear in your workspace sidebar.',keywords:'navigation sections show hide toggle modules'},
- {id:'connections',group:'Connections',name:'Email & calendar',icon:'messages',description:'Connect the accounts you use for conversations and scheduling.',keywords:'google gmail microsoft outlook nylas'},
+ {id:'connections',group:'Connections',name:'Email & calendar',icon:'messages',description:'Manage the account you use for email and scheduling.',keywords:'google gmail microsoft outlook nylas'},
  {id:'activity',group:'Workspace',name:'Activity',icon:'clock',description:'Recent changes across your workspace.',keywords:'history audit events'},
  {id:'mcp',group:'Connections',name:'AI & MCP',icon:'sparkles',description:'Connect your AI tools to your Thrive workspace.',keywords:'agent api codex integration'},
 ];
