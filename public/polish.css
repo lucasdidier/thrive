@@ -248,3 +248,42 @@ dialog>.fluid-portals>*{pointer-events:auto}
  #record-client-form .expandable-card>summary>span{flex-wrap:wrap;gap:2px 12px}
  #record-client-form .expandable-card>summary small{text-align:left}
 }
+
+/* Workflow editor uses the same compact controls and stable drawer as record forms. */
+dialog.drawer:has(>#wf-editor){display:flex;flex-direction:column;overflow:hidden;width:min(620px,100vw)}
+dialog:has(>#wf-editor)>.dialog-head{position:relative;flex:none;padding:18px 24px}
+#wf-editor{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden;--workflow-control-height:36px}
+#wf-editor>.dialog-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:24px}
+#wf-editor>.dialog-footer{position:relative;flex:none;margin:0;padding:14px 24px;background:var(--bg)}
+#wf-editor .field{display:block;margin:0 0 16px;font:500 12px/18px var(--system-font);color:var(--muted)}
+#wf-editor .field>input:not(.fluid-source),#wf-editor .field>select:not(.fluid-source),#wf-editor .field>textarea{width:100%;margin-top:6px;padding:8px 10px;border-radius:6px;font:400 13px/20px var(--system-font)}
+#wf-editor .field>input:not(.fluid-source),#wf-editor .field>select:not(.fluid-source):not([multiple]){height:var(--workflow-control-height);min-height:var(--workflow-control-height)}
+#wf-editor .field>.fluid-ui{margin-top:6px;font-size:13px;font-weight:400}
+#wf-editor .fluid-ui [role=group]:has(>input[role=combobox]){height:var(--workflow-control-height);min-height:var(--workflow-control-height);padding:0 10px;border-radius:6px;background:var(--input);box-shadow:0 0 0 1px var(--line)}
+#wf-editor .fluid-ui input[role=combobox]{height:20px;min-height:20px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;outline:none;font:400 13px/20px var(--system-font)}
+#wf-editor .fluid-ui [role=group]:focus-within{box-shadow:0 0 0 1px var(--accent)}
+#wf-editor .wf-enable{margin:4px 0 20px}
+#wf-editor .wf-step header{padding:14px 16px}
+#wf-editor .wf-fields>.field:last-child{margin-bottom:0}
+#wf-editor .wf-step-tabs{margin-bottom:12px}
+#wf-editor .wf-step-tabs [aria-pressed=true]{background:var(--hover);color:var(--text)}
+#wf-editor .wf-variables{margin:4px 0 0;padding:0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+#wf-editor .wf-variables>summary{min-height:44px;padding:12px 0;border:0;gap:12px}
+#wf-editor .wf-variables>summary strong{font:500 13px/20px var(--system-font)}
+#wf-editor .wf-variables>.expandable-card-body{display:block;padding:0 0 2px}
+#wf-editor .wf-variables p{margin:0 0 12px;font-size:12px;line-height:1.5}
+#wf-editor .wf-variable-list{display:flex;flex-wrap:wrap;gap:8px}
+#wf-editor .wf-variable-copy{display:inline-flex;align-items:center;gap:8px;min-height:32px;max-width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--input);color:var(--text);text-align:left}
+#wf-editor .wf-variable-copy:hover{background:var(--hover)}
+#wf-editor .wf-variable-copy code{padding:0;background:none;font-size:12px;overflow-wrap:anywhere;user-select:text}
+#wf-editor .wf-variable-copy svg{width:14px;height:14px;flex:none;color:var(--muted)}
+#wf-editor .wf-copy-status{display:block;min-height:18px;margin-top:8px;font-size:12px;color:var(--muted)}
+#wf-editor .form-error:empty{display:none}
+@media(max-width:650px){
+ #wf-editor{--workflow-control-height:44px}
+ dialog:has(>#wf-editor)>.dialog-head,#wf-editor>.dialog-body{padding:18px}
+ #wf-editor>.dialog-footer{padding:12px 18px}
+ #wf-editor .field>input:not(.fluid-source),#wf-editor .field>select:not(.fluid-source),#wf-editor .field>textarea,#wf-editor .fluid-ui input[role=combobox]{font-size:16px}
+ #wf-editor .wf-enable span{flex-basis:100%;padding-left:0}
+ #wf-editor .wf-variable-copy{min-height:44px}
+}

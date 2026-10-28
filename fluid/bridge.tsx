@@ -337,7 +337,7 @@ export function initFluid(ctx: Context) {
       }
     document
       .querySelectorAll<HTMLSelectElement>(
-        "#record-project-form select,#record-client-form select,#workspace-settings select,#settings-content select",
+        "#record-project-form select,#record-client-form select,#workspace-settings select,#settings-content select,#wf-editor select:not([multiple])",
       )
       .forEach((source) => {
         if (handled.has(source)) return;
