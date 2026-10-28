@@ -2,9 +2,22 @@ export function initSidebarUI(storageKey){
  const root=document.documentElement,key=storageKey+':sidebar-collapsed';
  try{root.dataset.sidebarCollapsed=localStorage.getItem(key)==='true'?'true':'false';}catch{root.dataset.sidebarCollapsed='false';}
  const desktop=()=>matchMedia('(min-width:651px)').matches;
- function apply(collapsed){root.dataset.sidebarCollapsed=String(collapsed);try{localStorage.setItem(key,String(collapsed));}catch{}sync();}
+ const popovers=['workspace-menu','account-menu','getting-started-menu'];
+ function position(panel){
+  const trigger=document.querySelector(`[popovertarget="${panel.id}"]:not([popovertargetaction])`);if(!trigger)return;
+  const r=trigger.getBoundingClientRect(),above=panel.id!=='workspace-menu'&&desktop();
+  panel.style.left=`${Math.max(12,Math.min(r.left,innerWidth-panel.offsetWidth-12))}px`;
+  panel.style.top=`${Math.max(12,Math.min(above?r.top-panel.offsetHeight-8:r.bottom+8,innerHeight-panel.offsetHeight-12))}px`;
+ }
+ function apply(collapsed){root.dataset.sidebarCollapsed=String(collapsed);try{localStorage.setItem(key,String(collapsed));}catch{}sync();document.querySelectorAll?.('#sidebar [popover]:popover-open').forEach(position);}
  function sync(){const button=document.querySelector('[data-sidebar-toggle]'),collapsed=root.dataset.sidebarCollapsed==='true';if(button){button.setAttribute('aria-label',collapsed?'Expand sidebar':'Collapse sidebar');button.setAttribute('title',collapsed?'Expand sidebar':'Collapse sidebar');button.setAttribute('aria-expanded',String(!collapsed));}}
- document.addEventListener('click',e=>{const toggle=e.target.closest('[data-sidebar-toggle]');if(toggle){e.preventDefault();e.stopImmediatePropagation();apply(root.dataset.sidebarCollapsed!=='true');return;}if(desktop()&&root.dataset.sidebarCollapsed==='true'&&e.target.closest('#sidebar')&&!e.target.closest('a,button,input,select,textarea,summary,[role=button]')){e.preventDefault();e.stopImmediatePropagation();apply(false);return;}if(e.target.closest('#workspace-menu [data-action]'))document.querySelector('#workspace-menu')?.hidePopover();},true);
- document.addEventListener('toggle',e=>{if(e.target.id==='workspace-menu')document.querySelector('[popovertarget="workspace-menu"]')?.setAttribute('aria-expanded',String(e.newState==='open'));},true);
+ document.addEventListener('click',e=>{const toggle=e.target.closest('[data-sidebar-toggle]');if(toggle){e.preventDefault();e.stopImmediatePropagation();apply(root.dataset.sidebarCollapsed!=='true');return;}if(desktop()&&root.dataset.sidebarCollapsed==='true'&&e.target.closest('#sidebar')&&!e.target.closest('a,button,input,select,textarea,summary,[role=button]')){e.preventDefault();e.stopImmediatePropagation();apply(false);return;}for(const id of ['workspace-menu','account-menu'])if(e.target.closest(`#${id} [data-action]`))document.getElementById(id)?.hidePopover();},true);
+ document.addEventListener('toggle',e=>{if(!popovers.includes(e.target.id))return;const trigger=document.querySelector(`[popovertarget="${e.target.id}"]:not([popovertargetaction])`);trigger?.setAttribute('aria-expanded',String(e.newState==='open'));if(e.newState==='open')position(e.target);},true);
+ document.addEventListener('keydown',e=>{
+  const panel=e.target.closest?.('#workspace-menu,#account-menu,#getting-started-menu');
+  if(panel&&e.key==='Escape'){e.preventDefault();e.stopPropagation();panel.hidePopover();document.querySelector(`[popovertarget="${panel.id}"]:not([popovertargetaction])`)?.focus();return;}
+  if(panel&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){const items=[...panel.querySelectorAll('button:not(:disabled),a[href]')],i=items.indexOf(document.activeElement);e.preventDefault();items[e.key==='Home'?0:e.key==='End'?items.length-1:(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}
+ });
+ if(typeof window!=='undefined')window.addEventListener('resize',()=>document.querySelectorAll('#sidebar [popover]:popover-open').forEach(position));
  return {sync};
 }

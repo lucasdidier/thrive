@@ -298,11 +298,13 @@ Imports preserve existing records and use the same owner isolation, optimistic
 concurrency, validation, events, and receipts as other MCP mutations. Local test
 fixtures do not establish that an external agent is connected to a live account.
 
-## Signup onboarding
+## Sidebar, account settings, and getting started
 
-New accounts enter a resumable three-step setup: name and optional business name, country and billing currency; business vertical; then optional setup actions. Six verticals offer editable example services and safe one-click workflows. CSV import uses the existing mapping and review flow. Google Calendar/Gmail uses the existing separate OAuth connection and accurately reports unavailable or connected status; Google sign-in alone does not grant mailbox/calendar access. Users can skip optional actions, return through Getting started, and see a resume prompt until they finish. Existing workspaces are not forced through onboarding.
+The top menu contains workspace settings. The bottom profile menu opens personal profile/photo and appearance settings at `#account/profile` and `#account/appearance`; editing a name no longer renames the business. Workspace settings have their own navigation. The current backend supports one workspace per account.
 
-A workspace uses one of 17 supported two-decimal currencies. Legacy workspaces default to USD. Currency locks once pricing or financial records exist; there is no currency conversion. Invoice/document snapshots and public views preserve the chosen currency. Starter prices are examples in the selected currency and should be reviewed before use.
+Quick actions and workspace search share the Cmd/Ctrl+K palette, with icons, creation actions, navigation, and contextual record results. `/` focuses a list search when available, otherwise opens workspace search.
+
+Getting started is a six-step sidebar popover: import/add clients, connect both email and calendar, add a service, create a workflow, create an invoice (including a saved draft), and create a proposal or contract. Existing records count automatically. Completed and skipped steps persist with the workspace; skipped steps can be reopened or undone. The colored button stroke stops when all steps are complete and respects reduced motion. The old `#onboarding` route opens Home with the checklist; the full onboarding page and forced setup redirect have been removed. Business details, country, and currency remain editable in Workspace settings, subject to the existing currency lock.
 
 ## Nylas email and scheduling
 

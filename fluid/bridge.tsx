@@ -1,3 +1,4 @@
+import {UserRound,BriefcaseBusiness,FileText,Receipt,ClipboardList,Mail,Workflow,Tag,Settings,House} from "lucide-react";
 import {recordSearchFields} from "../public/record-search.js";
 import React, { useState, useEffect, useId, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
@@ -485,11 +486,16 @@ export function initFluid(ctx: Context) {
         button.remove();
       };
       const items = [
-        ...["client", "project", "proposal", "contract", "form"].map((kind) => ({
+        ...[
+          ['client','New client',UserRound],['project','New project',BriefcaseBusiness],
+          ['proposal','New proposal',FileText],['contract','New contract',FileText],
+          ['invoice','New invoice',Receipt],['form','New form',ClipboardList],
+          ['mail','Compose email',Mail],['service','New service',Tag],['workflow','New workflow',Workflow],
+        ].map(([kind,label,icon]: any[]) => ({
           value: "new-" + kind,
-          label: "New " + kind,
-          group: "Create",
-          onSelect: () => action("new-" + kind),
+          label, icon,
+          group: "Quick actions",
+          onSelect: () => action(({mail:"mail-new",service:"service-new",workflow:"wf-new"} as any)[kind] || "new-" + kind),
         })),
         ...[
           "overview",
@@ -510,21 +516,25 @@ export function initFluid(ctx: Context) {
             page === "overview"
               ? "Home"
               : page === "messages" ? "Emails" : page[0].toUpperCase() + page.slice(1),
+          icon: page === "overview" ? House : ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt,workflows:Workflow,messages:Mail} as any)[page] || FileText,
           group: "Navigate",
           onSelect: () => action("navigate", undefined, page),
         })),
         {
           value: "settings",
           label: "Workspace settings",
+          icon: Settings,
           group: "Settings",
           onSelect: () => action("workspace-settings"),
         },
+        {value:"account-settings",label:"Account settings",icon:UserRound,group:"Settings",onSelect:()=>action("account-settings")},
         ...["clients", "projects", "documents", "forms", "invoices"].flatMap(
           (type) =>
             (state[type] || [])
               .filter((r: any) => !r.archived)
               .map((r: any) => ({
                 value: type + "-" + r.id,
+                icon: ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt} as any)[type] || FileText,
                 ...recordSearchFields(state, type, r),
                 group: type === "documents" ? (r.kind === "proposal" ? "Proposals" : ["contract", "agreement"].includes(r.kind) ? "Contracts" : "Reference material") : type[0].toUpperCase() + type.slice(1),
                 onSelect: () =>
@@ -550,7 +560,7 @@ export function initFluid(ctx: Context) {
         <CommandMenu items={items}>
           <CommandMenuInput
             autoFocus
-            placeholder="Search or jump to…"
+            placeholder="Search your workspace or take an action…"
             aria-label="Search workspace"
           />
           <CommandMenuList>

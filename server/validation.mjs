@@ -1,3 +1,4 @@
+import {validateGettingStarted} from '../public/getting-started.js';
 import {validateInvoiceDefaults} from '../public/invoice-defaults.js';
 import {saveProjectStatuses} from '../public/project-status.js';
 import {validateCurrency} from '../public/currency.js';
@@ -15,6 +16,8 @@ export function validateWorkspace(s,old){
  validateShareLinks(s,old);
  if(!s||typeof s!=='object'||s.workspaceSchema!==3||!s.settings||typeof s.settings.business!=='string'||typeof s.settings.name!=='string')throw Error('Invalid workspace data.');
  if(s.settings.invoiceDefaults)validateInvoiceDefaults(s.settings.invoiceDefaults);
+ validateGettingStarted(s);
+ if(s.settings.profilePhoto!==undefined&&(typeof s.settings.profilePhoto!=='string'||s.settings.profilePhoto.length>150000||(s.settings.profilePhoto&&!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(s.settings.profilePhoto))))throw Error('Invalid profile photo.');
  validateCurrency(s,old);validateOnboarding(s);if(s.settings.projectStatuses)saveProjectStatuses(s,s.settings.projectStatuses);
  if(s.settings.portalDefaults){const p=s.settings.portalDefaults;if(typeof p.title!=='string'||!p.title.trim()||p.title.length>100||typeof p.intro!=='string'||p.intro.length>1000||!p.sections||['documents','forms','invoices','projects','meetings'].some(k=>typeof p.sections[k]!=='boolean'))throw Error('Invalid workspace portal defaults.');}
  if(s.settings.emailFollowUps!==undefined){const choices=s.settings.emailFollowUps;if(!choices||typeof choices!=='object'||Array.isArray(choices)||Object.keys(choices).length>2000)throw Error('Invalid email reply preferences.');for(const [id,choice]of Object.entries(choices)){if(!id||id.length>512||!choice||typeof choice.messageId!=='string'||!choice.messageId||choice.messageId.length>512||!['reply','done'].includes(choice.status))throw Error('Invalid email reply preference.');}}
