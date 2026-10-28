@@ -213,7 +213,7 @@ body{font-size:13px;line-height:1.5}
 .mcp-agent img[src$="-color.svg"]{filter:none!important}.mcp-setup-action{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}.mcp-setup-action strong{font-size:12px;font-weight:500}.mcp-setup-action .btn{flex-shrink:0}.mcp-setup-preview{margin-top:12px}.mcp-setup-preview summary{font-size:11px;color:var(--link);cursor:pointer}.mcp-setup-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 var(--system-font);padding:16px;margin:10px 0 0;border-radius:7px;background:var(--input);border:1px solid var(--line);color:var(--muted)}@media(max-width:650px){.mcp-setup-action{align-items:flex-start;flex-direction:column;gap:12px}}
 
 /* Client editor: one scrolling body, aligned fields and compact optional sections. */
-dialog.drawer:has(>#record-client-form){width:min(560px,100vw);display:flex;flex-direction:column;overflow:hidden}
+dialog[open].drawer:has(>#record-client-form){width:min(560px,100vw);display:flex;flex-direction:column;overflow:hidden}
 dialog:has(>#record-client-form)>.dialog-head{position:relative;flex:none;padding:18px 24px}
 dialog:has(>#record-client-form)>.dialog-head h2{font-size:16px;font-weight:600}
 #record-client-form{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden;--client-control-height:36px}
@@ -250,7 +250,7 @@ dialog>.fluid-portals>*{pointer-events:auto}
 }
 
 /* Workflow editor uses the same compact controls and stable drawer as record forms. */
-dialog.drawer:has(>#wf-editor){display:flex;flex-direction:column;overflow:hidden;width:min(620px,100vw)}
+dialog[open].drawer:has(>#wf-editor){display:flex;flex-direction:column;overflow:hidden;width:min(620px,100vw)}
 dialog:has(>#wf-editor)>.dialog-head{position:relative;flex:none;padding:18px 24px}
 #wf-editor{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden;--workflow-control-height:36px}
 #wf-editor>.dialog-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:24px}
