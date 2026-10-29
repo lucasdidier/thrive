@@ -62,7 +62,6 @@ try{state=upgradeWorkspace(await workspaceSync.connect(state));}catch(err){docum
 try{Object.assign(account,await workspaceRequest());Object.assign(state.settings,account.profile);}catch{account.workspaces=[];}
 let workflowSnapshot=snapshotWorkspace(state);
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
-try{document.documentElement.dataset.theme=localStorage.getItem('thrive-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch{}
 const dialog=document.querySelector('#dialog');
 initDrawerMotion(dialog);
 const draftGuard=createDialogDraftGuard(dialog);

@@ -1,0 +1,84 @@
+# Thrive · Cobalt workspace
+
+October 29, 2026. This replaces the application’s evergreen/monochrome visual direction. The explicit references are LAGO and Attio; the user selected light-first with matching dark mode. See [the visual audit](docs/lago-design-audit.md) for evidence and reasoning.
+
+## Intent
+
+Thrive is a working tool for independent service businesses. The design should feel precise, capable, and approachable. The distinctive elements are its blue action hierarchy, recognizable Thrive mark, compact record tables, and a home screen organized around follow-up and delivery. Brand expression comes through consistent details rather than decorative illustration or dashboard ornaments.
+
+## Source of truth
+
+`public/design-system.css` owns application colors, semantic roles, shared components, and responsive refinements. It loads after legacy feature sheets. Existing names (`--bg`, `--accent`, etc.) are compatibility aliases, so old and enhanced React controls consume the same values. Future feature styles must use these roles, never introduce another root palette or literal primary button color. Feature layout rules remain in their feature sheets.
+
+`public/design-system.html` is the live component reference. Its Light/Dark toggle previews the same CSS tokens without changing the saved workspace preference. `public/appearance.js` applies saved appearance before paint. `public/typography.css` owns the sole Inter font declaration and shared font stack, including account and client-page chrome.
+
+## Palette
+
+| Role | Light | Dark |
+|---|---|---|
+| Primary action | `#3d63ee` | `#3d63ee` |
+| Action hover / pressed | `#3154d5` / `#2946b5` | Same |
+| Primary action text | `#ffffff` | `#ffffff` |
+| Working surface | `#ffffff` | `#1a1b1e` |
+| Canvas | `#fafbfc` | `#141517` |
+| Navigation | `#f6f7f9` | `#17181b` |
+| Hover / pressed | `#eef0f4` / `#e7eaf0` | `#25272c` / `#30333a` |
+| Primary text | `#20242d` | `#eef0f5` |
+| Secondary text | `#626a78` | `#b1b7c3` |
+| Tertiary text | `#606978` | `#9ca4b2` |
+| Link | `#3154d5` | `#a5bbff` |
+| Structural border | `#e3e6eb` | `#34373e` |
+| Control border | `#ccd1da` | `#555b67` |
+
+Use `--positive`, `--warning`, `--negative`, and their paired `-bg` roles for actual state. Success is green, attention amber, overdue/failure red. Never use success green for generic progress. Custom client project statuses retain their explicit user colors. Pale identity colors belong to client avatars, not the primary action hierarchy.
+
+## Typography
+
+Locally served Inter Variable, retaining its bundled license. One family across labels, fields, navigation, tables, and headings. LAGO uses GT America on its site; Thrive does not copy its proprietary font assets.
+
+| Role | Size / weight |
+|---|---|
+| Product wordmark | 25 / 650 |
+| Home title | 28 / 600 |
+| Page title | 26 / 600 |
+| Section title | 14 / 600 |
+| Body / record identity | 13 / 400–550 |
+| Controls / table values | 12 / 450–550 |
+| Metadata | 11 / 400 |
+
+Titles use −0.025em tracking, body stays normal. Monetary figures use tabular numerals and align right. Mobile page titles become 23px. Use full visible state labels rather than color alone.
+
+## Geometry
+
+4px spacing base. Tight groups use 8–12px; panel padding 20px; section gaps 24–32px. Desktop sidebar 228px, collapsed rail 64px. Topbar 56px. Page gutters 32px, tablet 24px, phone 16px. Desktop action buttons 30px, form-footer actions 32px, icon buttons 28px, fields 36px. Coarse-pointer touch targets stay 44px. Mobile navigation targets 44px. Control radius 6px; badges 4px; workspace panels 10px; dialogs 12px. Cards use a thin border and no resting shadow. Shadows indicate floating menus and overlays.
+
+## Components
+
+- Primary button: solid blue with white text. One per task. Hover deepens the blue; active deepens again. Disabled controls use neutral roles with legible text.
+- Secondary button: white/dark working surface and visible neutral border. Tertiary: unfilled text or quiet icon control.
+- Sidebar: neutral active fill; blue only on the active icon. Product mark/name above the workspace switcher. Existing collapse, hover reveal, and keyboard behavior remain intact.
+- Record tables: white/dark working surface, sentence-case headers, faint row rules, no zebra stripes. Client identity receives weight and a stable avatar tint. Preserve density and column choices.
+- Detail views: neutral property surface, clear header/actions, underline tabs, white working content. Related records retain existing navigation.
+- Home: follow-up, delivery, and the week have distinct containers. Existing totals remain computed from records. No fabricated analytics or ornamental trend charts.
+- Fields: visible neutral boundary, standard height, same font as the table. Use the blue focus role; placeholder contrast matches metadata.
+- Badges: small pale fills and matching readable text. Status always appears in words.
+- Dialogs and menus: opaque surfaces. Keep existing workflow safeguards and explicit form actions. No decorative blur.
+- Selection, caret, scrollbars, and portalled React controls consume the same semantic roles.
+
+## Appearance and behavior
+
+New visitors begin in light mode. Saved Light and Dark choices remain respected. System is an explicit Appearance setting and follows subsequent operating-system changes. The theme is applied before the interface loads to avoid a dark first frame.
+
+Interactions use short color transitions (120ms). Pointer presses compress buttons to 98%; keyboard actions and reduced-motion preferences stay still. Preserve the existing purposeful sidebar and drawer interactions, keyboard access, reduced-motion support, and high-contrast mode. No page entrance animation or perpetual onboarding orbit.
+
+## Responsive behavior
+
+Phones keep Thrive’s scrolling navigation strip below a compact brand row. The workspace selector and footer utilities hide; the account menu and search remain in the top row. Appearance is reachable through the account menu. The empty Home topbar hides. Home columns stack below 1050px. Table overflow remains inside its table frame, preserving all configured data. Header controls wrap; panels use 16px padding on phones. Detail panels and drawers retain their existing single-pane mobile behavior.
+
+## Boundaries
+
+Application styling must not replace saved invoice/document branding, published commercial snapshots, customer logos, or explicit project status colors. Do not restyle public client pages using workspace-only assumptions. The production release uses the existing Site associated with `prototype/`; `self-hosted/` is a separate checkout and is not synchronized by this release.
+
+## Direction provenance
+
+The design-taste app draw supplied an Achromatic ledger structure (seed 78174042); the user’s LAGO/Attio direction overrides its black primary button and icon-only shell. Thrive has twelve destinations, so labeled navigation is appropriate. Impeccable’s product-interface guidance supplies consistent states and restrained expression; its random concept service was unavailable. No generated visual comps were needed because the user pinned the visual reference and the implementation uses real working components.

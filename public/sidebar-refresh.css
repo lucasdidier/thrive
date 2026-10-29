@@ -1,6 +1,6 @@
 /* Shared shell: a quiet workspace menu, quick tools, and a personal footer. */
 .sidebar .workspace-switch{outline:none;box-shadow:none}
-.sidebar .workspace-switch:focus-visible,.sidebar .account-trigger:focus-visible{outline:2px solid var(--muted);outline-offset:2px}
+.sidebar .workspace-switch:focus-visible,.sidebar .account-trigger:focus-visible{outline:2px solid var(--focus,var(--muted));outline-offset:2px}
 .sidebar .workspace-switch[aria-expanded=true]{background:var(--hover)}
 .sidebar-quick-tools{display:flex;gap:6px;margin:12px 0 18px;flex:none}
 .sidebar-quick-tools .sidebar-search{display:flex;align-items:center;gap:7px;min-height:34px;margin:0;padding:6px 8px;background:var(--card);border:1px solid var(--line);border-radius:7px;color:var(--text);font-size:11px;line-height:18px;box-shadow:0 1px 2px #00000009}
@@ -85,7 +85,7 @@
 /* Pointer clicks use quiet surface feedback; keyboard focus stays clearly visible. */
 :root{--focus:var(--muted)}
 :root[data-input-modality=pointer] :is(button,a,summary,[tabindex]):focus{outline:none!important}
-:root[data-input-modality=keyboard] :is(button,a,summary,[tabindex]):focus-visible{outline:2px solid var(--muted);outline-offset:1px}
+:root[data-input-modality=keyboard] :is(button,a,summary,[tabindex]):focus-visible{outline:2px solid var(--focus,var(--muted));outline-offset:1px}
 .sidebar .workspace-switch:active,.sidebar .account-trigger:active,.getting-started-trigger:active{background:var(--hover)}
 .workspace-switch .initial img,.workspace-option-icon img{width:100%;height:100%;object-fit:contain;border-radius:5px}
 .workspace-option-icon{display:grid;place-items:center;width:24px;height:24px;flex:none}
@@ -101,7 +101,7 @@
 .sidebar-account .account-trigger{flex:1;min-width:0;width:auto}
 .sidebar-photo-upload{position:relative;flex:none;display:grid;place-items:center;width:36px;height:36px;cursor:pointer;border-radius:50%;margin-left:3px}
 .sidebar-photo-upload input,.image-upload input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2}
-.sidebar-photo-upload:has(input:focus-visible),.image-upload:has(input:focus-visible){outline:2px solid var(--muted);outline-offset:2px}
+.sidebar-photo-upload:has(input:focus-visible),.image-upload:has(input:focus-visible){outline:2px solid var(--focus,var(--muted));outline-offset:2px}
 .sidebar-photo-edit{position:absolute;bottom:0;right:0;display:grid;place-items:center;width:13px;height:13px;border-radius:50%;font-size:12px;line-height:1;background:var(--bg);border:1px solid var(--line);opacity:0}
 .sidebar-photo-upload:hover .sidebar-photo-edit,.sidebar-photo-upload:focus-within .sidebar-photo-edit{opacity:1}
 .image-upload{position:relative;display:block;width:64px;height:64px;flex:none;border-radius:12px;overflow:hidden;background:var(--hover);cursor:pointer}
