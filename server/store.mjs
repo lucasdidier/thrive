@@ -1,7 +1,8 @@
+import {upgradeProjects} from '../public/project-migration.js';
 import {appendMissingActivity} from '../public/activity-audit.js';
 export class StoreError extends Error {constructor(message,status=400){super(message);this.status=status;}}
 export async function encodeState(state){const text=JSON.stringify(state);if(new TextEncoder().encode(text).byteLength>8_000_000)throw new StoreError('Workspace exceeds the current 8 MB limit. Export a backup before removing unused content.',413);const bytes=new Uint8Array(await new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer());if(bytes.length>1_800_000)throw new StoreError('Workspace attachments exceed the current storage limit. Use smaller logos.',413);return bytes;}
-export async function decodeState(bytes){return JSON.parse(await new Response(new Blob([new Uint8Array(bytes)]).stream().pipeThrough(new DecompressionStream('gzip'))).text());}
+export async function decodeState(bytes){return upgradeProjects(JSON.parse(await new Response(new Blob([new Uint8Array(bytes)]).stream().pipeThrough(new DecompressionStream('gzip'))).text()));}
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;
 export async function hashRequest(value){const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(canonical(value))));return [...new Uint8Array(bytes)].map(v=>v.toString(16).padStart(2,'0')).join('');}
 export async function loadWorkspace(db,owner){if(db.kind==='supabase')return db.loadWorkspace(owner);const row=await db.prepare('SELECT revision, state, updated_at FROM workspaces WHERE owner_id=?').bind(owner).first();return row?{revision:row.revision,state:await decodeState(row.state),updatedAt:row.updated_at}:null;}

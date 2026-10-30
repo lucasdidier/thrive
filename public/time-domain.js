@@ -1,3 +1,4 @@
+import {invoiceDefaults,validateInvoiceDefaults} from './invoice-defaults.js';
 import {uid,today,addActivity} from './domain.js';
 
 const clean=x=>String(x??'').trim();
@@ -56,7 +57,7 @@ export function timeInvoiceData(s,{entryIds,groupBy='entry',additionalCharge=fal
  const groups=new Map();for(const t of entries){const rate=entryRate(s,t);if(!validRate(rate)||rate<1)throw Error('Set an hourly rate for every selected entry before invoicing.');const key=JSON.stringify([groupBy==='entry'?t.id:groupBy==='day'?t.date:t.note,rate]),g=groups.get(key)||{description:groupBy==='day'?`Services · ${t.date}`:groupBy==='entry'?`${t.note} · ${t.date}`:t.note,rate,timeSources:[]};g.timeSources.push({id:t.id,minutes:timeMinutes(t),rate});groups.set(key,g);}
  if(groups.size>30)throw Error('Use day or description grouping, or select fewer entries (30 invoice lines maximum).');
  const items=[...groups.values()].map(l=>({...l,...normalizeTimeLine({...l,quantity:l.timeSources.reduce((n,x)=>n+x.minutes,0)/60})}));
- return {title:`${p.name} · Tracked time`,clientId:p.clientId,projectId:p.id,issued:today(),due:new Date(Date.now()+14*86400000).toISOString().slice(0,10),items,taxRate:0,paymentInstructions:s.settings.paymentInstructions||'',timeBilling:{additionalCharge:true,groupBy}};
+ return {title:`${p.name} · Tracked time`,clientId:p.clientId,projectId:p.id,issued:today(),due:new Date(Date.now()+invoiceDefaults(s).dueDays*86400000).toISOString().slice(0,10),items,taxRate:invoiceDefaults(s).taxRate,paymentInstructions:s.settings.paymentInstructions||'',timeBilling:{additionalCharge:true,groupBy}};
 }
 export function validateTimeWorkspace(s,old){
  if(s.settings.hourlyRate!==undefined&&!validRate(s.settings.hourlyRate))throw Error('Invalid workspace hourly rate.');

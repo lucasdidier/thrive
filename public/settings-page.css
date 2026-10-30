@@ -19,7 +19,7 @@ dialog:not(.drawer){position:fixed;inset:0;margin:auto;max-height:calc(100dvh - 
 dialog.drawer{position:fixed;inset:0 0 0 auto;margin:0;height:100dvh;max-height:100dvh}
 .hint,.field,.settings-card small{font-size:13px;color:var(--muted)}
 .icon-btn{min-width:36px;min-height:36px}
-[data-theme="dark"] .btn.primary{background:#f4f4f5;border-color:#f4f4f5;color:#18181b}
+
 .portal-editor-heading{flex-direction:column;align-items:stretch}.portal-enable{width:100%}
 input[role="switch"]{appearance:none;width:40px;height:24px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;flex-shrink:0}
 input[role="switch"]:before{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text);transition:transform .15s}

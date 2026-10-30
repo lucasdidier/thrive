@@ -1,4 +1,6 @@
-import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
+import {UserRound,BriefcaseBusiness,FileText,Receipt,ClipboardList,Mail,Workflow,Tag,Settings,House} from "lucide-react";
+import {recordSearchFields} from "../public/record-search.js";
+import React, { useState, useEffect, useId, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FluidProvider } from "@/lib/fluid-provider";
 import { untitleduiIcons } from "@/lib/icons-untitledui";
@@ -11,12 +13,6 @@ import {
   ComboboxItem,
   ComboboxEmpty,
 } from "@/components/ui/combobox";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { ColorPickerPopover } from "@/components/ui/color-picker";
 import { InputCopy } from "@/components/ui/input-copy";
 import {
@@ -89,13 +85,6 @@ function useSource(
   }, [source]);
   return source.value;
 }
-function Slot({ node }: { node: HTMLElement }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    ref.current?.append(node);
-  }, [node]);
-  return <div className="legacy-slot" ref={ref} />;
-}
 function labelFor(source: HTMLElement) {
   const label = source.closest("label")?.cloneNode(true) as HTMLElement | null;
   label
@@ -116,18 +105,43 @@ function Picker({
   container: HTMLElement;
 }) {
   const value = useSource(source);
+  const errorId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const invalid = (event: Event) => {
+      event.preventDefault();
+      setError(source.validationMessage);
+      // Only the first invalid field receives focus on a multi-error submit.
+      queueMicrotask(() => {
+        const first = source.form?.querySelector("input:invalid,select:invalid,textarea:invalid");
+        if (!first || first === source) inputRef.current?.focus();
+      });
+    };
+    const clear = () => { if (source.validity.valid) setError(""); };
+    source.addEventListener("invalid", invalid);
+    source.addEventListener("change", clear);
+    source.addEventListener("input", clear);
+    return () => {
+      source.removeEventListener("invalid", invalid);
+      source.removeEventListener("change", clear);
+      source.removeEventListener("input", clear);
+    };
+  }, [source]);
+  const describedBy = [source.getAttribute("aria-describedby"), error ? errorId : ""].filter(Boolean).join(" ");
   const items = Array.from(source.options).map((o) => ({
     value: o.value || "__empty",
     label: o.textContent || "",
   }));
   return (
+    <>
     <Combobox
       items={items}
       value={value || "__empty"}
       disabled={source.matches(":disabled")}
       onValueChange={(v) => emit(source, v === "__empty" ? "" : v)}
     >
-      <ComboboxInput aria-label={labelFor(source)} />
+      <ComboboxInput ref={inputRef} aria-label={labelFor(source)} aria-required={source.required} aria-invalid={error ? true : undefined} aria-describedby={describedBy || undefined} />
       <ComboboxContent container={container}>
         <ComboboxList>
           {(item: any) => (
@@ -139,6 +153,8 @@ function Picker({
         <ComboboxEmpty>No matches</ComboboxEmpty>
       </ComboboxContent>
     </Combobox>
+    {error && <span id={errorId} className="fluid-select-error" role="alert">{error}</span>}
+    </>
   );
 }
 function Service({
@@ -267,49 +283,6 @@ function Tags({
     </Combobox>
   );
 }
-function Disclosure({
-  body,
-  title,
-  summary,
-  initial,
-}: {
-  body: HTMLElement;
-  title: string;
-  summary: string;
-  initial: boolean;
-}) {
-  const [value, setValue] = useState(initial ? "section" : "");
-  const [currentSummary, setCurrentSummary] = useState(
-    body.dataset.summary || summary,
-  );
-  useEffect(() => {
-    const invalid = () => setValue("section");
-    const observer = new MutationObserver(() =>
-      setCurrentSummary(body.dataset.summary || summary),
-    );
-    observer.observe(body, { attributes: true, attributeFilter: ["data-summary"] });
-    body.addEventListener("invalid", invalid, true);
-    return () => {
-      observer.disconnect();
-      body.removeEventListener("invalid", invalid, true);
-    };
-  }, [body, summary]);
-  return (
-    <Accordion className="w-full" value={value} onValueChange={setValue}>
-      <AccordionItem value="section">
-        <AccordionTrigger>
-          <span className="fluid-section-label">
-            <span className="fluid-section-title">{title}</span>
-            <span className="fluid-section-summary">{currentSummary}</span>
-          </span>
-        </AccordionTrigger>
-        <AccordionContent>
-          <Slot node={body} />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-}
 function Color({
   source,
   container,
@@ -324,6 +297,7 @@ function Color({
       hideAlpha
       value={value}
       triggerLabel={labelFor(source)}
+      triggerShowValue={!source.matches("[data-status-color]")}
       triggerClassName={source.closest(".settings-page") ? "settings-color-trigger" : undefined}
       format="hex"
       swatches={[
@@ -362,33 +336,8 @@ export function initFluid(ctx: Context) {
         roots.delete(host);
       }
     document
-      .querySelectorAll<HTMLDetailsElement>(
-        "#record-client-form .settings-section,#record-project-form .settings-section",
-      )
-      .forEach((source) => {
-        if (handled.has(source)) return;
-        handled.add(source);
-        const title = source.querySelector("summary strong")?.textContent || "";
-        const summary = source.querySelector("summary span")?.textContent || "";
-        const body = source.querySelector<HTMLElement>(
-          ".settings-section-body",
-        )!;
-        const host = after(source);
-        host.className = "fluid-disclosure";
-        source.remove();
-        mount(
-          host,
-          <Disclosure
-            body={body}
-            title={title}
-            summary={summary}
-            initial={source.open}
-          />,
-        );
-      });
-    document
       .querySelectorAll<HTMLSelectElement>(
-        "#record-project-form select,#record-client-form select,#workspace-settings select,#settings-content select",
+        "#record-project-form select,#record-client-form select,#workspace-settings select,#settings-content select,#wf-editor select:not([multiple])",
       )
       .forEach((source) => {
         if (handled.has(source)) return;
@@ -398,9 +347,6 @@ export function initFluid(ctx: Context) {
         source.classList.add("fluid-source");
         source.setAttribute("aria-hidden", "true");
         source.tabIndex = -1;
-        source.addEventListener("invalid", () =>
-          host.querySelector("input")?.focus(),
-        );
         mount(host, <Picker source={source} container={portal(source)} />);
       });
     document
@@ -493,6 +439,8 @@ export function initFluid(ctx: Context) {
     "invalid",
     (e) => {
       const target = e.target as HTMLElement;
+      // The Picker owns its visible error and first-invalid-field focus.
+      if (target.matches("select.fluid-source")) return;
       if (target.offsetParent === null) {
         e.preventDefault();
         requestAnimationFrame(() => {
@@ -538,11 +486,16 @@ export function initFluid(ctx: Context) {
         button.remove();
       };
       const items = [
-        ...["client", "project", "proposal", "contract", "form"].map((kind) => ({
+        ...[
+          ['client','New client',UserRound],['project','New project',BriefcaseBusiness],
+          ['proposal','New proposal',FileText],['contract','New contract',FileText],
+          ['invoice','New invoice',Receipt],['form','New form',ClipboardList],
+          ['mail','Compose email',Mail],['service','New service',Tag],['workflow','New workflow',Workflow],
+        ].map(([kind,label,icon]: any[]) => ({
           value: "new-" + kind,
-          label: "New " + kind,
-          group: "Create",
-          onSelect: () => action("new-" + kind),
+          label, icon,
+          group: "Quick actions",
+          onSelect: () => action(({mail:"mail-new",service:"service-new",workflow:"wf-new"} as any)[kind] || "new-" + kind),
         })),
         ...[
           "overview",
@@ -563,22 +516,26 @@ export function initFluid(ctx: Context) {
             page === "overview"
               ? "Home"
               : page === "messages" ? "Emails" : page[0].toUpperCase() + page.slice(1),
+          icon: page === "overview" ? House : ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt,workflows:Workflow,messages:Mail} as any)[page] || FileText,
           group: "Navigate",
           onSelect: () => action("navigate", undefined, page),
         })),
         {
           value: "settings",
           label: "Workspace settings",
+          icon: Settings,
           group: "Settings",
           onSelect: () => action("workspace-settings"),
         },
+        {value:"account-settings",label:"Account settings",icon:UserRound,group:"Settings",onSelect:()=>action("account-settings")},
         ...["clients", "projects", "documents", "forms", "invoices"].flatMap(
           (type) =>
             (state[type] || [])
               .filter((r: any) => !r.archived)
               .map((r: any) => ({
                 value: type + "-" + r.id,
-                label: r.name || r.title || r.number,
+                icon: ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt} as any)[type] || FileText,
+                ...recordSearchFields(state, type, r),
                 group: type === "documents" ? (r.kind === "proposal" ? "Proposals" : ["contract", "agreement"].includes(r.kind) ? "Contracts" : "Reference material") : type[0].toUpperCase() + type.slice(1),
                 onSelect: () =>
                   action(
@@ -603,7 +560,7 @@ export function initFluid(ctx: Context) {
         <CommandMenu items={items}>
           <CommandMenuInput
             autoFocus
-            placeholder="Search or jump to…"
+            placeholder="Search your workspace or take an action…"
             aria-label="Search workspace"
           />
           <CommandMenuList>

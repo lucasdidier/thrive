@@ -16,18 +16,20 @@ export function serviceItems(s,id){const x=(s.services||[]).find(x=>x.id===id&&!
 export function serviceOffer(s,id){const x=(s.services||[]).find(x=>x.id===id&&!x.archived);if(!x)throw Error('Choose an active service.');const basis=pricingBasis(x),single=x.kind==='service'?x.items[0]:null;return {id:uid(),name:x.name,...basis,description:single?(single.details||(single.description!==x.name?single.description:'')):x.items.map(i=>`${i.description} × ${i.quantity}`).join('\n'),rate:single?single.rate:x.amount,mode:'required',group:'',min:single?.quantity||1,max:single?.quantity||1,quantity:single?.quantity||1,serviceId:x.id,serviceVersion:x.version,items:serviceItems(s,id)};}
 export function validateOffers(input=[]){
  if(!Array.isArray(input)||input.length>20)throw Error('Use up to 20 service options.');
- const seen=new Set();return input.map(x=>{const id=clean(x.id),name=clean(x.name),description=clean(x.description),rate=Number(x.rate),min=Number(x.min),max=Number(x.max),quantity=Number(x.quantity),mode=x.mode,group=clean(x.group),basis=pricingBasis(x);
+ const seen=new Set();return input.map(raw=>{let x=raw;let packageItems,taxRate,subtotal,taxAmount;
+ if(raw.packageItems){if(!Array.isArray(raw.packageItems)||!raw.packageItems.length||raw.packageItems.some(i=>i.packageItems))throw Error('A package needs service items and cannot contain another package.');packageItems=validateOffers(raw.packageItems.map(i=>({...i,mode:'required',group:''})));taxRate=Number(raw.taxRate||0);if(!Number.isFinite(taxRate)||taxRate<0||taxRate>100)throw Error('Package tax must be between 0 and 100%.');subtotal=packageItems.reduce((n,i)=>n+Math.round(i.rate*i.quantity),0);taxAmount=Math.round(subtotal*taxRate/100);x={...raw,rate:subtotal+taxAmount,quantity:1,min:1,max:1,unit:'item',billingModel:'fixed'};}
+const id=clean(x.id),name=clean(x.name),description=clean(x.description),rate=Number(x.rate),min=Number(x.min),max=Number(x.max),quantity=Number(x.quantity),mode=x.mode,group=clean(x.group),basis=pricingBasis(x);
  if(!/^[\w-]{1,100}$/.test(id)||seen.has(id))throw Error('Service options must have unique identifiers.');seen.add(id);
  if(!name||name.length>100||description.length>2000)throw Error('Add a service name and keep descriptions under 2,000 characters.');
  if(!Number.isSafeInteger(rate)||rate<1||rate>100000000)throw Error('Set a positive service price.');
  if(!['required','optional','choice'].includes(mode))throw Error('Choose Required, Optional, or Choose one.');
  if(mode==='choice'&&(!group||group.length>60))throw Error('Give each choose-one option a group name.');
  if(![min,max,quantity].every(validQuantity)||max<min||quantity<min||quantity>max)throw Error('Use positive quantities with up to two decimals, within the minimum and maximum.');
- return {id,name,description,rate,min,max,quantity,...basis,mode,group:mode==='choice'?group:'',...(x.serviceId?{serviceId:clean(x.serviceId),serviceVersion:x.serviceVersion,items:copy(x.items||[])}:{})};});
+ return {id,name,description,rate,min,max,quantity,...basis,...(packageItems?{packageItems,taxRate,subtotal,taxAmount}:{}),mode,group:mode==='choice'?group:'',...(x.serviceId?{serviceId:clean(x.serviceId),serviceVersion:x.serviceVersion,items:copy(x.items||[])}:{})};});
 }
 export function defaultSelections(offers=[]){const groups=new Set();const selected=offers.filter(o=>o.mode==='required'||(o.mode==='choice'&&!groups.has(o.group)&&groups.add(o.group))).map(o=>({id:o.id,quantity:o.quantity}));return selected.length?selected:offers.length?[{id:offers[0].id,quantity:offers[0].quantity}]:[];}
-export function quoteOffers(input,selections=defaultSelections(input)){
- const offers=validateOffers(input);if(!Array.isArray(selections))throw Error('Choose your services.');const seen=new Set(),groups=new Map();
+export function quoteOffers(input,selections){
+ const offers=validateOffers(input);selections??=defaultSelections(offers);if(!Array.isArray(selections))throw Error('Choose your services.');const seen=new Set(),groups=new Map();
  const items=selections.map(x=>{if(seen.has(x.id))throw Error('A service can only be selected once.');seen.add(x.id);const o=offers.find(o=>o.id===x.id);if(!o)throw Error('This service option is no longer available.');const quantity=Number(x.quantity);if(!validQuantity(quantity)||quantity<o.min||quantity>o.max)throw Error(`${o.name}: choose a quantity from ${o.min} to ${o.max}.`);if(o.mode==='choice')groups.set(o.group,(groups.get(o.group)||0)+1);return {...copy(o),quantity,amount:Math.round(o.rate*quantity)};});
  if(offers.some(o=>o.mode==='required'&&!seen.has(o.id)))throw Error('Include all required services.');
  if(offers.some(o=>o.mode==='choice'&&groups.get(o.group)!==1))throw Error('Select exactly one option from each group.');

@@ -1,0 +1,3 @@
+export function expandableCard(title,description,content,{open=false,className=''}={}){return `<details class="expandable-card ${className}" ${open?'open':''}><summary><span><strong>${title}</strong>${description?`<small>${description}</small>`:''}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></summary><div class="expandable-card-body">${content}</div></details>`;}
+
+if(typeof document!=='undefined')document.addEventListener('invalid',event=>{let card=event.target.closest('details.expandable-card');while(card){card.open=true;card=card.parentElement.closest('details.expandable-card');}},true);

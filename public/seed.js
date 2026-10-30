@@ -1,6 +1,6 @@
 export function baseSeed() {
   return {
-    version:1, settings:{name:'Alex Morgan',business:'Morgan Studio',deposit:50,phases:['Discovery','Design','Handoff'],review:true,description:'I’m a brand designer. I take 50% upfront, work in three phases, and review every proposal before sending it.'},
+    version:1, settings:{name:'Alex Morgan',business:'Morgan Studio',deposit:50,review:true,description:'I’m a brand designer. I take 50% upfront, review every proposal before sending it.'},
     clients:[
       {id:'c1',name:'Juniper Studio',contact:'Sophie Chen',email:'sophie@juniper.example',color:'sage',initials:'J',tag:'Branding'},
       {id:'c2',name:'Orbit',contact:'James Wilson',email:'james@orbit.example',color:'violet',initials:'O',tag:'Web design'},
@@ -9,11 +9,11 @@ export function baseSeed() {
       {id:'c5',name:'Sunday Goods',contact:'Mia Taylor',email:'mia@sunday.example',color:'blue',initials:'S',tag:'Strategy'}
     ],
     projects:[
-      {id:'p1',clientId:'c1',name:'Juniper brand identity',service:'Brand identity',budget:600000,status:'active',deposit:50,phases:[{name:'Discovery',done:true},{name:'Design',done:false},{name:'Handoff',done:false}],due:'2026-10-28',proposal:'Visual identity for Juniper Studio. Includes creative direction, a primary logo and supporting marks, a color palette, typography, and a concise brand guide.',accepted:true},
-      {id:'p2',clientId:'c2',name:'Orbit website',service:'Web design',budget:650000,status:'active',deposit:50,phases:[{name:'Discovery',done:true},{name:'Design',done:true},{name:'Handoff',done:false}],due:'2026-10-24',proposal:'Design and build a responsive product website for Orbit.',accepted:true},
-      {id:'p3',clientId:'c3',name:'The autumn edition',service:'Editorial design',budget:200000,status:'completed',deposit:50,phases:[{name:'Discovery',done:true},{name:'Design',done:true},{name:'Handoff',done:true}],due:'2026-10-10',proposal:'Editorial design and production-ready artwork.',accepted:true},
-      {id:'p4',clientId:'c4',name:'Paper & Pine brand refresh',service:'Brand identity',budget:400000,status:'proposal',deposit:50,phases:[{name:'Discovery',done:false},{name:'Design',done:false},{name:'Handoff',done:false}],due:'2026-11-14',proposal:'Develop the creative direction, refine the logo, and define colors and typography. Deliver logo files and a brand guide.',accepted:false},
-      {id:'p5',clientId:'c5',name:'Sunday brand strategy',service:'Brand strategy',budget:250000,status:'inquiry',deposit:50,phases:[{name:'Discovery',done:false},{name:'Design',done:false},{name:'Handoff',done:false}],due:'2026-11-20',proposal:'Define brand positioning, target audience, and messaging.',accepted:false}
+      {id:'p1',clientId:'c1',name:'Juniper brand identity',service:'Brand identity',budget:600000,status:'active',deposit:50,due:'2026-10-28',proposal:'Visual identity for Juniper Studio. Includes creative direction, a primary logo and supporting marks, a color palette, typography, and a concise brand guide.',accepted:true},
+      {id:'p2',clientId:'c2',name:'Orbit website',service:'Web design',budget:650000,status:'active',deposit:50,due:'2026-10-24',proposal:'Design and build a responsive product website for Orbit.',accepted:true},
+      {id:'p3',clientId:'c3',name:'The autumn edition',service:'Editorial design',budget:200000,status:'completed',deposit:50,due:'2026-10-10',proposal:'Editorial design and production-ready artwork.',accepted:true},
+      {id:'p4',clientId:'c4',name:'Paper & Pine brand refresh',service:'Brand identity',budget:400000,status:'planned',deposit:50,due:'2026-11-14',proposal:'Develop the creative direction, refine the logo, and define colors and typography. Deliver logo files and a brand guide.',accepted:false},
+      {id:'p5',clientId:'c5',name:'Sunday brand strategy',service:'Brand strategy',budget:250000,status:'planned',deposit:50,due:'2026-11-20',proposal:'Define brand positioning, target audience, and messaging.',accepted:false}
     ],
     invoices:[
       {id:'i1',number:'INV-001',projectId:'p1',amount:300000,paid:300000,due:'2026-10-02',paidAt:'2026-10-02',kind:'deposit'},

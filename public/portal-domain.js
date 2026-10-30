@@ -1,3 +1,4 @@
+import {projectStatus} from './project-status.js';
 import {invoiceStatus,money,addActivity} from './domain.js';
 import {deliveryStatus} from './workspace-domain.js';
 export const portalSections={documents:'Documents',forms:'Forms',invoices:'Invoices',projects:'Projects',meetings:'Meetings'};
@@ -9,7 +10,7 @@ export function portalCandidates(s,clientId){const client=s.clients.find(c=>c.id
  documents:s.documents.filter(d=>d.clientId===clientId&&!d.archived&&d.status!=='draft'&&projectOpen(d.projectId)&&d.versions.some(v=>v.number===d.currentVersion&&v.status!=='superseded'&&v.client?.id===clientId)).map(d=>({id:d.id,title:d.title,detail:`Version ${d.currentVersion} · ${d.status}`,version:d.currentVersion})),
  forms:s.forms.filter(f=>f.status==='active'&&!f.archived).map(f=>({id:f.id,title:f.name||f.title,detail:'One response per assignment'})),
  invoices:s.invoices.filter(i=>i.number&&!i.archived&&invoiceClient(s,i)===clientId).map(i=>({id:i.id,title:i.number,detail:`${money(i.amount-i.paid,i.currency||s.settings.currency||'USD')} outstanding · ${invoiceStatus(i)}`})),
- projects:s.projects.filter(p=>p.clientId===clientId&&!p.archived&&p.status!=='cancelled').map(p=>({id:p.id,title:p.name,detail:deliveryStatus(p)})),
+ projects:s.projects.filter(p=>p.clientId===clientId&&!p.archived&&p.status!=='cancelled').map(p=>({id:p.id,title:p.name,detail:projectStatus(s,p).name})),
  meetings:(s.scheduling?.meetings||[]).filter(m=>m.clientId===clientId).map(m=>({id:m.id,title:m.typeName,detail:`${m.start} · ${m.status}`}))
  };}
 export function savePortal(s,clientId,data){const c=s.clients.find(c=>c.id===clientId&&!c.archived);if(!c)throw Error('Choose an active client.');const old=c.portal||portalDefaults(c,s.settings),candidates=portalCandidates(s,clientId);if(!data||Object.keys(data).some(k=>!['enabled','title','intro','sections',...Object.keys(portalSections)].includes(k)))throw Error('Invalid portal settings.');
@@ -41,7 +42,7 @@ export function portalProjection(s,clientId,{preview=false}={}){const c=preview?
  if(e.entity==='document'){const d=s.documents.find(d=>d.id===e.recordId),v=d.versions.find(v=>v.number===e.version),pending=v.status==='published'&&v.responseMode!=='none';return {key:e.key,entity:e.entity,title:v.title,status:pending?'Awaiting '+(v.responseMode==='signature'?'signature':'acceptance'):v.status==='published'?'For information':v.status,detail:`Version ${e.version}`,needsAttention:pending,action:pending?(v.responseMode==='signature'?'Review & sign':'Review document'):'View document'};}
  if(e.entity==='invoice'){const i=s.invoices.find(i=>i.id===e.recordId);return {key:e.key,entity:e.entity,title:i.number,status:invoiceStatus(i),detail:money(i.amount-i.paid,i.currency||s.settings.currency||'USD')+' outstanding',needsAttention:i.paid<i.amount,action:i.paid<i.amount?'Payment instructions':'View invoice'};}
  if(e.entity==='form'){const f=s.forms.find(f=>f.id===e.recordId),response=portalFormResponse(s,clientId,e.assignmentId);return {key:e.key,entity:e.entity,title:f.title,status:response?'Completed':'To complete',detail:response?'Response received':'Requested form',needsAttention:!response,action:response?'View status':'Complete form'};}
- if(e.entity==='project'){const r=s.projects.find(r=>r.id===e.recordId);return {entity:e.entity,title:r.name,status:deliveryStatus(r),due:r.due||'',phases:r.phases.map(f=>({name:f.name,done:!!f.done,approved:!!f.approved})),needsAttention:false};}
+ if(e.entity==='project'){const r=s.projects.find(r=>r.id===e.recordId);return {entity:e.entity,title:r.name,status:projectStatus(s,r).name,due:r.due||'',needsAttention:false};}
  const m=s.scheduling.meetings.find(m=>m.id===e.recordId);return {entity:'meeting',title:m.typeName,status:m.status,start:m.start,end:m.end,timeZone:m.timeZone,location:m.location,needsAttention:false};
  });return {entity:'portal',data:{title:p.title,intro:p.intro,business:s.settings.business,currency:s.settings.currency||'USD',clientName:c.name,logo:/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s.settings.invoiceDesign?.logo||'')?s.settings.invoiceDesign.logo:'',items},actions:[]};
 }

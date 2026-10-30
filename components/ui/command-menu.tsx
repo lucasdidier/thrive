@@ -21,9 +21,7 @@ import {
   type RefObject,
   type SetStateAction,
 } from "react";
-import { animate, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { spring } from "@/lib/springs";
 import { useIcons, type IconComponent } from "@/lib/icon-context";
 import { shapeMap } from "@/lib/shape-context";
 import { SizeProvider, useSize, typeClass, fieldTouchClass, type SizeVariant } from "@/lib/size-context";
@@ -557,22 +555,17 @@ const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
     // (Home at the top, ↓ in a one-row list, a query that keeps row 0) must
     // still scroll, and no flag can be left behind for a pointer move to
     // pick up. A keyboard move keeps its row at the CENTER of the viewport
-    // (as far as the ends allow) and the viewport travels there on the same
-    // fast spring as the highlight, so row and fill move together; a query
+    // (as far as the ends allow), immediately with keyboard selection; a query
     // reset snaps to the top, heading included. Offsets, not rects: the
     // row's offsetParent is the list, whose offsetParent is the scroll
     // area's root that the viewport fills, so their sum is the row's place
     // in the scroll content whatever transform an ancestor carries. Never
     // scrollIntoView, which also scrolls the page.
-    const reduceMotion = useReducedMotion() ?? false;
-    const scrollAnimationRef = useRef<{ stop: () => void } | null>(null);
     const scrollToRow = useCallback(
       (index: number, mode: "center" | "top") => {
         const list = listRef.current;
         const viewport = list?.closest<HTMLElement>('[data-slot="scroll-area-viewport"]');
         if (!list || !viewport) return;
-        scrollAnimationRef.current?.stop();
-        scrollAnimationRef.current = null;
         if (mode === "top" || index === 0) {
           viewport.scrollTop = 0;
           return;
@@ -587,20 +580,11 @@ const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
             viewport.scrollHeight - viewport.clientHeight
           )
         );
-        if (reduceMotion) {
-          viewport.scrollTop = target;
-          return;
-        }
-        scrollAnimationRef.current = animate(viewport.scrollTop, target, {
-          ...spring.fast,
-          onUpdate: (value) => {
-            viewport.scrollTop = value;
-          },
-        });
+        // Keyboard navigation must keep pace with key repeat.
+        viewport.scrollTop = target;
       },
-      [reduceMotion]
+      []
     );
-    useEffect(() => () => scrollAnimationRef.current?.stop(), []);
 
     // The first enabled row is highlighted whenever the row set changes, so
     // Enter always has a target and it follows the query as it filters.
@@ -689,24 +673,8 @@ const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
       ]
     );
 
-    // The panel follows its rows: the column inside is measured (offsetHeight,
-    // transform-immune) and the frame springs to that number on the moderate
-    // tier. Never "auto": framer would read the visual size under a scaled
-    // ancestor. Reduced motion snaps. max-h inherits down the chain, so a
-    // cap on the wrapper (or on this root's className) bounds the column and
-    // the list scrolls past it.
-    const columnRef = useRef<HTMLDivElement | null>(null);
-    const [height, setHeight] = useState<number | null>(null);
-    useEffect(() => {
-      const el = columnRef.current;
-      if (!el || typeof ResizeObserver === "undefined") return;
-      const update = () => setHeight(el.offsetHeight);
-      update();
-      const ro = new ResizeObserver(update);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, []);
-
+    // Keep query-driven size changes immediate. The inherited max-height caps
+    // the result viewport without animating layout while the user types.
     const root = (
       <CommandMenuContext.Provider value={ctx}>
         <CommandMenuFillContext.Provider value={fill}>
@@ -716,16 +684,11 @@ const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
             className={cn("relative w-full max-h-[inherit] overflow-hidden", className)}
             {...props}
           >
-            <motion.div
-              className="max-h-[inherit] overflow-hidden"
-              initial={false}
-              animate={height === null ? {} : { height }}
-              transition={reduceMotion ? { duration: 0 } : spring.moderate}
-            >
-              <div ref={columnRef} className="flex max-h-[inherit] min-h-0 flex-col">
+            <div className="max-h-[inherit] overflow-hidden">
+              <div className="flex max-h-[inherit] min-h-0 flex-col">
                 {children}
               </div>
-            </motion.div>
+            </div>
           </div>
         </CommandMenuFillContext.Provider>
       </CommandMenuContext.Provider>

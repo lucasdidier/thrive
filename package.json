@@ -16,7 +16,8 @@
     "build:self-hosted": "node scripts/build-fluid.mjs && vite build --config vite.self-hosted.config.ts",
     "dev:self-hosted": "node scripts/build-fluid.mjs && vite --config vite.self-hosted.config.ts --host 127.0.0.1",
     "deploy:self-hosted": "wrangler deploy --config dist/server/wrangler.json",
-    "db:local": "node scripts/migrate-local.mjs"
+    "db:local": "node scripts/migrate-local.mjs",
+    "preview:design": "node scripts/design-preview.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

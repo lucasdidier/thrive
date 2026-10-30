@@ -1,6 +1,7 @@
 import {nylasStatus,nylasConnection,nylasRequest} from './nylas.mjs';
 import {loadWorkspace,hashRequest,StoreError} from './store.mjs';
 import {ownerOf,checkOrigin,readBody,json,errorResponse} from './http.mjs';
+import {schedulerMeetings} from './scheduler-bookings.mjs';
 
 const clock=n=>`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;
 export const schedulerSlug=async(owner,typeId)=>'thrive-'+(await hashRequest({owner,typeId})).slice(0,32);
@@ -26,9 +27,9 @@ async function context(db,owner,env,fetcher){
 // Slugs are owner/type-derived; callers never supply a grant or configuration ID.
 async function findConfig(ctx,owner,id){const slug=await schedulerSlug(owner,id);return {slug,config:ctx.configs.find(c=>c.slug===slug)};}
 export async function schedulerStatus(db,owner,env,fetcher=fetch){
- const ctx=await context(db,owner,env,fetcher),pages={};
- for(const t of ctx.state.scheduling?.types||[]){const {slug,config}=await findConfig(ctx,owner,t.id);if(config)pages[t.id]={url:`https://book.nylas.com/${env.NYLAS_REGION||'eu'}/${encodeURIComponent(env.NYLAS_CLIENT_ID)}/${slug}`,published:!config.requires_session_auth};}
- return {connection:ctx.connection,pages};
+ const ctx=await context(db,owner,env,fetcher),pages={},ownedConfigs=[];
+ for(const t of ctx.state.scheduling?.types||[]){const {slug,config}=await findConfig(ctx,owner,t.id);if(config){pages[t.id]={url:`https://book.nylas.com/${env.NYLAS_REGION||'eu'}/${encodeURIComponent(env.NYLAS_CLIENT_ID)}/${slug}`,published:!config.requires_session_auth};ownedConfigs.push({config,type:t});}}
+ return {connection:ctx.connection,pages,meetings:await schedulerMeetings(ctx,owner,ownedConfigs)};
 }
 export async function publishBookingPage(db,owner,env,id,{remove=false,existingOnly=false,fetcher=fetch}={}){
  const ctx=await context(db,owner,env,fetcher),t=ctx.state.scheduling?.types?.find(t=>t.id===id);

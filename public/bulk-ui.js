@@ -5,10 +5,10 @@ export function createBulkUI({getState:S,render,save,blocked,open,dialog,esc,ico
  function use(next){config=next;selection.use(next.scope,next.rows.map(r=>r.id));}
  function reset(){selection.stop();config=null;document.querySelector('#bulk-actions')?.remove();document.body.classList.remove('bulk-selecting');}
  function control(){return `<button class="crm-tool bulk-toggle ${selection.active?'applied':''}" data-action="bulk-toggle" aria-pressed="${selection.active}" ${config.rows.length||selection.active?'':'disabled'}>${icon('check')}<span>${selection.active?'Done selecting':'Select multiple'}</span></button>`;}
- function checkbox(id,name){return `<input class="bulk-checkbox" type="checkbox" data-bulk-id="${esc(id)}" aria-label="Select ${esc(name)}" ${selection.has(id)?'checked':''}>`;}
- function head(){return selection.active?`<th class="bulk-cell" scope="col"><input class="bulk-checkbox" type="checkbox" data-bulk-all aria-label="Select all in this view" aria-checked="${selection.mixed?'mixed':selection.all}" ${selection.all?'checked':''} ${selection.total?'':'disabled'}></th>`:'';}
+ function checkbox(id,name){return `<label class="bulk-check-target"><input class="bulk-checkbox" type="checkbox" data-bulk-id="${esc(id)}" aria-label="Select ${esc(name)}" ${selection.has(id)?'checked':''}></label>`;}
+ function head(){return selection.active?`<th class="bulk-cell" scope="col"><label class="bulk-check-target"><input class="bulk-checkbox" type="checkbox" data-bulk-all aria-label="Select all in this view" aria-checked="${selection.mixed?'mixed':selection.all}" ${selection.all?'checked':''} ${selection.total?'':'disabled'}></label></th>`:'';}
  function cell(id,name){return selection.active?`<td class="bulk-cell">${checkbox(id,name)}</td>`:'';}
- function card(id,name){return selection.active?`<label class="bulk-card-check">${checkbox(id,name)}<span class="sr-only">Select ${esc(name)}</span></label>`:'';}
+ function card(id,name){return selection.active?`<span class="bulk-card-check">${checkbox(id,name)}</span>`:'';}
  function redraw(focus){render();if(focus==='toggle')document.querySelector('[data-action=bulk-toggle]')?.focus();else if(focus==='all')document.querySelector('[data-bulk-all]')?.focus();else if(focus)Array.from(document.querySelectorAll('[data-bulk-id]')).find(el=>el.dataset.bulkId===focus)?.focus();}
  function sync(){let root=document.querySelector('#bulk-actions');document.body.classList.toggle('bulk-selecting',selection.active);if(!selection.active||!config){root?.remove();return;}
  if(!root){root=document.createElement('div');root.id='bulk-actions';root.className='bulk-floating';root.setAttribute('role','region');root.setAttribute('aria-label','Selection actions');document.body.append(root);}

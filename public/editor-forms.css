@@ -1,0 +1,147 @@
+/* Shared editor primitives: one spacing source per group, one scrolling body. */
+:root{--editor-control-height:36px;--editor-field-gap:18px;--editor-section-gap:16px}
+/* Standard editors and detail/confirmation dialogs share a fixed frame.
+   Wizard and template-gallery layouts retain their dedicated scroll regions. */
+dialog[open]:has(>.dialog-body,>form>.dialog-body){display:flex;flex-direction:column;overflow:hidden}
+dialog:has(>.dialog-body,>form>.dialog-body)>.dialog-head{position:relative;flex:none;padding:18px 24px;gap:16px}
+dialog:has(>.dialog-body,>form>.dialog-body)>.dialog-head h2{font-size:16px;font-weight:500;line-height:24px;min-width:0;overflow-wrap:anywhere}
+dialog>form:has(>.dialog-body){display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden}
+dialog>.dialog-body,dialog>form>.dialog-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:24px}
+dialog:has(>.dialog-body,>form>.dialog-body)>.dialog-footer,dialog>form>.dialog-footer{position:relative;flex:none;margin:0;padding:14px 24px;background:var(--bg);gap:8px}
+dialog.drawer:has(>form>.dialog-body):not(.portal-editor,.import-dialog,.workflow-dialog,.form-builder-dialog){width:min(560px,100vw)}
+dialog:not(.drawer):not(.editor-modal):has(>.dialog-body,>form>.dialog-body){width:min(520px,calc(100vw - 32px))}
+dialog .dialog-head>.icon-btn{flex:none}
+dialog .dialog-footer .btn{white-space:normal;text-align:center}
+dialog>.dialog-body>:first-child{margin-top:0}
+dialog>.dialog-body>:last-child{margin-bottom:0}
+dialog .field{min-width:0;font-size:12px;font-weight:500;line-height:18px;margin-bottom:var(--editor-field-gap)}
+dialog .field>input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=color]):not([type=range]):not([type=file]):not(.fluid-source),dialog .field>select:not([multiple]):not(.fluid-source):not(.thrive-native-select){height:var(--editor-control-height);min-height:var(--editor-control-height);width:100%;margin-top:6px;padding:8px 10px;border-radius:6px;font:400 13px/20px var(--system-font)}
+dialog .field>textarea{margin-top:6px;padding:8px 10px;border-radius:6px;font:400 13px/20px var(--system-font);resize:vertical}
+dialog .field>.thrive-select,dialog .field>.fluid-ui{margin-top:6px;min-width:0;width:100%;font-size:13px;font-weight:400}
+dialog .field>.thrive-select>.thrive-select-trigger{min-height:var(--editor-control-height);height:var(--editor-control-height);font-size:13px;border-radius:6px}
+dialog .field>.fluid-ui [role=group]:has(>input[role=combobox]){height:var(--editor-control-height);min-height:var(--editor-control-height);padding:0 10px;border-radius:6px;background:var(--input)}
+dialog .field>.fluid-ui input[role=combobox]{height:20px;min-height:20px;margin:0;padding:0;border:0;background:transparent;font:400 13px/20px var(--system-font)}
+/* A stack owns the gap; its fields and sections must not add another margin. */
+dialog .settings-stack{gap:var(--editor-field-gap)}
+dialog .settings-stack>.field,dialog .settings-stack>.expandable-card{margin:0}
+dialog .field-row{gap:var(--editor-section-gap);align-items:start}
+dialog .field-row>.field{min-width:0}
+dialog .form-error:empty{display:none}
+/* Consistent disclosures in forms, builders, import/share and settings panels. */
+:is(dialog,.settings-page,.document-controls) .expandable-card{border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:12px 0 0;padding:0}
+:is(dialog,.settings-page,.document-controls) .expandable-card+.expandable-card{margin-top:0}
+:is(dialog,.settings-page,.document-controls) .expandable-card>summary{min-height:52px;padding:14px 0;gap:16px;border:0;text-align:left}
+:is(dialog,.settings-page,.document-controls) .expandable-card>summary>span{display:flex;flex:1;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:2px 16px;min-width:0}
+:is(dialog,.settings-page,.document-controls) .expandable-card>summary strong{font:500 13px/20px var(--system-font)}
+:is(dialog,.settings-page,.document-controls) .expandable-card>summary small{font:400 12px/20px var(--system-font);color:var(--muted);text-align:right;overflow-wrap:anywhere}
+:is(dialog,.settings-page,.document-controls) .expandable-card-body{padding:4px 0 18px}
+:is(dialog,.settings-page,.document-controls) .expandable-card-body>.field:last-child{margin-bottom:0}
+.editor-section-list{margin-top:6px}
+/* Project and client editors share their field rhythm and compact sections. */
+dialog.drawer:has(>:is(#record-client-form,#record-project-form)){width:min(560px,100vw)}
+:is(#record-client-form,#record-project-form)>.dialog-body{gap:var(--editor-field-gap);padding:24px}
+:is(#record-client-form,#record-project-form)>.dialog-footer{padding:14px 24px}
+:is(#record-client-form,#record-project-form) .field,:is(#record-client-form,#record-project-form) .field-label{display:block;margin:0;font:500 12px/18px var(--system-font);color:var(--muted)}
+:is(#record-client-form,#record-project-form) .field>input:not(.fluid-source):not([hidden]),:is(#record-client-form,#record-project-form) .field>select:not(.fluid-source),:is(#record-client-form,#record-project-form) .field>textarea{font-size:13px}
+:is(#record-client-form,#record-project-form) .field>.fluid-ui,:is(#record-client-form,#record-project-form) .fluid-tags{margin:6px 0 0;font-size:13px;font-weight:400}
+:is(#record-client-form,#record-project-form) .fluid-ui [role=group]:has(>input[role=combobox]),:is(#record-client-form,#record-project-form) .fluid-tags>div>div{min-height:var(--editor-control-height);padding:0 10px;border-radius:6px;background:var(--input);box-shadow:0 0 0 1px var(--line)}
+:is(#record-client-form,#record-project-form) .fluid-tags>div>div{padding:calc((var(--editor-control-height) - 20px)/2) 10px!important}
+:is(#record-client-form,#record-project-form) .fluid-ui input[role=combobox]{font:400 13px/20px var(--system-font)}
+:is(#record-client-form,#record-project-form) .expandable-card{margin:0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+:is(#record-client-form,#record-project-form) .expandable-card>summary{min-height:52px;padding:14px 0}
+:is(#record-client-form,#record-project-form) .expandable-card>summary>span{flex-wrap:wrap;gap:2px 16px}
+:is(#record-client-form,#record-project-form) .expandable-card>summary strong{font-weight:500}
+:is(#record-client-form,#record-project-form) .expandable-card-body{display:grid;gap:16px;padding:4px 0 18px}
+:is(#record-client-form,#record-project-form) .expandable-card-body>fieldset{display:grid;gap:16px;min-width:0;padding:0;margin:0;border:0}
+:is(#record-client-form,#record-project-form) .hint{margin:0;font-size:12px;line-height:1.5}
+:is(#record-client-form,#record-project-form) .field[hidden]{display:none}
+#record-project-form #inline-client:not([hidden]){display:grid;gap:16px;margin:0;padding:16px;border:1px solid var(--line);border-radius:6px;min-width:0}
+#record-project-form #inline-client[hidden]{display:none}
+@media(max-width:650px){
+ :root{--editor-control-height:44px}
+ dialog:has(>.dialog-body,>form>.dialog-body)>.dialog-head,dialog>.dialog-body,dialog>form>.dialog-body,:is(#record-client-form,#record-project-form)>.dialog-body{padding:18px}
+ dialog:has(>.dialog-body,>form>.dialog-body)>.dialog-footer,dialog>form>.dialog-footer,:is(#record-client-form,#record-project-form)>.dialog-footer{padding:12px 18px}
+ dialog .field>input:not([type=checkbox]):not([type=radio]):not(.fluid-source),dialog .field>textarea,dialog .field>select:not(.fluid-source),dialog .field>.thrive-select>.thrive-select-trigger,dialog .field>.fluid-ui input[role=combobox],:is(#record-client-form,#record-project-form) .fluid-ui input[role=combobox],:is(#record-client-form,#record-project-form) .field>input:not(.fluid-source),:is(#record-client-form,#record-project-form) .field>textarea{font-size:16px}
+ :is(dialog,.settings-page,.document-controls) .expandable-card>summary small{text-align:left}
+ dialog .field-row{grid-template-columns:minmax(0,1fr)}
+}
+/* Grid gaps already separate these rows, including at the narrowest breakpoint. */
+:is(#record-client-form,#record-project-form) .expandable-card-body>.check{margin:0}
+#record-project-form .project-budget-pair,#record-project-form .project-details-pair{gap:16px}
+
+/* Ordinary forms use one vertical rhythm, also when embedded in Settings. */
+:is(dialog,.settings-embedded)>form:not(.editor-wizard):not(#wf-editor):not(#fb-editor):not(#portal-settings)>.dialog-body{display:flex;flex-direction:column;gap:var(--editor-field-gap);align-items:stretch}
+:is(dialog,.settings-embedded)>form:not(.editor-wizard):not(#wf-editor):not(#fb-editor):not(#portal-settings)>.dialog-body>:not([hidden]){margin-block:0;flex-shrink:0}
+:is(dialog,.settings-embedded)>form>.dialog-body>.btn{align-self:flex-start}
+dialog .field-row{margin-bottom:var(--editor-field-gap)}
+dialog .field-row>.field{margin-bottom:0}
+dialog .field:last-child{margin-bottom:0}
+dialog .field>small{display:block;font-size:12px;font-weight:400;line-height:18px;margin-top:6px;color:var(--muted)}
+dialog :is(.hint,.notice){line-height:1.6;overflow-wrap:anywhere}
+dialog :is(.hint,.form-error):empty{display:none}
+dialog .check{align-items:flex-start;line-height:20px}
+dialog .check>input{margin-top:2px}
+dialog .check:has(>input[role=switch]){align-items:center}
+dialog .check>input[role=switch]{margin-top:0}
+dialog .expandable-card-body>.field-row:last-child{margin-bottom:0}
+#new-document-form #document-project-field>.field{margin:0}
+/* Catalog items and utility controls have the same baseline as regular fields. */
+:is(dialog,.settings-embedded) #catalog-items{display:grid;gap:16px}
+:is(dialog,.settings-embedded) .catalog-item{grid-template-columns:minmax(0,1fr) 64px 100px 36px;gap:12px;align-items:end}
+:is(dialog,.settings-embedded) .catalog-item>.field{margin:0;min-width:0}
+:is(dialog,.settings-embedded) .catalog-item>.icon-btn{height:var(--editor-control-height);width:36px}
+dialog .cf-option-row{align-items:center;gap:8px}
+dialog .cf-option-row>input:not([type=color]),dialog .fb-choice>input{height:var(--editor-control-height);min-width:0;font-size:13px;padding:8px 10px;border-radius:6px}
+dialog .cf-option-row>input:not([type=color]){border:1px solid var(--line);background:var(--input);color:var(--text);font-family:var(--system-font)}
+dialog .cf-preview{border-color:var(--line)}
+dialog .cf-options>.field-label{margin-bottom:6px}
+dialog .cf-option-row>.icon-btn,dialog .fb-choice>.btn{min-height:var(--editor-control-height);min-width:36px}
+/* Align the insert-link action with its input, rather than its label. */
+dialog .mail-link-insert{align-items:end;gap:12px}
+dialog .mail-link-insert>.field{margin:0;min-width:0}
+dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
+/* Compact form-builder groups without adding margins to the grid's own gaps. */
+#fb-editor .fb-intro{margin-bottom:24px}
+#fb-editor .fb-question-editor{padding:16px}
+#fb-editor .fb-field-row{gap:16px;align-items:end;margin-bottom:18px}
+#fb-editor .fb-field-row>.field{margin:0;min-width:0}
+#fb-editor .fb-required{margin:0;min-height:var(--editor-control-height);align-items:center}
+#fb-editor .fb-more .field{margin-top:0}
+#fb-editor .fb-more[open]>summary{margin-bottom:16px}
+#fb-editor .fb-settings>summary{margin-bottom:0}
+#fb-editor .form-design-grid>.field{margin:0;min-width:0}
+#fb-editor .fb-add{margin:16px 0 24px}
+#portal-settings .portal-editor-tabs{margin:16px 0}
+#portal-settings .portal-picker{margin:16px 0}
+/* Specialized builders keep their split preview; only editor controls change. */
+.editor-wizard .dialog-footer{position:relative;min-height:0;padding:14px 24px}
+.editor-wizard .document-controls .field,.editor-wizard .invoice-editor-controls .field{margin-bottom:18px}
+.editor-wizard :is(.document-controls,.invoice-editor-controls) .field-row>.field{margin:0}
+.editor-wizard .editor-context{margin-bottom:18px}
+.editor-wizard .step-intro{margin-bottom:20px}
+.editor-wizard [data-editor-step]>.hint{margin:0 0 18px}
+#time-entry-form .field-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.4fr)}
+.editor-wizard .billing-card{border:0;border-top:1px solid var(--line);border-radius:0;margin:24px 0 0;background:transparent}
+.editor-wizard .billing-card>.editor-section{padding:18px 0 0}
+.editor-wizard .billing-card .billing-toggle{margin-bottom:0}
+.editor-wizard .billing-card:has(fieldset:not([hidden])) .billing-toggle{margin-bottom:18px}
+@media(max-width:650px){
+ dialog .dialog-footer .btn{min-height:44px}
+ dialog .cf-option-row>input:not([type=color]),dialog .fb-choice>input{font-size:16px}
+ :is(dialog,.settings-embedded) .catalog-item{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px;gap:12px}
+ :is(dialog,.settings-embedded) .catalog-item>.field:first-child{grid-column:1/-1}
+ :is(dialog,.settings-embedded) .catalog-item>.icon-btn{width:44px}
+ dialog .mail-link-insert{display:flex;flex-direction:column;align-items:stretch}
+ dialog .mail-link-insert>.btn{align-self:flex-start}
+ dialog .import-mapping .field{margin:0}
+ .editor-wizard .dialog-footer{padding:12px 18px}
+ #fb-editor .fb-field-row{flex-wrap:wrap}
+ #fb-editor .fb-field-row>.field{flex:1 1 100%}
+ #fb-editor>.dialog-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ #fb-editor>.dialog-footer>.btn{width:100%}
+ #time-entry-form .field-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #time-entry-form .field-row>.field:last-child{grid-column:1/-1}
+}
+@media print{
+ dialog .invoice-preview-body{display:block;overflow:visible;max-height:none;padding:0;flex:none}
+}

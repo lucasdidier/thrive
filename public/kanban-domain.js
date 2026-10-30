@@ -1,3 +1,4 @@
+import {projectStatuses} from './project-status.js';
 import {groupRecords} from './list-view-domain.js';
 import {crmRecords} from './crm-domain.js';
 import {saveClient,updateProject} from './domain.js';
@@ -20,7 +21,7 @@ const keepsEmptyColumns=(scope,key)=>scope==='clients'&&key==='tag'||scope==='fo
 export function boardGroups(s,scope,config,fields,rows,allRows=rows){
  const field=boardFields(fields).find(f=>f.key===config.groupBy);if(!field)return [];
  const custom=fieldsFor(s,entityFor(scope)).find(f=>f.id===field.key);
- const values=custom?.type==='select'?[...custom.options.map(o=>o.label),null]:custom?.type==='checkbox'?['Unchecked','Checked',null]:field.key==='status'?stages[scope]:null;
+ const values=custom?.type==='select'?[...custom.options.map(o=>o.label),null]:custom?.type==='checkbox'?['Unchecked','Checked',null]:field.key==='status'?(scope==='projects'?projectStatuses(s).map(x=>x.id):stages[scope]):null;
  const groups=groupRecords(rows,config,[field]);
  const available=groupRecords(values?values.map(v=>({[field.key]:v})):allRows,config,[field]);
  if(keepsEmptyColumns(scope,field.key))available.push(...(s.crm?.boardLanes?.[orderKey(scope,config)]||[]));
@@ -35,7 +36,7 @@ export function boardGroups(s,scope,config,fields,rows,allRows=rows){
 }
 export function boardMoveHint(scope,field){
  if(field?.custom||scope==='clients'&&field?.key==='tag'||scope==='forms'&&['service','tag'].includes(field?.key))return 'Drag cards between columns to update this field.';
- if(scope==='projects'&&field?.key==='status')return 'Drag to change stage. Delivery requirements still apply.';
+ if(scope==='projects'&&field?.key==='status')return 'Drag to change project status.';
  if(scope==='workflows'&&field?.key==='status')return 'Drag to activate or pause a workflow.';
  if(scope==='invoices'&&field?.key==='status')return 'Drop into a new status to review the invoice. Payments are recorded separately.';
  if(scope==='documents'&&field?.key==='status')return 'Drop into a new status to review the document. Client responses stay with the client.';
@@ -48,7 +49,7 @@ function changeColumn(s,scope,row,field,target){
  if(custom){const next=custom.type==='checkbox'?(value===null?null:value==='Checked'):value===null?null:custom.options.find(o=>o.label===value)?.id;if(next===undefined)throw Error('This option is no longer available.');setFieldValue(s,entityFor(scope),row.id,field.key,next);return;}
  if(scope==='clients'&&field.key==='tag'){if(!value)throw Error('Choose a service.');saveClient(s,{...raw,tag:value},row.id);return;}
  if(scope==='forms'&&['service','tag'].includes(field.key)){if(!value)throw Error('Choose a value.');saveForm(s,{...raw,[field.key]:value},row.id);return;}
- if(scope==='projects'&&field.key==='status'){updateProject(s,row.id,{...raw,status:value==='planned'?'inquiry':value});return;}
+ if(scope==='projects'&&field.key==='status'){updateProject(s,row.id,{...raw,status:value});return;}
  if(scope==='workflows'&&field.key==='status'){const enabled=value==='Active';if(enabled)validateWorkflow(s,raw);raw.enabled=enabled;return;}
  if(scope==='invoices'&&field.key==='status')throw Error(value==='paid'?'Record a payment on the invoice to mark it paid.':value==='outstanding'&&row.status==='draft'?'Review and issue this draft invoice first.':'Invoice status follows its issue date, due date, and recorded payments. Review the invoice to make a change.');
  if(scope==='documents'&&field.key==='status')throw Error(value==='published'?'Review and publish this document first.':'Document status follows publishing and the client’s response. Open the document to review the next step.');

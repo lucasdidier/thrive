@@ -27,3 +27,47 @@ test('every existing prepared query is implemented by the Supabase adapter',()=>
 test('private storage never makes uploaded files publicly accessible',async()=>{const calls=[];const bucket=supabaseBucket({storage:{from:name=>{assert.equal(name,'thrive-files');return {upload:async(...args)=>{calls.push(args);return {};},download:async()=>({data:new Blob(['file'])}),remove:async()=>({})};}}});await bucket.put('owner/file',new Uint8Array([1]));assert.equal(calls[0][2].upsert,false);assert.equal(calls[0][2].contentType,'application/octet-stream');assert.equal(await new Response((await bucket.get('owner/file')).body).text(),'file');});
 test('login errors are generic and logout clears only this session',async()=>{const failed=mock({signInWithPassword:async()=>({error:{message:'private provider detail'},data:null})});let r=await handleAuth(request({action:'signin',email:user.email,password:'wrong'}),env,{contextFactory:failed.factory});assert.equal(r.status,400);assert.doesNotMatch(JSON.stringify(await r.json()),/private provider detail/);let scope;const m=mock({signOut:async input=>{scope=input.scope;return {error:null};}});r=await handleAuth(request({action:'signout'}),env,{contextFactory:m.factory});assert.equal(scope,'local');assert.equal((await r.json()).redirect,'/auth/sign-in');});
 test('workspace recovery cache cannot read or bootstrap a different account’s browser data',async()=>{const {createWorkspaceSync}=await import('../public/workspace-sync.js');const original={fetch:globalThis.fetch,localStorage:globalThis.localStorage,document:globalThis.document};const saved=new Map([['thrive-workspace-v1',JSON.stringify({secret:'demo'})],['thrive-workspace-v1:supabase:other',JSON.stringify({secret:'other'})]]);const methods=[];globalThis.localStorage={setItem:(k,v)=>saved.set(k,v),getItem:k=>saved.get(k)};globalThis.document={querySelector:()=>({replaceChildren(){},append(){}}),createElement:()=>({})};try{globalThis.fetch=async(_url,init)=>{methods.push(init.method);return Response.json({owner:'supabase:alice',initialized:true,state:{clients:[]},revision:0});};const sync=createWorkspaceSync({enabled:true,user:{owner:'supabase:alice'}});assert.deepEqual(await sync.connect({secret:'must not import'}),{clients:[]});assert.deepEqual(methods,['GET']);assert.equal(saved.get('thrive-workspace-v1:supabase:other'),JSON.stringify({secret:'other'}));assert.equal(saved.get('thrive-workspace-v1:supabase:alice'),JSON.stringify({clients:[]}));globalThis.fetch=async()=>Response.json({owner:'supabase:other',initialized:true,state:{secret:'other'},revision:0});await assert.rejects(()=>sync.connect({}),/account changed/);}finally{Object.assign(globalThis,original);}});
+
+test('OAuth fallback to the home URL exchanges PKCE, persists cookies and opens the workspace',async()=>{
+ const {accountHome}=await import('../server/auth.mjs');
+ const {createHash}=await import('node:crypto');
+ const jar=new Map(),applyCookies=response=>{for(const value of response.headers.getSetCookie()){const pair=value.split(';')[0],at=pair.indexOf('=');if(/max-age=0(?:;|$)/i.test(value))jar.delete(pair.slice(0,at));else jar.set(pair.slice(0,at),pair.slice(at+1));}},cookie=()=>[...jar].map(([k,v])=>k+'='+v).join('; ');
+ const jwt=[btoa(JSON.stringify({alg:'HS256'})),btoa(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600})),btoa('signature')].join('.');
+ let challenge,exchanges=0;
+ const factory=(req,settings)=>authContext(req,settings,async(url,init)=>{
+  if(String(url).includes('/token?grant_type=pkce')){
+   exchanges++;const body=JSON.parse(init.body);assert.equal(body.auth_code,'provider-code');assert.equal(createHash('sha256').update(body.code_verifier).digest('base64url'),challenge);
+   return Response.json({access_token:jwt,refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user});
+  }
+  assert.ok(String(url).endsWith('/user'));return Response.json(user);
+ });
+ const start=await handleAuth(request({action:'oauth',provider:'google'}),env,{contextFactory:factory});
+ assert.equal(start.status,200);challenge=new URL((await start.json()).redirect).searchParams.get('code_challenge');assert.ok(challenge);applyCookies(start);
+ const callback=await accountHome(new Request('https://thrive.test/?code=provider-code&next=https://evil.test',{headers:{cookie:cookie()}}),env,'workspace',{contextFactory:factory});
+ assert.equal(exchanges,1);assert.equal(callback.status,303);assert.equal(callback.headers.get('location'),'https://thrive.test/');assert.match(callback.headers.get('cache-control'),/no-store/);assert.match(callback.headers.get('set-cookie'),/HttpOnly/);applyCookies(callback);
+ const home=await accountHome(new Request('https://thrive.test/',{headers:{cookie:cookie()}}),env,'workspace',{contextFactory:factory});
+ assert.equal(home.status,200);assert.equal(await home.text(),'workspace');
+ const missing=await accountHome(new Request('https://thrive.test/?code=provider-code'),env,'workspace',{contextFactory:factory});
+ assert.equal(missing.headers.get('location'),'/auth/sign-in?error=link');assert.equal(exchanges,1);
+ const denied=await accountHome(new Request('https://thrive.test/?error=access_denied'),env,'workspace',{contextFactory:factory});
+ assert.equal(denied.headers.get('location'),'/auth/sign-in?error=link');assert.equal(exchanges,1);
+ const anonymous=await accountHome(new Request('https://thrive.test/'),env,'workspace',{contextFactory:factory});
+ assert.equal(anonymous.headers.get('location'),'/auth/sign-in');
+});
+
+test('owner-only mode blocks account creation and every non-Google login action before calling the provider',async()=>{
+ const settings={...env,THRIVE_OWNER_EMAIL:'owner@example.com'};
+ for(const action of ['signup','signin','forgot','reset','resend','confirm']){const m=mock();const r=await handleAuth(request({action,email:settings.THRIVE_OWNER_EMAIL}),settings,{contextFactory:m.factory});assert.equal(r.status,403,action);assert.equal(m.calls.length,0);}
+ const r=await handleAuth(new Request('https://thrive.test/api/auth'),settings,{contextFactory:mock().factory});const config=await r.json();assert.equal(config.ownerOnly,true);assert.equal(config.providers.microsoft,false);assert.equal(config.user,null);
+});
+test('owner-only verification rejects other emails, unverified email and non-Google identities on every workspace request',async()=>{
+ const settings={...env,THRIVE_OWNER_EMAIL:'owner@example.com'};
+ const owner={...user,email:'owner@example.com',email_confirmed_at:'2026-10-01',app_metadata:{provider:'google'}};
+ for(const candidate of [{...owner,email:'other@gmail.com'},{...owner,email_confirmed_at:null},{...owner,app_metadata:{provider:'email'}},owner]){
+ const m=mock({getUser:async()=>({data:{user:candidate},error:null})});const r=await withRuntime(new Request('https://thrive.test/api/workspace'),settings,async()=>json({ok:true}),{contextFactory:m.factory});assert.equal(r.status,candidate===owner?200:401);
+ }
+});
+test('owner-only callback signs out unauthorized users instead of opening a workspace',async()=>{
+ let signedOut=false;const m=mock({exchangeCodeForSession:async()=>({data:{},error:null}),signOut:async()=>{signedOut=true;return {error:null};}});
+ const r=await authCallback(new Request('https://thrive.test/auth/callback?code=test'),{...env,THRIVE_OWNER_EMAIL:'owner@example.com'},{contextFactory:m.factory});assert.equal(signedOut,true);assert.equal(r.headers.get('location'),'/auth/sign-in?error=link');
+});

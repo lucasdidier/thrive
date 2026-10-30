@@ -13,11 +13,12 @@ export function invoiceServiceLines(state,id){
 }
 // Call against the same staged workspace used to save the document. A validation
 // failure must never leave a catalog entry behind.
-export function resolveNewServices(state,lines,{invoice=false}={}){
+export function resolveNewServices(state,lines,{invoice=false,draft=false}={}){
  const staged=structuredClone(state);
  const result=lines.map(line=>{
-  const {createService,...item}=line;if(!createService)return item;
+  if(line.packageItems)return {...line,packageItems:resolveNewServices(staged,line.packageItems,{draft})};const {createService,...item}=line;if(!createService)return item;
   const name=String(invoice?item.description:item.name).trim();
+  if(draft&&(!name||!Number.isSafeInteger(item.rate)||item.rate<=0||!(Number(item.quantity)>0)))return line;
   let service=(staged.services||[]).find(s=>!s.archived&&key(s.name)===key(name));
   if(!service){
    if(!Number.isSafeInteger(item.rate)||item.rate<=0)throw Error(`Set a rate greater than zero for “${name}” to save it as a service.`);
@@ -26,7 +27,7 @@ export function resolveNewServices(state,lines,{invoice=false}={}){
   }
   return {...item,serviceId:service.id,serviceVersion:service.version,...(!invoice?{items:serviceItems(staged,service.id)}:{})};
  });
- if(lines.some(l=>l.createService)){state.services=staged.services;state.activity=staged.activity;}
+ if(lines.some(l=>l.createService||l.packageItems)){state.services=staged.services;state.activity=staged.activity;}
  return result;
 }
 export {serviceRate};

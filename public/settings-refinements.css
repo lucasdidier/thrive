@@ -1,0 +1,60 @@
+/* Settings use medium labels and a small number of clear heading levels. */
+.settings-page .settings-page-title h1{font-weight:550;letter-spacing:-.025em}
+.settings-page :is(.settings-navigation>h2,.settings-card h2,.settings-subheading){font-weight:550}
+.settings-page :is(.settings-toggle-row strong,.settings-profile-heading strong,.settings-activity strong){font-weight:450}
+.settings-page .btn{font-weight:500}
+.settings-page .settings-card-body{padding-bottom:16px}
+.settings-page .settings-savebar{margin-top:12px}
+.catalog-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.catalog-tabs{display:flex;gap:22px;align-self:stretch}
+.catalog-tabs button{display:flex;align-items:center;gap:7px;min-height:48px;padding:10px 0;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:450;font-size:13px;color:var(--muted)}
+.catalog-tabs button[aria-pressed=true]{border-bottom-color:var(--text);color:var(--text);font-weight:500}
+.catalog-tabs button span{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.catalog-toolbar-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:0 0 8px}
+.settings-page .catalog-panel{gap:0!important}
+.catalog-panel .catalog-service-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,120px) 86px;gap:20px;align-items:center;padding:18px 0;min-height:82px}
+.settings-page .catalog-panel .catalog-service-row:first-child{padding-top:18px}
+.settings-page .catalog-panel .catalog-service-row:last-child{padding-bottom:18px;border-bottom:1px solid var(--line)}
+.catalog-service-name{min-width:0;text-align:left;color:var(--text);font-weight:500;font-size:13px;line-height:1.5;padding:0}
+.catalog-service-name>span{overflow-wrap:anywhere}
+.catalog-service-name:hover>span{text-decoration:underline;text-underline-offset:3px}
+.catalog-service-price{text-align:right;font-weight:500;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.catalog-service-row small{font-size:11px;line-height:1.5;font-weight:400;color:var(--muted);margin-top:4px}
+.catalog-empty{padding:40px 16px;text-align:center}
+.catalog-empty h3{font-size:14px;font-weight:500;margin:0 0 6px}
+.catalog-empty p{font-size:12px;color:var(--muted);margin:0}
+.connected-account-card{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:22px;min-width:0}
+.connected-account-header{display:flex;align-items:center;gap:12px;min-width:0}
+.connected-account-symbol{display:grid;place-items:center;width:38px;height:38px;background:var(--hover);border-radius:8px;flex:none;color:var(--muted)}
+.connected-account-header>div{min-width:0;flex:1}
+.connected-account-header h2{margin:0;font-size:14px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
+.connected-account-header p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.connection-state{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11px;color:var(--muted)}
+.connection-state::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.connection-state.is-connected::before{background:var(--accent)}
+.connection-state.needs-attention::before{background:var(--warning)}
+.connected-account-description,.connection-unavailable{font-size:13px;line-height:1.6;color:var(--muted);margin:18px 0}
+.connected-account-actions{display:flex;gap:8px;flex-wrap:wrap}
+.connected-account-shortcuts{display:flex;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
+.connected-account-shortcuts .btn{border:0;background:transparent;box-shadow:none;padding:0;min-height:28px;font-weight:450;color:var(--muted)}
+.connected-account-shortcuts .btn:hover{color:var(--text)}
+.connected-account-shortcuts svg{width:14px;height:14px}
+.connected-account-details{font-size:12px;color:var(--muted)}
+.connected-account-details summary{cursor:pointer;display:flex;align-items:center;gap:8px;width:fit-content;min-height:38px;list-style:none;font-weight:450;color:var(--text)}
+.connected-account-details summary::-webkit-details-marker{display:none}
+.connected-account-details summary svg{width:13px;height:13px}
+.connected-account-details[open] summary svg{transform:rotate(180deg)}
+.connected-account-details>div{max-width:65ch;padding:4px 0 12px;line-height:1.7}
+.connected-account-details p{margin:0 0 12px}
+.connected-account-disconnect{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+.connection-test-note{font-size:11px}
+@container settings-detail (max-width:540px){
+ .catalog-toolbar{gap:8px;align-items:stretch;flex-direction:column}
+ .catalog-toolbar-actions{order:-1;padding:0 0 4px}.catalog-tabs{gap:24px}
+ .catalog-panel .catalog-service-row{grid-template-columns:minmax(0,1fr) auto;gap:10px 16px}
+ .catalog-service-name{grid-column:1/-1}.catalog-service-price{text-align:left}
+ .catalog-service-row>.btn{grid-column:2;grid-row:2}
+ .connected-account-header{flex-wrap:wrap}.connected-account-header>div{flex-basis:calc(100% - 50px)}.connection-state{margin-left:50px}
+ .connected-account-card{padding:18px}
+}
+@media(max-width:650px){.catalog-tabs button,.connected-account-shortcuts .btn,.connected-account-details summary{min-height:44px}}

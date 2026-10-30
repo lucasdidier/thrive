@@ -22,7 +22,7 @@ test('all core CRM lists offer a board and persist its layout in saved views',()
 test('empty stage columns remain drop targets even when filters remove all their cards',()=>{
  const s=fresh(),config={groupBy:'status'},fields=[field('status')],rows=crmRecords(s,'projects');
  const groups=boardGroups(s,'projects',config,fields,rows.filter(r=>r.status==='active'),rows);
- assert.deepEqual(groups.map(g=>g.label),['planned','awaiting deposit','active','completed','cancelled']);
+ assert.deepEqual(groups.map(g=>g.label),['planned','active','completed','cancelled']);
  assert.equal(groups.find(g=>g.label==='completed').rows.length,0);
 });
 test('custom choice columns use option identities, support empty values and emit real field events',()=>{
@@ -46,11 +46,9 @@ test('moving the last card out of a service keeps an empty destination for movin
  assert.equal(boardGroups(copy,'clients',{groupBy:'tag'},[field('tag')],rows).find(g=>g.label===original).rows.length,0);
  moveBoardCard(copy,request(copy,'clients',a.id,original));assert.equal(copy.clients.find(c=>c.id===a.id).tag,original);
 });
-test('project stages enforce delivery prerequisites and never partially mutate on failure',()=>{
- const s=fresh(),p=s.projects.find(p=>!p.accepted),before=structuredClone(s);
- assert.throws(()=>moveBoardCard(s,request(s,'projects',p.id,'active')),/deposit/);assert.deepEqual(s,before);
- moveBoardCard(s,request(s,'projects',p.id,'cancelled'));assert.equal(s.projects.find(r=>r.id===p.id).status,'cancelled');
- const cancelled=structuredClone(s);assert.throws(()=>moveBoardCard(s,request(s,'projects',p.id,'planned')),/reopen/);assert.deepEqual(s,cancelled);
+test('project status changes independently from billing, including reopening cancelled projects',()=>{
+ const s=fresh(),p=s.projects.find(p=>!p.accepted);moveBoardCard(s,request(s,'projects',p.id,'active'));assert.equal(s.projects.find(r=>r.id===p.id).status,'active');
+ moveBoardCard(s,request(s,'projects',p.id,'cancelled'));assert.equal(s.projects.find(r=>r.id===p.id).status,'cancelled');moveBoardCard(s,request(s,'projects',p.id,'planned'));assert.equal(s.projects.find(r=>r.id===p.id).status,'planned');
 });
 test('dropping invoices or documents cannot fabricate payments, publication or client responses',()=>{
  const s=fresh(),invoice=crmRecords(s,'invoices').find(r=>r.status!=='paid'),doc=crmRecords(s,'documents').find(r=>r.status!=='signed'),before=structuredClone(s);

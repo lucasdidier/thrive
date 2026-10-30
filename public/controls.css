@@ -1,0 +1,41 @@
+/* Shadcn-inspired native controls: preserve labels, keyboard handling and FormData. */
+input[type=checkbox]:not([role=switch]):not([hidden]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *)){
+ appearance:none;display:inline-grid;place-content:center;position:relative;vertical-align:middle;
+ width:16px;height:16px;min-width:16px;min-height:16px;flex:0 0 16px;padding:0;margin:0;
+ border:1px solid color-mix(in srgb,var(--muted) 60%,var(--line));border-radius:4px;
+ background:var(--input);color:var(--accent-text);box-shadow:0 1px 2px #00000008;cursor:pointer;
+ transition:background-color .12s,border-color .12s;
+}
+input[type=checkbox]:not([role=switch]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *))::after{
+ content:'';width:5px;height:9px;border:solid currentColor;border-width:0 2px 2px 0;
+ transform:translateY(-1px) rotate(45deg);opacity:0;
+}
+input[type=checkbox]:not([role=switch]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *)):is(:checked,:indeterminate){background:var(--accent);border-color:var(--accent)}
+input[type=checkbox]:not([role=switch]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *)):is(:checked,:indeterminate)::after{opacity:1}
+input[type=checkbox]:not([role=switch]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *)):indeterminate::after{width:8px;height:2px;border:0;border-radius:1px;background:currentColor;transform:none}
+input[type=checkbox]:not([role=switch]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *)):hover:not(:disabled){border-color:var(--muted)}
+input[type=checkbox]:focus-visible{outline:2px solid color-mix(in srgb,var(--muted) 65%,transparent);outline-offset:3px}
+input[type=checkbox]:disabled{opacity:.45;cursor:not-allowed}
+/* All on/off settings share the same track and thumb, including existing settings switches. */
+input[type=checkbox][role=switch],.settings-page .settings-toggle-row input[role=switch],.document-controls .billing-toggle input[role=switch]{
+ appearance:none;display:inline-block;position:relative;vertical-align:middle;
+ width:40px;height:24px;min-width:40px;min-height:24px;flex:0 0 40px;padding:0;margin:0;
+ border:1px solid transparent;border-radius:999px;background:var(--line);box-shadow:none;cursor:pointer;
+ transition:background-color .15s;
+}
+input[type=checkbox][role=switch]::before{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border:0;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0002;transform:translateX(0);transition:transform .15s ease-out}
+input[type=checkbox][role=switch]:checked{background:var(--accent)}
+input[type=checkbox][role=switch]:checked::before{transform:translateX(16px);background:var(--accent-text)}
+input[type=checkbox][role=switch]::after{content:none}
+.check:has(>input[role=switch]),.wf-enable{min-height:32px;gap:10px}
+.document-controls .billing-toggle{align-items:flex-start}
+.document-controls .billing-toggle>span{min-width:0}
+.crm-column-option:has(input[role=switch]){min-height:40px;gap:16px}
+.wf-status[role=switch]{display:inline-flex;align-items:center;gap:9px;min-height:32px;font-size:12px;color:var(--muted)}
+.switch-visual{display:inline-block;position:relative;width:40px;height:24px;flex:none;border-radius:999px;background:var(--line)}
+.switch-visual::before{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0002;transition:transform .15s ease-out}
+.wf-status[aria-checked=true] .switch-visual{background:var(--accent)}
+.wf-status[aria-checked=true] .switch-visual::before{transform:translateX(16px);background:var(--accent-text)}
+.dashboard-heading .create-menu-wrap{flex:none;align-self:flex-start}
+@media(prefers-reduced-motion:reduce){input[type=checkbox],input[type=checkbox]::before,.switch-visual::before{transition:none!important}}
+@media(forced-colors:active){input[type=checkbox]:not([role=switch]):not([aria-hidden=true]):not(.fluid-source):not(:where(.available-days *)){appearance:auto}input[type=checkbox]:not([role=switch])::after{display:none}input[type=checkbox][role=switch]{border:1px solid ButtonText}input[type=checkbox][role=switch]::before,.switch-visual::before{background:ButtonText}input[type=checkbox][role=switch]:checked::before{background:Highlight}}
