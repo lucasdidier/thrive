@@ -20,7 +20,7 @@ export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
   closeLineItemMenus(form);
   current=Math.max(0,Math.min(steps.length-1,index));form.dataset.editorCurrent=current;form.dataset.editorLast=current===steps.length-1;
   panels.forEach((p,i)=>p.hidden=i!==current);
-  nav.querySelectorAll('button').forEach((b,i)=>{if(i===current)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
+  nav.querySelectorAll('button').forEach((b,i)=>{if(i===current)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');b.toggleAttribute('data-step-done',i<current&&[...panels[i].querySelectorAll('input,select,textarea')].every(el=>!el.willValidate||el.validity.valid));});
   back.hidden=current===0;next.hidden=current===steps.length-1;if(final)final.hidden=current!==steps.length-1;
   if(error)error.textContent='';
   progress.textContent=`Step ${current+1} of ${steps.length}`;onStep(current);

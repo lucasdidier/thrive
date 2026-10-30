@@ -287,3 +287,46 @@ dialog:has(>#wf-editor)>.dialog-head{position:relative;flex:none;padding:18px 24
  #wf-editor .wf-enable span{flex-basis:100%;padding-left:0}
  #wf-editor .wf-variable-copy{min-height:44px}
 }
+
+#main:focus:not(:focus-visible),#main[tabindex="-1"]:focus{outline:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* Phones: keep each row's name visible while the table scrolls sideways. */
+@media(max-width:650px){.crm-table th:first-child,.crm-table td:first-child{position:sticky;left:0;z-index:2;background:var(--bg);box-shadow:1px 0 0 var(--line)}.crm-table th:first-child{z-index:3}}
+
+/* Client sharing is a focused task, not a full-height record inspector. */
+dialog.share-dialog{width:min(560px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);padding:0;border-radius:8px;overflow:hidden}
+dialog.share-dialog[open]{display:flex;flex-direction:column}
+.share-dialog>.dialog-head,.share-dialog>.dialog-footer{flex:none;position:relative;background:var(--bg)}
+.share-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.share-record h3{margin:0 0 8px;font-size:18px;line-height:1.4;font-weight:600;overflow-wrap:anywhere}
+.share-record p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.share-content{margin-top:24px;min-width:0}
+.share-body .field,.share-body .field-row{min-width:0}
+.share-body .field input,.share-body .field textarea{width:100%;min-width:0}
+.share-body #client-share-url{font:12px/1.6 ui-monospace,monospace;text-overflow:ellipsis}
+.share-link-meta{font-size:12px;color:var(--muted);margin:-4px 0 16px;font-variant-numeric:tabular-nums}
+.share-body .action-row{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.share-body .hint{margin:10px 0;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.share-body .share-tabs{margin:20px 0 0;gap:4px}
+.share-tabs button{min-height:36px;flex:1}
+.share-body .share-revoke{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.share-revoke h3{font-size:13px;margin:0 0 6px}
+.share-body .embed-help{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.share-body .embed-help summary{cursor:pointer;color:var(--link);min-height:32px;font-size:12px}
+.share-body .form-error:empty{display:none}
+/* Shared readability and keyboard affordances, without changing status colors. */
+.page-heading h1,.dialog-body h1,.setup-intro h1,.settings-page h1,.onboarding-page h1,.invoice-total,.stat-value,.brand,.mcp-guide h2,.dash-metric strong,.dash-time-total strong,.dash-form-total strong,.dash-invoice-total strong{letter-spacing:0}
+.crm-footer strong,.billing-amount,.crm-table td:has(.money){font-variant-numeric:tabular-nums}
+.field:focus-within{color:var(--text)}
+.field input:focus-visible,.field textarea:focus-visible,.field select:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:none}
+@media(max-width:650px){
+ dialog.share-dialog{width:calc(100vw - 24px);max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px)}
+ .share-body .field-row{grid-template-columns:minmax(0,1fr);gap:0}
+ .share-body .action-row>.btn{flex:1;min-height:44px;white-space:normal;text-align:center}
+ .nav a,.record-tabs button,.crm-view-tab,.icon-btn{min-height:40px}
+ .icon-btn{min-width:40px}
+ .share-tabs button,.dialog-footer .btn{min-height:44px}
+ .dialog-footer{flex-wrap:wrap}
+ .dialog-footer .btn{white-space:normal;text-align:center}
+ .crm-empty{padding:32px 18px}
+}
