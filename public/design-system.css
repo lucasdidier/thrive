@@ -117,7 +117,7 @@ input::placeholder, textarea::placeholder { color: var(--faint); opacity: 1; }
 /* A distinct product mark, then the workspace scope. The collapsed rail keeps
    the established 64px geometry so hover and keyboard reveal stay aligned. */
 .thrive-wordmark { display: flex; align-items: center; gap: 9px; width: fit-content; min-height: 36px; padding: 0 8px; margin: 3px 0 13px; color: var(--text); }
-.thrive-wordmark svg { width: 24px; height: 24px; color: var(--link); stroke-width: 2; }
+.thrive-wordmark .thrive-logo { display: block; flex: none; width: 24px; height: 24px; }
 .thrive-wordmark span { font-size: 25px; font-weight: 650; letter-spacing: -.04em; line-height: 1; }
 .thrive-wordmark:hover { color: var(--text); }
 .sidebar { background: var(--side); border-color: var(--line); }
@@ -322,7 +322,7 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
   .sidebar { width: 100%; padding: 12px 14px 0; }
   .thrive-wordmark { min-height: 28px; margin: 0; padding: 0 4px; }
   .thrive-wordmark span { font-size: 23px; }
-  .thrive-wordmark svg { width: 22px; height: 22px; }
+  .thrive-wordmark .thrive-logo { width: 22px; height: 22px; }
   .sidebar-workspace { display: none; }
   .sidebar .sidebar-bottom { display: contents; }
   .sidebar .getting-started-wrap, .sidebar .sidebar-theme { display: none; }
