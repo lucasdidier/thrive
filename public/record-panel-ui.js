@@ -1,3 +1,5 @@
+import {installInlineAutosave} from './inline-autosave.js';
+import {createPersistenceUI} from './persistence-ui.js';
 import {createPanelModality} from './panel-modality.js';
 import {projectStatus,projectStatuses} from './project-status.js';
 import {saveClient,updateProject,addActivity} from './domain.js';
@@ -5,6 +7,8 @@ import {saveClient,updateProject,addActivity} from './domain.js';
 // Shared record surface. Creation actions retain their client/project context.
 export function createRecordPanel(ctx){
  const {getState:S,esc,icon,btn,avatar,save,render,toast,dialog,blocked=()=>false}=ctx;
+ const persistInline=createPersistenceUI(ctx);
+ installInlineAutosave();
  let active=null,expanded=false,returnFocus=null,modality=null;
  async function persist(message){try{await save();if(blocked())return;render();refresh(true);if(message)toast(message);}catch(error){const box=document.querySelector('#rp-inline-form .form-error');if(box)box.textContent=error.message;else toast(error.message);}}
  const root=()=>{let el=document.querySelector('#client-panel');if(!el){el=document.createElement('aside');el.id='client-panel';el.className='record-panel';el.tabIndex=-1;el.setAttribute('role','dialog');document.body.append(el);}return el;};
@@ -39,7 +43,11 @@ export function createRecordPanel(ctx){
   if(a==='rp-status'){const p=S().projects.find(p=>p.id===el.dataset.id);updateProject(S(),p.id,{...p,status:el.dataset.status});void persist();}else if(a==='rp-copy-email'){const record=S()[el.dataset.entity==='client'?'clients':'projects'].find(r=>r.id===el.dataset.id);if(record?.email)navigator.clipboard.writeText(record.email).then(()=>toast('Email address copied.'),()=>toast('Unable to copy. Open the email field to select the address.'));}else if(a==='rp-close'){if(canLeaveInline()){if(expanded&&ctx.exitExpanded)ctx.exitExpanded();else close();}}else if(a==='rp-expand'){if(!canLeaveInline())return true;if(expanded)ctx.exitExpanded?.();else ctx.expand?.(active.id);}else if(a==='rp-edit')edit(el);else if(a==='rp-cancel'){if(el.closest('.project-page'))render();else refresh(true);}else if(a==='rp-navigate'){if(canLeaveInline()){if(expanded&&ctx.expand)ctx.expand(el.dataset.id);else ctx.detail(el.dataset.entity,el.dataset.id);}}else if(a==='rp-remove-logo'){const c=S().clients.find(c=>c.id===el.dataset.id);c.logo='';void persist();}
   return true;
  }
- function handleSubmit(form,v){if(form.id!=='rp-inline-form')return false;try{const {entity,id,key}=form.dataset,r=S()[entity==='client'?'clients':'projects'].find(r=>r.id===id);if(entity==='client'){const data={...r,[key]:v.value};if(key==='type'&&v.value==='company'&&!r.contact)data.contact=r.name;saveClient(S(),data,id);}else updateProject(S(),id,{...r,[key]:v.value});void persist('Field updated.');}catch(e){form.querySelector('.form-error').textContent=e.message;}return true;}
+ function handleSubmit(form,v){if(form.id!=='rp-inline-form')return false;
+  if(form.getAttribute('aria-busy')==='true')return true;
+  form.inlineSave=persistInline(form,()=>{const {entity,id,key}=form.dataset,r=S()[entity==='client'?'clients':'projects'].find(r=>r.id===id);if(entity==='client'){const data={...r,[key]:v.value};if(key==='type'&&v.value==='company'&&!r.contact)data.contact=r.name;saveClient(S(),data,id);}else updateProject(S(),id,{...r,[key]:v.value});},()=>{render();refresh(true);},{form:true});return true;
+ }
+
  function handleChange(el){if(!el.dataset.clientLogo)return false;const id=el.dataset.clientLogo,file=el.files?.[0];if(!file)return true;void(async()=>{try{if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>2*1024*1024)throw Error('Choose a PNG, JPEG, or WebP under 2 MB.');const bitmap=await createImageBitmap(file),canvas=document.createElement('canvas'),scale=Math.min(1,256/Math.max(bitmap.width,bitmap.height));canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();const logo=canvas.toDataURL('image/webp',.85);if(logo.length>150000)throw Error('Choose a smaller logo.');const c=S().clients.find(c=>c.id===id);if(!c)return;c.logo=logo;addActivity(S(),'Client logo updated',c.name,'client');await save();if(blocked())return;render();refresh(true);toast('Logo saved.');}catch(e){toast(e.message);}})();return true;}
  function keyboard(e){if(e.defaultPrevented||e.key!=='Escape'||dialog.open)return;const menu=document.querySelector('.record-header-actions details[open], .project-create[open]');if(menu){e.preventDefault();menu.open=false;menu.querySelector('summary')?.focus();return true;}if(document.querySelector('#rp-inline-form,#cf-value-form,#crm-inline-form')){e.preventDefault();canLeaveInline();return true;}if(!active)return;e.preventDefault();if(canLeaveInline()){if(expanded&&ctx.exitExpanded)ctx.exitExpanded();else close();}return true;}
  document.addEventListener('click',e=>{document.querySelectorAll('.record-header-actions details[open], .project-create[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('[data-action]'))d.open=false;});});

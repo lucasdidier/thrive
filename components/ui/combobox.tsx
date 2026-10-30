@@ -13,6 +13,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
   type InputHTMLAttributes,
+  type CSSProperties,
 } from "react";
 import { motion, AnimatePresence, animate, useMotionValue } from "motion/react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -560,7 +561,7 @@ ComboboxInput.displayName = "ComboboxInput";
 // the chips, where Backspace/Delete removes the focused one.
 // ---------------------------------------------------------------------------
 
-type ComboboxChipsProps = ComboboxFieldProps;
+type ComboboxChipsProps = ComboboxFieldProps & { chipStyle?: (item: ComboboxItemData) => CSSProperties };
 
 /** Springs the chips field's height to the measured chip row stack (plus
  *  `padY`, the field's vertical padding) as chips wrap and unwrap. The
@@ -604,6 +605,7 @@ const ComboboxChips = forwardRef<HTMLInputElement, ComboboxChipsProps>(
   (
     {
       className,
+      chipStyle,
       variant,
       icon: Icon,
       placeholder = "Search…",
@@ -705,6 +707,7 @@ const ComboboxChips = forwardRef<HTMLInputElement, ComboboxChipsProps>(
                         >
                           <ComboboxPrimitive.Chip
                             aria-label={label}
+                            style={chipStyle?.(item)}
                             className={cn(
                               "inline-flex max-w-full shrink-0 items-center gap-0.5 bg-hover pl-2 pr-0.5 text-foreground outline-none",
                               shape.variant === "pill" ? "rounded-full" : "rounded-md",

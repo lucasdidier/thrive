@@ -39,7 +39,8 @@ test('activity includes each project record type and skips undated legacy events
 test('overview puts summaries before creation and history, passes context, and retains billing in invoices',()=>{
  const s=fresh(),p=s.projects[0],ui=createJourneyUI(context(s)),html=ui.page(p.id);
  assert.ok(html.indexOf('Project summary')<html.indexOf('Create in project'));
- assert.ok(html.indexOf('Create in project')<html.indexOf('project-activity-title'));
+ assert.ok(html.indexOf('project-activity-title')<html.indexOf('Create in project'));
+ assert.match(html,/<header class="project-activity-header">/);
  for(const action of ['log-time','new-proposal','new-contract','new-invoice','new-document','mail-new','new-form','booking-preview']){
   assert.match(html,new RegExp(`data-action="${action}" data-client="${p.clientId}" data-project="${p.id}"`));
  }

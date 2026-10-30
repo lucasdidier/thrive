@@ -17,7 +17,8 @@ export function createPersistenceUI({save,blocked=()=>false,toast=()=>{}}){
    if(blocked())throw Error(blockedMessage);
    pending.delete(source);
    if(source.isConnected!==false)complete(result);
-  }catch(err){if(error)error.textContent=err.message;else toast(err.message);}
+   return true;
+  }catch(err){if(error)error.textContent=err.message;else toast(err.message);return false;}
   finally{busy.delete(source);source.removeAttribute?.('aria-busy');buttons.forEach((button,i)=>{if(button.isConnected!==false)button.disabled=disabled[i];});}
  };
 }

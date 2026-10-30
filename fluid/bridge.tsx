@@ -1,4 +1,5 @@
 import {UserRound,BriefcaseBusiness,FileText,Receipt,ClipboardList,Mail,Workflow,Tag,Settings,House} from "lucide-react";
+import {tagColor} from "../public/tags-ui.js";
 import {recordSearchFields} from "../public/record-search.js";
 import React, { useState, useEffect, useId, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
@@ -269,7 +270,7 @@ function Tags({
         }
       }}
     >
-      <ComboboxChips aria-label="Tags" placeholder="Search or create tags…" />
+      <ComboboxChips aria-label="Tags" placeholder="Search or create tags…" chipStyle={(item) => ({"--tag-color": tagColor(String(item.value)), background: "color-mix(in srgb, var(--tag-color) 14%, var(--bg))", color: "color-mix(in srgb, var(--tag-color) var(--tag-text-mix, 75%), var(--text))"} as React.CSSProperties)} />
       <ComboboxContent container={container}>
         <ComboboxList>
           {(item: any) => (
