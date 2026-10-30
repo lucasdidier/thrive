@@ -110,9 +110,17 @@ export function createCommunicationsUI(ctx){
  async function cancelCalendar(id){const status=await api();data=status;loaded=true;if(status.connection.provider==='nylas')await api({action:'calendar-cancel',id});}
  function projectEmailRecords(p){const threads=data.threads.filter(t=>t.projectId===p.id&&!t.archived),drafts=(S().emailDrafts||[]).filter(d=>d.projectId===p.id&&!threads.some(t=>t.id===receipt(d.id)?.threadId));return {threads,drafts};}
  function projectEmailCount(p){if(!loaded&&!loading&&!loadError)queueMicrotask(load);const {threads,drafts}=projectEmailRecords(p);return threads.length+drafts.length;}
+ function projectEmailActivity(p){
+  const threads=data.threads.filter(t=>t.projectId===p.id),events=threads.flatMap(t=>(t.messages||[]).map(m=>({at:m.date,text:m.direction==='outgoing'?'Email sent':'Email received',detail:m.subject||t.subject||'(No subject)',action:'mail-project-thread',id:t.id})));
+  for(const d of (S().emailDrafts||[]).filter(d=>d.projectId===p.id)){
+   const op=receipt(d.id);
+   if(op?.status==='sent'&&!threads.some(t=>t.id===op.threadId))events.push({at:op.updatedAt,text:'Email sent',detail:d.subject||'(No subject)',action:'mail-edit',id:d.id});
+  }
+  return events;
+ }
  function projectEmails(p){if(!loaded&&!loading&&!loadError)void load();const {threads,drafts}=projectEmailRecords(p),rel=createRelatedList({icon,esc}),attrs=`data-client="${esc(p.clientId)}" data-project="${esc(p.id)}"`,day=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'':shortDate(v);};
   const rows=[...threads.map(t=>{const last=t.messages?.at?.(-1);return {action:'mail-project-thread',id:t.id,icon:'mail',title:t.subject||'(No subject)',subtitle:esc([last?(last.direction==='outgoing'?'To '+shortAddress(last.to):'From '+shortAddress(last.from)):'',day(t.updatedAt)].filter(Boolean).join(' · ')),status:`<span class="badge">${esc(conversationStatus(S(),t))}</span>`};}),...drafts.map(d=>({action:'mail-edit',id:d.id,icon:'edit',title:d.subject||'(No subject)',subtitle:esc([d.to?'To '+d.to:'No recipient yet',day(d.updatedAt)?'Edited '+day(d.updatedAt):''].filter(Boolean).join(' · ')),status:receipt(d.id)?.status==='sent'?'<span class="badge sent"><i></i>Sent</span>':'<span class="badge draft"><i></i>Draft</span>'}))];
   const note=loading?'<p class="rel-note" role="status">Loading conversations…</p>':loadError?`<p class="rel-note" role="alert">${esc(loadError)}</p>`:'';
   return rel.section({title:'Emails',rows,note,action:btn(icon('plus')+'Compose email','mail-new',attrs),empty:{icon:'mail',title:'No emails yet',text:'Drafts and conversations linked to this project appear here. Drafts stay in Thrive until you review and send them.',action:btn(icon('plus')+'Compose email','mail-new',attrs,'primary')}});}
- return {clientEmails,projectEmails,projectEmailCount,cancelCalendar,calendarAvailability,page,handleClick,handleChange,handleInput,handleSubmit,contextActions,connections,load};
+ return {clientEmails,projectEmails,projectEmailCount,projectEmailActivity,cancelCalendar,calendarAvailability,page,handleClick,handleChange,handleInput,handleSubmit,contextActions,connections,load};
 }

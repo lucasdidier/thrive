@@ -27,9 +27,10 @@ test('project email counts and rows deduplicate delivered drafts represented by 
  t.after(()=>{if(oldDocument===undefined)delete globalThis.document;else globalThis.document=oldDocument;});
  const s=setup(),p=s.projects[0],date='2026-10-30T10:00:00Z';
  s.emailDrafts=[{id:'sent',projectId:p.id,subject:'Sent draft',updatedAt:date},{id:'unsent',projectId:p.id,subject:'Next update',updatedAt:date}];
- t.mock.method(globalThis,'fetch',async()=>Response.json({connection:{account:null},threads:[{id:'abc',projectId:p.id,subject:'Delivered conversation',updatedAt:date,messages:[{id:'m1',direction:'outgoing',to:'client@example.com'}]}],operations:[{id:'email:sent',status:'sent',threadId:'abc'}]}));
+ t.mock.method(globalThis,'fetch',async()=>Response.json({connection:{account:null},threads:[{id:'abc',projectId:p.id,subject:'Delivered conversation',updatedAt:date,messages:[{id:'m1',direction:'outgoing',to:'client@example.com',date}]}],operations:[{id:'email:sent',status:'sent',threadId:'abc'}]}));
  const ui=createCommunicationsUI({...context(s),getPage:()=>'',render:()=>{}});await ui.load();
  assert.equal(ui.projectEmailCount(p),2);
+ const activity=ui.projectEmailActivity(p);assert.equal(activity.length,1);assert.equal(activity[0].text,'Email sent');assert.equal(activity[0].at,date);assert.equal(activity[0].id,'abc');assert.deepEqual(ui.projectEmailActivity({id:'other-project'}),[]);
  const html=ui.projectEmails(p);
  assert.match(html,/Delivered conversation/);assert.match(html,/Next update/);
  assert.doesNotMatch(html,/Sent draft/);assert.match(html,/>Sent<\/span>/);
