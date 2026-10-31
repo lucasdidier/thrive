@@ -461,6 +461,15 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
 .settings-page .field > input:not(.fluid-source):not([type=checkbox]):not([type=file]):not([type=color]),
 .settings-page .field > select:not(.fluid-source),
 .settings-page .field > .fluid-ui [role=group]:has(>input[role=combobox]) { height: 40px; min-height: 40px; }
+/* Monetary rate entry: one quiet focus boundary, without native steppers. */
+.settings-page .hourly-rate-control { display: flex; align-items: center; gap: 10px; width: 280px; max-width: 100%; min-height: 40px; padding-inline: 12px; border: 1px solid var(--border-control); border-radius: var(--radius-control); background: var(--input); cursor: text; }
+.settings-page .hourly-rate-control:focus-within { border-color: var(--focus); box-shadow: 0 0 0 2px var(--surface-selected); }
+.settings-page .hourly-rate-control > input { flex: 1; width: 0; min-width: 0; min-height: 38px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--text); font-variant-numeric: tabular-nums; appearance: textfield; -moz-appearance: textfield; }
+.settings-page .hourly-rate-control > input:focus { outline: none; box-shadow: none; }
+.settings-page .hourly-rate-control > input::-webkit-inner-spin-button,
+.settings-page .hourly-rate-control > input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.hourly-rate-currency, .hourly-rate-unit { flex: none; color: var(--muted); font-size: 13px; font-weight: 400; }
+.hourly-rate-currency { font-weight: 500; }
 .settings-profile-heading .image-upload { width: 56px; height: 56px; border-radius: 8px; }
 .settings-page .settings-savebar { padding: 16px 0; margin: 24px 0 32px; gap: 12px; background: var(--bg); }
 .settings-page .settings-savebar .btn { min-height: 34px; padding-inline: 12px; }
