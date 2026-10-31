@@ -28,6 +28,7 @@ import {createBulkUI} from './bulk-ui.js';
 import {createPortalUI} from './portal-ui.js';
 import {loadAccount,signOut} from './account.js';
 import {initSelects} from './select-ui.js';
+import {selectIdentity} from './select-identity.js';
 import {createTimeUI} from './time-ui.js';
 import {verticals,inferVertical,populateCatalog,starterServices} from './catalog-starters.js';
 import {createFormsUI} from './forms-ui.js';
@@ -49,7 +50,6 @@ import {createWorkspaceUI} from './workspace-ui.js';
 import {createJourneyUI} from './journey-ui.js';
 import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,createProject,acceptProposal,generateDeposit,suggestSetup,addActivity,migrate} from './domain.js';
 history.scrollRestoration='manual';
-initSelects();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
 const storageKey='thrive-workspace-v1'+(account.enabled?':'+account.user.owner:'')+(account.workspaceId!=='default'?':workspace:'+account.workspaceId:'');
@@ -60,6 +60,7 @@ initWorkflows(state);
 const workspaceSync=createWorkspaceSync(account);
 try{state=upgradeWorkspace(await workspaceSync.connect(state));}catch(err){document.querySelector('#main').innerHTML=`<div class="crm-empty"><h2>Workspace unavailable</h2><p>Your browser data has been preserved. Reload to reconnect.</p><a class="btn" href="${account.enabled?'/auth/sign-in':'/signin-with-chatgpt?return_to=%2F'}">Sign in</a></div>`;throw err;}
 try{Object.assign(account,await workspaceRequest());Object.assign(state.settings,account.profile);}catch{account.workspaces=[];}
+initSelects({getOptionVisual:(select,option)=>selectIdentity(state,select.name,option?.value)});
 let workflowSnapshot=snapshotWorkspace(state);
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
 const dialog=document.querySelector('#dialog');

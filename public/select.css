@@ -26,7 +26,7 @@ select.thrive-native-select{position:absolute!important;width:1px!important;heig
 .thrive-select-search input:focus-visible{outline:none}
 .thrive-select-options{overflow:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--line,#ddd) transparent;overscroll-behavior:contain;padding:0;max-height:inherit}
 .thrive-select-option{display:flex;align-items:center;gap:12px;min-height:31px;padding:7px 9px;border-radius:4px;cursor:pointer;user-select:none}
-.thrive-select-option>span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
+.thrive-select-option-label{flex:1;min-width:0;overflow-wrap:anywhere}
 .thrive-select-option.is-active{background:var(--hover,#f0f0ef)}
 .thrive-select-option[aria-disabled=true]{opacity:.4;cursor:not-allowed}
 .thrive-select-check{display:flex;flex:none;width:14px;color:var(--text,#252525)}
@@ -38,3 +38,12 @@ select.thrive-native-select{position:absolute!important;width:1px!important;heig
 .crm-menu-item{min-height:31px;border-radius:4px}
 @media(max-width:600px){.time-filters .thrive-select{min-width:130px;max-width:190px}.thrive-select-option{min-height:36px}.thrive-select-popover{max-width:calc(100vw - 16px)}}
 @media(prefers-reduced-motion:reduce){.thrive-select-trigger{transition:none}}
+
+/* Relation identities stay the same size in the trigger and its option list. */
+.thrive-select-trigger:has(.thrive-select-visual){gap:8px}
+.thrive-select-visual{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px;width:20px;height:20px;min-width:20px;border-radius:4px;overflow:hidden;font-size:9px;font-weight:600;line-height:1;letter-spacing:0}
+.thrive-select-visual.avatar{width:20px;height:20px;font-size:9px}
+.thrive-select-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--bg)}
+.thrive-select-visual.is-project{background:var(--hover);color:var(--muted)}
+.thrive-select-visual.is-empty{background:transparent;color:var(--faint)}
+.thrive-select-visual svg{width:14px;height:14px;flex:none}

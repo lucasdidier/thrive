@@ -1,5 +1,16 @@
+import {icon} from './app-icons.js';
 // Keep native selects as the form/data contract; enhance their presentation once.
 const controls=new Map();
+let getOptionVisual=()=>null;
+function visualFor(select,option){
+ const data=getOptionVisual(select,option);if(!data)return null;
+ const node=document.createElement('span');node.className='thrive-select-visual';node.setAttribute('aria-hidden','true');
+ if(data.type==='client'){
+  node.classList.add('avatar',data.color);node.textContent=data.initials;
+  if(data.logo){const img=document.createElement('img');img.alt='';img.src=data.logo;img.addEventListener('error',()=>img.remove(),{once:true});node.append(img);}
+ }else{node.classList.add('is-project');if(data.empty)node.classList.add('is-empty');node.innerHTML=icon(data.type==='project'?'projects':'clients');}
+ return node;
+}
 let active=null,sequence=0,initialized=false,scheduled=false,invalidBatch=false;
 const chevron='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
 const check='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg>';
@@ -15,6 +26,7 @@ function sync(c){
  const {select,button,value}=c,option=select.selectedOptions[0];
  if(!select.isConnected||!c.wrap.isConnected){if(active?.control===c)close(false);controls.delete(select);return;}
  const text=option?.label||select.dataset.placeholder||'Choose an option';if(value.textContent!==text)value.textContent=text;
+ const visualKey=JSON.stringify(getOptionVisual(select,option));if(c.visualKey!==visualKey){c.visualKey=visualKey;c.visual?.remove();c.visual=visualFor(select,option);if(c.visual)button.prepend(c.visual);}
  button.disabled=select.matches(':disabled');setAttribute(button,'aria-required',select.required);setAttribute(button,'aria-label',c.label);
  button.classList.toggle('is-placeholder',!select.value&&(select.required||/^(choose|select)\b/i.test(text)));
  c.wrap.hidden=select.hidden;
@@ -67,7 +79,7 @@ function rows(query=''){
  for(const option of a.control.select.options){if(option.hidden||option.parentElement.hidden||!option.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))continue;
   const parent=option.parentElement;if(parent.tagName==='OPTGROUP'&&parent!==group){const title=document.createElement('div');title.className='thrive-select-group';title.textContent=parent.label;a.list.append(title);group=parent;}
   const node=document.createElement('div');node.className='thrive-select-option';node.id=`${a.list.id}-${option.index}`;node.setAttribute('role','option');node.setAttribute('aria-selected',option.selected);node.setAttribute('aria-disabled',!!disabled(option));
-  const text=document.createElement('span');text.textContent=option.label;const mark=document.createElement('span');mark.className='thrive-select-check';if(option.selected)mark.innerHTML=check;node.append(text,mark);a.list.append(node);
+  const text=document.createElement('span');text.className='thrive-select-option-label';text.textContent=option.label;const visual=visualFor(a.control.select,option);if(visual)node.append(visual);const mark=document.createElement('span');mark.className='thrive-select-check';if(option.selected)mark.innerHTML=check;node.append(text,mark);a.list.append(node);
   if(!disabled(option)){const index=a.rows.length;a.rows.push({node,option});node.addEventListener('pointermove',()=>highlight(index,false));node.addEventListener('click',()=>choose(index));}
  }
  if(!a.list.children.length){const empty=document.createElement('div');empty.className='thrive-select-empty';empty.textContent='No options found';a.list.append(empty);}
@@ -91,8 +103,8 @@ function key(e,c){
  if(e.target===active?.search)return;
  if(e.key.length===1){e.preventDefault();e.stopPropagation();if(!isOpen)open(c,c.select.options.length>=8?e.key:'');if(active.search)return;const now=Date.now();active.buffer=(now-active.typedAt<700?active.buffer:'')+e.key.toLocaleLowerCase();active.typedAt=now;const index=active.rows.findIndex(r=>r.option.label.toLocaleLowerCase().startsWith(active.buffer));if(index>=0)highlight(index);}
 }
-export function initSelects(){
- if(initialized)return;initialized=true;refresh();
+export function initSelects(options={}){
+ if(initialized)return;getOptionVisual=options.getOptionVisual||(()=>null);initialized=true;refresh();
  new MutationObserver(changes=>{if(changes.some(m=>!m.target.closest?.('.thrive-select-popover')&&(!m.target.closest?.('.thrive-select')||m.target.closest?.('select'))))schedule();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['disabled','required','selected','label','value','hidden']});
  document.addEventListener('change',schedule,true);document.addEventListener('reset',schedule,true);
  document.addEventListener('pointerdown',e=>{if(active&&!active.panel.contains(e.target)&&!active.control.wrap.contains(e.target))close(false);},true);
