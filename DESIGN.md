@@ -82,3 +82,9 @@ Application styling must not replace saved invoice/document branding, published 
 ## Direction provenance
 
 The design-taste app draw supplied an Achromatic ledger structure (seed 78174042); the user’s LAGO/Attio direction overrides its black primary button and icon-only shell. Thrive has twelve destinations, so labeled navigation is appropriate. Impeccable’s product-interface guidance supplies consistent states and restrained expression; its random concept service was unavailable. No generated visual comps were needed because the user pinned the visual reference and the implementation uses real working components.
+
+## Feature icon tiles
+
+Use `featureIcon(name, size)` from `public/feature-icon.js` for feature identity in navigation, page headers, record lists, related records, search results, creation menus, and feature empty states. Existing layout wrappers carry the same `feature-icon` class. The reference is the related-record icon tile: neutral grey line art on a light-grey rounded square, a fine border, no shadow. Dark mode uses an elevated charcoal tile and a lighter glyph.
+
+Sizes are deliberate: `xs` 20/13px for menus and navigation, `sm` 24/14px for compact tables and timelines, default `md` 30/15px for related records, and `lg` 40/20px for identity headers and empty states. Blue identifies selected/active features and unread activity, never arbitrary feature categories. Green/amber/red remain status colours; client logos/avatars retain their identity colours. Utility/action glyphs (add, close, copy, edit, arrows, table controls and inline field labels) stay unboxed. Do not change client-facing document branding to match workspace chrome.

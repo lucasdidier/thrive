@@ -1002,3 +1002,27 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  .dashboard .section-heading { flex-wrap: wrap; }
 }
 @media (pointer: coarse) { .home-widget-option { min-height: 44px; } }
+
+/* Feature identity: one neutral tile, blue only for an active selection.
+   Utility controls, status symbols, client logos and document branding are separate. */
+:root { --feature-icon-bg: var(--surface-subtle); --feature-icon-ink: var(--ink-secondary); --feature-icon-border: var(--border-subtle); }
+:root[data-theme=dark] { --feature-icon-bg: var(--surface-hover); --feature-icon-border: var(--border-default); }
+.feature-icon.feature-icon { --feature-size: 30px; --feature-glyph: 15px; display: inline-grid; place-items: center; vertical-align: middle; flex: 0 0 var(--feature-size); width: var(--feature-size); height: var(--feature-size); min-width: var(--feature-size); padding: 0; margin: 0; border: 1px solid var(--feature-icon-border); border-radius: 7px; background: var(--feature-icon-bg); color: var(--feature-icon-ink); box-shadow: none; }
+.feature-icon.feature-icon--xs { --feature-size: 20px; --feature-glyph: 13px; border-radius: 5px; }
+.feature-icon.feature-icon--sm { --feature-size: 24px; --feature-glyph: 14px; border-radius: 6px; }
+.feature-icon.feature-icon--lg { --feature-size: 40px; --feature-glyph: 20px; border-radius: 9px; }
+.feature-icon.feature-icon > svg { display: block; width: var(--feature-glyph); height: var(--feature-glyph); margin: 0; color: inherit; stroke-width: 1.7; }
+:is(.nav a.active, [role=option][aria-selected=true], .response-option:has(input:checked)) .feature-icon,
+.feature-icon.is-unread, .feature-icon.is-selected { background: var(--surface-selected); color: var(--link); border-color: var(--brand-100); }
+.sidebar .nav a .feature-icon > svg { color: inherit; }
+.sidebar .nav a { padding-block: 4px; }
+.crm-record-name > .feature-icon { overflow: visible; }
+.related-record > .feature-icon { flex-grow: 0; }
+.timeline-event > .feature-icon { flex-shrink: 0; }
+.quiet-empty > .feature-icon, .crm-empty > .feature-icon { margin-bottom: 12px; }
+.thrive-select-option[aria-selected=true] .feature-icon { background: var(--surface-selected); color: var(--link); border-color: var(--brand-100); }
+@media (pointer: coarse) { .sidebar .nav a { min-height: 44px; } }
+
+.settings-nav-group a[aria-current=page] .feature-icon { background: var(--surface-selected); color: var(--link); border-color: var(--brand-100); }
+.getting-started-step.complete .feature-icon { background: var(--positive-bg); color: var(--positive); border-color: transparent; }
+@media (max-width:650px) { .sidebar .nav a { min-height: 44px; } }

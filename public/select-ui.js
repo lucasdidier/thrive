@@ -8,7 +8,7 @@ function visualFor(select,option){
  if(data.type==='client'){
   node.classList.add('avatar',data.color);node.textContent=data.initials;
   if(data.logo){const img=document.createElement('img');img.alt='';img.src=data.logo;img.addEventListener('error',()=>img.remove(),{once:true});node.append(img);}
- }else{node.classList.add('is-project');if(data.empty)node.classList.add('is-empty');node.innerHTML=icon(data.type==='project'?'projects':'clients');}
+ }else{node.classList.add('is-project','feature-icon','feature-icon--xs');if(data.empty)node.classList.add('is-empty');node.innerHTML=icon(data.type==='project'?'projects':'clients');}
  return node;
 }
 let active=null,sequence=0,initialized=false,scheduled=false,invalidBatch=false;

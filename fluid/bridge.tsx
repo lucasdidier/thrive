@@ -1,4 +1,4 @@
-import {UserRound,BriefcaseBusiness,FileText,Receipt,ClipboardList,Mail,Workflow,Tag,Settings,House} from "lucide-react";
+import {icon as appIcon} from "../public/app-icons.js";
 import {tagColor} from "../public/tags-ui.js";
 import {recordSearchFields} from "../public/record-search.js";
 import React, { useState, useEffect, useId, useRef } from "react";
@@ -24,6 +24,12 @@ import {
   CommandMenuFooter,
 } from "@/components/ui/command-menu";
 
+
+// Command search shares the workspace's feature glyphs and tile tokens.
+const featureGlyph=(name:string)=>function FeatureGlyph({className=""}:{className?:string}) {
+  return <span className={`feature-icon feature-icon--sm ${className}`} aria-hidden="true" dangerouslySetInnerHTML={{__html:appIcon(name)}} />;
+};
+const UserRound=featureGlyph('clients'), BriefcaseBusiness=featureGlyph('projects'), FileText=featureGlyph('documents'), Signature=featureGlyph('signature'), Receipt=featureGlyph('invoices'), ClipboardList=featureGlyph('forms'), Mail=featureGlyph('mail'), Workflow=featureGlyph('workflows'), Tag=featureGlyph('tag'), Settings=featureGlyph('settings'), House=featureGlyph('home'), Clock=featureGlyph('clock'), Calendar=featureGlyph('calendar'), Notifications=featureGlyph('notifications');
 
 type Context = {
   getState: () => any;
@@ -489,7 +495,7 @@ export function initFluid(ctx: Context) {
       const items = [
         ...[
           ['client','New client',UserRound],['project','New project',BriefcaseBusiness],
-          ['proposal','New proposal',FileText],['contract','New contract',FileText],
+          ['proposal','New proposal',FileText],['contract','New contract',Signature],
           ['invoice','New invoice',Receipt],['form','New form',ClipboardList],
           ['mail','Compose email',Mail],['service','New service',Tag],['workflow','New workflow',Workflow],
         ].map(([kind,label,icon]: any[]) => ({
@@ -517,7 +523,7 @@ export function initFluid(ctx: Context) {
             page === "overview"
               ? "Home"
               : page === "messages" ? "Emails" : page[0].toUpperCase() + page.slice(1),
-          icon: page === "overview" ? House : ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt,workflows:Workflow,messages:Mail} as any)[page] || FileText,
+          icon: page === "overview" ? House : ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt,workflows:Workflow,messages:Mail,time:Clock,scheduling:Calendar,notifications:Notifications,contracts:Signature,forms:ClipboardList} as any)[page] || FileText,
           group: "Navigate",
           onSelect: () => action("navigate", undefined, page),
         })),
@@ -535,7 +541,7 @@ export function initFluid(ctx: Context) {
               .filter((r: any) => !r.archived)
               .map((r: any) => ({
                 value: type + "-" + r.id,
-                icon: ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt} as any)[type] || FileText,
+                icon: type==="documents" && ["contract","agreement"].includes(r.kind) ? Signature : ({clients:UserRound,projects:BriefcaseBusiness,invoices:Receipt,forms:ClipboardList} as any)[type] || FileText,
                 ...recordSearchFields(state, type, r),
                 group: type === "documents" ? (r.kind === "proposal" ? "Proposals" : ["contract", "agreement"].includes(r.kind) ? "Contracts" : "Reference material") : type[0].toUpperCase() + type.slice(1),
                 onSelect: () =>
