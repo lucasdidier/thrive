@@ -849,3 +849,25 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 }
 
 @media(min-width:651px){:root[data-sidebar-collapsed=true] .sidebar .nav a{min-height:30px;padding-block:6px;margin:0}}
+
+/* Compact record details: consistent rhythm in drawers and expanded records. */
+.record-panel .record-identity{align-items:flex-start;gap:10px;padding:18px 20px 12px}
+.record-panel .record-identity .avatar{width:34px;height:34px;border-radius:7px;font-size:12px}
+.record-panel .record-identity h1{font-size:18px;line-height:24px;letter-spacing:-.025em;margin-bottom:2px}
+.record-panel .record-identity-text>.fluid-tags{margin-top:5px;margin-left:-7px;width:calc(100% + 7px);max-width:240px}
+.record-panel .record-properties{padding:0 20px 16px;row-gap:2px}
+.record-panel .record-property,.record-panel .record-property:has(.inline-editor){grid-template-columns:100px minmax(0,1fr);gap:12px;min-height:32px;align-items:center}
+.record-panel .record-property>span:first-child,.record-panel .record-value{min-height:30px;line-height:20px}
+.record-panel .record-property .editable-cell{min-height:30px;padding-block:5px;line-height:20px}
+.record-panel .record-property .inline-editor>input{min-height:30px;padding-block:4px;line-height:20px}
+.record-panel .record-manage-fields{margin-top:8px;min-height:28px;font-size:11px}
+@media(max-width:650px){
+ .record-panel .record-identity{padding:16px 18px 10px}
+ .record-panel .record-properties{padding-inline:18px}
+ .record-panel .record-property,.record-panel .record-property:has(.inline-editor){grid-template-columns:92px minmax(0,1fr);gap:10px}
+}
+@media(pointer:coarse),(max-width:650px){
+ .record-panel .record-property,.record-panel .record-property:has(.inline-editor){min-height:44px}
+ .record-panel .record-property .editable-cell,.record-panel .record-property .inline-editor>input{min-height:44px}
+ .record-panel .record-manage-fields{min-height:44px}
+}

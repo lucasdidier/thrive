@@ -270,7 +270,7 @@ function Tags({
         }
       }}
     >
-      <ComboboxChips aria-label="Tags" placeholder="Search or create tags…" chipStyle={(item) => ({"--tag-color": tagColor(String(item.value)), background: "color-mix(in srgb, var(--tag-color) 14%, var(--bg))", color: "color-mix(in srgb, var(--tag-color) var(--tag-text-mix, 75%), var(--text))"} as React.CSSProperties)} />
+      <ComboboxChips aria-label="Tags" variant={source.closest(".record-identity") ? "borderless" : "bordered"} placeholder={source.closest(".record-identity") ? "Add tags…" : "Search or create tags…"} chipStyle={(item) => ({"--tag-color": tagColor(String(item.value)), background: "color-mix(in srgb, var(--tag-color) 14%, var(--bg))", color: "color-mix(in srgb, var(--tag-color) var(--tag-text-mix, 75%), var(--text))"} as React.CSSProperties)} />
       <ComboboxContent container={container}>
         <ComboboxList>
           {(item: any) => (
