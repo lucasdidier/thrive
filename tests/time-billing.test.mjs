@@ -20,7 +20,7 @@ test('time uses whole minutes, saved rates and reversible archive with legacy ho
  saveTimeRates(s,{hourlyRate:null},s.projects[0].id);assert.equal(entry(s,{rate:undefined}).rate,5000);
  assert.equal(timeMinutes(s.time[0]),1110);assert.equal(s.time[0].minutes,undefined);
  archiveTimeEntry(s,t.id);assert.equal(timeStatus(s,t),'archived');archiveTimeEntry(s,t.id,false);assert.equal(timeStatus(s,t),'unbilled');
- for(const data of [{minutes:0},{minutes:1.1},{minutes:1441},{date:'2026-02-30'},{rate:-1},{rate:1.1},{billable:'false'},{note:''},{projectId:'missing'}]){const before=JSON.stringify(s);assert.throws(()=>entry(s,data));assert.equal(JSON.stringify(s),before);}
+ for(const data of [{minutes:0},{minutes:1.1},{minutes:1441},{date:'2026-02-30'},{rate:-1},{rate:1.1},{billable:'false'},{note:'x'.repeat(201)},{projectId:'missing'}]){const before=JSON.stringify(s);assert.throws(()=>entry(s,data));assert.equal(JSON.stringify(s),before);}
 });
 test('all invoice groupings preserve cents and distinct hourly rates',()=>{
  const s=state(),a=entry(s,{minutes:1}),b=entry(s,{minutes:1}),c=entry(s,{minutes:31,rate:1999}),ids=[a.id,b.id,c.id];
@@ -69,4 +69,26 @@ test('many entries can be grouped without changing time or fee agreements',()=>{
 
 test('shared time invoices show exact durations without exposing source record IDs',()=>{
  const s=state(),t=entry(s),d=draft(s,[t.id]),i=issueInvoiceDraft(s,d.id);const view=clientProjection(s,{entity:'invoice',recordId:i.id});assert.equal(view.data.items[0].durationMinutes,61);assert.equal(view.data.items[0].timeSources,undefined);assert.ok(!JSON.stringify(view).includes(t.id));assert.match(invoicePaper(view.data),/1:01/);
+});
+
+
+test('time descriptions may be omitted, blank or cleared without blocking persistence or billing',()=>{
+ const s=state(),before=structuredClone(s),ids=[];
+ for(const note of [undefined,'','   ']){const t=entry(s,{note});assert.equal(t.note,'');ids.push(t.id);}
+ const existing=entry(s);saveTimeEntry(s,{...existing,note:''},existing.id);assert.equal(existing.note,'');
+ validateWorkspace(s,before);
+ for(const groupBy of ['entry','day','description']){
+  const data=timeInvoiceData(s,{entryIds:ids,groupBy,additionalCharge:true});
+  assert.ok(data.items.every(line=>line.description.trim()));
+  assert.equal(calculateInvoice(data.items,0).subtotal,30504);
+ }
+ const invoiceDraft=draft(s,ids,'description');assert.equal(invoiceDraft.items[0].description,'Tracked time');
+ const issued=issueInvoiceDraft(s,invoiceDraft.id);assert.equal(issued.amount,30504);validateWorkspace(s);
+});
+
+test('the time.save API accepts an omitted description and stores an empty string',()=>{
+ const s=state(),schema=actionCatalog().find(a=>a.id==='time.save').inputSchema.properties.data;
+ assert.ok(!schema.required.includes('note'));
+ const out=executeOperation(s,'time.save',{data:{projectId:s.projects[0].id,minutes:30,date:'2026-10-18',rate:5000}},'time-without-note');
+ assert.equal(out.result.note,'');validateWorkspace(out.state,s);
 });
