@@ -70,8 +70,8 @@ dialog.drawer:has(>:is(#record-client-form,#record-project-form)){width:min(560p
 #record-project-form .project-budget-pair,#record-project-form .project-details-pair{gap:16px}
 
 /* Ordinary forms use one vertical rhythm, also when embedded in Settings. */
-:is(dialog,.settings-embedded)>form:not(.editor-wizard):not(#wf-editor):not(#fb-editor):not(#portal-settings)>.dialog-body{display:flex;flex-direction:column;gap:var(--editor-field-gap);align-items:stretch}
-:is(dialog,.settings-embedded)>form:not(.editor-wizard):not(#wf-editor):not(#fb-editor):not(#portal-settings)>.dialog-body>:not([hidden]){margin-block:0;flex-shrink:0}
+:is(dialog,.settings-embedded)>form:not(.editor-wizard):not(#wf-editor):not(#fb-editor):not(#portal-settings):not(#new-document-form)>.dialog-body{display:flex;flex-direction:column;gap:var(--editor-field-gap);align-items:stretch}
+:is(dialog,.settings-embedded)>form:not(.editor-wizard):not(#wf-editor):not(#fb-editor):not(#portal-settings):not(#new-document-form)>.dialog-body>:not([hidden]){margin-block:0;flex-shrink:0}
 :is(dialog,.settings-embedded)>form>.dialog-body>.btn{align-self:flex-start}
 dialog .field-row{margin-bottom:var(--editor-field-gap)}
 dialog .field-row>.field{margin-bottom:0}
@@ -153,3 +153,25 @@ dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
 #record-project-form .field.field-with-leading-icon>input,
 #record-project-form .field.field-with-leading-icon>select,
 #record-project-form .field-with-leading-icon>.fluid-ui [role=group]:has(>input[role=combobox]){padding-left:35px}
+
+/* Template selection keeps the document visible beside its setup controls. */
+dialog[open].drawer.document-template-dialog:has(>#new-document-form){width:min(1160px,100vw);max-width:100vw}
+#new-document-form>.template-browser-body{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(0,1.15fr);padding:0;overflow:hidden;scrollbar-gutter:auto}
+.template-browser-controls,.template-browser-preview{min-width:0;overflow:auto;overscroll-behavior:contain;padding:24px}
+.template-browser-controls{border-right:1px solid var(--line)}
+.template-browser-preview{background:var(--card)}
+.template-browser-preview>header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
+.template-browser-preview>header h3{font-size:13px;font-weight:500;margin:0}
+.template-browser-preview>header span{font-size:12px;color:var(--muted);text-align:right}
+.template-browser-preview>.hint{margin:0 0 20px}
+#document-template-preview .document-sheet{min-height:640px;width:100%;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+#document-template-preview .template-pricing-placeholder{padding:16px 0;border-block:1px solid #ddd}
+#document-template-preview .template-pricing-placeholder p{color:#666}
+@media(max-width:760px){
+ #new-document-form>.template-browser-body{display:block;overflow-y:auto}
+ .template-browser-controls,.template-browser-preview{overflow:visible;padding:18px}
+ .template-browser-controls{border-right:0}
+ .template-browser-preview{border-top:1px solid var(--line)}
+ #document-template-preview .document-sheet{padding:24px;min-height:480px}
+ .template-browser-preview>header{flex-wrap:wrap}
+}
