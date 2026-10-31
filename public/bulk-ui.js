@@ -1,11 +1,13 @@
 import {createSelection,bulkActions,applyBulkAction,selectionCSV} from './bulk-domain.js';
 export function createBulkUI({getState:S,render,save,blocked,open,dialog,esc,icon,toast,onTimeInvoice}){
- const selection=createSelection();let config=null,busy=false,pending=null;
+ const selection=createSelection();let config=null,busy=false,pending=null,rangeRequested=false;
+ // Native checkbox change events omit modifier keys; capture them on activation.
+ if(typeof document!=='undefined')document.addEventListener('click',event=>{if(event.target.matches?.('[data-bulk-id]'))rangeRequested=event.shiftKey;},true);
  const chosen=()=>config?.rows.filter(r=>selection.has(r.id))||[];
  function use(next){config=next;selection.use(next.scope,next.rows.map(r=>r.id));}
  function reset(){selection.stop();config=null;document.querySelector('#bulk-actions')?.remove();document.body.classList.remove('bulk-selecting');}
  function control(){return `<button class="crm-tool bulk-toggle ${selection.active?'applied':''}" data-action="bulk-toggle" aria-pressed="${selection.active}" ${config.rows.length||selection.active?'':'disabled'}>${icon('check')}<span>${selection.active?'Done selecting':'Select multiple'}</span></button>`;}
- function checkbox(id,name){return `<label class="bulk-check-target"><input class="bulk-checkbox" type="checkbox" data-bulk-id="${esc(id)}" aria-label="Select ${esc(name)}" ${selection.has(id)?'checked':''}></label>`;}
+ function checkbox(id,name){return `<label class="bulk-check-target" title="Shift-click to select a range"><input class="bulk-checkbox" type="checkbox" data-bulk-id="${esc(id)}" aria-label="Select ${esc(name)}" ${selection.has(id)?'checked':''}></label>`;}
  function head(){return selection.active?`<th class="bulk-cell" scope="col"><label class="bulk-check-target"><input class="bulk-checkbox" type="checkbox" data-bulk-all aria-label="Select all in this view" aria-checked="${selection.mixed?'mixed':selection.all}" ${selection.all?'checked':''} ${selection.total?'':'disabled'}></label></th>`:'';}
  function cell(id,name){return selection.active?`<td class="bulk-cell">${checkbox(id,name)}</td>`:'';}
  function card(id,name){return selection.active?`<span class="bulk-card-check">${checkbox(id,name)}</span>`:'';}
@@ -23,7 +25,7 @@ export function createBulkUI({getState:S,render,save,blocked,open,dialog,esc,ico
  }
  async function confirm(){if(busy||!pending)return;busy=true;const button=dialog.querySelector('[data-action=bulk-confirm]');if(button)button.disabled=true;try{const count=applyBulkAction(S(),pending.scope,pending.ids,pending.action);await save();if(blocked())return;selection.stop();pending=null;dialog.close();render();toast(`${count} ${count===1?'record':'records'} updated.`);}catch(error){const el=dialog.querySelector('.form-error');if(el)el.textContent=error.message;else toast(error.message);}finally{busy=false;if(button?.isConnected)button.disabled=false;}}
  function handleClick(action,el){if(!action.startsWith('bulk-'))return false;if(action==='bulk-confirm'){void confirm();return true;}if(!config)return true;if(action==='bulk-toggle'){if(selection.active)selection.stop();else{config.onStart?.();selection.start();}redraw('toggle');}else if(action==='bulk-done'){selection.stop();redraw('toggle');}else if(action==='bulk-all'){selection.selectAll(!selection.all);redraw('all');}else if(action==='bulk-export')exportSelected();else if(action==='bulk-run')review(el.dataset.operation);return true;}
- function handleChange(el){if(!el.hasAttribute('data-bulk-id')&&!el.hasAttribute('data-bulk-all'))return false;if(el.hasAttribute('data-bulk-all')){selection.selectAll(el.checked);redraw('all');}else{selection.toggle(el.dataset.bulkId,el.checked);redraw(el.dataset.bulkId);}return true;}
+ function handleChange(el){if(!el.hasAttribute('data-bulk-id')&&!el.hasAttribute('data-bulk-all'))return false;if(el.hasAttribute('data-bulk-all')){selection.selectAll(el.checked);redraw('all');}else{selection.toggle(el.dataset.bulkId,el.checked,{range:rangeRequested});rangeRequested=false;redraw(el.dataset.bulkId);}return true;}
  function keyboard(event){if(event.defaultPrevented||!selection.active||dialog.open||document.querySelector('#crm-popup, #view-popup')||event.target.closest('input:not([type=checkbox]),textarea,select,[contenteditable]'))return false;if(event.key==='Escape'){event.preventDefault();selection.stop();redraw('toggle');return true;}if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='a'){event.preventDefault();selection.selectAll();redraw('all');return true;}return false;}
  return {use,reset,control,head,cell,card,sync,handleClick,handleChange,keyboard,get active(){return selection.active;},get ids(){return selection.ids;},has:id=>selection.has(id),clear:()=>selection.clear()};
 }

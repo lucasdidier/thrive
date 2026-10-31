@@ -30,7 +30,7 @@ function sync(c){
  button.disabled=select.matches(':disabled');setAttribute(button,'aria-required',select.required);setAttribute(button,'aria-label',c.label);
  button.classList.toggle('is-placeholder',!select.value&&(select.required||/^(choose|select)\b/i.test(text)));
  c.wrap.hidden=select.hidden;
- if(select.validity.valid){button.removeAttribute('aria-invalid');c.error?.remove();c.error=null;}
+ if(select.validity.valid){button.removeAttribute('aria-invalid');button.removeAttribute('aria-errormessage');c.error?.remove();c.error=null;}
  if(active?.control===c&&(button.disabled||select.closest('dialog')&&!select.closest('dialog').open))close(false);
 }
 function enhance(select){
@@ -45,7 +45,7 @@ function enhance(select){
  button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(active?.control===c)close();else open(c);});
  button.addEventListener('keydown',e=>key(e,c));
  select.addEventListener('focus',()=>{if(!button.disabled)button.focus();});
- select.addEventListener('invalid',e=>{e.preventDefault();setAttribute(button,'aria-invalid',true);if(!c.error){c.error=document.createElement('span');c.error.className='thrive-select-error';c.error.setAttribute('role','alert');wrap.append(c.error);}c.error.textContent=select.validationMessage;if(!invalidBatch){invalidBatch=true;setTimeout(()=>{const first=select.form?.querySelector('input:invalid,select:invalid,textarea:invalid');if(select.isConnected&&(!first||first===select))button.focus();invalidBatch=false;},0);}});
+ select.addEventListener('invalid',e=>{e.preventDefault();setAttribute(button,'aria-invalid',true);if(!c.error){c.error=document.createElement('span');c.error.id=button.id+'-error';c.error.className='thrive-select-error';c.error.setAttribute('role','alert');wrap.append(c.error);}button.setAttribute('aria-errormessage',c.error.id);c.error.textContent=select.validationMessage;if(!invalidBatch){invalidBatch=true;setTimeout(()=>{const first=select.form?.querySelector('input:invalid,select:invalid,textarea:invalid');if(select.isConnected&&(!first||first===select))button.focus();invalidBatch=false;},0);}});
 }
 function refresh(){scheduled=false;document.querySelectorAll('select').forEach(enhance);for(const c of controls.values())sync(c);if(active&&!active.control.select.isConnected)close(false);}
 function schedule(){if(!scheduled){scheduled=true;queueMicrotask(refresh);}}
@@ -82,7 +82,7 @@ function rows(query=''){
   const text=document.createElement('span');text.className='thrive-select-option-label';text.textContent=option.label;const visual=visualFor(a.control.select,option);if(visual)node.append(visual);const mark=document.createElement('span');mark.className='thrive-select-check';if(option.selected)mark.innerHTML=check;node.append(text,mark);a.list.append(node);
   if(!disabled(option)){const index=a.rows.length;a.rows.push({node,option});node.addEventListener('pointermove',()=>highlight(index,false));node.addEventListener('click',()=>choose(index));}
  }
- if(!a.list.children.length){const empty=document.createElement('div');empty.className='thrive-select-empty';empty.textContent='No options found';a.list.append(empty);}
+ if(!a.list.children.length){const empty=document.createElement('div');empty.className='thrive-select-empty';empty.setAttribute('role','status');empty.textContent='No options found';a.list.append(empty);}
  let index=a.rows.findIndex(r=>r.option.selected);if(index<0)index=a.rows.length?0:-1;highlight(index);position();
 }
 function open(control,initial=''){
@@ -93,7 +93,9 @@ function open(control,initial=''){
  control.button.setAttribute('aria-expanded','true');control.button.setAttribute('aria-controls',list.id);rows(initial);(active.search||control.button).focus({preventScroll:true});position();
 }
 function key(e,c){
- if(e.metaKey||e.ctrlKey||e.altKey)return;const isOpen=active?.control===c;
+ if(e.metaKey||e.ctrlKey||e.altKey||e.isComposing)return;const isOpen=active?.control===c;
+ // Search remains a text field: Home/End move its caret, arrows navigate options.
+ if(e.target===active?.search&&['Home','End'].includes(e.key))return;
  if(e.key==='Escape'&&isOpen){e.preventDefault();e.stopPropagation();close();return;}
  if(e.key==='Tab'&&isOpen){const searching=!!active.search;if(searching){c.button.focus({preventScroll:true});}close(false);return;}
  if(['ArrowDown','ArrowUp','Home','End','Enter',' '].includes(e.key)&&!(e.target===active?.search&&e.key===' ')){

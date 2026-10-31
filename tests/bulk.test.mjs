@@ -16,3 +16,17 @@ test('enabling workflows validates every workflow before changing any',()=>{cons
 test('CSV exports selected visible fields with quoted text and spreadsheet formula protection',()=>{const csv=selectionCSV([['name','Client'],['note','Note']],[{name:'=IMPORTDATA("private")',note:'two, lines\nnext',secret:'not exported'},{name:'Ordinary',note:'@formula'}]);assert.ok(!csv.includes('not exported'));assert.ok(csv.includes('"\'=IMPORTDATA(""private"")"'));assert.ok(csv.includes('"two, lines\nnext"'));assert.ok(csv.includes('"\'@formula"'));});
 
 test('mixed active and paused items can be set to the same state',()=>{const s=state();s.scheduling={types:[{id:'a',active:true},{id:'b',active:false}]};assert.ok(bulkActions(s,'meeting-types',s.scheduling.types).filter(a=>a.enabled).length===2);applyBulkAction(s,'meeting-types',['a','b'],'pause');assert.ok(s.scheduling.types.every(t=>!t.active));applyBulkAction(s,'meeting-types',['a','b'],'enable');assert.ok(s.scheduling.types.every(t=>t.active));});
+
+
+test('range selection follows visible order in both directions and can deselect a range',()=>{
+ const s=createSelection();s.use('clients',['d','b','a','c','e']);s.start();
+ s.toggle('b',true);s.toggle('c',true,{range:true});assert.deepEqual(s.ids,['b','a','c']);
+ s.toggle('d',true,{range:true});assert.deepEqual(new Set(s.ids),new Set(['d','b','a','c']));
+ s.toggle('c',false,{range:true});assert.deepEqual(s.ids,['d']);
+});
+test('range anchors never select filtered, collapsed, or previous-scope records',()=>{
+ const s=createSelection();s.use('clients',['a','b','c','d']);s.start();s.toggle('a',true);
+ s.use('clients',['b','d']);s.toggle('d',true,{range:true});assert.deepEqual(s.ids,['d']);
+ s.use('projects',['x','y']);s.start();s.toggle('y',true,{range:true});assert.deepEqual(s.ids,['y']);
+ s.selectAll(false);s.toggle('x',true,{range:true});assert.deepEqual(s.ids,['x']);
+});

@@ -1,3 +1,4 @@
+import {navigateActionMenu} from './menu-keyboard.js';
 let sequence=0;
 
 // Secondary actions keep their original handlers and record attributes.
@@ -15,11 +16,7 @@ export function toggleMoreActions(button){
   menu.addEventListener('toggle',e=>button.setAttribute('aria-expanded',String(e.newState==='open')));
   menu.addEventListener('click',e=>{if(e.target.closest('[data-action]'))menu.hidePopover();});
   menu.addEventListener('keydown',e=>{
-   if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key))return;
-   const items=[...menu.querySelectorAll('button:not(:disabled),a[href]')];
-   const index=items.indexOf(document.activeElement);
-   const next=e.key==='Home'?0:e.key==='End'?items.length-1:(index+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;
-   e.preventDefault();items[next]?.focus();
+   navigateActionMenu(e,menu,{trigger:button,close:()=>menu.hidePopover()});
   });
  }
  const wasOpen=button.dataset.wasOpen==='true';delete button.dataset.wasOpen;

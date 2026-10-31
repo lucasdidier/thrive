@@ -5,10 +5,12 @@ import {deleteInvoiceDraft} from './invoice-domain.js';
 import {validateWorkflow} from './workflow-domain.js';
 
 // Selection is scoped to the visible view. Hidden rows never remain selected.
-export function createSelection(){let scope='',active=false,visible=[],selected=new Set();return {
- use(next,ids){if(scope!==next){scope=next;active=false;selected.clear();}visible=[...new Set(ids)];selected=new Set([...selected].filter(id=>visible.includes(id)));},
+export function createSelection(){let scope='',active=false,visible=[],selected=new Set(),anchor=null;return {
+ use(next,ids){if(scope!==next){scope=next;active=false;selected.clear();anchor=null;}visible=[...new Set(ids)];selected=new Set([...selected].filter(id=>visible.includes(id)));if(!visible.includes(anchor))anchor=null;},
  get active(){return active;},get ids(){return [...selected];},get count(){return selected.size;},get total(){return visible.length;},get all(){return visible.length>0&&selected.size===visible.length;},get mixed(){return selected.size>0&&selected.size<visible.length;},has:id=>selected.has(id),
- start(){active=true;selected.clear();},stop(){active=false;selected.clear();},clear(){selected.clear();},toggle(id,checked){if(!active||!visible.includes(id))return;if(checked)selected.add(id);else selected.delete(id);},selectAll(checked=true){if(active)selected=new Set(checked?visible:[]);}
+ start(){active=true;selected.clear();anchor=null;},stop(){active=false;selected.clear();anchor=null;},clear(){selected.clear();anchor=null;},
+ toggle(id,checked,{range=false}={}){if(!active||!visible.includes(id))return;const end=visible.indexOf(id),start=range&&anchor!==null?visible.indexOf(anchor):end;for(const key of visible.slice(Math.min(start,end),Math.max(start,end)+1)){if(checked)selected.add(key);else selected.delete(key);}if(!range||anchor===null)anchor=id;},
+ selectAll(checked=true){if(active){selected=new Set(checked?visible:[]);anchor=null;}}
  };}
 export function bulkActions(s,scope,rows){const has=rows.length>0,all=fn=>has&&rows.every(fn),actions=[];
  if(['clients','projects','documents','proposals','contracts','forms'].includes(scope)){actions.push({id:'archive',label:'Archive',enabled:all(r=>!r.archived)},{id:'restore',label:'Restore',enabled:all(r=>r.archived)});}

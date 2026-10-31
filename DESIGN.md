@@ -108,3 +108,9 @@ Project defaults owns hourly rate, deposit and statuses. Client/project Custom f
 Branding owns the shared workspace/document logo. Profile and branding image controls pair a fixed-size preview with Upload/Replace and a separate Remove action. Client logos use a compact anchored action menu. Raster validation and resizing are shared. Published/issued commercial snapshots retain their branding; changed defaults refresh drafts only.
 
 Text-input focus recolors the existing boundary blue without a second ring. Input groups own one boundary; keyboard button outlines and forced-colors focus remain visible. Positive connection states use the green status role and a check icon.
+
+### Interaction states and keyboard behavior
+
+Use neutral hover and pressed surfaces; reserve blue selection for the current view, committed option, or explicitly selected record. Preserve checkmarks, selected semantics and status text so color is not the sole signal. Inputs and custom select triggers own a single focus boundary; keyboard buttons and links keep outlines. Invalid fields use semantic error colors and an associated message, and submitting an invalid form focuses the first error.
+
+Action menus share `navigateActionMenu`: Arrow keys, Home/End, typeahead and Escape with trigger-focus return. Do not intercept text editing, composition or modified shortcuts. Record creation menus sit below their own trigger and stay within the viewport. Async content updates retain navigation and focus. Bulk Shift-selection follows visible order and resets its anchor when the view/scope changes.

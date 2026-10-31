@@ -1,3 +1,4 @@
+import {navigateActionMenu} from './menu-keyboard.js';
 import {featureIcon} from './feature-icon.js';
 import {cancelInlineEdit} from './inline-edit.js';
 import {unbilledTime} from './time-domain.js';
@@ -61,7 +62,7 @@ export function createCRM(ctx){
   const rect=el.getBoundingClientRect(),height=menu.offsetHeight;menu.style.left=Math.max(12,Math.min(innerWidth-menu.offsetWidth-12,rect.right-menu.offsetWidth))+'px';menu.style.top=Math.max(12,Math.min(innerHeight-height-12,rect.bottom+6))+'px';
   menu.addEventListener('click',e=>{if(e.target.closest('[data-action]'))menu.hidePopover();});
   menu.addEventListener('toggle',e=>{if(e.newState==='closed')el.setAttribute('aria-expanded','false');});
-  menu.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidePopover();el.focus();}});menu.querySelector('button')?.focus();
+  menu.addEventListener('keydown',e=>navigateActionMenu(e,menu,{trigger:el,close:()=>menu.hidePopover()}));menu.querySelector('button')?.focus();
  }
  function table(list){return listView.table({cell,tail:[...(hasDocumentActions()?[{label:'Actions',cell:rowActions}]:[]),...(scope()?[{label:`<button class="icon-btn" data-action="cf-add" data-entity="${scope()}" aria-label="Add custom field">${icon('plus')}</button>`,cell:()=>''}]:[]),...(entity()==='forms'?[{label:'Actions',cell:r=>`<div class="row-actions">${r.archived?'':btn('Share','share-item',`data-entity="form" data-id="${r.id}"`)+btn('Preview','preview-form',`data-id="${r.id}"`)}${moreActions((!r.archived?btn('Edit form','edit-form',`data-id="${r.id}"`):'')+btn(r.archived?'Restore':'Archive','toggle-form',`data-id="${r.id}"`),icon,'More form actions')}</div>`}]:[])],empty:empty(),add:schema().action?`<button class="crm-add-row" data-action="${schema().action}">${icon('plus')}Add ${schema().singular}</button>`:''});}
  function empty(){const searching=!!listView.search(entity()),filtered=Object.values(config().filters).some(Boolean);return `<div class="crm-empty">${featureIcon(entity()==='submissions'?'forms':entity(),'lg')}<h3>${searching||filtered?'No '+schema().title.toLowerCase()+' match your search or filters':'No '+schema().title.toLowerCase()+' yet'}</h3><p>${searching||filtered?'Try a different search or clear your filters.':entity()==='submissions'?'Submit a form preview to see incoming requests here.':`Create your first ${schema().singular} to get started.`}</p>${searching?btn('Clear search','crm-clear-search'):''}${filtered?btn('Clear filters','crm-clear-all'):''}</div>`;}
@@ -134,5 +135,15 @@ export function createCRM(ctx){
  window.addEventListener('beforeunload',e=>{if(noteDrafts.atRisk()){e.preventDefault();e.returnValue='';}});
  function keyboard(e){if(e.key==='Escape'&&!dialog.open){if(e.target.closest('#crm-inline-form')){e.preventDefault();render();drawPanel();}else if(menu){menu=null;render();}else if(panelId){closePanel();}}}
  function showColumn(e,id){const key=e==='client'?'clients':'projects';if(drafts[key]&&!drafts[key].config.columns.includes(id))drafts[key].config.columns.push(id);else if(!drafts[key]){const base=clone(viewsFor(S(),key)[0].config);if(!base.columns.includes(id))base.columns.push(id);drafts[key]={id:'all',config:base};}}
- return{refreshEmails:()=>{if(panelTab==='emails')drawPanel();},showColumn,refreshPanel:drawPanel,page,handleClick,handleChange,handleInput,handleSubmit,clientDetail,reset,resetAll,outsideClick,keyboard};
+ function refreshEmails(){
+  if(panelTab!=='emails'||!panelId)return;
+  const host=panelRoot()?.querySelector('.record-tab-body'),active=document.activeElement;
+  const action=host?.contains(active)?active.dataset.action:null;
+  drawPanel(true);
+  if(action){
+   const replacement=[...panelRoot().querySelectorAll('.record-tab-body [data-action]')].find(el=>el.dataset.action===action);
+   (replacement&&!replacement.disabled?replacement:panelRoot().querySelector('.record-tab-body'))?.focus({preventScroll:true});
+  }
+ }
+ return{refreshEmails,showColumn,refreshPanel:drawPanel,page,handleClick,handleChange,handleInput,handleSubmit,clientDetail,reset,resetAll,outsideClick,keyboard};
 }

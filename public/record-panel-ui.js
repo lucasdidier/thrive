@@ -5,6 +5,7 @@ import {createPersistenceUI} from './persistence-ui.js';
 import {createPanelModality} from './panel-modality.js';
 import {projectStatus,projectStatuses} from './project-status.js';
 import {saveClient,updateProject,addActivity} from './domain.js';
+import {navigateActionMenu} from './menu-keyboard.js';
 
 // Shared record surface. Creation actions retain their client/project context.
 export function createRecordPanel(ctx){
@@ -59,6 +60,20 @@ export function createRecordPanel(ctx){
  function handleChange(el){if(!el.dataset.clientLogo)return false;const id=el.dataset.clientLogo,file=el.files?.[0];if(!file)return true;void(async()=>{try{const logo=await readImageUpload(file);if(logo.length>150000)throw Error('Choose a smaller logo.');const c=S().clients.find(c=>c.id===id);if(!c)return;c.logo=logo;addActivity(S(),'Client logo updated',c.name,'client');await save();if(blocked())return;render();refresh(true);toast('Logo saved.');}catch(e){toast(e.message);}})();return true;}
  function keyboard(e){if(e.defaultPrevented||e.key!=='Escape'||dialog.open)return;const menu=document.querySelector('.record-header-actions details[open], .record-create[open], .record-logo-menu[open]');if(menu){e.preventDefault();menu.open=false;menu.querySelector('summary')?.focus();return true;}if(document.querySelector('#rp-inline-form,#cf-value-form,#crm-inline-form')){e.preventDefault();cancelInlineEdit(document,{focus:true});return true;}if(!active)return;e.preventDefault();if(canLeaveInline()){if(expanded&&ctx.exitExpanded)ctx.exitExpanded();else close();}return true;}
  document.addEventListener('click',e=>{document.querySelectorAll('.record-header-actions details[open], .record-create[open], .record-logo-menu[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('[data-action]'))d.open=false;});});
+ document.addEventListener('keydown',e=>{
+  const d=e.target.closest?.('.record-create,.record-more,.record-logo-menu');if(!d)return;
+  const trigger=d.querySelector('summary');
+  if(e.target===trigger&&['ArrowDown','ArrowUp'].includes(e.key))d.open=true;
+  if(d.open)navigateActionMenu(e,d,{trigger,close:()=>{d.open=false;}});
+ },true);
+ document.addEventListener('toggle',e=>{
+  if(!e.target.matches('.record-create')||!e.target.open)return;
+  const menu=e.target.querySelector('.record-create-menu');if(!menu)return;
+  menu.style.transform='';const r=menu.getBoundingClientRect();
+  const shift=r.right>innerWidth-12?innerWidth-12-r.right:r.left<12?12-r.left:0;
+  menu.style.transform=`translateX(${shift}px)`;
+ },true);
+ document.addEventListener('focusout',e=>{const d=e.target.closest?.('.record-create,.record-more,.record-logo-menu');if(d&&e.relatedTarget&&!d.contains(e.relatedTarget))d.open=false;});
  document.addEventListener('toggle',e=>{if(e.target.matches('.status-picker')&&e.target.open){const menu=e.target.querySelector('.status-menu');menu.style.transform='';menu.style.top='';menu.style.bottom='';const r=menu.getBoundingClientRect(),shift=r.right>innerWidth-12?innerWidth-12-r.right:r.left<12?12-r.left:0;menu.style.transform=`translateX(${shift}px)`;if(r.bottom>innerHeight-12&&e.target.getBoundingClientRect().top>r.height+12){menu.style.top='auto';menu.style.bottom='calc(100% + 6px)';}e.target.querySelector('input').focus({preventScroll:true});}},true);
  document.addEventListener('input',e=>{if(e.target.matches('.status-search')){const q=e.target.value.trim().toLowerCase();e.target.parentElement.querySelectorAll('[data-status]').forEach(b=>b.hidden=!b.textContent.toLowerCase().includes(q));}});
  document.addEventListener('click',e=>document.querySelectorAll('.status-picker[open]').forEach(d=>{if(!d.contains(e.target))d.open=false;}));

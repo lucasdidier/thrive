@@ -1,4 +1,5 @@
 import {featureIcon} from './feature-icon.js';
+import {navigateActionMenu} from './menu-keyboard.js';
 const objects = [
   ['Client', 'clients', 'new-client'],
   ['Project', 'projects', 'new-project'],
@@ -25,6 +26,7 @@ export function createMenu(icon) {
 }
 
 export function initCreateMenu() {
+  let openAtEnd=false;
   const menu = () => document.querySelector('#create-menu');
   const trigger = () => document.querySelector('#create-trigger');
   const position = () => {
@@ -39,7 +41,8 @@ export function initCreateMenu() {
     trigger()?.setAttribute('aria-expanded', String(event.newState === 'open'));
     if (event.newState === 'open') {
       position();
-      event.target.querySelector('[role=menuitem]')?.focus();
+      const items=[...event.target.querySelectorAll('[role=menuitem]:not(:disabled)')];
+      (openAtEnd?items.at(-1):items[0])?.focus();openAtEnd=false;
     }
   }, true);
   document.addEventListener('click', event => {
@@ -50,18 +53,13 @@ export function initCreateMenu() {
     if (!panel) return;
     if (event.target.closest('#create-trigger') && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
       event.preventDefault();
+      openAtEnd=event.key==='ArrowUp';
       panel.showPopover();
       return;
     }
     if (!panel.matches(':popover-open') || !panel.contains(event.target)) return;
-    const items = [...panel.querySelectorAll('[role=menuitem]')];
-    const index = items.indexOf(document.activeElement);
-    if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
-      event.preventDefault();
-      const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
-      items[next].focus();
-    }
-    if (event.key === 'Tab') panel.hidePopover();
+    navigateActionMenu(event,panel,{trigger:trigger(),close:()=>panel.hidePopover()});
+    if (event.key === 'Tab') {trigger()?.focus();panel.hidePopover();}
   });
   window.addEventListener('resize', position);
   window.addEventListener('scroll', position, true);

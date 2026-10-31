@@ -240,7 +240,7 @@ dialog .dialog-footer .btn { min-height: var(--control-height-form); padding: 6p
 .crm-table th, .data-table th { background: var(--bg); color: var(--muted); font-size: 12px; font-weight: 450; text-transform: none; letter-spacing: 0; border-color: var(--line); }
 .crm-table td, .data-table td { border-color: var(--grid); font-size: 12px; }
 .crm-table tbody tr:hover, .data-table tbody tr:hover { background: var(--surface-subtle); }
-.crm-table tr.selected, .crm-table tr[aria-selected=true] { background: var(--surface-selected); }
+.crm-table tbody tr.selected, .crm-table tbody tr[aria-selected=true], .crm-table tr.bulk-selected td { background: var(--surface-selected); }
 .crm-record-name { color: var(--text); font-weight: 550; }
 .crm-record-name:hover { color: var(--link); }
 .crm-table .crm-number, .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -264,7 +264,7 @@ dialog .dialog-footer .btn { min-height: var(--control-height-form); padding: 6p
 .fluid-ui { --background: var(--bg); --foreground: var(--text); --primary: var(--action-primary); --primary-foreground: var(--action-ink); --border: var(--border-control); --ring: var(--focus); --muted-foreground: var(--muted); --destructive: var(--negative); }
 :where(.field input, .field textarea, .field select):not(.fluid-source):not([type=checkbox]):not([type=radio]) { background: var(--input); color: var(--text); border-color: var(--border-control); border-radius: var(--radius-control); }
 .field input:not(.fluid-source):not([type=checkbox]):not([type=radio]), .field select:not(.fluid-source) { min-height: 36px; }
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--focus); box-shadow: 0 0 0 2px var(--surface-selected); }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--focus); outline: none; box-shadow: none; }
 input[type=checkbox]:checked, input[role=switch]:checked { background: var(--action-primary); border-color: var(--action-primary); }
 input[type=checkbox][role=switch]::before, input[type=checkbox][role=switch]:checked::before, .switch-visual::before { background: var(--action-ink); }
 input[type=checkbox]:checked::after { border-color: var(--action-ink); }
@@ -434,7 +434,8 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
 .workspace-menu [data-action=signout]:hover { background: var(--negative-bg); }
 .fluid-ui [role=option], .fluid-ui [data-slot=menu-item] { box-sizing: border-box; min-height: var(--menu-item-height); padding-block: 5px; font-size: 12px; line-height: 20px; border-radius: 4px; }
 .thrive-select-group { padding: 8px 8px 3px; font-size: 11px; line-height: 16px; color: var(--muted); }
-.fluid-ui [role=option][data-highlighted], .fluid-ui [role=option]:hover { background: var(--hover); }
+.fluid-ui [role=option][data-highlighted]:not([aria-selected=true]), .thrive-select-option.is-active:not([aria-selected=true]) { background: var(--hover); color: var(--text); }
+.fluid-ui [role=option][aria-selected=true][data-highlighted], .thrive-select-option[aria-selected=true].is-active { background: var(--brand-100); color: var(--link); }
 .fluid-ui [role=group]:has(> input[role=combobox]) { border-color: var(--border-control); }
 .fluid-ui [role=group]:has(> input[role=combobox]):hover { border-color: var(--faint); }
 .fluid-ui [role=group]:has(> input[role=combobox]:focus) { border-color: var(--focus); }
@@ -818,7 +819,7 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 
 .project-page .inline-editor .thrive-select { border: 0; }
 .project-page .inline-editor .thrive-select-trigger { min-height: 36px; border-color: var(--focus); background: var(--bg); box-shadow: none; }
-.project-page .inline-editor .thrive-select-trigger:is(:focus-visible,[aria-expanded=true]) { border-color: var(--focus); outline: 2px solid color-mix(in srgb, var(--focus) 22%, transparent); outline-offset: 1px; }
+.project-page .inline-editor .thrive-select-trigger:is(:focus-visible,[aria-expanded=true]) { border-color: var(--focus); outline: none; box-shadow: none; }
 
 [data-theme="dark"] .fluid-tags { --tag-text-mix: 35%; }
 
@@ -1131,10 +1132,10 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .record-logo-menu>summary:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 /* Record edits stay in the header; creation stays with contextual actions. */
 .record-quick-actions{position:relative}
-.record-quick-actions .record-create{position:static}
+.record-quick-actions .record-create{position:relative}
 .record-quick-actions .record-create>summary{gap:4px;list-style:none;cursor:pointer}
 .record-quick-actions .record-create>summary::-webkit-details-marker{display:none}
-.record-quick-actions .record-create>.record-create-menu{top:calc(100% - 8px);left:auto;right:20px;width:220px;max-width:calc(100% - 40px)}
+.record-quick-actions .record-create>.record-create-menu{top:calc(100% + 6px);left:0;right:auto;width:220px;max-width:calc(100vw - 40px)}
 .record-header-actions>.btn{white-space:nowrap}
 
 /* Client portal editor follows the compact record-detail anatomy. */
@@ -1178,3 +1179,46 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 #portal-settings .dialog-footer{border-top:1px solid var(--line);margin-top:20px;gap:8px}
 #portal-settings .portal-preview-surface{border-radius:12px}
 @media(max-width:600px){#portal-settings .portal-access,#portal-settings .portal-picker header{padding:12px;gap:10px}#portal-settings .dialog-footer .btn{flex:1;justify-content:center}}
+
+/* Interaction contract: neutral hover, blue selection, one focus boundary.
+   Limit to app controls; published document snapshots keep their own styles. */
+:root .thrive-select .thrive-select-trigger:is(:focus-visible,[aria-expanded=true]) {
+ border-color:var(--focus); outline:none; box-shadow:none; background:var(--input);
+}
+:root .thrive-select .thrive-select-trigger[aria-invalid=true],
+:is(#main,#dialog,#client-panel) :is(input,textarea,select):is([aria-invalid=true],:user-invalid):not([type=checkbox]):not([type=radio]):not([type=file]) {
+ border-color:var(--negative); background-color:var(--negative-bg);
+}
+.thrive-select-error { color:var(--negative); font-size:11px; line-height:1.5; margin-top:5px; }
+.thrive-select .thrive-select-trigger:disabled {
+ opacity:1; background:var(--surface-subtle); color:var(--muted); border-color:var(--line); cursor:not-allowed;
+}
+:is(.icon-btn,.crm-tool,.text-btn,.bulk-link):disabled {
+ color:var(--faint); background:transparent; opacity:.55; cursor:not-allowed; transform:none;
+}
+:is(.icon-btn,.crm-tool,.text-btn,.bulk-link):disabled:hover { color:var(--faint); background:transparent; text-decoration:none; }
+:is(.crm-tool,.crm-view-button)[aria-expanded=true],
+:is(.record-create,.record-more,.record-logo-menu)[open]>summary { background:var(--surface-hover); color:var(--text); }
+.crm-tool.applied:is(:hover,[aria-expanded=true]) { background:var(--brand-100); color:var(--link); }
+:is(.list-search,.crm-search) { border:1px solid transparent; border-radius:var(--radius-control); padding-inline:7px; }
+:is(.list-search,.crm-search):focus-within { border-color:var(--focus); background:var(--input); color:var(--link); }
+:is(.list-search,.crm-search):focus-within kbd { visibility:hidden; }
+.crm-table th button { border-radius:4px; }
+:root[data-input-modality=keyboard] :is(.crm-table th button,.record-tabs button,.crm-section-tabs button,.project-tabs a):focus-visible { outline-offset:-3px; }
+:is(.record-tabs,.crm-section-tabs) button, .project-tabs a { border-radius:0; }
+:is(.record-panel,.record-page) .record-property>span:first-child {
+ white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; align-items:center;
+}
+:is(.record-panel,.record-page) .record-property>span:first-child>svg { flex-shrink:0; }
+.bulk-card-wrap.bulk-selected .board-card,.bulk-message-row.bulk-selected { background:var(--surface-selected); border-color:var(--focus); }
+@media(hover:hover) and (pointer:fine) {
+ .crm-table tbody tr:not(.selected):not(.bulk-selected):hover { background:var(--surface-hover); }
+ .crm-table th button:hover, .record-create-menu button:not(:disabled):hover { background:var(--surface-hover); }
+ :is(.record-tabs,.crm-section-tabs) button:not([aria-pressed=true]):hover,.project-tabs a:not([aria-current=page]):hover { background:var(--surface-subtle); color:var(--text); }
+}
+.record-create-menu button:focus-visible { background:var(--surface-hover); outline-offset:-2px; }
+:is(.crm-tool,.crm-menu-item,.record-create-menu button,.filter-chip):active:not(:disabled) { background:var(--surface-pressed); }
+@media(forced-colors:active) {
+ :root .thrive-select .thrive-select-trigger:focus-visible { outline:1px solid Highlight; outline-offset:0; }
+ .crm-table tbody tr.selected,.crm-table tr.bulk-selected td { outline:1px solid Highlight; outline-offset:-1px; }
+}

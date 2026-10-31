@@ -1,4 +1,5 @@
 import {createSidebarMotion} from './sidebar-motion.js';
+import {navigateActionMenu} from './menu-keyboard.js';
 export function initSidebarUI(storageKey){
  const root=document.documentElement,key=storageKey+':sidebar-collapsed';
  try{root.dataset.sidebarCollapsed=localStorage.getItem(key)==='true'?'true':'false';}catch{root.dataset.sidebarCollapsed='false';}
@@ -21,8 +22,7 @@ export function initSidebarUI(storageKey){
  document.addEventListener('toggle',e=>{if(!popovers.includes(e.target.id))return;const trigger=document.querySelector(`[popovertarget="${e.target.id}"]:not([popovertargetaction])`);trigger?.setAttribute('aria-expanded',String(e.newState==='open'));if(e.newState==='open')position(e.target);else if(!inside)peek(false);},true);
  document.addEventListener('keydown',e=>{
   const panel=e.target.closest?.('#workspace-menu,#account-menu,#getting-started-menu');
-  if(panel&&e.key==='Escape'){e.preventDefault();e.stopPropagation();panel.hidePopover();document.querySelector(`[popovertarget="${panel.id}"]:not([popovertargetaction])`)?.focus();return;}
-  if(panel&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){const items=[...panel.querySelectorAll('button:not(:disabled),a[href]')],i=items.indexOf(document.activeElement);e.preventDefault();items[e.key==='Home'?0:e.key==='End'?items.length-1:(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}
+  if(panel)navigateActionMenu(e,panel,{trigger:document.querySelector(`[popovertarget="${panel.id}"]:not([popovertargetaction])`),close:()=>panel.hidePopover()});
  });
  function peek(show,focusLeaving=false){if(!pinnedCollapsed||!desktop()||root.dataset.sidebarPeek===String(show))return;if(!show&&(document.querySelector?.('#sidebar [popover]:popover-open')||(!focusLeaving&&root.dataset.inputModality==='keyboard'&&sidebar?.contains?.(document.activeElement))))return;motion.run(()=>{root.dataset.sidebarPeek=String(show);});}
  const sidebar=document.getElementById?.('sidebar');

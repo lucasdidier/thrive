@@ -181,8 +181,24 @@ document.addEventListener('click',e=>{
  else if(a==='export'){const rows=[['Invoice','Client','Project','Currency','Amount','Paid','Due','Status'],...state.invoices.map(i=>{const p=state.projects.find(p=>p.id===i.projectId);return [i.number,i.clientName||projectClient(state,p)?.name||'',i.projectName||p?.name||'',recordCurrency(state,i),(i.amount/100).toFixed(2),(i.paid/100).toFixed(2),i.due,invoiceStatus(i)]})];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const link=document.createElement('a');link.href=url;link.download='thrive-invoices.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Your invoice export is ready.')}
  }catch(err){error(err.message)}
 });
-document.addEventListener('invalid',e=>{if(!e.target.form)return;e.preventDefault();const form=e.target.form;let box=form.querySelector('.form-error');if(!box){box=document.createElement('div');box.className='form-error';box.setAttribute('role','alert');form.append(box);}const label=e.target.labels?.[0]?.textContent.trim().split('\n')[0]||'This field';box.textContent=label+': '+e.target.validationMessage;e.target.setAttribute('aria-invalid','true');},true);
-document.addEventListener('input',e=>{if(e.target.validity?.valid)e.target.removeAttribute('aria-invalid');});
+const pendingInvalidForms=new WeakSet();
+let validationSequence=0;
+document.addEventListener('invalid',e=>{
+ const field=e.target,form=field.form;if(!form)return;e.preventDefault();field.setAttribute('aria-invalid','true');
+ if(pendingInvalidForms.has(form))return;pendingInvalidForms.add(form);
+ queueMicrotask(()=>{
+  pendingInvalidForms.delete(form);if(!form.isConnected)return;
+  const first=form.querySelector('input:invalid,select:invalid,textarea:invalid');if(!first)return;
+  let box=form.querySelector('.form-error');if(!box){box=document.createElement('div');box.className='form-error';form.append(box);}
+  box.setAttribute('role','alert');box.id||='form-validation-'+(++validationSequence);
+  const label=first.labels?.[0]?.cloneNode(true);label?.querySelectorAll('input,select,textarea,button,small,.hint,.thrive-select').forEach(el=>el.remove());
+  box.textContent=(first.getAttribute('aria-label')||label?.textContent.trim()||'This field')+': '+first.validationMessage;
+  first.setAttribute('aria-errormessage',box.id);first.focus();
+ });
+},true);
+function clearValidField(e){if(e.target.validity?.valid){e.target.removeAttribute('aria-invalid');e.target.removeAttribute('aria-errormessage');const form=e.target.form;if(form&&!form.querySelector(':invalid')){const box=form.querySelector('.form-error');if(box)box.textContent='';}}}
+document.addEventListener('input',clearValidField);
+document.addEventListener('change',clearValidField);
 document.addEventListener('submit',e=>{
  if(!e.target.closest('dialog,#client-panel,#settings-content,.project-page')&&!e.target.id.startsWith('crm-')&&!e.target.id.startsWith('cf-')&&e.target.id!=='chat-form'&&e.target.id!=='availability-form')return;e.preventDefault();const f=new FormData(e.target),values=Object.fromEntries(f);
  try{
