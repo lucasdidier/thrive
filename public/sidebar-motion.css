@@ -15,8 +15,9 @@
  :root[data-sidebar-collapsed=true] .sidebar-toggle {position:absolute;left:7px;width:34px;transition:none}
  :root[data-sidebar-collapsed=true] .sidebar-toggle svg {transition:none;transform:rotate(180deg)}
  :root[data-sidebar-collapsed=true] .sidebar .workspace-switch {
-  display:flex;flex:1;max-width:none;margin-left:48px;padding:4px 5px;opacity:1;pointer-events:auto;
+  display:flex;flex:1;max-width:none;margin-left:48px;padding:4px 5px;opacity:0;pointer-events:none;
  }
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar .workspace-switch {opacity:1;pointer-events:auto}
  :root[data-sidebar-collapsed=true] .workspace-switch .initial {display:grid;width:20px;height:20px;flex:none}
  :root[data-sidebar-collapsed=true] .sidebar-quick-tools {display:flex;align-items:stretch;margin:10px 0;gap:0}
  :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search {
