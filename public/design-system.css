@@ -199,7 +199,7 @@ dialog .dialog-footer .btn { min-height: var(--control-height-form); padding: 6p
 .dashboard-projects { margin-top: 0; }
 .dashboard-projects .section-heading { margin-bottom: 8px; }
 .section-heading p { font-size: 12px; }
-.attention-group-heading { padding: 12px 0; border-color: var(--line); }
+.attention-group-heading { padding: 12px 0; }
 .attention-group-heading h3 { font-size: 12px; font-weight: 500; }
 .attention-group-heading h3 > span { display: inline-grid; place-items: center; min-width: 19px; margin-left: 5px; padding: 0 4px; background: var(--side); border: 1px solid var(--line); border-radius: var(--radius-badge); font-size: 11px; }
 .attention-group-heading > strong { font-size: 23px; font-weight: 600; letter-spacing: -.025em; }

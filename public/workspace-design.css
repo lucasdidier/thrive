@@ -155,7 +155,7 @@ main:focus:not(:focus-visible){outline:none}
 .dashboard-work-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:36px;align-items:start}
 .dashboard-priorities{min-width:0}
 .attention-section>.section-heading{margin-bottom:22px}
-.attention-group-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.attention-group-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0}
 .attention-group-heading h3{font-size:12px;font-weight:550;margin:0}
 .attention-group-heading h3>span{color:var(--muted);margin-left:8px;font-weight:400}
 .attention-group-heading>strong{font-size:20px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
