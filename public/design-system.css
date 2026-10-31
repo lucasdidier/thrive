@@ -9,8 +9,9 @@
   --brand-500: #3d63ee;
   --brand-600: #3154d5;
   --brand-700: #2946b5;
-  --surface-canvas: #fafbfc;
+  --surface-canvas: #ffffff;
   --surface-base: #ffffff;
+  --surface-navigation: #f5f7fc;
   --surface-subtle: #f6f7f9;
   --surface-hover: #eef0f4;
   --surface-pressed: #e7eaf0;
@@ -70,8 +71,9 @@
   color-scheme: dark;
   --brand-50: #222b45;
   --brand-100: #2a385c;
-  --surface-canvas: #141517;
+  --surface-canvas: #1a1b1e;
   --surface-base: #1a1b1e;
+  --surface-navigation: #181c25;
   --surface-subtle: #17181b;
   --surface-hover: #25272c;
   --surface-pressed: #30333a;
@@ -119,7 +121,7 @@ input::placeholder, textarea::placeholder { color: var(--faint); opacity: 1; }
 .thrive-wordmark .thrive-logo { display: block; flex: none; width: 24px; height: 24px; }
 .thrive-wordmark span { font-size: 25px; font-weight: 650; letter-spacing: -.04em; line-height: 1; }
 .thrive-wordmark:hover { color: var(--text); }
-.sidebar { background: var(--side); border-color: var(--line); }
+.sidebar { background: var(--surface-navigation); border-color: var(--line); }
 .sidebar-workspace { height: 36px; }
 .sidebar .workspace-switch { padding: 6px; border-radius: var(--radius-control); }
 .workspace-switch strong { font-size: 12px; font-weight: 550; }
@@ -820,8 +822,9 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 
 [data-theme="dark"] .fluid-tags { --tag-text-mix: 35%; }
 
-/* Inset navigation frame, with Thrive's cobalt selection and quiet utilities. */
-:root { --ease-drawer: cubic-bezier(.32,.72,0,1); }
+/* The inset navigation is the only tinted shell surface. The canvas behind it
+   matches the working sheet, so header and record borders never meet a grey strip. */
+:root { --ease-drawer: cubic-bezier(.32,.72,0,1); --duration-sidebar:260ms; }
 .nav-group-label { color:var(--muted);font-size:10px;font-weight:550;line-height:16px;padding:0 10px 1px;text-transform:none;letter-spacing:0; }
 .sidebar-customize { display:flex;align-items:center;gap:8px;flex:none;padding:7px 10px;color:var(--muted);font-size:11px;border-radius:6px;text-decoration:none; }
 .sidebar-customize svg { width:13px;height:13px;flex:none; }
@@ -830,8 +833,8 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .sidebar .nav a.active { font-weight:550; }
 .sidebar .sidebar-settings { text-decoration:none; }
 @media(min-width:651px){
- .sidebar { isolation:isolate;background:transparent;border:0;padding:14px 12px 12px; }
- .sidebar::before { content:'';position:absolute;inset:4px;border:1px solid var(--line);border-radius:9px;background:var(--side);z-index:-1;pointer-events:none; }
+ .sidebar { isolation:isolate;background:transparent;border:0;padding:14px 12px 12px;box-shadow:none; }
+ .sidebar::before { content:'';position:absolute;inset:4px;border:1px solid var(--line);border-radius:9px;background:var(--surface-navigation);z-index:-1;pointer-events:none;transform-origin:left center; }
  .thrive-wordmark { margin-bottom:10px;padding-inline:9px; }
  .sidebar .workspace-switch { min-height:32px;font-size:12px; }
  .sidebar-quick-tools { margin:10px 0 16px; }
@@ -868,6 +871,14 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 }
 
 @media(min-width:651px){:root[data-sidebar-collapsed=true] .sidebar .nav a{min-height:30px;padding-block:6px;margin:0}}
+
+/* Both pinned states own the transition, so opening and closing are symmetric.
+   Layout changes once; sidebar-motion.js bridges positions without per-frame reflow. */
+@media(min-width:651px) and (prefers-reduced-motion:no-preference){
+ :root[data-input-modality=pointer] .sidebar {transition:clip-path var(--duration-sidebar) var(--ease-drawer)}
+ :root[data-input-modality=pointer] .sidebar :is(.nav a,.sidebar-theme button) {transition:clip-path var(--duration-sidebar) var(--ease-drawer),background-color 120ms ease,color 120ms ease}
+ :root[data-input-modality=pointer] .sidebar :is(.thrive-wordmark span,.workspace-switch,.sidebar-search>span,.sidebar-search kbd,.nav-item-label,.nav-group-label,.sidebar-customize span,.sidebar-promo-label,.getting-started-label,.sidebar-theme span,.account-identity,.account-trigger>svg) {transition:opacity 160ms var(--ease-out)}
+}
 
 /* Compact record details: consistent rhythm in drawers and expanded records. */
 :is(.record-panel,.record-page) .record-identity{align-items:flex-start;gap:10px;padding:18px 20px 12px}
@@ -994,6 +1005,8 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .dashboard-recent .rel-row { grid-template-columns: auto minmax(0,1fr) auto 16px; }
 .dashboard-recent .rel-value { color: var(--muted); font-size: 11px; font-weight: 400; }
 .dashboard .agenda-event summary { grid-template-columns: 30px minmax(0,1fr) 14px; gap: 12px; padding: 12px 0; }
+.dashboard .agenda-list .agenda-event summary { display: grid; align-items: center; }
+.dashboard .agenda-list .agenda-event p { padding-left: 0; }
 .dashboard .agenda-event summary .rel-main strong { font-size: 13px; white-space: normal; }
 .dashboard .agenda-event summary time { font-size: 12px; }
 .dashboard .agenda-event p { margin-left: 42px; }
@@ -1041,3 +1054,119 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .settings-nav-group a[aria-current=page] .feature-icon { background: var(--surface-selected); color: var(--link); border-color: var(--brand-100); }
 .getting-started-step.complete .feature-icon { background: var(--positive-bg); color: var(--positive); border-color: transparent; }
 @media (max-width:650px) { .sidebar .nav a { min-height: 44px; } }
+
+/* Settings use the same compact controls and action hierarchy as record editors. */
+.settings-image-control { display:flex; align-items:center; gap:16px; min-width:0; }
+.settings-image-preview { display:grid; place-items:center; width:64px; height:64px; flex:none; border:1px solid var(--line); border-radius:10px; background:var(--surface-subtle); color:var(--muted); font-size:20px; overflow:hidden; }
+.settings-image-preview.is-avatar { border-radius:50%; }
+.settings-image-preview img { width:100%; height:100%; object-fit:contain; }
+.settings-image-preview.is-avatar img { object-fit:cover; }
+.settings-image-actions { display:grid; gap:8px; min-width:0; }
+.settings-image-actions > div,.settings-inline-actions { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.settings-image-actions small { color:var(--muted); font-size:11px; }
+.settings-image-upload { position:relative; overflow:hidden; cursor:pointer; }
+.settings-image-upload input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+.settings-image-upload:focus-within { outline:2px solid var(--focus); outline-offset:2px; }
+.settings-image-actions .text-btn { color:var(--muted); }
+.settings-image-actions .text-btn:hover { color:var(--negative); }
+.settings-status.is-success { display:flex; align-items:center; gap:8px; background:var(--positive-bg); color:var(--positive); border:1px solid color-mix(in srgb,var(--positive) 18%,transparent); border-radius:var(--radius-control); padding:12px; }
+.settings-status.is-success svg { flex:none; width:16px; height:16px; }
+.settings-security-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 0; border-bottom:1px solid var(--line); }
+.settings-security-row:first-child { padding-top:0; }
+.settings-security-row p { color:var(--muted); margin:4px 0 0; overflow-wrap:anywhere; }
+.settings-security-form { display:grid; gap:16px; max-width:420px; padding-top:24px; }
+.settings-security-form h3 { margin:0; font-size:14px; }
+.settings-security-form .settings-inline-actions { justify-content:flex-end; }
+.settings-fields-list { display:grid; }
+.settings-field-row { display:flex; align-items:center; gap:10px; padding:12px 8px; border-radius:var(--radius-control); text-align:left; }
+.settings-field-row:hover { background:var(--hover); }
+.settings-field-row > span:not(.feature-icon) { display:grid; gap:4px; flex:1; }
+.settings-field-row small { color:var(--muted); }
+.settings-field-row > svg { color:var(--muted); width:14px; height:14px; }
+.sidebar .sidebar-ai { background:var(--surface-selected)!important; border:1px solid color-mix(in srgb,var(--link) 18%,transparent)!important; box-shadow:none; color:var(--link); }
+.sidebar .sidebar-ai .feature-icon { color:var(--link); background:transparent; border:0; }
+.sidebar .sidebar-ai:hover { background:var(--surface-pressed)!important; filter:none; }
+.sidebar-account-avatar { display:flex; flex:none; }
+.sidebar .sidebar-account .account-trigger { width:100%; gap:9px; }
+.getting-started-wrap[hidden] { display:none!important; }
+.getting-started-panel footer { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.getting-started-step .getting-started-step-label { color:var(--text); text-align:left; }
+.getting-started-step .getting-started-step-label:hover { color:var(--link); }
+@media(min-width:651px) {
+ :root[data-sidebar-collapsed=true] .sidebar-account .account-trigger { opacity:1; padding-left:8px; }
+ :root[data-sidebar-collapsed=true] .account-trigger .account-identity,:root[data-sidebar-collapsed=true] .account-trigger > svg { opacity:0; }
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .account-trigger .account-identity,:root[data-sidebar-collapsed=true][data-sidebar-peek=true] .account-trigger > svg { opacity:1; }
+}
+@media(max-width:650px) {
+ .settings-image-control { align-items:flex-start; gap:12px; }
+ .settings-security-row { align-items:flex-start; flex-direction:column; }
+ .sidebar .sidebar-account .account-trigger { padding:0; gap:0; }
+ .sidebar-account-avatar .avatar { width:32px; height:32px; }
+}
+/* Focus replaces the control border. Buttons retain their keyboard outline. */
+:is(#main,#dialog,#client-panel) :is(input,textarea,select):not([type=checkbox]):not([type=radio]):not([type=file]):focus {
+ border-color:var(--focus); outline:none!important; box-shadow:none!important;
+}
+:is(#main,#dialog,#client-panel) .fluid-ui :is([role=combobox],[role=group]):focus-within,
+:is(#main,#dialog,#client-panel) .fluid-ui [role=combobox]:focus-visible {
+ border-color:var(--focus)!important; outline:none!important; box-shadow:none!important;
+}
+.settings-page .hourly-rate-control:focus-within,.settings-search:focus-within { border-color:var(--focus); outline:none; box-shadow:none; }
+@media(forced-colors:active) {
+ :is(#main,#dialog,#client-panel) :is(input,textarea,select):focus { outline:1px solid Highlight!important; outline-offset:0; }
+}
+.record-logo-menu{position:relative;flex-shrink:0}
+.record-logo-menu>summary{list-style:none;cursor:pointer}
+.record-logo-menu>summary::-webkit-details-marker{display:none}
+.record-logo-actions{position:absolute;top:calc(100% + 8px);left:0;z-index:12;display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:236px;padding:14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-float)}
+.record-logo-actions small{font-size:11px;color:var(--muted)}
+.record-logo-menu>summary:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+/* Record edits stay in the header; creation stays with contextual actions. */
+.record-quick-actions{position:relative}
+.record-quick-actions .record-create{position:static}
+.record-quick-actions .record-create>summary{gap:4px;list-style:none;cursor:pointer}
+.record-quick-actions .record-create>summary::-webkit-details-marker{display:none}
+.record-quick-actions .record-create>.record-create-menu{top:calc(100% - 8px);left:auto;right:20px;width:220px;max-width:calc(100% - 40px)}
+.record-header-actions>.btn{white-space:nowrap}
+
+/* Client portal editor follows the compact record-detail anatomy. */
+#portal-settings .portal-access{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
+#portal-settings .portal-access>span:not(.feature-icon){flex:1;min-width:0}
+#portal-settings .portal-access strong,#portal-settings .portal-picker-heading strong{display:block;font-size:13px;font-weight:600}
+#portal-settings .portal-access small,#portal-settings .portal-picker-heading small{display:block;margin-top:3px;font-size:12px;color:var(--muted)}
+#portal-settings input[role=switch]{flex-shrink:0;margin:0}
+#portal-settings .portal-editor-tabs{gap:20px;margin:20px 0}
+#portal-settings .portal-editor-tabs button{display:flex;align-items:center;gap:7px;padding:10px 0;border-radius:0;font-weight:500}
+#portal-settings .portal-editor-tabs button svg{width:16px;height:16px}
+#portal-settings .portal-editor-tabs [aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
+#portal-settings .portal-introduction{border-bottom:1px solid var(--line);margin-bottom:20px}
+#portal-settings .portal-introduction summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;padding:0 0 16px}
+#portal-settings .portal-introduction summary::-webkit-details-marker{display:none}
+#portal-settings .portal-introduction summary strong{display:block;font-size:13px;font-weight:600}
+#portal-settings .portal-introduction summary small{display:block;font-size:12px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+#portal-settings .portal-introduction summary>svg{width:16px;height:16px;color:var(--muted);flex-shrink:0}
+#portal-settings .portal-introduction[open] summary>svg{transform:rotate(180deg)}
+#portal-settings .portal-introduction>div{padding-bottom:16px}
+#portal-settings .portal-introduction .field:last-child{margin-bottom:0}
+#portal-settings .portal-introduction textarea{min-height:72px}
+#portal-settings .portal-content-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#portal-settings .portal-content-heading h3{font-size:13px;font-weight:600;margin:0}
+#portal-settings .portal-content-heading a{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);text-decoration:none}
+#portal-settings .portal-content-heading a svg{width:14px;height:14px}
+#portal-settings .portal-content-note{font-size:12px;line-height:1.5;color:var(--muted);margin:6px 0 14px;max-width:65ch}
+#portal-settings .portal-pickers{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+#portal-settings .portal-picker{margin:0;border:0;border-radius:0}
+#portal-settings .portal-picker+.portal-picker{border-top:1px solid var(--line)}
+#portal-settings .portal-picker header{padding:12px 16px;gap:12px;background:var(--card);border:0}
+#portal-settings .portal-picker-heading{flex:1;min-width:0}
+#portal-settings .portal-picker-list{border-top:1px solid var(--line)}
+#portal-settings .portal-picker-list[hidden]{display:none}
+#portal-settings .portal-pick-row{margin:0;padding:12px 16px;gap:12px;align-items:center}
+#portal-settings .portal-pick-row>span{min-width:0;overflow-wrap:anywhere}
+#portal-settings .portal-pick-row strong{font-size:13px;font-weight:500}
+#portal-settings .portal-pick-row small{font-size:12px}
+#portal-settings .portal-picker-empty{margin:0;padding:20px 16px;font-size:12px;color:var(--muted)}
+#portal-settings .portal-access-note{margin:14px 0 0}
+#portal-settings .dialog-footer{border-top:1px solid var(--line);margin-top:20px;gap:8px}
+#portal-settings .portal-preview-surface{border-radius:12px}
+@media(max-width:600px){#portal-settings .portal-access,#portal-settings .portal-picker header{padding:12px;gap:10px}#portal-settings .dialog-footer .btn{flex:1;justify-content:center}}

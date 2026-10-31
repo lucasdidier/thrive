@@ -36,9 +36,12 @@ test('activity includes each project record type and skips undated legacy events
  assert.equal(events[0].text,'Updated project');assert.deepEqual(projectActivity(s,'other'),[]);
 });
 
-test('record header provides contextual creation and overview retains billing in invoices',()=>{
+test('record header exposes editing, contextual actions provide creation, and billing stays in invoices',()=>{
  const s=fresh(),p=s.projects[0],ui=createJourneyUI(context(s)),html=ui.page(p.id);
- assert.ok(html.indexOf('Create in project')<html.indexOf('Project details and fields'));
+ assert.ok(html.indexOf('data-action="edit-project"')<html.indexOf('Project details and fields'));
+ assert.ok(html.indexOf('Create in project')>html.indexOf('record-quick-actions'));
+ assert.ok(html.indexOf('Create in project')<html.indexOf('record-fields-heading'));
+ assert.equal((html.match(/data-action="edit-project"/g)||[]).length,1);
  assert.ok(html.indexOf('Project summary')<html.indexOf('project-activity-title'));
  assert.match(html,/<header class="project-activity-header">/);
  for(const action of ['log-time','new-proposal','new-contract','new-invoice','new-document','mail-new','new-form','booking-preview']){

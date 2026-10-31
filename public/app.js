@@ -2,9 +2,8 @@ import {featureIcon} from './feature-icon.js';
 import {clientLogo} from './client-logo.js';
 import {resetPagePosition} from './page-navigation.js';
 import {createWorkspaceManager,workspaceRequest} from './workspace-manager.js';
-import {readImageUpload} from './image-upload.js';
 import {sidebarHeader,sidebarFooter} from './sidebar-content.js';
-import {gettingStartedSteps,rememberGettingStarted,skipGettingStarted} from './getting-started.js';
+import {gettingStartedSteps,rememberGettingStarted,skipGettingStarted,resetGettingStarted,completeGettingStarted} from './getting-started.js';
 import {initDrawerMotion} from './drawer-motion.js';
 import {createDialogDraftGuard} from './dialog-draft-guard.js';
 import {toggleMoreActions} from './more-actions.js';
@@ -159,6 +158,7 @@ document.addEventListener('click',e=>{
  if(workspaceManager.click(a,el))return;
  if(a==='sidebar-theme'){const theme=el.dataset.theme;document.documentElement.dataset.theme=theme;localStorage.setItem('thrive-theme',theme);document.querySelectorAll('[data-action=sidebar-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===theme)));return;}
  if(a==='gs-open'){const step=gettingStartedSteps.find(x=>x.id===el.dataset.step);document.querySelector('#getting-started-menu')?.hidePopover();if(step?.page)go(step.page);else if(step){const b=document.createElement('button');b.dataset.action=step.action;document.body.append(b);b.click();b.remove();}return;}
+ if(['gs-hide','gs-show','gs-reset','gs-complete'].includes(a)){rememberGettingStarted(state,checklistConnection);if(a==='gs-reset')resetGettingStarted(state,el.dataset.step,checklistConnection);else if(a==='gs-complete')completeGettingStarted(state,el.dataset.step);else state.settings.gettingStarted.hidden=a==='gs-hide';void saveThen(()=>{shell();if(a!=='gs-hide')document.querySelector('#getting-started-menu')?.showPopover();});return;}
  if(a==='gs-skip'||a==='gs-undo'){skipGettingStarted(state,el.dataset.step,a==='gs-undo');void saveThen(()=>{toast(a==='gs-undo'?'Step restored.':'Step skipped. You can come back to it anytime.');});return;}
  if(a==='more-actions'){toggleMoreActions(el);return;}
  if(notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
@@ -212,4 +212,3 @@ resetPagePosition({focus:false});
 const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Emails to load client conversations.');for(const key of ['google_connected','google_error','nylas_connected','nylas_error'])googleResult.delete(key);history.replaceState(null,'',location.pathname+(googleResult.size?'?'+googleResult:'')+location.hash);}
 
 document.addEventListener('submit',e=>{if(e.target.id==='create-workspace-form'){e.preventDefault();e.stopImmediatePropagation();workspaceManager.submit(e.target);}},true);
-document.addEventListener('change',e=>{if(e.target.id!=='sidebar-profile-photo'||!e.target.files[0])return;if(document.body.hasAttribute('data-settings-dirty')){toast('Save or reset your settings before updating your photo here.');e.target.value='';return;}const input=e.target;input.disabled=true;void(async()=>{try{await saveProfile({name:state.settings.name,profilePhoto:await readImageUpload(input.files[0],{square:true})});await save();shell();toast('Profile photo updated.');}catch(error){toast(error.message);}finally{input.disabled=false;input.value='';}})();});

@@ -7,6 +7,6 @@ export function demoClientLogo(client){
  return demoLogoMarks[demoNames[key]]||'';
 }
 export function clientLogo(client){
- if(client?.logo)return /^data:image\/(png|jpeg|webp);base64,/.test(client.logo)?client.logo:'';
+ if(client?.logo!==undefined)return /^data:image\/(png|jpeg|webp);base64,/.test(client.logo)?client.logo:'';
  return demoClientLogo(client);
 }

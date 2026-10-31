@@ -20,7 +20,8 @@ Thrive is a working tool for independent service businesses. The design should f
 | Action hover / pressed | `#3154d5` / `#2946b5` | Same |
 | Primary action text | `#ffffff` | `#ffffff` |
 | Working surface | `#ffffff` | `#1a1b1e` |
-| Canvas | `#fafbfc` | `#141517` |
+| Canvas | `#ffffff` | `#1a1b1e` |
+| Navigation surface | `#f5f7fc` | `#181c25` |
 | Navigation | `#f6f7f9` | `#17181b` |
 | Hover / pressed | `#eef0f4` / `#e7eaf0` | `#25272c` / `#30333a` |
 | Primary text | `#20242d` | `#eef0f5` |
@@ -56,7 +57,7 @@ Titles use −0.025em tracking, body stays normal. Monetary figures use tabular 
 
 - Primary button: solid blue with white text. One per task. Hover deepens the blue; active deepens again. Disabled controls use neutral roles with legible text.
 - Secondary button: white/dark working surface and visible neutral border. Tertiary: unfilled text or quiet icon control.
-- Sidebar: neutral active fill; blue only on the active icon. Product mark/name above the workspace switcher. Existing collapse, hover reveal, and keyboard behavior remain intact.
+- Shell: one continuous white working canvas (charcoal in dark mode), including the gutter behind the inset sidebar and the topbar. No contrasting strip or resting shadow between navigation and content. The sidebar alone uses a barely blue surface; selected navigation uses the cobalt selection role. Product mark/name above the workspace switcher. Existing collapse, hover reveal, and keyboard behavior remain intact.
 - Record tables: white/dark working surface, sentence-case headers, faint row rules, no zebra stripes. Client identity receives weight and a stable avatar tint. Preserve density and column choices.
 - Detail views: neutral property surface, clear header/actions, underline tabs, white working content. Related records retain existing navigation.
 - Home: follow-up, delivery, and the week have distinct containers. Existing totals remain computed from records. No fabricated analytics or ornamental trend charts.
@@ -70,6 +71,8 @@ Titles use −0.025em tracking, body stays normal. Monetary figures use tabular 
 New visitors begin in light mode. Saved Light and Dark choices remain respected. System is an explicit Appearance setting and follows subsequent operating-system changes. The theme is applied before the interface loads to avoid a dark first frame.
 
 Interactions use short color transitions (120ms). Pointer presses compress buttons to 98%; keyboard actions and reduced-motion preferences stay still. Preserve the existing purposeful sidebar and drawer interactions, keyboard access, reduced-motion support, and high-contrast mode. No page entrance animation or perpetual onboarding orbit.
+
+Sidebar pin/unpin and hover reveal use the shared drawer curve over 260ms, with 160ms label fades. Commit the destination layout once and bridge positions with transforms; never animate width or page margins each frame. Rapid reversal starts at the currently painted position. Keyboard and reduced-motion changes are immediate; mobile retains its static navigation layout.
 
 ## Responsive behavior
 
@@ -95,3 +98,13 @@ Sizes are deliberate: `xs` 20/13px for menus and navigation, `sm` 24/14px for co
 Dashboard browse actions use the shared blue `View all` label with a right arrow, aligned at the top right of the relevant widget or section heading. Do not repeat these actions in footers. Give each link or button a destination-specific accessible name.
 
 Headings and controls should stand on their own. Omit subtitles that restate a section’s purpose or describe what is already visible. Keep counts, date ranges, constraints, consequences, save state, and actionable recovery guidance. Empty states name what is missing and offer an action; avoid promotional filler. Render optional descriptions only when present so removed copy leaves no empty paragraph.
+
+### Settings and identity controls
+
+Account menu has one Edit profile destination and Getting started. The entire account row, avatar included, is a single hover/click target; photo editing belongs on Profile. Appearance stays in the sidebar, with an account settings page for System and mobile access. Workspace settings live in the workspace menu, not as a duplicated sidebar item. Use with AI gets a restrained blue-tinted navigation surface.
+
+Project defaults owns hourly rate, deposit and statuses. Client/project Custom fields and Scheduling are workspace settings destinations. Rates may be overridden on individual client/project records, never through a second project editor in Time.
+
+Branding owns the shared workspace/document logo. Profile and branding image controls pair a fixed-size preview with Upload/Replace and a separate Remove action. Client logos use a compact anchored action menu. Raster validation and resizing are shared. Published/issued commercial snapshots retain their branding; changed defaults refresh drafts only.
+
+Text-input focus recolors the existing boundary blue without a second ring. Input groups own one boundary; keyboard button outlines and forced-colors focus remain visible. Positive connection states use the green status role and a check icon.

@@ -21,8 +21,8 @@ export function createCustomFieldsUI(ctx){
 
  }
  function handleClick(a,el){if(!a.startsWith('cf-'))return false;const e=el.dataset.entity,id=el.dataset.id;
- if(a==='cf-manage'){if(el.dataset.record)remember(el);else if(el.closest('.crm-page'))origin=null;manage(e);}
- else if(a==='cf-add'||a==='cf-edit'){if(el.closest('.crm-page'))origin=null;edit(e,id);}
+ if(a==='cf-manage'){if(el.dataset.record)remember(el);else if(el.closest('.crm-page,#settings-content'))origin=null;manage(e);}
+ else if(a==='cf-add'||a==='cf-edit'){if(el.closest('.crm-page,#settings-content'))origin=null;edit(e,id);}
  else if(a==='cf-back')back();
  else if(a==='cf-archive'){void persist(el,()=>archiveField(S(),e,id,el.dataset.archived==='true'),()=>{render();manage(e);toast(el.dataset.archived==='true'?'Field archived. Values preserved.':'Field restored.');});}
  else if(a==='cf-value'){origin=null;valueEditor(e,el.dataset.record,id,el);}

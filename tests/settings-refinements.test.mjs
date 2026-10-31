@@ -31,3 +31,9 @@ test('unconfigured account disables connections and escapes account names',()=>{
  const account=connectionSettings({configured:true,account:{email:'<script>bad</script>',gmail:true,calendar:true}},helpers);
  assert.doesNotMatch(account,/<script>/);assert.match(account,/&lt;script>/);
 });
+test('removing a client logo keeps it removed rather than restoring its demo fallback',async()=>{
+ const {clientLogo}=await import('../public/client-logo.js');
+ const client={name:'Juniper Studio',email:'hello@juniper.example'};
+ assert.match(clientLogo(client),/^data:image/);
+ assert.equal(clientLogo({...client,logo:''}),'');
+});

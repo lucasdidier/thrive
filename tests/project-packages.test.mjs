@@ -56,3 +56,16 @@ test('selected package survives save, publication, acceptance and deposit billin
  const saved=s.documents.find(x=>x.id===d.id),project=s.projects.find(x=>x.id===p.id);assert.equal(saved.versions[0].agreedItems[0].packageItems.length,2);assert.equal(project.budget,330000);assert.equal(project.billingPlan.reduce((n,x)=>n+x.amount,0),330000);assert.equal(s.invoices.find(i=>i.projectId===p.id).amount,165000);
  const count=s.invoices.length;respondDocument(s,d.id,v.number,'accept',{selections:[{id:'Website',quantity:1}]});assert.equal(s.invoices.length,count);assert.equal(s.documents.find(x=>x.id===d.id).versions[0].budget,330000);
 });
+test('the workspace logo is the branding source and explicit removal reaches drafts only',()=>{
+ const s=setup(),oldInvoices=structuredClone(s.invoices),oldVersions=structuredClone(s.documents.map(d=>d.versions));
+ s.settings.documentDesign={...s.settings.documentDesign,logo:'data:image/png;base64,old'};
+ s.settings.workspaceLogo='data:image/png;base64,new';
+ s.invoiceDrafts=[{id:'draft',design:{template:'compact'}}];
+ refreshDraftBranding(s);
+ assert.equal(workspaceBranding(s).logo,s.settings.workspaceLogo);
+ assert.equal(s.invoiceDrafts[0].design.logo,s.settings.workspaceLogo);
+ s.settings.workspaceLogo='';refreshDraftBranding(s);
+ assert.equal(s.invoiceDrafts[0].design.logo,'');
+ assert.equal(s.documents.find(d=>d.status==='draft').design.logo,'');
+ assert.deepEqual(s.invoices,oldInvoices);assert.deepEqual(s.documents.map(d=>d.versions),oldVersions);
+});

@@ -71,3 +71,15 @@ test('owner-only callback signs out unauthorized users instead of opening a work
  let signedOut=false;const m=mock({exchangeCodeForSession:async()=>({data:{},error:null}),signOut:async()=>{signedOut=true;return {error:null};}});
  const r=await authCallback(new Request('https://thrive.test/auth/callback?code=test'),{...env,THRIVE_OWNER_EMAIL:'owner@example.com'},{contextFactory:m.factory});assert.equal(signedOut,true);assert.equal(r.headers.get('location'),'/auth/sign-in?error=link');
 });
+
+test('email changes require current password and preserve verification flow',async()=>{
+ let update,options;const m=mock({signInWithPassword:async input=>({data:{user},error:input.password==='correct-password'?null:{status:400}}),updateUser:async (data,opts)=>{update=data;options=opts;return {data:{user},error:null};}});
+ let r=await handleAuth(request({action:'change-email',email:'new@example.test',currentPassword:'wrong'}),env,{contextFactory:m.factory});assert.equal(r.status,400);assert.equal(update,undefined);
+ r=await handleAuth(request({action:'change-email',email:'new@example.test',currentPassword:'correct-password'}),env,{contextFactory:m.factory});assert.equal(r.status,200);assert.deepEqual(update,{email:'new@example.test'});assert.equal(options.emailRedirectTo,'https://thrive.test/auth/callback');assert.match((await r.json()).message,/confirm/);
+});
+test('password changes validate length, reauthenticate identity, and reject provider-managed users',async()=>{
+ let changed=false;const base={signInWithPassword:async()=>({data:{user},error:null}),updateUser:async()=>{changed=true;return {data:{user},error:null};}};
+ const m=mock(base);let r=await handleAuth(request({action:'change-password',password:'short',currentPassword:'correct'}),env,{contextFactory:m.factory});assert.equal(r.status,400);assert.equal(changed,false);
+ r=await handleAuth(request({action:'change-password',password:'new-long-password',currentPassword:'correct'}),env,{contextFactory:m.factory});assert.equal(r.status,200);assert.equal(changed,true);
+ for(const extra of [{getUser:async()=>({data:{user:null},error:null})},{getUser:async()=>({data:{user:{...user,app_metadata:{provider:'google',providers:['google']}}},error:null})},{signInWithPassword:async()=>({data:{user:{id:'other'}},error:null})}]){changed=false;const blocked=mock({...base,...extra});r=await handleAuth(request({action:'change-password',password:'new-long-password',currentPassword:'correct'}),env,{contextFactory:blocked.factory});assert.ok([401,403].includes(r.status));assert.equal(changed,false);}
+});

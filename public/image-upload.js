@@ -8,5 +8,6 @@ export async function readImageUpload(file,{square=false}={}){
  }finally{image.close();}
 }
 export function imageUploadControl({image='',name,label,initials='',esc}){
- return `<label class="image-upload" title="${label}"><input type="file" name="${name}" accept="image/png,image/jpeg,image/webp" aria-label="${label}"><span class="image-upload-preview">${image?`<img src="${esc(image)}" alt="">`:esc(initials||'+')}</span><span class="image-upload-overlay" aria-hidden="true">Change</span></label>`;
+ const kind=name==='profilePhoto'?'photo':'logo';
+ return `<div class="settings-image-control" data-image-name="${name}" data-initials="${esc(initials)}"><span class="settings-image-preview ${kind==='photo'?'is-avatar':''}">${image?`<img src="${esc(image)}" alt="Current ${kind}">`:`<span>${esc(initials||'+')}</span>`}</span><div class="settings-image-actions"><div><label class="btn settings-image-upload"><input type="file" name="${name}" accept="image/png,image/jpeg,image/webp" aria-label="${esc(label)}"><span data-image-upload-label>${image?'Replace':'Upload'} ${kind}</span></label><button type="button" class="text-btn" data-action="settings-image-remove" ${image?'':'hidden'}>Remove ${kind}</button></div><small>PNG, JPG or WebP · Up to 2 MB</small><input type="hidden" name="${name}Removed" value="false"></div></div>`;
 }

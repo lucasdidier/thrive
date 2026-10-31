@@ -31,3 +31,17 @@ test('invalid checklist and photo inputs are rejected by server validation',()=>
 test('account and workspace settings resolve to separate entry points',()=>{
  assert.equal(settingsSection('#account/profile').group,'Personal');assert.equal(settingsSection('#account/appearance').id,'appearance');assert.equal(settingsSection('#settings').id,'workspace');assert.equal(settingsSection('#settings/profile').id,'profile');
 });
+
+test('completed steps can be reopened without existing records completing them again',async()=>{
+ const {resetGettingStarted,completeGettingStarted}=await import('../public/getting-started.js');
+ const s=fresh();s.clients.push({id:'existing'});rememberGettingStarted(s);resetGettingStarted(s,'clients');rememberGettingStarted(s);
+ assert.equal(gettingStartedProgress(s).find(x=>x.id==='clients').status,'pending');
+ s.clients.push({id:'new'});rememberGettingStarted(s);assert.equal(gettingStartedProgress(s).find(x=>x.id==='clients').status,'complete');
+ resetGettingStarted(s,'clients');completeGettingStarted(s,'clients');assert.equal(gettingStartedProgress(s).find(x=>x.id==='clients').status,'complete');
+});
+test('hidden checklist persists and reopening a step restores its sidebar visibility',async()=>{
+ const {resetGettingStarted}=await import('../public/getting-started.js');const s=fresh();rememberGettingStarted(s);s.settings.gettingStarted.hidden=true;rememberGettingStarted(s);
+ assert.equal(validateWorkspace(JSON.parse(JSON.stringify(s))).settings.gettingStarted.hidden,true);
+ resetGettingStarted(s,'services');assert.equal(s.settings.gettingStarted.hidden,false);
+ for(const value of [null,{completed:[],skipped:[],hidden:'yes'},{completed:[],skipped:[],reopened:{unknown:[]}}]){s.settings.gettingStarted=value;assert.throws(()=>validateWorkspace(s),/getting started/);}
+});
