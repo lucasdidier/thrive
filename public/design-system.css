@@ -989,7 +989,8 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .home-widget-option { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; }
 .home-widget-option:hover, .home-widget-option:focus-within { background: var(--hover); }
 .home-widget-option > svg { width: 15px; height: 15px; color: var(--muted); }
-.home-widget-option input { appearance: auto; width: 15px; height: 15px; margin: 0 0 0 auto; accent-color: var(--accent); }
+.home-widget-option > span { flex: 1; }
+.home-widget-option input { accent-color: var(--accent); }
 .home-widgets-menu footer { display: grid; gap: 8px; margin: 6px 2px 0; padding: 10px 6px 6px; border-top: 1px solid var(--line); }
 .home-widgets-menu footer .text-btn { text-align: left; justify-self: start; }
 .home-widgets-menu footer small { color: var(--muted); font-size: 11px; }
