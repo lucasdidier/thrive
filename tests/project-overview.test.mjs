@@ -7,7 +7,7 @@ import {createJourneyUI} from '../public/journey-ui.js';
 
 const fresh=()=>initBilling(upgradeWorkspace(seed()));
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
-const context=s=>({getState:()=>s,esc,icon:()=>'',avatar:()=>'',btn:(label,action,attrs='')=>`<button data-action="${action}" ${attrs}>${label}</button>`,badge:(status)=>`<span>${status}</span>`,date:String,recordPanel:{identity:(entity,r)=>`<h1>${esc(r.name)}</h1>`,statusControl:()=>'',field:()=>''},customFields:{properties:()=>''},projectEmailCount:()=>0});
+const context=s=>({getState:()=>s,esc,icon:()=>'',avatar:()=>'',btn:(label,action,attrs='')=>`<button data-action="${action}" ${attrs}>${label}</button>`,badge:(status)=>`<span>${status}</span>`,date:String,recordPanel:{currency:()=>'',identity:(entity,r)=>`<h1>${esc(r.name)}</h1>`,statusControl:()=>'',field:()=>''},customFields:{properties:()=>''},projectEmailCount:()=>0});
 
 test('project activity isolates same-client projects, orders timestamps and preserves record currency',()=>{
  const s=fresh();s.documents=[];s.time=[];s.invoices=[];s.activity=[];

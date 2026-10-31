@@ -25,7 +25,7 @@ export function allocatePlan(budget,rules){
  return {id,name:clean(r.name)||(i?'Payment':'Deposit'),percent,amount,trigger:i===0?'acceptance':'manual'};});
 }
 export function defaultPlan(budget,deposit){return allocatePlan(budget,[{name:'Deposit',percent:deposit},...(deposit<100?[{name:'Final payment',percent:100-deposit}]:[])]);}
-function snapshot(s,p){return{number:p.versions.length+1,name:p.name,client:clone(projectClient(s,p)),business:s.settings.business,currency:p.currency||s.settings.currency||'USD',scope:p.proposal,deliverables:p.deliverables,budget:p.budget,due:p.due,billingPlan:clone(p.billingPlan),createdAt:new Date().toISOString(),status:'published'};}
+function snapshot(s,p){return{number:p.versions.length+1,name:p.name,client:clone(projectClient(s,p)),business:s.settings.business,currency:p.budgetCurrency||p.currency||s.settings.currency||'USD',scope:p.proposal,deliverables:p.deliverables,budget:p.budget,due:p.due,billingPlan:clone(p.billingPlan),createdAt:new Date().toISOString(),status:'published'};}
 export function migrate(s){
  if(!s||![1,2].includes(s.version)||!Array.isArray(s.projects))return seed();if(s.version===2)return s;
  s.intake={title:'Project inquiry',intro:'Tell us about your project.',service:'Brand identity',tag:'Website inquiry',collectBudget:true,collectDate:true,question:'',questionRequired:false};s.submissions=[];
@@ -50,7 +50,7 @@ export function archiveClient(s,id){const c=s.clients.find(c=>c.id===id);if(!c)t
 export function createProject(s,data){
  const name=clean(data.name),c=s.clients.find(c=>c.id===data.clientId);if(!name||!c||c.archived)throw Error('Choose an active client and enter a project name.');if(!validDate(data.due))throw Error('Enter a valid target date.');
  const billingPlan=defaultPlan(data.budget,s.settings.deposit);
- const p={id:uid(),name,clientId:data.clientId,budget:data.budget,service:clean(data.service)||s.settings.service||'Services',due:data.due||'',status:'planned',archived:false,deposit:s.settings.deposit,billingPlan,accepted:false,proposal:clean(data.scope)||'Describe the scope of work.',deliverables:'',proposalStatus:'draft',versions:[],currentVersion:null};s.projects.unshift(p);addActivity(s,'Project created',p.name);return p;
+ const p={id:uid(),name,currency:data.currency||c.currency||s.settings.currency||'USD',clientId:data.clientId,budget:data.budget,service:clean(data.service)||s.settings.service||'Services',due:data.due||'',status:'planned',archived:false,deposit:s.settings.deposit,billingPlan,accepted:false,proposal:clean(data.scope)||'Describe the scope of work.',deliverables:'',proposalStatus:'draft',versions:[],currentVersion:null};s.projects.unshift(p);addActivity(s,'Project created',p.name);return p;
 }
 function deliveryFunded(s,p){const bills=s.invoices.filter(i=>i.projectId===p.id&&i.kind!=='manual'),deposits=bills.filter(i=>i.kind==='deposit');return deposits.length?deposits.every(i=>i.paid>=i.amount):p.budget>0&&bills.reduce((a,i)=>a+i.paid,0)>=p.budget;}
 export function updateProject(s,id,data){

@@ -8,7 +8,7 @@ import {hoursMinutes} from '../public/related-list.js';
 
 const setup=()=>initBilling(upgradeWorkspace(seed()));
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
-const context=s=>({getState:()=>s,esc,icon:()=>'',btn:(label,action)=>`<button data-action="${action}">${label}</button>`,badge:(status,label)=>`<span>${label||status}</span>`,date:String,avatar:()=>'',customFields:{properties:()=>''},recordPanel:{identity:()=>'',field:()=>'',statusControl:()=>''},projectEmailCount:()=>0});
+const context=s=>({getState:()=>s,esc,icon:()=>'',btn:(label,action)=>`<button data-action="${action}">${label}</button>`,badge:(status,label)=>`<span>${label||status}</span>`,date:String,avatar:()=>'',customFields:{properties:()=>''},recordPanel:{currency:()=>'',identity:()=>'',field:()=>'',statusControl:()=>''},projectEmailCount:()=>0});
 
 test('project invoice totals exclude drafts and retain record currency',()=>{
  const s=setup(),p=s.projects[0];p.currency='EUR';

@@ -20,7 +20,7 @@ import {createSettingsUI} from './settings-ui.js';
 import {createTagsUI} from './tags-ui.js';
 
 
-import {currencyCode,moneyGroups} from './currency.js';
+import {currencyCode,moneyGroups,recordCurrency} from './currency.js';
 import {createClientImportUI} from './client-import-ui.js';
 import {createRecordPanel} from './record-panel-ui.js';
 import {createListViewUI} from './list-view-ui.js';
@@ -175,7 +175,7 @@ document.addEventListener('click',e=>{
  else if(a==='search')search();
  else if(a==='reset-preview')open('Reset the demo?', '<div class="dialog-body"><p>This restores the original sample workspace and removes changes made in this browser. Your appearance preference is kept.</p></div>',{footer:btn('Keep my changes','close')+btn('Reset sample data','reset-data','','primary')});
  else if(a==='reset-data'){state=initBilling(upgradeWorkspace(seed()));initScheduling(state,Intl.DateTimeFormat().resolvedOptions().timeZone);scheduleUI.reset();crm.resetAll();chatUI.reset();workflowUI.reset();initWorkflows(state);workflowSnapshot=snapshotWorkspace(state);void saveThen(()=>{dialog.close();render();toast('Sample data restored.');})}
- else if(a==='export'){const rows=[['Invoice','Client','Project',`Amount ${currencyCode(state)}`,`Paid ${currencyCode(state)}`,'Due','Status'],...state.invoices.map(i=>{const p=state.projects.find(p=>p.id===i.projectId);return [i.number,i.clientName||projectClient(state,p)?.name||'',i.projectName||p?.name||'',(i.amount/100).toFixed(2),(i.paid/100).toFixed(2),i.due,invoiceStatus(i)]})];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const link=document.createElement('a');link.href=url;link.download='thrive-invoices.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Your invoice export is ready.')}
+ else if(a==='export'){const rows=[['Invoice','Client','Project','Currency','Amount','Paid','Due','Status'],...state.invoices.map(i=>{const p=state.projects.find(p=>p.id===i.projectId);return [i.number,i.clientName||projectClient(state,p)?.name||'',i.projectName||p?.name||'',recordCurrency(state,i),(i.amount/100).toFixed(2),(i.paid/100).toFixed(2),i.due,invoiceStatus(i)]})];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const link=document.createElement('a');link.href=url;link.download='thrive-invoices.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Your invoice export is ready.')}
  }catch(err){error(err.message)}
 });
 document.addEventListener('invalid',e=>{if(!e.target.form)return;e.preventDefault();const form=e.target.form;let box=form.querySelector('.form-error');if(!box){box=document.createElement('div');box.className='form-error';box.setAttribute('role','alert');form.append(box);}const label=e.target.labels?.[0]?.textContent.trim().split('\n')[0]||'This field';box.textContent=label+': '+e.target.validationMessage;e.target.setAttribute('aria-invalid','true');},true);

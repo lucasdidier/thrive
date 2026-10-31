@@ -1,3 +1,4 @@
+import {currencyCode} from './currency.js';
 import {pricingBasis,quantityLabel,validQuantity,hasTimePricing} from './pricing.js';
 import {uid,addActivity} from './domain.js';
 import {calculateInvoice} from './invoice-domain.js';
@@ -7,7 +8,7 @@ export function saveService(s,data,id){
  const name=clean(data.name),kind=data.kind||'service';if(!name||name.length>100)throw Error('Enter a name of up to 100 characters.');
  if(!['service','package'].includes(kind))throw Error('Choose a service or package.');
  if(kind==='service'&&data.items?.length!==1)throw Error('A service has one item. Choose Package for multiple items.');
- const basis=pricingBasis({...old,...data}),{items,amount}=calculateInvoice(data.items);const record={id:old?.id||uid(),name,kind,...basis,items,amount,...(old?.starterKey?{starterKey:old.starterKey}:{}),version:(old?.version||0)+1,archived:old?.archived||false};
+ const basis=pricingBasis({...old,...data}),{items,amount}=calculateInvoice(data.items);const record={id:old?.id||uid(),name,kind,currency:old?.currency||currencyCode(s),...basis,items,amount,...(old?.starterKey?{starterKey:old.starterKey}:{}),version:(old?.version||0)+1,archived:old?.archived||false};
  s.services??=[];if(old)Object.assign(old,record);else s.services.unshift(record);addActivity(s,'Service saved',name,'document');return old||record;
 }
 export function toggleService(s,id){const x=(s.services||[]).find(x=>x.id===id);if(!x)throw Error('Service not found.');x.archived=!x.archived;return x;}
