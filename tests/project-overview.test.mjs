@@ -7,7 +7,7 @@ import {createJourneyUI} from '../public/journey-ui.js';
 
 const fresh=()=>initBilling(upgradeWorkspace(seed()));
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
-const context=s=>({getState:()=>s,esc,icon:()=>'',avatar:()=>'',btn:(label,action,attrs='')=>`<button data-action="${action}" ${attrs}>${label}</button>`,badge:(status)=>`<span>${status}</span>`,date:String,recordPanel:{statusControl:()=>'',field:()=>''},customFields:{properties:()=>''},projectEmailCount:()=>0});
+const context=s=>({getState:()=>s,esc,icon:()=>'',avatar:()=>'',btn:(label,action,attrs='')=>`<button data-action="${action}" ${attrs}>${label}</button>`,badge:(status)=>`<span>${status}</span>`,date:String,recordPanel:{identity:(entity,r)=>`<h1>${esc(r.name)}</h1>`,statusControl:()=>'',field:()=>''},customFields:{properties:()=>''},projectEmailCount:()=>0});
 
 test('project activity isolates same-client projects, orders timestamps and preserves record currency',()=>{
  const s=fresh();s.documents=[];s.time=[];s.invoices=[];s.activity=[];
@@ -36,10 +36,10 @@ test('activity includes each project record type and skips undated legacy events
  assert.equal(events[0].text,'Updated project');assert.deepEqual(projectActivity(s,'other'),[]);
 });
 
-test('overview puts summaries before creation and history, passes context, and retains billing in invoices',()=>{
+test('record header provides contextual creation and overview retains billing in invoices',()=>{
  const s=fresh(),p=s.projects[0],ui=createJourneyUI(context(s)),html=ui.page(p.id);
- assert.ok(html.indexOf('Project summary')<html.indexOf('Create in project'));
- assert.ok(html.indexOf('project-activity-title')<html.indexOf('Create in project'));
+ assert.ok(html.indexOf('Create in project')<html.indexOf('Project details and fields'));
+ assert.ok(html.indexOf('Project summary')<html.indexOf('project-activity-title'));
  assert.match(html,/<header class="project-activity-header">/);
  for(const action of ['log-time','new-proposal','new-contract','new-invoice','new-document','mail-new','new-form','booking-preview']){
   assert.match(html,new RegExp(`data-action="${action}" data-client="${p.clientId}" data-project="${p.id}"`));
@@ -57,4 +57,18 @@ test('overview escapes activity text and presents a useful empty state',()=>{
  const ui=createJourneyUI(context(s));assert.match(ui.page(p.id),/No activity yet/);
  s.emailDrafts=[{id:'e',projectId:p.id,createdAt:'2026-01-01',subject:'<img src=x onerror=alert(1)>'}];
  assert.match(ui.page(p.id),/&lt;img/);assert.doesNotMatch(ui.page(p.id),/<img src=x/);
+});
+
+
+test('all project routes retain identity, editable details, navigation and scoped actions',()=>{
+ const s=fresh(),p=s.projects[0],ui=createJourneyUI(context(s));
+ for(const tab of ['overview','time','invoices','proposals','contracts','messages','forms','meetings']){
+  const html=ui.page(p.id,tab);
+  assert.match(html,/aria-label="Project details and fields"/);
+  assert.match(html,new RegExp(`<h1>${p.name}</h1>`));
+  assert.match(html,new RegExp(`data-action="rp-edit" data-entity="project" data-id="${p.id}" data-key="clientId"`));
+  assert.ok(html.indexOf('Project details and fields')<html.indexOf('aria-label="Project content"'));
+  assert.match(html,new RegExp(`href="#projects/${p.id}/${tab}" aria-current="page"`));
+  assert.match(html,/aria-label="Close project details"/);
+ }
 });

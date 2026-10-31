@@ -851,23 +851,101 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 @media(min-width:651px){:root[data-sidebar-collapsed=true] .sidebar .nav a{min-height:30px;padding-block:6px;margin:0}}
 
 /* Compact record details: consistent rhythm in drawers and expanded records. */
-.record-panel .record-identity{align-items:flex-start;gap:10px;padding:18px 20px 12px}
-.record-panel .record-identity .avatar{width:34px;height:34px;border-radius:7px;font-size:12px}
-.record-panel .record-identity h1{font-size:18px;line-height:24px;letter-spacing:-.025em;margin-bottom:2px}
-.record-panel .record-identity-text>.fluid-tags{margin-top:5px;margin-left:-7px;width:calc(100% + 7px);max-width:240px}
-.record-panel .record-properties{padding:0 20px 16px;row-gap:2px}
-.record-panel .record-property,.record-panel .record-property:has(.inline-editor){grid-template-columns:100px minmax(0,1fr);gap:12px;min-height:32px;align-items:center}
-.record-panel .record-property>span:first-child,.record-panel .record-value{min-height:30px;line-height:20px}
-.record-panel .record-property .editable-cell{min-height:30px;padding-block:5px;line-height:20px}
-.record-panel .record-property .inline-editor>input{min-height:30px;padding-block:4px;line-height:20px}
-.record-panel .record-manage-fields{margin-top:8px;min-height:28px;font-size:11px}
+:is(.record-panel,.record-page) .record-identity{align-items:flex-start;gap:10px;padding:18px 20px 12px}
+:is(.record-panel,.record-page) .record-identity .avatar{width:34px;height:34px;border-radius:7px;font-size:12px}
+:is(.record-panel,.record-page) .record-identity h1{font-size:18px;line-height:24px;letter-spacing:-.025em;margin-bottom:2px}
+:is(.record-panel,.record-page) .record-identity-text>.fluid-tags{margin-top:5px;margin-left:-7px;width:calc(100% + 7px);max-width:240px}
+:is(.record-panel,.record-page) .record-properties{padding:0 20px 16px;row-gap:2px}
+:is(.record-panel,.record-page) .record-property,:is(.record-panel,.record-page) .record-property:has(.inline-editor){grid-template-columns:100px minmax(0,1fr);gap:12px;min-height:32px;align-items:center}
+:is(.record-panel,.record-page) .record-property>span:first-child,:is(.record-panel,.record-page) .record-value{min-height:30px;line-height:20px}
+:is(.record-panel,.record-page) .record-property .editable-cell{min-height:30px;padding-block:5px;line-height:20px}
+:is(.record-panel,.record-page) .record-property .inline-editor>input{min-height:30px;padding-block:4px;line-height:20px}
+:is(.record-panel,.record-page) .record-manage-fields{margin-top:8px;min-height:28px;font-size:11px}
 @media(max-width:650px){
- .record-panel .record-identity{padding:16px 18px 10px}
- .record-panel .record-properties{padding-inline:18px}
- .record-panel .record-property,.record-panel .record-property:has(.inline-editor){grid-template-columns:92px minmax(0,1fr);gap:10px}
+ :is(.record-panel,.record-page) .record-identity{padding:16px 18px 10px}
+ :is(.record-panel,.record-page) .record-properties{padding-inline:18px}
+ :is(.record-panel,.record-page) .record-property,:is(.record-panel,.record-page) .record-property:has(.inline-editor){grid-template-columns:92px minmax(0,1fr);gap:10px}
 }
 @media(pointer:coarse),(max-width:650px){
- .record-panel .record-property,.record-panel .record-property:has(.inline-editor){min-height:44px}
- .record-panel .record-property .editable-cell,.record-panel .record-property .inline-editor>input{min-height:44px}
- .record-panel .record-manage-fields{min-height:44px}
+ :is(.record-panel,.record-page) .record-property,:is(.record-panel,.record-page) .record-property:has(.inline-editor){min-height:44px}
+ :is(.record-panel,.record-page) .record-property .editable-cell,:is(.record-panel,.record-page) .record-property .inline-editor>input{min-height:44px}
+ :is(.record-panel,.record-page) .record-manage-fields{min-height:44px}
+}
+
+/* A shared record anatomy: identity and fields stay beside every content tab. */
+.workspace:has(.record-page)>#topbar{display:none}
+.record-page{min-height:100dvh}
+.record-page>.record-panel-head{position:sticky;top:0;z-index:12;background:var(--bg);padding:0 24px}
+.record-page .record-breadcrumb{display:flex;align-items:center;gap:8px;min-width:0}
+.record-page .record-identity-text>span{display:inline}
+.record-page .record-breadcrumb>a{display:flex;align-items:center;color:var(--muted);border-radius:4px}
+.record-page .record-breadcrumb>a:hover{color:var(--text)}
+.record-page .record-header-actions{display:flex;align-items:center}
+.record-page .record-header-actions small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.record-expanded .record-detail-layout,.record-page .record-detail-layout{display:grid;grid-template-columns:minmax(300px,30%) minmax(0,1fr);min-height:calc(100dvh - 53px)}
+.record-page .record-detail-sidebar{padding:0;order:0;border-top:0;background:var(--card)}
+.record-page .record-identity-text h1{display:block}
+.record-page .record-detail-main{min-width:0}
+.record-page .record-project-icon{width:34px;height:34px;flex:none;background:var(--brand-wash,var(--hover));color:var(--muted)}
+.record-page .record-project-icon svg{width:18px;height:18px}
+.record-page .inline-editor{padding:0;gap:4px}
+.record-page .record-property .status-choice{min-height:26px;padding:3px 7px;font-size:12px;gap:6px}
+.record-page .record-property .status-choice svg{width:12px;height:12px}
+.record-page .record-static-value{font-size:12px;font-variant-numeric:tabular-nums}
+.record-quick-actions{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 16px}
+.record-quick-actions .btn{font-size:11px;min-height:28px;padding:4px 8px;gap:6px;box-shadow:none}
+.record-quick-actions .btn svg{width:13px;height:13px}
+.record-fields-heading{font-size:11px;font-weight:600;line-height:18px;color:var(--muted);margin:0 20px 7px;padding-top:14px;border-top:1px solid var(--line)}
+:is(.record-panel,.record-page) .record-detail-sidebar .record-manage-fields{opacity:1;pointer-events:auto;color:var(--muted)}
+:is(.record-panel,.record-page) .record-manage-fields:hover{color:var(--link)}
+.record-page .record-relation{gap:4px;min-width:0}
+.record-page .record-relation .relation-pill{max-width:calc(100% - 28px);padding:3px 0;gap:6px;font-size:12px}
+.record-page .record-relation .relation-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.record-page .record-relation .avatar{width:20px;height:20px;font-size:9px}
+.record-page .record-relation>.icon-btn{opacity:0}
+.record-page .record-relation:hover>.icon-btn,.record-page .record-relation:focus-within>.icon-btn{opacity:1}
+.record-page .record-tabs{margin:0;padding:0 24px;height:51px;gap:20px;border-bottom:1px solid var(--line);background:var(--bg);flex-wrap:nowrap}
+.record-page .record-tabs>a{flex:none;gap:6px;font-size:12px}
+.record-page .record-tabs>a>svg{width:14px;height:14px}
+.record-page .project-record-content{padding:22px 24px}
+.record-page .project-tab-body>:is(.rel-section,.project-billing,.comm-client){margin:22px 24px}
+.record-page .project-summary{gap:0;margin:0 0 28px;padding:0 0 20px;border-bottom:1px solid var(--line)}
+.record-page .project-summary>div{border:0;border-radius:0;padding:0 18px;background:transparent;border-left:1px solid var(--line)}
+.record-page .project-summary>div:first-child{padding-left:0;border-left:0}
+.record-page .project-summary dt{font-size:11px;margin-bottom:6px}
+.record-page .project-summary dd{font-size:18px;letter-spacing:-.02em}
+.record-page .project-activity-header{margin-bottom:16px}
+.record-page .project-inquiry{margin:0 20px 20px;padding-top:12px}
+@media(max-width:900px){
+ .record-expanded .record-detail-layout,.record-page .record-detail-layout{grid-template-columns:minmax(0,1fr)}
+ .record-page .record-detail-sidebar{border-right:0;border-bottom:1px solid var(--line)}
+ .record-page .record-properties{max-width:none}
+}
+@media(max-width:650px){
+ .record-page>.record-panel-head{padding:0 12px;min-height:53px;height:auto}
+ .record-page .record-panel-head .record-breadcrumb{max-width:38vw}
+ .record-page .record-header-actions{gap:2px}
+ .record-page .record-header-actions small{display:none}
+ .record-page .record-header-actions .icon-btn{width:32px;min-width:32px}
+ .record-page .record-tabs{padding-inline:18px}
+ .record-page .project-record-content{padding:20px 18px}
+ .record-page .project-tab-body>:is(.rel-section,.project-billing,.comm-client){margin:20px 18px}
+ .record-page .project-summary>div{padding-inline:10px}
+ .record-page .project-summary dd{font-size:16px}
+ .record-quick-actions{padding-inline:18px}
+ .record-fields-heading{margin-inline:18px}
+}
+@media(pointer:coarse),(max-width:650px){
+ .record-quick-actions .btn,.record-page .record-header-actions :is(.btn,.icon-btn),.record-page .record-property .status-choice{min-height:44px}
+ .record-page .record-relation>.icon-btn{opacity:1;min-height:44px}
+}
+@media(max-width:650px){
+ body:has(.record-page)>.sidebar{display:none}
+ #client-panel .record-panel-head,.record-page>.record-panel-head{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;height:auto;min-height:96px;padding:8px 12px}
+ #client-panel .record-breadcrumb,.record-page .record-panel-head .record-breadcrumb{display:flex;align-items:center;gap:8px;width:100%;max-width:none;min-height:28px;flex:none}
+ #client-panel .record-header-actions,.record-page .record-header-actions{display:flex;width:100%;justify-content:flex-end;gap:4px}
+ .record-page .record-header-actions .record-create{margin-right:auto}
+ .record-page .record-header-actions .icon-btn{width:44px;min-width:44px}
+ .record-page .project-summary>div{padding:4px 0;border-left:0}
+ .record-page .project-summary dt{margin:0}
 }
