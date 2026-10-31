@@ -31,7 +31,7 @@ function timeHarness(){
  return {ui,state,a,b,rate,billable,status,get closed(){return closed;},toasts,finish(failed=false){blocked=failed;resolveSave();}};
 }
 test('changing time project applies zero rate and nonbillable defaults until overridden',()=>{
- const h=timeHarness();const field=(name,value)=>({name,value,dataset:{},closest:()=>true});
+ const h=timeHarness();const field=(name,value)=>({name,value,dataset:{},closest:selector=>selector==='#time-entry-form'});
  h.ui.handleChange(field('projectId',h.b.id));assert.equal(h.rate.value,0);assert.equal(h.billable.checked,false);
  h.rate.value='75';h.ui.handleChange(field('rate','75'));h.billable.checked=true;h.ui.handleChange(field('billable','on'));
  h.ui.handleChange(field('projectId',h.a.id));assert.equal(h.rate.value,'75');assert.equal(h.billable.checked,true);

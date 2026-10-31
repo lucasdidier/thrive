@@ -42,3 +42,21 @@ export function issueInvoiceDraft(s,id){
 export function deleteInvoiceDraft(s,id){if(!(s.invoiceDrafts||[]).some(i=>i.id===id))throw Error('Draft not found.');s.invoiceDrafts=s.invoiceDrafts.filter(i=>i.id!==id);}
 
 export function createTimeInvoiceDraft(s,options){return saveInvoiceDraft(s,timeInvoiceData(s,options));}
+
+// Compose locally before saving: opening or cancelling the picker never reserves time.
+export function appendTimeInvoiceData(s,data,options){
+ if(data.id&&s.invoices.some(i=>i.id===data.id))throw Error('Issued invoices cannot be edited.');
+ const time=timeInvoiceData(s,options),p=s.projects.find(p=>p.id===time.projectId),currency=p.currency||s.settings.currency||'USD';
+ if(data.clientId&&data.clientId!==time.clientId)throw Error('Choose time belonging to this invoice client.');
+ if(data.projectId&&data.projectId!==time.projectId)throw Error('Choose time belonging to this invoice project.');
+ if(data.currency&&data.currency!==currency)throw Error('The time and invoice must use the same currency.');
+ const items=(data.items||[]).filter(l=>!(l.description===''&&!l.details&&!l.serviceId&&!l.createService&&!l.timeSources&&Number(l.rate)===0&&Number(l.quantity)===1));
+ if(items.length+time.items.length>30)throw Error('Use day or description grouping, or select fewer entries (30 invoice lines maximum).');
+ const result={...data,clientId:time.clientId,projectId:time.projectId,currency,items:[...items,...time.items],timeBilling:time.timeBilling};
+ validateTimeInvoice(s,result,data.id);return result;
+}
+export function addTimeToInvoiceDraft(s,id,options){
+ if(s.invoices.some(i=>i.id===id))throw Error('Issued invoices cannot be edited.');
+ const draft=(s.invoiceDrafts||[]).find(d=>d.id===id);if(!draft)throw Error('Draft not found.');
+ return saveInvoiceDraft(s,appendTimeInvoiceData(s,draft,options),id);
+}

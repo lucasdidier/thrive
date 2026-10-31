@@ -66,7 +66,7 @@ const dialog=document.querySelector('#dialog');
 initDrawerMotion(dialog);
 const draftGuard=createDialogDraftGuard(dialog);
 let settingsPage;
-const settingsSurface=new Proxy(dialog,{get(target,key){const surface=!target.open&&settingsPage?.isActive()?document.querySelector('#settings-content')||target:target;if(key==='close')return ()=>{if(target.open)target.close();};const value=Reflect.get(surface,key,surface);return typeof value==='function'?value.bind(surface):value;}});
+const settingsSurface=new Proxy(dialog,{get(target,key){const surface=!target.open&&settingsPage?.isActive()?document.querySelector('#settings-content')||target:target;if(key==='close')return ()=>{if(target.open)target.close();};const value=Reflect.get(surface,key,surface);return typeof value==='function'?value.bind(surface):value;},set(target,key,value){const surface=!target.open&&settingsPage?.isActive()?document.querySelector('#settings-content')||target:target;return Reflect.set(surface,key,value,surface);}});
 initCreateMenu();initDatePicker();
 let checklistConnection=null;
 function save(){rememberGettingStarted(state,checklistConnection);return workspaceSync.save();}

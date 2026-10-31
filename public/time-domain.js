@@ -66,3 +66,9 @@ export function validateTimeWorkspace(s,old){
  const seen=new Set();for(const i of [...s.invoices,...s.invoiceDrafts||[]]){validateTimeInvoice(s,i,i.id);for(const x of timeSources(i)){if(seen.has(x.id))throw Error('Time entries cannot appear on multiple invoices.');seen.add(x.id);const priorInvoice=[...old?.invoices||[],...old?.invoiceDrafts||[]].find(p=>p.id===i.id);const prior=priorInvoice&&timeSources(priorInvoice).find(p=>p.id===x.id);if(prior&&JSON.stringify(prior)!==JSON.stringify(x))throw Error('Reserved time quantities and rates cannot change.');if(!prior&&x.rate!==entryRate(s,s.time.find(t=>t.id===x.id)))throw Error('Invoice time rate must match its source entry.');}}
  for(const t of old?.time||[]){const next=s.time.find(x=>x.id===t.id);if(!next)throw Error('Archive time entries instead of deleting them.');if(timeClaim(old,t.id)&&JSON.stringify(next)!==JSON.stringify(t))throw Error('Linked time entries are locked. Release the draft before editing.');}
 }
+
+// Eligible source records, shared by every time-to-invoice entry point.
+export function unbilledTime(s,{clientId='',projectId='',excludeIds=[]}={}){
+ const excluded=new Set(excludeIds);
+ return (s.time||[]).filter(t=>{const p=s.projects.find(p=>p.id===t.projectId);return !excluded.has(t.id)&&timeStatus(s,t)==='unbilled'&&p&&!p.archived&&p.status!=='cancelled'&&(!projectId||p.id===projectId)&&(!clientId||p.clientId===clientId)&&s.clients.some(c=>c.id===p.clientId&&!c.archived);});
+}

@@ -15,7 +15,7 @@ export function bulkActions(s,scope,rows){const has=rows.length>0,all=fn=>has&&r
  if(scope==='invoices')actions.push({id:'delete-drafts',label:'Delete drafts',enabled:all(r=>r.status==='draft'),hint:'Only invoice drafts can be deleted.'});
  if(scope==='time'){
  const singleProject=new Set(rows.map(r=>r.projectId)).size===1,invoiceable=all(r=>timeStatus(s,r)==='unbilled'&&entryRate(s,r)>0&&s.projects.some(p=>p.id===r.projectId&&!p.archived&&p.status!=='cancelled'&&s.clients.some(c=>c.id===p.clientId&&!c.archived)));
- actions.push({id:'invoice-time',label:'Create invoice draft',enabled:singleProject&&invoiceable,hint:'Choose unbilled entries from one active project, with hourly rates set.'},{id:'archive',label:'Archive',enabled:all(r=>!r.archived&&!timeClaim(s,r.id)),hint:'Entries linked to invoices cannot be archived.'},{id:'restore',label:'Restore',enabled:all(r=>r.archived&&!timeClaim(s,r.id))});
+ actions.push({id:'invoice-time',label:'Invoice time',enabled:singleProject&&invoiceable,hint:'Choose unbilled entries from one active project, with hourly rates set.'},{id:'archive',label:'Archive',enabled:all(r=>!r.archived&&!timeClaim(s,r.id)),hint:'Entries linked to invoices cannot be archived.'},{id:'restore',label:'Restore',enabled:all(r=>r.archived&&!timeClaim(s,r.id))});
  }
  if(['workflows','meeting-types'].includes(scope)){const active=r=>scope==='workflows'?r.enabled:r.active;actions.push({id:'pause',label:'Pause',enabled:has&&rows.some(active)},{id:'enable',label:'Enable',enabled:has&&rows.some(r=>!active(r))});}
  // Avoid duplicate inverse actions when a homogeneous selection (or view) is known.
