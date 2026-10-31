@@ -1,3 +1,4 @@
+import {demoClientLogo} from './client-logo.js';
 export function baseSeed() {
   return {
     version:1, settings:{name:'Alex Morgan',business:'Morgan Studio',deposit:50,review:true,description:'I’m a brand designer. I take 50% upfront, review every proposal before sending it.'},
@@ -7,7 +8,7 @@ export function baseSeed() {
       {id:'c3',name:'Forma',contact:'Emma Davis',email:'emma@forma.example',color:'sand',initials:'F',tag:'Editorial'},
       {id:'c4',name:'Paper & Pine',contact:'Oliver Reed',email:'oliver@paperpine.example',color:'rose',initials:'P',tag:'Branding'},
       {id:'c5',name:'Sunday Goods',contact:'Mia Taylor',email:'mia@sunday.example',color:'blue',initials:'S',tag:'Strategy'}
-    ],
+    ].map(client=>({...client,logo:demoClientLogo(client)})),
     projects:[
       {id:'p1',clientId:'c1',name:'Juniper brand identity',service:'Brand identity',budget:600000,status:'active',deposit:50,due:'2026-10-28',proposal:'Visual identity for Juniper Studio. Includes creative direction, a primary logo and supporting marks, a color palette, typography, and a concise brand guide.',accepted:true},
       {id:'p2',clientId:'c2',name:'Orbit website',service:'Web design',budget:650000,status:'active',deposit:50,due:'2026-10-24',proposal:'Design and build a responsive product website for Orbit.',accepted:true},

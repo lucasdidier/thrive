@@ -1,3 +1,4 @@
+import {clientLogo} from './client-logo.js';
 import {resetPagePosition} from './page-navigation.js';
 import {createWorkspaceManager,workspaceRequest} from './workspace-manager.js';
 import {readImageUpload} from './image-upload.js';
@@ -76,7 +77,7 @@ function toast(text){const el=document.querySelector('#toast');el.textContent=te
 function btn(text,action,extra='',cls=''){return `<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`}
 const sentence=v=>{v=String(v??'');return v?v[0].toUpperCase()+v.slice(1):v;};
 const badge=(status,label,style='')=>`<span class="badge ${String(status).replaceAll(' ','-')}"${style?` style="${style}"`:''}><i></i>${esc(label??sentence(status))}</span>`;
-const avatar=c=>`<span class="avatar ${c?.color||'sage'}">${c?.logo&&/^data:image\/(png|jpeg|webp);base64,/.test(c.logo)?`<img src="${esc(c.logo)}" alt="">`:esc(displayInitials(c))}</span>`;
+const avatar=c=>`<span class="avatar ${c?.color||'sage'}">${clientLogo(c)?`<img src="${esc(clientLogo(c))}" alt="">`:esc(displayInitials(c))}</span>`;
 const date=s=>s?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'No date';
 function go(p){if(page===p){filter='all';query='';render()}else location.hash=p}
 function open(title,html,{drawer=!/[?]$|^Approve milestone$|^Search workspace$/.test(title),footer=''}={}){if(settingsPage?.present(title,html,{footer}))return;if(!dialog.open)draftGuard.clear();dialog.className=drawer?'drawer':'';dialog.scrollTop=0;dialog.innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${title}</h2><button class="icon-btn" data-action="close" aria-label="Close dialog">${icon('close')}</button></div>${html}${footer?`<div class="dialog-footer">${footer}</div>`:''}`;if(!dialog.open)dialog.showModal();dialog.scrollTop=0;draftGuard.track()}
@@ -126,7 +127,7 @@ const portalUI=createPortalUI({getState:()=>state,open,dialog,btn,esc,save,block
 const chatUI=createChatUI({getState:()=>state,render,save,toast,icon,esc,btn,open,dialog,go});
 const catalogUI=createCatalogUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,btn,icon,esc,dialog:settingsSurface,save,render,toast});
 const billingUI=createBillingUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,btn,icon,esc,badge,date,dialog:settingsSurface,save,render,toast});
-const timeUI=createTimeUI({blocked:workspaceSync.isBlocked,bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
+const timeUI=createTimeUI({avatar,blocked:workspaceSync.isBlocked,bulk,listView,getState:()=>state,open,dialog,btn,icon,esc,save,render,toast,go,invoiceDetail:billingUI.detail});
 const scheduleUI=createSchedulingUI({createClient:prefill=>journey.clientForm(undefined,prefill),viewClient:id=>journey.clientDetail(id),getPage:()=>page,bulk,listView,calendarAvailability:messagesUI.calendarAvailability,cancelCalendar:messagesUI.cancelCalendar,blocked:workspaceSync.isBlocked,getState:()=>state,render,save,toast,open,dialog:settingsSurface,btn,icon,esc,badge,avatar});
 const notificationsUI=createNotificationsUI({getState:()=>state,getPage:()=>page,render,save,open,btn,icon,esc,toast});
 const dashboard=createDashboard({recentActivity:emptyHTML=>notificationsUI.recent(4,emptyHTML),getState:()=>state,getPage:()=>page,render,icon,esc,btn});

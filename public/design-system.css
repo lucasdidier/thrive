@@ -959,3 +959,8 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  .record-page .project-summary>div{padding:4px 0;border-left:0}
  .record-page .project-summary dt{margin:0}
 }
+
+/* Client identities keep a consistent footprint in every relation column. */
+.crm-table .relation-pill:has(>.avatar){gap:6px;max-width:100%;padding:2px 5px 2px 2px}
+.crm-table .relation-pill>.avatar{width:20px;height:20px;min-width:20px;flex:0 0 20px;font-size:9px;border-radius:4px}
+.crm-table .relation-pill>.relation-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

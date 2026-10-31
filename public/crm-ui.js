@@ -40,7 +40,7 @@ export function createCRM(ctx){
  if(e==='clients'&&key==='contact'&&raw.type==='individual')return '<span class="muted">—</span>';
  if(e==='clients'&&['contact','email','tag'].includes(key))return `<button class="editable-cell" data-action="crm-edit-field" data-id="${r.id}" data-key="${key}" aria-label="Edit ${key==='tag'?'service':key} for ${esc(r.name)}"><span>${key==='tag'?`<span class="relation-pill">${esc(r[key])}</span>`:esc(r[key])}</span>${icon('edit')}</button>`;
  if(key==='client'&&!r.clientId)return '<span class="muted">No client</span>';
- if(key==='client')return `<button class="relation-pill relation-link" data-action="client" data-id="${r.clientId}">${icon('clients')}${esc(r.client)}</button>`;
+ if(key==='client')return `<button class="relation-pill relation-link" data-action="client" data-id="${r.clientId}">${avatar(S().clients.find(c=>c.id===r.clientId))}<span class="relation-name">${esc(r.client)}</span></button>`;
  if(['budget','amount','balance'].includes(key))return r[key]==null?'<span class="muted">Not priced</span>':`<span class="numeric">${money(r[key],recordCurrency(S(),r.raw||r))}</span>`;
  if(['due','updated','received'].includes(key))return `<span class="muted">${r[key]?date(String(r[key]).slice(0,10)):'—'}</span>`;
  if(key==='projects')return `<span class="relation-pill">${icon('projects')}${r.projects}</span>`;
