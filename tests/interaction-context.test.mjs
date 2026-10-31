@@ -59,14 +59,13 @@ test('editor context distinguishes repeated disclosures and identical fields in 
  container={querySelectorAll:s=>s==='details'?nextDetails:s==='*'?[nextScroller]:[firstNew,secondNew]};restore();
  assert.deepEqual(nextDetails.map(d=>d.open),[false,true]);assert.equal(firstNew.focused,undefined);assert.equal(secondNew.focused,true);assert.equal(nextScroller.scrollTop,300);assert.equal(nextScroller.scrollLeft,50);
 });
-test('inline record edit blocks panel close, record navigation and Escape until explicit cancel/save',()=>{
- const messages=[];let navigated=false,prevented=false;
- globalThis.document={addEventListener(){},querySelector:selector=>selector==='#rp-inline-form,#cf-value-form,#crm-inline-form'?{id:'rp-inline-form'}:null};
+test('record navigation cancels inline edits without blocking the destination',()=>{
+ let navigated=false,form;const messages=[],host={dataset:{inlineOriginal:'Saved name'},set innerHTML(value){this.restored=value;form=null;}};
+ form={id:'rp-inline-form',parentElement:host};
+ globalThis.document={addEventListener(){},querySelector:selector=>selector==='#rp-inline-form,#cf-value-form,#crm-inline-form'?form:null};
  const panel=createRecordPanel({dialog:{open:false},toast:m=>messages.push(m),detail(){navigated=true;}});
- assert.equal(panel.handleClick('rp-close',{}),true);
  assert.equal(panel.handleClick('rp-navigate',{dataset:{entity:'client',id:'c2'}}),true);
- assert.equal(panel.keyboard({key:'Escape',preventDefault(){prevented=true;}}),true);
- assert.equal(navigated,false);assert.equal(prevented,true);assert.equal(messages.length,3);
+ assert.equal(navigated,true);assert.equal(host.restored,'Saved name');assert.deepEqual(messages,[]);
 });
 
 test('workspace polling preserves blurred inline edits before and during refresh',async()=>{

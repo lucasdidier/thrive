@@ -1,3 +1,4 @@
+import {cancelInlineEdit} from './inline-edit.js';
 import {createPersistenceUI} from './persistence-ui.js';
 import {fieldsFor,fieldById,fieldTypes,saveField,archiveField,setFieldValue,fieldDisplay} from './custom-fields-domain.js';
 export function createCustomFieldsUI(ctx){
@@ -15,7 +16,7 @@ export function createCustomFieldsUI(ctx){
  if(f.type==='multiselect')input=`<div class="cf-choices">${f.options.map(o=>`<label><input type="checkbox" name="value" value="${o.id}" ${v?.includes(o.id)?'checked':''}>${esc(o.label)}</label>`).join('')}</div>`;
  else if(['select','checkbox'].includes(f.type)){const options=f.type==='checkbox'?[{id:'true',label:'Checked'},{id:'false',label:'Unchecked'}]:f.options;input=`<select name="value" aria-label="${esc(f.name)}"><option value="">No value</option>${options.map(o=>`<option value="${o.id}" ${String(v)===o.id?'selected':''}>${esc(o.label)}</option>`).join('')}</select>`;}
  else input=`<input name="value" aria-label="${esc(f.name)}" type="${({currency:'number',number:'number',date:'date',email:'email',url:'url'})[f.type]||'text'}" ${['currency','number'].includes(f.type)?'step="any"':''} value="${esc(v??'')}" maxlength="5000" autofocus>`;
- if(document.querySelector('#cf-value-form,#rp-inline-form,#crm-inline-form')){toast('Save or cancel the current edit first.');return;}
+ cancelInlineEdit();
  const host=el.parentElement;host.dataset.inlineOriginal=host.innerHTML;host.innerHTML=`<form id="cf-value-form" class="inline-editor cf-inline-editor" data-entity="${entity}" data-record="${recordId}" data-id="${fieldId}">${input}<div class="inline-actions"><button type="submit" class="icon-btn" aria-label="Save ${esc(f.name)}">${icon('check')}</button>${btn('Clear','cf-clear',`data-entity="${entity}" data-record="${recordId}" data-id="${fieldId}"`,'text-btn')}${btn('Cancel','cf-inline-cancel','','text-btn')}</div><div class="form-error" role="alert"></div></form>`;host.querySelector('input,select')?.focus();
 
  }
