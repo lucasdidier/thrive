@@ -145,3 +145,11 @@ dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
 @media print{
  dialog .invoice-preview-body{display:block;overflow:visible;max-height:none;padding:0;flex:none}
 }
+
+/* Decorative record icons share the same inset in text and enhanced select fields. */
+#record-project-form .field-with-leading-icon{position:relative}
+#record-project-form .field-leading-icon{position:absolute;left:11px;top:calc(24px + var(--editor-control-height)/2);transform:translateY(-50%);display:flex;color:var(--muted);pointer-events:none;z-index:1}
+#record-project-form .field-leading-icon svg{width:16px;height:16px}
+#record-project-form .field.field-with-leading-icon>input,
+#record-project-form .field.field-with-leading-icon>select,
+#record-project-form .field-with-leading-icon>.fluid-ui [role=group]:has(>input[role=combobox]){padding-left:35px}
