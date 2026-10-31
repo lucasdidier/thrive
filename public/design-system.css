@@ -883,6 +883,8 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 /* A shared record anatomy: identity and fields stay beside every content tab. */
 .workspace:has(.record-page)>#topbar{display:none}
 .record-page{min-height:100dvh}
+/* Expanded records are page content, so their drawer shadow must not cover navigation. */
+.record-expanded .record-panel{box-shadow:none}
 .record-page>.record-panel-head{position:sticky;top:0;z-index:12;background:var(--bg);padding:0 24px}
 .record-page .record-breadcrumb{display:flex;align-items:center;gap:8px;min-width:0}
 .record-page .record-identity-text>span{display:inline}
