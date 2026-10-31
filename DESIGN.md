@@ -92,4 +92,6 @@ Sizes are deliberate: `xs` 20/13px for menus and navigation, `sm` 24/14px for co
 
 ### Product copy
 
+Dashboard browse actions use the shared blue `View all` label with a right arrow, aligned at the top right of the relevant widget or section heading. Do not repeat these actions in footers. Give each link or button a destination-specific accessible name.
+
 Headings and controls should stand on their own. Omit subtitles that restate a section’s purpose or describe what is already visible. Keep counts, date ranges, constraints, consequences, save state, and actionable recovery guidance. Empty states name what is missing and offer an action; avoid promotional filler. Render optional descriptions only when present so removed copy leaves no empty paragraph.
