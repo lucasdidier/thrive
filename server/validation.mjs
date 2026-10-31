@@ -1,3 +1,4 @@
+import {validateTimers} from '../public/timer-domain.js';
 import {validateGettingStarted} from '../public/getting-started.js';
 import {validateInvoiceDefaults} from '../public/invoice-defaults.js';
 import {saveProjectStatuses} from '../public/project-status.js';
@@ -28,7 +29,7 @@ export function validateWorkspace(s,old){
  for(const m of s.scheduling?.meetings||[])if(m.projectId&&!s.projects.some(p=>p.id===m.projectId&&p.clientId===m.clientId))throw Error('Invalid meeting project.');
  for(const f of s.forms){if(f.clientId&&!s.clients.some(c=>c.id===f.clientId))throw Error('Invalid form client.');if(f.projectId&&!s.projects.some(p=>p.id===f.projectId&&p.clientId===f.clientId))throw Error('Invalid form project.');}
  for(const c of s.clients)if(c.portal)validatePortal(s,c.id,c.portal);
- validateTimeWorkspace(s,old);
+ validateTimeWorkspace(s,old);validateTimers(s);
  for(const i of s.invoices.filter(i=>i.items?.some(l=>l.timeSources))){const computed=calculateInvoice(i.items,i.taxRate);for(const key of ['amount','subtotal','taxAmount'])if(i[key]!==computed[key])throw Error('Invoice time totals do not match source entries.');for(let n=0;n<i.items.length;n++)if(i.items[n].amount!==computed.items[n].amount)throw Error('Invoice time line amount is invalid.');}
  for(const e of ['client','project']){const defs=fieldsFor(s,e,true),ids=new Set(),names=new Set();if(defs.length>50)throw Error('Too many custom fields.');for(const f of defs){if(!/^cf_[\w-]+$/.test(f.id)||ids.has(f.id)||!Object.hasOwn(fieldTypes,f.type)||typeof f.name!=='string'||!f.name.trim()||f.name.length>60||names.has(f.name.toLowerCase()))throw Error('Invalid custom field definition.');ids.add(f.id);names.add(f.name.toLowerCase());if(!Array.isArray(f.options)||f.options.length>50)throw Error('Invalid custom field options.');const options=new Set();for(const o of f.options){if(typeof o.id!=='string'||options.has(o.id)||typeof o.label!=='string'||!o.label.trim())throw Error('Invalid field option.');options.add(o.id);}const prev=fieldsFor(old||{},e,true).find(x=>x.id===f.id);if(prev&&prev.type!==f.type)throw Error('Custom field types are immutable.');}
  for(const r of s[e==='client'?'clients':'projects'])for(const [id,value]of Object.entries(r.customFields||{})){const f=defs.find(f=>f.id===id);if(!f)throw Error('A custom field definition is missing.');validateFieldValue({...f,archived:false},value);}

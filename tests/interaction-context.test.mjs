@@ -27,24 +27,24 @@ function timeHarness(){
  const b=createProject(state,{clientId:state.clients[0].id,name:'Nonbillable project',budget:10000});b.hourlyRate=0;b.billable=false;
  const rate={value:'50'},billable={checked:true},status={textContent:''};let closed=0,toasts=[],blocked=false,resolveSave;
  const dialog={querySelector:sel=>sel==='[name="rate"]'?rate:sel==='[name="billable"]'?billable:sel==='[data-time-default-status]'?status:null,close(){closed++;}};
- const ui=createTimeUI({getState:()=>state,dialog,blocked:()=>blocked,save:()=>new Promise(r=>resolveSave=r),render(){},toast:m=>toasts.push(m)});
+ const ui=createTimeUI({actorId:()=> 'test-person',getState:()=>state,dialog,blocked:()=>blocked,save:()=>new Promise(r=>resolveSave=r),render(){},toast:m=>toasts.push(m)});
  return {ui,state,a,b,rate,billable,status,get closed(){return closed;},toasts,finish(failed=false){blocked=failed;resolveSave();}};
 }
 test('changing time project applies zero rate and nonbillable defaults until overridden',()=>{
- const h=timeHarness();const field=(name,value)=>({name,value,dataset:{},closest:selector=>selector==='#time-entry-form'});
+ const h=timeHarness();const field=(name,value)=>({name,value,dataset:{},matches:()=>false,closest:selector=>selector==='#time-entry-form'});
  h.ui.handleChange(field('projectId',h.b.id));assert.equal(h.rate.value,0);assert.equal(h.billable.checked,false);
  h.rate.value='75';h.ui.handleChange(field('rate','75'));h.billable.checked=true;h.ui.handleChange(field('billable','on'));
  h.ui.handleChange(field('projectId',h.a.id));assert.equal(h.rate.value,'75');assert.equal(h.billable.checked,true);
 });
 test('time save keeps editor open until acknowledged and never reports blocked save as success',async()=>{
  const h=timeHarness(),form={id:'time-entry-form',dataset:{},elements:{billable:{checked:true}}};
- assert.equal(h.ui.handleSubmit(form,{projectId:h.a.id,hours:'1',minutes:'0',rate:'50',date:'2026-10-27',note:'Audit task'}),true);
+ assert.equal(h.ui.handleSubmit(form,{projectId:h.a.id,duration:'1:00',rate:'50',date:'2026-10-27',note:'Audit task'}),true);
  assert.equal(h.closed,0);assert.deepEqual(h.toasts,[]);assert.ok(form.dataset.id);
  h.finish(true);await new Promise(r=>setImmediate(r));assert.equal(h.closed,0);assert.deepEqual(h.toasts,[]);
 });
 test('acknowledged time save closes and reports success once',async()=>{
  const h=timeHarness(),form={id:'time-entry-form',dataset:{},elements:{billable:{checked:true}}};
- h.ui.handleSubmit(form,{projectId:h.a.id,hours:'1',minutes:'0',rate:'50',date:'2026-10-27',note:'Audit task'});
+ h.ui.handleSubmit(form,{projectId:h.a.id,duration:'1:00',rate:'50',date:'2026-10-27',note:'Audit task'});
  h.finish();await new Promise(r=>setImmediate(r));assert.equal(h.closed,1);assert.deepEqual(h.toasts,['Time entry saved.']);
  assert.equal(h.ui.handleSubmit({id:'unrelated'},{}),false);
 });
@@ -106,7 +106,7 @@ test('form required state updates appearance and a blocked new-form retry update
 
 test('retrying a blocked new time entry updates its retained ID instead of adding another entry',async()=>{
  const h=timeHarness(),before=h.state.time.length,form={id:'time-entry-form',dataset:{},elements:{billable:{checked:true}}};
- const values={projectId:h.a.id,hours:'1',minutes:'0',rate:'50',date:'2026-10-27',note:'Retry task'};
+ const values={projectId:h.a.id,duration:'1:00',rate:'50',date:'2026-10-27',note:'Retry task'};
  h.ui.handleSubmit(form,values);h.finish(true);await new Promise(r=>setImmediate(r));const id=form.dataset.id;
  h.ui.handleSubmit(form,values);h.finish(false);await new Promise(r=>setImmediate(r));assert.equal(h.state.time.length,before+1);assert.equal(form.dataset.id,id);
 });
