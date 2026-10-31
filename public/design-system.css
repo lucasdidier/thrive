@@ -970,10 +970,14 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 /* Home uses the same related-record rows as project and client details. */
 .dashboard [hidden] { display: none !important; }
 .dashboard-history, .dashboard-recent { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-surface); background: var(--card); }
-.dashboard-history { margin: 0 0 24px; }
+.home-widget-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }
+.home-widget-grid > [data-home-widget] { min-width: 0; margin: 0; }
+.home-widget-grid .dashboard-history .dash-metrics { grid-template-columns: minmax(0,1fr); gap: 0; }
+.home-widget-grid .dashboard-history .dash-metric { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--grid); }
+.home-widget-grid .dashboard-history .dash-metric:last-child { border-bottom: 0; }
+.home-widget-grid .dashboard-history .dash-metric strong { text-align: right; max-width: 55%; }
 .dashboard-history .section-heading, .dashboard-recent .section-heading { margin-bottom: 20px; }
-.dashboard-recent { margin-top: 24px; }
-.dashboard-work-grid.single-column { grid-template-columns: minmax(0,1fr); }
+
 .dashboard .section-heading { gap: 12px; }
 .dashboard .section-heading > div { min-width: 0; }
 .dashboard .section-heading > a { flex-shrink: 0; }
@@ -995,9 +999,9 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .home-widget-option input { flex: 0 0 16px; width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
 .home-widgets-menu footer { display: grid; gap: 8px; margin: 6px 2px 0; padding: 10px 6px 6px; border-top: 1px solid var(--line); }
 .home-widgets-menu footer .text-btn { text-align: left; justify-self: start; }
-.home-widgets-menu footer small { color: var(--muted); font-size: 11px; }
 .home-empty { border: 1px dashed var(--line); border-radius: var(--radius-surface); background: var(--card); }
 @media (max-width: 760px) {
+ .home-widget-grid { grid-template-columns: minmax(0,1fr); gap: 16px; }
  .dashboard-history, .dashboard-recent { padding: 16px; }
  .dashboard-recent .rel-row { grid-template-columns: 30px minmax(0,1fr); grid-template-areas: "icon main" ". value"; }
  .dashboard .rel-main small { white-space: normal; overflow-wrap: anywhere; }

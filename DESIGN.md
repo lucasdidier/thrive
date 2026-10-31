@@ -73,7 +73,7 @@ Interactions use short color transitions (120ms). Pointer presses compress butto
 
 ## Responsive behavior
 
-Phones keep Thrive’s scrolling navigation strip below a compact brand row. The workspace selector and footer utilities hide; the account menu and search remain in the top row. Appearance is reachable through the account menu. The empty Home topbar hides. Home columns stack below 1050px. Table overflow remains inside its table frame, preserving all configured data. Header controls wrap; panels use 16px padding on phones. Detail panels and drawers retain their existing single-pane mobile behavior.
+Phones keep Thrive’s scrolling navigation strip below a compact brand row. The workspace selector and footer utilities hide; the account menu and search remain in the top row. Appearance is reachable through the account menu. The empty Home topbar hides. Home widgets share one equal two-column grid, in display order, with hidden widgets removed from the flow. A single remaining widget stays half-width. The grid stacks below 760px. Table overflow remains inside its table frame, preserving all configured data. Header controls wrap; panels use 16px padding on phones. Detail panels and drawers retain their existing single-pane mobile behavior.
 
 ## Boundaries
 
