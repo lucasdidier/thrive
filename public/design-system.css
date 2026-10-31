@@ -377,7 +377,9 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
 :root {
   --duration-reveal: 180ms;
   --menu-radius: 8px;
-  --menu-item-height: 38px;
+  --menu-item-height: 30px;
+  --menu-item-padding: 5px 8px;
+  --menu-icon-size: 14px;
 }
 .thrive-wordmark span, .settings-page-title h1, .settings-nav-group h3,
 .getting-started-panel h2 { letter-spacing: 0; }
@@ -406,12 +408,17 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
   background: var(--bg); color: var(--text); box-shadow: var(--shadow-float);
   max-width: calc(100vw - 24px); overscroll-behavior: contain;
 }
-.workspace-menu { width: 248px; padding: 6px; }
-.workspace-menu-heading { padding: 9px 10px 11px; margin-bottom: 4px; font-size: 11px; line-height: 18px; font-weight: 500; border-bottom: 1px solid var(--line); }
+.workspace-menu { width: 232px; padding: 4px; }
+.create-menu { width: 208px; padding: 4px; }
+.create-menu-group { padding: 8px 8px 3px; font-size: 11px; font-weight: 500; line-height: 16px; }
+.create-menu-group:not(:first-child) { margin-top: 4px; border-top: 1px solid var(--line); }
+.workspace-menu-heading { padding: 6px 8px 8px; margin-bottom: 4px; font-size: 11px; line-height: 18px; font-weight: 500; border-bottom: 1px solid var(--line); }
 .workspace-menu button, .create-menu button, .crm-menu-item,
-.thrive-select-option { min-height: var(--menu-item-height); padding: 9px 10px; gap: 10px; border-radius: var(--radius-control); text-align: left; line-height: 20px; }
+.thrive-select-option { box-sizing: border-box; min-height: var(--menu-item-height); padding: var(--menu-item-padding); gap: 8px; border-radius: 4px; text-align: left; font-size: 12px; font-weight: 400; line-height: 20px; }
+:is(.workspace-menu button,.create-menu button,.crm-menu-item) > svg { width: var(--menu-icon-size); height: var(--menu-icon-size); flex: none; color: var(--muted); }
+.create-menu .crm-menu-item > span { min-width: 0; overflow-wrap: anywhere; }
 .workspace-menu button { width: 100%; display: flex; align-items: center; }
-.workspace-menu button svg { width: 16px; height: 16px; color: var(--muted); }
+.workspace-menu button svg { width: var(--menu-icon-size); height: var(--menu-icon-size); color: var(--muted); }
 .workspace-menu button:hover svg, .workspace-menu button:focus-visible svg { color: var(--link); }
 .workspace-menu button:focus-visible, .crm-menu-item:focus-visible,
 .thrive-select-option:focus-visible { background: var(--surface-selected); outline-offset: -2px; }
@@ -421,7 +428,8 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
 .workspace-menu [data-action=signout] { color: var(--negative); }
 .workspace-menu [data-action=signout] svg { color: currentColor; }
 .workspace-menu [data-action=signout]:hover { background: var(--negative-bg); }
-.fluid-ui [role=option] { min-height: var(--menu-item-height); line-height: 20px; }
+.fluid-ui [role=option], .fluid-ui [data-slot=menu-item] { box-sizing: border-box; min-height: var(--menu-item-height); padding-block: 5px; font-size: 12px; line-height: 20px; border-radius: 4px; }
+.thrive-select-group { padding: 8px 8px 3px; font-size: 11px; line-height: 16px; color: var(--muted); }
 .fluid-ui [role=option][data-highlighted], .fluid-ui [role=option]:hover { background: var(--hover); }
 .fluid-ui [role=group]:has(> input[role=combobox]) { border-color: var(--border-control); }
 .fluid-ui [role=group]:has(> input[role=combobox]):hover { border-color: var(--faint); }
@@ -434,7 +442,7 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
 .settings-search:focus-within { outline-color: var(--focus); outline-offset: 2px; }
 .settings-page .settings-nav-group { margin-bottom: 22px; }
 .settings-nav-group h3 { margin: 0 10px 8px; font-size: 10px; font-weight: 550; }
-.settings-page .settings-nav-group a { min-height: 38px; padding: 9px 10px; border-radius: var(--radius-control); gap: 10px; }
+.settings-page .settings-nav-group a { min-height: 32px; padding: 6px 10px; border-radius: var(--radius-control); gap: 10px; }
 .settings-nav-group a[aria-current=page] { background: var(--surface-selected); color: var(--link); font-weight: 550; }
 .settings-nav-group a[aria-current=page]:hover { background: var(--brand-100); }
 .settings-nav-group a svg { width: 16px; height: 16px; }
@@ -499,7 +507,7 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
   .settings-page-heading { margin-bottom: 28px; }
   .settings-page .settings-savebar { flex-wrap: wrap; }
 }
-@media (pointer:coarse) {
+@media (pointer:coarse), (max-width:650px) {
   :root { --menu-item-height: 44px; }
   .workspace-menu button, .settings-page .settings-savebar .btn { min-height: 44px; }
 }
@@ -598,7 +606,7 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .project-create > summary { list-style: none; cursor: pointer; min-height: 30px; padding: 5px 10px; font-size: 12px; gap: 6px; }
 .project-create > summary::-webkit-details-marker { display: none; }
 .project-create > .record-create-menu { left: auto; right: 0; width: 220px; max-width: calc(100vw - 32px); }
-.project-create .crm-menu-item { min-height: 36px; width: 100%; color: var(--text); }
+.project-create .crm-menu-item { min-height: var(--menu-item-height); width: 100%; color: var(--text); }
 .project-activity h2 { font-size: 14px; font-weight: 600; margin: 0 0 16px; }
 .project-activity-link { display: block; max-width: 100%; font-size: 12px; font-weight: 500; line-height: 19px; padding: 0; text-align: left; overflow-wrap: anywhere; border-radius: 3px; }
 .project-activity-link:hover { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }

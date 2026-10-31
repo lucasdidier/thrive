@@ -50,7 +50,7 @@ Titles use −0.025em tracking, body stays normal. Monetary figures use tabular 
 
 ## Geometry
 
-4px spacing base. Tight groups use 8–12px; panel padding 20px; section gaps 24–32px. Desktop sidebar 228px, collapsed rail 64px. Topbar 56px. Page gutters 32px, tablet 24px, phone 16px. Desktop action buttons 30px, form-footer actions 32px, icon buttons 28px, fields 36px. Coarse-pointer touch targets stay 44px. Mobile navigation targets 44px. Control radius 6px; badges 4px; workspace panels 10px; dialogs 12px. Cards use a thin border and no resting shadow. Shadows indicate floating menus and overlays.
+4px spacing base. Tight groups use 8–12px; panel padding 20px; section gaps 24–32px. Desktop sidebar 228px, collapsed rail 64px. Topbar 56px. Page gutters 32px, tablet 24px, phone 16px. Desktop action buttons 30px, form-footer actions 32px, icon buttons 28px, fields 36px. Coarse-pointer touch targets stay 44px. Mobile navigation targets 44px. Control radius 6px; badges 4px; workspace panels 10px; dialogs 12px. Cards use a thin border and no resting shadow. Shadows indicate floating menus and overlays. Desktop menu rows use a 30px minimum height, 12px text, 14px icons, and 4px inner corners; group labels use 11px text with compact spacing. Create is 208px wide. Mobile and coarse-pointer menus keep 44px rows. Settings navigation uses 32px desktop rows.
 
 ## Components
 
