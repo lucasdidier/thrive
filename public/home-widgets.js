@@ -1,2 +1,2 @@
-export const homeWidgets=[['totals','Business totals','money'],['calendar','Your week','calendar'],['invoices','Outstanding invoices','invoices'],['awaiting','Awaiting a response','documents'],['projects','Projects in motion','projects'],['activity','Recent activity','clock']];
+export const homeWidgets=[['totals','Business totals','money'],['calendar','Calendar','calendar'],['invoices','Outstanding invoices','invoices'],['awaiting','Awaiting a response','documents'],['projects','Projects in motion','projects'],['activity','Recent activity','clock']];
 export function homeWidgetPreferences(value){return Object.fromEntries(homeWidgets.map(([id])=>[id,(value?.[id]??(['invoices','awaiting'].includes(id)?value?.followup:undefined))!==false]));}

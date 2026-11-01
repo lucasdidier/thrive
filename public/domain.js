@@ -57,6 +57,7 @@ export function updateProject(s,id,data){
  const p=get(s,id);if(p.archived)throw Error('Restore the project first.');const name=clean(data.name),service=clean(data.service),due=data.due||'',status=data.status||p.status;if(!name||!validDate(due))throw Error('Enter a project name and valid target date.');
  if(!projectStatuses(s).some(x=>x.id===normalizedProjectStatus(status)))throw Error('Choose a project status from workspace settings.');
  const clientId=data.clientId||p.clientId;if(clientId!==p.clientId){if(!s.clients.some(c=>c.id===clientId&&!c.archived))throw Error('Choose an active client.');if(p.accepted||p.versions?.length||['documents','invoices','invoiceDrafts','time','forms'].some(key=>s[key]?.some(r=>r.projectId===id))||s.scheduling?.meetings.some(m=>m.projectId===id))throw Error('This project has linked work. Keep its client to preserve those relationships.');}
+ if(normalizedProjectStatus(status)!==normalizedProjectStatus(p.status))p.completedAt=normalizedProjectStatus(status)==='completed'?new Date().toISOString():null;
  Object.assign(p,{name,service,due,status:normalizedProjectStatus(status),clientId});addActivity(s,'Project updated',p.name,'project',{projectId:p.id});return p;
 }
 export function archiveProject(s,id){const p=get(s,id);p.archived=!p.archived;addActivity(s,p.archived?'Project archived':'Project restored',p.name,'project',{projectId:p.id});}
