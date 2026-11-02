@@ -1479,3 +1479,51 @@ dialog.editor-modal > #new-document-form > .dialog-footer { flex: none; }
 .editor-wizard [data-editor-step] > h3:has(+ .step-intro) { margin-bottom: 4px; }
 .invoice-editor-totals { margin: 16px 0 24px auto; }
 .editor-review dd.is-missing { color: var(--ink-tertiary); font-style: normal; }
+
+/* Plain disclosures share the expandable-card chevron instead of the native triangle (Nov 2026 UI audit). */
+:is(.mail-compose-context, .mail-compose-tools, .embed-help, .project-inquiry) > summary { display: flex; align-items: center; gap: 6px; list-style: none; cursor: pointer; font-size: 13px; font-weight: 550; color: var(--ink-primary); }
+:is(.mail-compose-context, .mail-compose-tools, .embed-help, .project-inquiry) > summary::-webkit-details-marker { display: none; }
+:is(.mail-compose-context, .mail-compose-tools, .embed-help, .project-inquiry) > summary::before { content: ""; flex: none; width: 14px; height: 14px; background: var(--ink-secondary); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") center / contain no-repeat; transition: transform .12s; }
+:is(.mail-compose-context, .mail-compose-tools, .embed-help, .project-inquiry)[open] > summary::before { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) { :is(.mail-compose-context, .mail-compose-tools, .embed-help, .project-inquiry) > summary::before { transition: none; } }
+
+/* Phones: one topbar row. Quiet utilities become icon buttons (accessible names kept),
+   text-only utilities step aside; list controls go icon-only so the toolbar fits one line. */
+@media (max-width: 650px) {
+  .top-actions { flex-wrap: nowrap; gap: 4px; }
+  .top-actions > .btn.subtle:not(:has(svg)), .top-actions > a.btn.subtle:not(:has(svg)) { display: none; }
+  .top-actions > .btn.subtle:has(svg) { width: 40px; min-width: 40px; padding: 0; justify-content: center; font-size: 0; gap: 0; }
+  .top-actions > .btn.subtle:has(svg) svg { width: 16px; height: 16px; }
+  .top-actions > .btn:not(.subtle):not(.primary):has(svg) { width: 40px; min-width: 40px; padding: 0; justify-content: center; font-size: 0; gap: 0; }
+  .list-toolbar-actions { flex-wrap: nowrap; gap: 2px; }
+  .list-toolbar-actions > button:has(svg) { font-size: 0; gap: 0; padding: 0 10px; min-width: 40px; justify-content: center; }
+  .list-toolbar-actions > button:has(svg) svg { width: 16px; height: 16px; }
+  .list-toolbar-actions > button small { font-size: 11px; margin-left: 4px; }
+}
+
+/* ── Callout: the shared information note (Nov 2026 UI audit) ───────────────
+   Neutral surface, fine border, tone carried by the icon. Built by callout() in
+   callout.js; legacy `.notice` paragraphs render the same way. */
+.callout, p.notice, div.notice { position: relative; display: flex; align-items: flex-start; gap: 10px; margin: 0; padding: 12px 14px; border: 1px solid var(--border-default); border-radius: var(--radius-surface); background: var(--surface-subtle); color: var(--ink-secondary); font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.callout-icon { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--info, var(--link)); stroke: currentColor; fill: none; stroke-width: 1.8; }
+.callout-body { display: grid; gap: 4px; min-width: 0; }
+.callout-body > p { margin: 0; }
+.callout-body > p:empty { display: none; }
+.callout-title { color: var(--ink-primary); font-weight: 600; }
+.callout--positive .callout-icon { color: var(--positive); }
+.callout--warning { border-color: color-mix(in srgb, var(--warning) 30%, var(--border-default)); background: var(--warning-bg); }
+.callout--warning .callout-icon { color: var(--warning); }
+.callout--negative { border-color: color-mix(in srgb, var(--negative) 30%, var(--border-default)); background: var(--negative-bg); }
+.callout--negative .callout-icon { color: var(--negative); }
+p.notice::before, div.notice::before { content: ""; flex: none; width: 16px; height: 16px; margin-top: 2px; background: var(--info, var(--link)); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Cpath d='M12 11v5M12 8h.01'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Cpath d='M12 11v5M12 8h.01'/%3E%3C/svg%3E") center / contain no-repeat; }
+p.notice[role=alert]::before { background: var(--negative); }
+.editor-wizard .callout { margin-top: 20px; }
+/* The time-entry "linked to an invoice" banner is a callout with an action. */
+.time-linked-banner { align-items: center; gap: 12px; padding: 12px 14px; border-color: var(--border-default); border-radius: var(--radius-surface); background: var(--surface-subtle); font-size: 13px; }
+.time-linked-banner strong { color: var(--ink-primary); }
+.time-linked-banner p { color: var(--ink-secondary); }
+p.notice, div.notice { display: block; padding-left: 38px; }
+p.notice::before, div.notice::before { position: absolute; left: 14px; top: 14px; margin: 0; }
+.settings-status { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--border-default); border-radius: var(--radius-surface); background: var(--surface-subtle); color: var(--ink-secondary); font-size: 13px; line-height: 1.55; }
+.settings-status svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--positive); }
+.settings-status svg.is-info { color: var(--info, var(--link)); }
