@@ -23,7 +23,7 @@ export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
   nav.querySelectorAll('button').forEach((b,i)=>{if(i===current)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');b.toggleAttribute('data-step-done',i<current&&[...panels[i].querySelectorAll('input,select,textarea')].every(el=>!el.willValidate||el.validity.valid));});
   back.hidden=current===0;next.hidden=current===steps.length-1;if(final)final.hidden=current!==steps.length-1;
   if(error)error.textContent='';
-  progress.textContent=`Step ${current+1} of ${steps.length}`;onStep(current);
+  progress.classList.remove('is-error');progress.textContent=`Step ${current+1} of ${steps.length}`;onStep(current);
   if(focus){panels[current].focus({preventScroll:true});form.querySelector('.document-workbench,.invoice-workbench')?.scrollTo({top:0});}
  }
  function validate(all=false){
@@ -37,9 +37,14 @@ export function mountEditorWizard(form,{steps,initial=0,onStep=()=>{}}){
   invalid.reportValidity();
   const label=invalid.getAttribute('aria-label')||[...(invalid.labels?.[0]?.childNodes||[])].filter(n=>n.nodeType===3).map(n=>n.textContent.trim()).filter(Boolean).join(' ')||'This field';
   if(error)error.textContent=`${label}: ${invalid.validationMessage}`;
-  invalid.focus();return false;
+  // The footer status stays visible wherever the field sits in the scrolling pane.
+  if(!progress.id)progress.id=`${form.id}-progress`;
+  progress.textContent=`${label}: ${invalid.validationMessage}`;progress.classList.add('is-error');
+  invalid.setAttribute('aria-describedby',[invalid.getAttribute('aria-describedby'),progress.id].filter(Boolean).join(' '));
+  invalid.scrollIntoView?.({block:'center'});invalid.focus({preventScroll:true});return false;
  }
  function advance(){if(validate())show(current+1);}
+ form.addEventListener('input',e=>{if(progress.classList.contains('is-error')&&e.target.validity?.valid&&![...panels[current].querySelectorAll('input,select,textarea')].some(el=>el.willValidate&&!el.validity.valid)){progress.classList.remove('is-error');progress.textContent=`Step ${current+1} of ${steps.length}`;}});
  back.addEventListener('click',()=>show(current-1));next.addEventListener('click',advance);
  nav.addEventListener('click',e=>{const b=e.target.closest('[data-editor-go]');if(b)show(Number(b.dataset.editorGo));});
  form.addEventListener('submit',e=>{

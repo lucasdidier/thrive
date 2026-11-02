@@ -48,7 +48,7 @@ dialog .fluid-portals{font-family:var(--system-font);font-size:12px}dialog .flui
 .document-controls .hint{font-size:11px;line-height:1.6;margin:10px 0 0}
 .document-controls .document-branding{border-bottom:0;margin:20px 0 0;padding:18px 0 0}
 .document-controls .document-branding summary{font:500 12px/20px var(--system-font)}
-.document-live-pane{top:0;padding:20px;max-height:100%;min-width:0}.document-live-pane .preview-pane-label{font:500 10px/16px var(--system-font);letter-spacing:.08em;margin-bottom:12px}
+.document-live-pane{top:0;padding:20px;max-height:100%;min-width:0}
 @media(max-width:650px){.fluid-section-label{gap:8px}.fluid-section-summary{max-width:48%;font-size:10px}#record-project-form>.dialog-body,.document-controls{padding:16px}#record-project-form>.dialog-footer,#document-editor>.dialog-footer{padding:12px 16px}.document-live-pane{max-height:none}}
 dialog.drawer.document-workbench-dialog{width:min(1280px,100vw);max-width:100vw}.document-workbench{grid-template-columns:minmax(360px,.9fr) minmax(0,1.1fr)}@media(max-width:1050px){.document-workbench{grid-template-columns:minmax(0,1fr)}.document-live-pane{max-height:none}}
 .document-controls .service-picker{display:flex;align-items:flex-end;gap:8px;margin:0 0 16px}.document-controls .service-picker>.field{flex:1;min-width:0;margin:0}.document-controls .service-picker>.btn{height:36px;margin:0;flex-shrink:0}.document-controls #offer-editor-total:empty{display:none}

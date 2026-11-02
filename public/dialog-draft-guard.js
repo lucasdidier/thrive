@@ -5,7 +5,9 @@ export function draftSnapshot(root) {
   .map(el=>[el.name||el.id||'',el.type,['checkbox','radio'].includes(el.type)?[el.value,el.checked]:el.type==='file'?[...el.files].map(f=>[f.name,f.size,f.lastModified]):el.multiple?[...el.selectedOptions].map(option=>option.value):el.value]));
 }
 
-export function createDialogDraftGuard(dialog,{confirmDiscard=()=>window.confirm('Discard your unsaved changes? Your saved records will be kept.')}={}) {
+// `prompt` (async, in-app) is preferred over the synchronous `confirmDiscard`, which
+// remains for tests and environments without the workspace prompt.
+export function createDialogDraftGuard(dialog,{confirmDiscard=()=>window.confirm('Discard your unsaved changes? Your saved records will be kept.'),prompt=null}={}) {
  let key='',baseline='',generation=0;
  function clear(){key='';baseline='';generation++;}
  function track(){
@@ -19,9 +21,11 @@ export function createDialogDraftGuard(dialog,{confirmDiscard=()=>window.confirm
   });
  }
  const dirty=()=>!!(dialog.open&&key&&draftSnapshot(dialog)!==baseline);
- function canLeave(){if(!dirty())return true;if(!confirmDiscard())return false;clear();return true;}
+ // Runs `next` immediately when nothing changed, otherwise after the person confirms discarding.
+ function leave(next){if(!dirty()){next();return;}if(!prompt){if(confirmDiscard()){clear();next();}return;}Promise.resolve(prompt()).then(ok=>{if(ok){clear();next();}});}
+ function canLeave(){if(!dirty())return true;if(prompt){leave(()=>dialog.close());return false;}if(!confirmDiscard())return false;clear();return true;}
  dialog.addEventListener('close',()=>{if(!dialog.open)clear();});
- dialog.addEventListener('cancel',event=>{if(!canLeave())event.preventDefault();});
+ dialog.addEventListener('cancel',event=>{if(!dirty())return;event.preventDefault();leave(()=>dialog.close());});
  window.addEventListener('beforeunload',event=>{if(dirty()){event.preventDefault();event.returnValue='';}});
- return {track,dirty,canLeave,clear};
+ return {track,dirty,canLeave,leave,clear};
 }

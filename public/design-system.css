@@ -1392,3 +1392,90 @@ span.feature-icon.feature-icon { flex: none; }
 .invoice-properties > div > :last-child { justify-self: start; text-align: left; font-weight: 450; font-variant-numeric: tabular-nums; }
 .invoice-properties .text-btn { max-width: 100%; padding: 0; font-size: 13px; text-align: left; }
 .invoice-summary + .invoice-properties { margin-top: 20px; }
+
+/* ── Document & invoice creation flows (Nov 2026 UI audit) ─────────────────
+   One container for every step, one selection style for option cards,
+   quiet-but-visible field boundaries in line items, 11px minimum text. */
+dialog.editor-modal > #new-document-form { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+dialog.editor-modal > #new-document-form > .template-browser-body { flex: 1; min-height: 0; }
+dialog.editor-modal > #new-document-form > .dialog-footer { flex: none; }
+.template-browser-controls > .hint, #new-document-form .template-browser-controls > p.hint { margin-top: 8px; }
+.template-browser-controls { display: flex; flex-direction: column; gap: 16px; }
+.template-browser-controls > .field, .template-browser-controls > div > .field { margin: 0; }
+
+/* Preview pane labels read like the template preview heading. */
+.preview-pane-label, .document-live-pane .preview-pane-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; font: 500 13px/1.4 var(--system-font); letter-spacing: 0; text-transform: none; color: var(--ink-primary); }
+.preview-pane-label span { font-size: 12px; font-weight: 400; color: var(--ink-secondary); }
+
+/* Stepper: the current step is marked by its blue number and label, not a filled block. */
+.editor-steps { gap: 4px; }
+.editor-steps button { border-radius: var(--radius-control); font-weight: 500; font-size: 13px; }
+.editor-steps button[aria-current] { background: transparent; color: var(--link); font-weight: 600; }
+.editor-steps button:not([aria-current]):hover { background: var(--surface-hover); }
+
+/* Option cards (templates, fee structures): one selection language. */
+.doc-template-choice, .fee-structures button { border: 1px solid var(--border-default); border-radius: var(--radius-surface); background: var(--surface-base); padding: 14px 16px; gap: 4px; transition: border-color .12s, background-color .12s; }
+.doc-template-choice:hover, .fee-structures button:hover { border-color: var(--border-control); background: var(--surface-subtle); }
+.doc-template-choice:has(:checked), .fee-structures button[aria-pressed=true], .fee-structures button[aria-pressed=true]:hover { border-color: var(--action-primary); background: var(--surface-selected); box-shadow: inset 0 0 0 1px var(--action-primary); }
+.doc-template-choice strong, .fee-structures strong { font-size: 13px; font-weight: 600; color: var(--ink-primary); }
+.doc-template-choice:has(:checked) strong, .fee-structures button[aria-pressed=true] strong { color: var(--link); }
+.doc-template-choice small, .fee-structures small { font-size: 12px; line-height: 1.45; color: var(--ink-secondary); }
+.doc-template-picker { gap: 8px; }
+.doc-template-picker legend { font-size: 13px; color: var(--ink-secondary); margin-bottom: 8px; }
+
+/* Package editor header: title and description are real fields. */
+.package-editor { border-color: var(--border-default); border-radius: var(--radius-surface); padding: 16px; }
+.package-editor > header > input { height: 36px; padding: 0 10px; font-size: 15px; font-weight: 600; border: 1px solid transparent; border-radius: var(--radius-control); background: transparent; }
+.package-editor > header > input:hover { border-color: var(--border-default); background: transparent; }
+.package-editor > header > input:focus { border-color: var(--focus, var(--action-primary)); background: var(--surface-base); outline: none; }
+.package-editor > header > textarea { resize: none; field-sizing: content; min-height: 60px; font-size: 13px; color: var(--ink-primary); border-color: var(--border-default); padding: 8px 10px; }
+
+/* Line items: inputs show a quiet boundary at rest so they read as editable. */
+.line-table-heading { font-size: 11px; font-weight: 500; color: var(--ink-secondary); padding-bottom: 8px; }
+.editor-wizard .line-item-row { align-items: start; padding: 12px 0; }
+.editor-wizard .line-item-row input:not(.fluid-source) { height: 32px; padding: 0 8px; font-size: 13px; border-color: var(--border-default); background: var(--surface-base); }
+.editor-wizard .line-item-row input:not(.fluid-source):hover { border-color: var(--border-control); background: var(--surface-base); }
+.editor-wizard .line-item-row input:not(.fluid-source):focus { border-color: var(--focus, var(--action-primary)); box-shadow: none; background: var(--surface-base); }
+.editor-wizard .line-item-row .line-item-title > input { font-weight: 500; padding-left: 8px; }
+.editor-wizard .line-item-row .line-item-title > textarea { margin-top: 4px; padding: 4px 8px; font-size: 12px; resize: none; border-color: transparent; background: transparent; }
+.editor-wizard .line-item-row .line-item-title > textarea:hover { background: var(--surface-hover); }
+.editor-wizard .line-item-row .line-item-title > textarea:focus { border-color: var(--focus, var(--action-primary)); background: var(--surface-base); box-shadow: none; }
+.line-unit .thrive-select-trigger, .line-unit select { height: 32px; min-height: 32px; font-size: 13px; }
+.line-item-total { font-size: 13px; line-height: 32px; padding: 0; font-variant-numeric: tabular-nums; }
+.line-more { width: 28px; height: 32px; }
+.line-source-note, .line-number small { font-size: 11px; }
+.package-lines + .btn, #offer-add-option, .package-editor > .btn { margin-top: 8px; }
+.package-totals { font-size: 13px; gap: 8px; }
+.package-totals input { height: 28px; width: 72px; padding: 0 8px; border-color: var(--border-control); background: var(--surface-base); border-radius: var(--radius-control); }
+.package-totals > div:last-child { padding-top: 10px; }
+/* Editor panes grow with their content so the white surface never stops mid-scroll. */
+.editor-wizard > :is(.document-workbench, .invoice-workbench) { grid-template-rows: minmax(max-content, 1fr); }
+.editor-wizard :is(.document-workbench > .document-controls, .invoice-workbench > .invoice-editor-controls) { align-self: stretch; }
+.fee-structures button { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+.package-actions { display: flex; gap: 4px; }
+.package-actions .icon-btn, .package-actions .btn { width: 28px; height: 28px; min-height: 28px; padding: 0; border: 1px solid transparent; background: transparent; color: var(--ink-secondary); }
+.package-actions .icon-btn:hover, .package-actions .btn:hover { background: var(--surface-hover); color: var(--ink-primary); }
+.editor-progress.is-error { color: var(--negative); font-weight: 500; }
+/* Response choice and layout cards share the option-card selection language. */
+.response-option { border-color: var(--border-default); border-radius: var(--radius-surface); padding: 12px 14px; transition: border-color .12s, background-color .12s; }
+.response-option:hover { border-color: var(--border-control); background: var(--surface-subtle); }
+.response-option:has(input:checked) { border-color: var(--action-primary); background: var(--surface-selected); box-shadow: inset 0 0 0 1px var(--action-primary); }
+.response-option:has(input:checked) strong { color: var(--link); }
+.response-option:has(input:checked) .response-option-icon svg { color: var(--link); }
+.response-option strong { font-size: 13px; font-weight: 600; }
+.response-option small { font-size: 12px; color: var(--ink-secondary); }
+.response-picker legend { font-size: 13px; color: var(--ink-secondary); }
+.template-card { border-color: var(--border-default); border-radius: var(--radius-surface); }
+.template-card.selected, .editor-wizard .template-card.selected { border-color: var(--action-primary); background: var(--surface-selected); box-shadow: inset 0 0 0 1px var(--action-primary); }
+.template-card.selected strong { color: var(--link); }
+.editor-wizard .template-card strong { font-size: 12px; font-weight: 600; }
+/* Review summary uses the record-detail label/value layout. */
+.editor-review > div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 12px 0; font-size: 13px; }
+.editor-review dt { color: var(--ink-secondary); }
+.editor-review dd { text-align: left; font-weight: 450; }
+.editor-review-note { background: var(--surface-subtle); border: 1px solid var(--border-default); border-radius: var(--radius-surface); font-size: 13px; color: var(--ink-secondary); }
+.editor-review-note strong { color: var(--ink-primary); font-weight: 600; }
+.editor-wizard [data-editor-step] > h3 { margin: 0 0 16px; }
+.editor-wizard [data-editor-step] > h3:has(+ .step-intro) { margin-bottom: 4px; }
+.invoice-editor-totals { margin: 16px 0 24px auto; }
+.editor-review dd.is-missing { color: var(--ink-tertiary); font-style: normal; }

@@ -6,6 +6,7 @@ import {sidebarHeader,sidebarFooter} from './sidebar-content.js';
 import {gettingStartedSteps,rememberGettingStarted,skipGettingStarted,resetGettingStarted,completeGettingStarted} from './getting-started.js';
 import {initDrawerMotion} from './drawer-motion.js';
 import {createDialogDraftGuard} from './dialog-draft-guard.js';
+import {createDiscardPrompt} from './discard-prompt.js';
 import {toggleMoreActions} from './more-actions.js';
 import {displayInitials} from './attention-domain.js';
 import {documentLabel} from './document-labels.js';
@@ -66,7 +67,7 @@ let workflowSnapshot=snapshotWorkspace(state);
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
 const dialog=document.querySelector('#dialog');
 initDrawerMotion(dialog);
-const draftGuard=createDialogDraftGuard(dialog);
+const draftGuard=createDialogDraftGuard(dialog,{prompt:createDiscardPrompt({title:'Discard unsaved changes?',body:'Your changes in this window will be lost. Saved records stay as they are.'})});
 let settingsPage;
 const settingsSurface=new Proxy(dialog,{get(target,key){const surface=!target.open&&settingsPage?.isActive()?document.querySelector('#settings-content')||target:target;if(key==='close')return ()=>{if(target.open)target.close();};const value=Reflect.get(surface,key,surface);return typeof value==='function'?value.bind(surface):value;},set(target,key,value){const surface=!target.open&&settingsPage?.isActive()?document.querySelector('#settings-content')||target:target;return Reflect.set(surface,key,value,surface);}});
 initCreateMenu();initDatePicker();
@@ -149,7 +150,7 @@ workspaceSync.bind(()=>state,next=>{state=upgradeWorkspace(next);workflowSnapsho
 document.addEventListener('click',e=>{
  const el=e.target.closest('button[data-action],a[href]');if(!el||!dialog.open)return;
  const leaving=el.matches('a[href]')||['signout','navigate'].includes(el.dataset.action)||(el.closest('#dialog')&&/^(Cancel|Back to (invoice|draft)|Close|Done)$/.test(el.textContent.trim()));
- if(leaving&&el.dataset.action!=='close'&&!draftGuard.canLeave()){e.preventDefault();e.stopImmediatePropagation();}
+ if(leaving&&el.dataset.action!=='close'&&draftGuard.dirty()){e.preventDefault();e.stopImmediatePropagation();draftGuard.leave(()=>el.click());}
 },true);
 document.addEventListener('click',e=>{
  if(e.target.closest('.skip')){e.preventDefault();document.querySelector('#main').focus();return;}
@@ -164,12 +165,12 @@ document.addEventListener('click',e=>{
  if(notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
  if(a==='signout'){if(workspaceSync.isPending())throw Error('Finish syncing your changes before signing out.');signOut().catch(err=>toast(err.message));return;}
  if(account.enabled&&['reset-preview','reset-data'].includes(a))throw Error('Sample data reset is only available in the demo.');
- if(a==='close'){if(draftGuard.canLeave())dialog.close();}
+ if(a==='close'){draftGuard.leave(()=>dialog.close());}
  else if(a==='theme'){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('thrive-theme',t)}catch{}}
  else if(a==='project')projectDetail(id);else if(a==='client')clientDetail(id);else if(a==='invoice')invoiceDetail(id);else if(a==='proposal')proposalDetail(id);
  else if(a==='new-project')projectForm(el.dataset.client);else if(a==='new-client')clientForm();else if(a==='setup')setup();else if(a==='business')business();
  else if(a==='filter'){filter=el.dataset.filter;render()}
- else if(a==='navigate'){if(draftGuard.canLeave()){dialog.close();go(el.dataset.page)}}
+ else if(a==='navigate'){draftGuard.leave(()=>{dialog.close();go(el.dataset.page)});}
  else if(a==='deposit'){const invoice=generateDeposit(state,id);void saveThen(()=>{render();invoiceDetail(invoice.id);toast('Deposit invoice ready.');})}
  else if(a==='toggle-workflow'){const w=state.workflows.find(w=>w.id===id);w.enabled=!w.enabled;void saveThen(()=>{render();toast(w.enabled?'Deposit workflow enabled.':'Deposit workflow paused. You can still create invoices manually.');})}
  else if(a==='workflow')workflowDetail(id);
@@ -210,9 +211,9 @@ document.addEventListener('submit',e=>{
 });
 document.addEventListener('input',e=>{if(settingsPage.input(e.target))return;if(listView.handleInput(e.target)||messagesUI.handleInput(e.target)||customFields.handleInput(e.target)||workflowUI.handleInput(e.target)||billingUI.handleInput(e.target)||scheduleUI.handleInput(e.target)||chatUI.handleInput(e.target)||crm.handleInput(e.target))return;workspaceUI.handleInput(e.target);journey.handleInput(e.target);if(e.target.id==='list-search'){const cursor=e.target.selectionStart;query=e.target.value;render();const input=document.querySelector('#list-search');input.focus();input.setSelectionRange(cursor,cursor)}if(e.target.id==='global-search')searchResults(e.target.value)});
 document.addEventListener('change',e=>{settingsPage.input(e.target);try{if(!settingsUI.change(e.target)&&!clientImport.handleChange(e.target)&&!recordPanel.handleChange(e.target)&&!journey.handleChange(e.target)&&!listView.handleChange(e.target)&&!bulk.handleChange(e.target)&&!timeUI.handleChange(e.target)&&!catalogUI.handleChange(e.target)&&!formsUI.handleChange(e.target)&&!messagesUI.handleChange(e.target)&&!customFields.handleChange(e.target)&&!workflowUI.handleChange(e.target)&&!billingUI.handleChange(e.target)&&!scheduleUI.handleChange(e.target)&&!crm.handleChange(e.target))workspaceUI.handleChange(e.target)}catch(err){error(err.message)}});
-document.addEventListener('keydown',e=>{if(listView.keyboard(e)||bulk.keyboard(e)||recordPanel.keyboard(e))return;chatUI.keyboard(e);crm.keyboard(e);if(e.key==='/'&&!dialog.open&&!e.target.closest('input,textarea,select,[contenteditable]')){const search=document.querySelector('#crm-search, #list-search, #meeting-search');e.preventDefault();if(search)search.focus();else if(draftGuard.canLeave())window.setTimeout(()=>document.querySelector('.sidebar-search')?.click(),0);}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(draftGuard.canLeave())search()}});
-dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){if(draftGuard.canLeave())dialog.close()}}});
-window.addEventListener('hashchange',event=>{if(!recordPanel.canLeaveInline()){history.replaceState(null,'',event.oldURL);return;}if(!draftGuard.canLeave()){history.replaceState(null,'',event.oldURL);return;}if(!settingsPage.guardHash())return;clearTimeout(toastTimer);document.querySelector('#toast').classList.remove('show');document.querySelector('#toast').textContent='';dialog.close();recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();if(!page.startsWith('clients/'))resetPagePosition()});
+document.addEventListener('keydown',e=>{if(listView.keyboard(e)||bulk.keyboard(e)||recordPanel.keyboard(e))return;chatUI.keyboard(e);crm.keyboard(e);if(e.key==='/'&&!dialog.open&&!e.target.closest('input,textarea,select,[contenteditable]')){const search=document.querySelector('#crm-search, #list-search, #meeting-search');e.preventDefault();if(search)search.focus();else draftGuard.leave(()=>window.setTimeout(()=>document.querySelector('.sidebar-search')?.click(),0));}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();draftGuard.leave(()=>search())}});
+dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){draftGuard.leave(()=>dialog.close())}}});
+window.addEventListener('hashchange',event=>{if(!recordPanel.canLeaveInline()){history.replaceState(null,'',event.oldURL);return;}if(draftGuard.dirty()){const target=location.hash;history.replaceState(null,'',event.oldURL);draftGuard.leave(()=>{location.hash=target;});return;}if(!settingsPage.guardHash())return;clearTimeout(toastTimer);document.querySelector('#toast').classList.remove('show');document.querySelector('#toast').textContent='';dialog.close();recordPanel.close(false);listView.reset();bulk.reset();page=location.hash.slice(1)||'overview';filter='all';query='';workspaceUI.reset();crm.reset();render();if(!page.startsWith('clients/'))resetPagePosition()});
 let checkingConnection=false;
 document.addEventListener('toggle',async event=>{
  if(event.target.id!=='getting-started-menu'||event.newState!=='open'||checkingConnection)return;

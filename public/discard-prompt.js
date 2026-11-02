@@ -1,11 +1,13 @@
-export function createDiscardPrompt(){
+let promptSequence=0;
+export function createDiscardPrompt({title='Discard settings changes?',body='Your unsaved changes will be lost. Saved settings will stay as they are.'}={}){
+ const titleId=`discard-prompt-title-${++promptSequence}`;
  let pending;
  return function confirmDiscard(){
   if(pending)return pending;
   pending=new Promise(resolve=>{
    const opener=document.activeElement,modal=document.createElement('dialog');
-   modal.className='discard-prompt';modal.setAttribute('aria-labelledby','discard-settings-title');
-   modal.innerHTML='<div class="dialog-head"><h2 id="discard-settings-title">Discard settings changes?</h2></div><div class="dialog-body"><p>Your unsaved changes will be lost. Saved settings will stay as they are.</p></div><div class="dialog-footer"><button type="button" class="btn primary" data-keep autofocus>Keep editing</button><button type="button" class="btn" data-discard>Discard changes</button></div>';
+   modal.className='discard-prompt';modal.setAttribute('aria-labelledby',titleId);
+   modal.innerHTML=`<div class="dialog-head"><h2 id="${titleId}">${title}</h2></div><div class="dialog-body"><p>${body}</p></div><div class="dialog-footer"><button type="button" class="btn" data-discard>Discard changes</button><button type="button" class="btn primary" data-keep autofocus>Keep editing</button></div>`;
    let done=false;
    const finish=discard=>{if(done)return;done=true;modal.close();modal.remove();pending=null;opener?.isConnected&&opener.focus();resolve(discard);};
    modal.addEventListener('cancel',e=>{e.preventDefault();finish(false);});
