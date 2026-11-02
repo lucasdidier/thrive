@@ -1288,3 +1288,17 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  .home-widget-grid .rel-status .badge { font-size: 10px; }
 }
 @media (prefers-reduced-motion:reduce) { .home-widget-grid .dashboard-history .dash-metric { transition: none; } }
+
+/* Footer controls own a complete compact surface instead of being cut off by
+   the rail. Their icon/count stays fixed when the hover preview reveals text. */
+@media(min-width:651px){
+ :root[data-sidebar-collapsed=true] .sidebar .sidebar-ai{position:relative;width:36px;height:36px;min-height:36px;margin:0 6px;padding:0;gap:0;overflow:hidden;justify-content:flex-start}
+ :root[data-sidebar-collapsed=true] .sidebar-ai>.feature-icon{flex:none;margin-inline:8px;width:18px;height:18px}
+ :root[data-sidebar-collapsed=true] .sidebar-ai>.sidebar-promo-label{position:absolute;left:44px;right:8px;white-space:nowrap}
+ :root[data-sidebar-collapsed=true] .getting-started-wrap{padding:5px 6px 0;justify-content:flex-start}
+ :root[data-sidebar-collapsed=true] .getting-started-trigger{width:36px;height:36px;min-height:36px;padding:0;gap:0;overflow:hidden;background:var(--bg)}
+ :root[data-sidebar-collapsed=true] .getting-started-count{width:34px;flex:none;text-align:center}
+ :root[data-sidebar-collapsed=true] .getting-started-label{position:absolute;left:44px;right:8px;text-align:left;white-space:nowrap}
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar .sidebar-ai{width:calc(100% - 12px)}
+ :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .getting-started-trigger{width:100%}
+}
