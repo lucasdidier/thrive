@@ -42,3 +42,4 @@
 #time-entry-details :is(input:not([type=checkbox]),select,.thrive-select-trigger):disabled{opacity:1;color:var(--muted);background:var(--hover);cursor:not-allowed}
 
 #time-entry-details{display:flex;flex-direction:column;flex:1;min-height:0}#time-entry-details>.dialog-body{flex:1}#time-entry-details>.dialog-footer{margin-top:auto}
+dialog[open]:has(>#time-entry-details){display:flex;flex-direction:column;overflow:hidden}dialog:has(>#time-entry-details)>.dialog-head{position:relative;flex:none}#time-entry-details{overflow:hidden}#time-entry-details>.dialog-body{min-height:0;overflow-y:auto;overscroll-behavior:contain}#time-entry-details>.dialog-footer{position:relative;flex:none}
