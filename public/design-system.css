@@ -942,11 +942,10 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .record-page .record-tabs>a>svg{width:14px;height:14px}
 .record-page .project-record-content{padding:22px 24px}
 .record-page .project-tab-body>:is(.rel-section,.project-billing,.comm-client){margin:22px 24px}
-.record-page .project-summary{gap:0;margin:0 0 28px;padding:0 0 20px;border-bottom:1px solid var(--line)}
-.record-page .project-summary>div{border:0;border-radius:0;padding:0 18px;background:transparent;border-left:1px solid var(--line)}
-.record-page .project-summary>div:first-child{padding-left:0;border-left:0}
-.record-page .project-summary dt{font-size:11px;margin-bottom:6px}
-.record-page .project-summary dd{font-size:18px;letter-spacing:-.02em}
+.record-page .project-summary{gap:12px;margin:0 0 32px}
+.record-page .project-summary>div{display:flex;flex-direction:column;gap:6px;padding:16px 20px;border:1px solid var(--border-default);border-radius:var(--radius-surface);background:var(--surface-base)}
+.record-page .project-summary dt{font-size:12px;margin:0;color:var(--ink-secondary)}
+.record-page .project-summary dd{font-size:22px;line-height:1.2;letter-spacing:-.01em}
 .record-page .project-activity-header{margin-bottom:16px}
 .record-page .project-inquiry{margin:0 20px 20px;padding-top:12px}
 @media(max-width:900px){
@@ -963,8 +962,9 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  .record-page .record-tabs{padding-inline:18px}
  .record-page .project-record-content{padding:20px 18px}
  .record-page .project-tab-body>:is(.rel-section,.project-billing,.comm-client){margin:20px 18px}
- .record-page .project-summary>div{padding-inline:10px}
- .record-page .project-summary dd{font-size:16px}
+ .record-page .project-summary{gap:8px}
+ .record-page .project-summary>div{padding:12px 14px}
+ .record-page .project-summary dd{font-size:18px}
  .record-quick-actions{padding-inline:18px}
  .record-fields-heading{margin-inline:18px}
 }
@@ -979,8 +979,6 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  #client-panel .record-header-actions,.record-page .record-header-actions{display:flex;width:100%;justify-content:flex-end;gap:4px}
  .record-page .record-header-actions .record-create{margin-right:auto}
  .record-page .record-header-actions .icon-btn{width:44px;min-width:44px}
- .record-page .project-summary>div{padding:4px 0;border-left:0}
- .record-page .project-summary dt{margin:0}
 }
 
 /* Client identities keep a consistent footprint in every relation column. */
@@ -1349,3 +1347,13 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .crm-table td .row-actions .btn:not(.icon-btn) { height: 28px; min-height: 28px; padding: 0 10px; font-size: 12px; }
 .crm-table .more-actions-trigger, .crm-table .record-list-actions { width: 28px; height: 28px; min-height: 28px; border-color: transparent; background: transparent; box-shadow: none; color: var(--ink-secondary); }
 .crm-table .more-actions-trigger:hover, .crm-table .record-list-actions:hover, .crm-table .more-actions-trigger[aria-expanded=true], .crm-table .record-list-actions[aria-expanded=true] { background: var(--surface-hover); color: var(--ink-primary); }
+
+/* Disabled controls keep their variant's shape; only primary turns neutral (Nov 2026 UI audit). */
+.btn:not(.primary):not(.accent):not(#create-trigger):disabled, .btn:not(.primary):not(.accent):not(#create-trigger):disabled:hover { background: var(--surface-base); border-color: var(--border-default); color: var(--ink-tertiary); opacity: .7; }
+.btn.subtle:disabled, .btn.subtle:disabled:hover { background: transparent; border-color: transparent; }
+
+/* Record identity tags: fit the content, reveal the chevron on interaction (Nov 2026 UI audit). */
+.record-identity .fluid-tags { width: fit-content; max-width: 100%; margin-left: -8px; }
+.record-identity .fluid-tags > div, .record-identity .fluid-tags > div > div { width: auto; }
+.record-identity .fluid-tags button.shrink-0 { opacity: 0; transition: opacity .12s; }
+.record-identity .fluid-tags:is(:hover, :focus-within) button.shrink-0 { opacity: 1; }

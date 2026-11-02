@@ -120,7 +120,7 @@ dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
 .editor-wizard .editor-context{margin-bottom:18px}
 .editor-wizard .step-intro{margin-bottom:20px}
 .editor-wizard [data-editor-step]>.hint{margin:0 0 18px}
-#time-entry-form .field-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.4fr)}
+#time-entry-form .field-row{grid-template-columns:repeat(2,minmax(0,1fr))}
 .editor-wizard .billing-card{border:0;border-top:1px solid var(--line);border-radius:0;margin:24px 0 0;background:transparent}
 .editor-wizard .billing-card>.editor-section{padding:18px 0 0}
 .editor-wizard .billing-card .billing-toggle{margin-bottom:0}
@@ -140,7 +140,6 @@ dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
  #fb-editor>.dialog-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
  #fb-editor>.dialog-footer>.btn{width:100%}
  #time-entry-form .field-row{grid-template-columns:repeat(2,minmax(0,1fr))}
- #time-entry-form .field-row>.field:last-child{grid-column:1/-1}
 }
 @media print{
  dialog .invoice-preview-body{display:block;overflow:visible;max-height:none;padding:0;flex:none}
