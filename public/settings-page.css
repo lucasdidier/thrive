@@ -71,3 +71,4 @@ body:has(.page-heading h1) .topbar-title h1,body:has(.settings-page) .topbar-tit
 .timeline-event-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .timeline-event .timeline-detail{display:block;font-size:12px;line-height:18px;color:var(--muted);margin:2px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .timeline-event .timeline-detail:empty{display:none}
+.timeline-event>.timeline-content{display:block;width:auto;height:auto;border-radius:0;background:transparent;color:inherit;place-items:normal}
