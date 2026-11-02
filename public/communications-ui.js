@@ -83,7 +83,7 @@ export function createCommunicationsUI(ctx){
  else if(action==='mail-attention')run(async()=>{const t=data.threads.find(t=>t.id===id);if(blocked())throw Error('Resolve unsaved workspace changes before updating reply status.');setConversationAttention(S(),t,el.dataset.status);await save();render();if(!blocked())toast(el.dataset.status==='reply'?'Marked as needs reply.':el.dataset.status==='done'?'No reply needed. A new incoming message will return to your inbox.':'Reply status cleared.');});
  else if(action==='mail-view'){view=el.dataset.view;selected='';render();}
  else if(action==='mail-project-thread'){view='all';selected='thread:'+id;go('messages');}else if(action==='mail-select'){selected=id;render();}
- else if(action==='mail-new')compose({...(el.dataset.client?{clientId:el.dataset.client}:{}),...(el.dataset.project?{projectId:el.dataset.project}:{})},el.dataset.project?'update':'blank');
+ else if(action==='mail-new')compose({...(el.dataset.client?{clientId:el.dataset.client}:{}),...(el.dataset.project?{projectId:el.dataset.project}:{}),...(el.dataset.subject?{subject:el.dataset.subject}:{}),...(el.dataset.body?{body:el.dataset.body}:{})},el.dataset.subject?'blank':el.dataset.project?'update':'blank');
  else if(action==='mail-edit')compose(S().emailDrafts?.find(d=>d.id===id));
  else if(action==='mail-duplicate'){const d=S().emailDrafts?.find(d=>d.id===id);if(d)compose({...d,id:''});}
  else if(action==='mail-context'){clientFilter=el.dataset.client||'';projectFilter=el.dataset.project||'';view='all';listView.setFilters('messages-all',{...(clientFilter?{clientId:clientFilter}:{}),...(projectFilter?{projectId:projectFilter}:{})});dialog.close();go('messages');}

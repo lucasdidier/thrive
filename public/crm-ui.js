@@ -25,7 +25,8 @@ export function createCRM(ctx){
  const scope=()=>({clients:'client',projects:'project'})[entity()];
  function config(){const e=entity(),crm=initCRM(S()),views=viewsFor(S(),e);if(!drafts[e]){const v=views.find(v=>v.id===crm.active[e])||views[0];drafts[e]={id:v.id,config:clone(v.config)};}const ids=fieldsFor(S(),scope()).map(f=>f.id);if(knownFields[e])for(const id of ids)if(!knownFields[e].includes(id)&&!drafts[e].config.columns.includes(id))drafts[e].config.columns.push(id);knownFields[e]=ids;for(const key of Object.keys(drafts[e].config.filters))if(key.startsWith('cf_')&&!ids.includes(key))delete drafts[e].config.filters[key];return drafts[e].config;}
  function currentView(){const e=entity();config();return viewsFor(S(),e).find(v=>v.id===drafts[e].id)||viewsFor(S(),e)[0];}
- function dirty(){return JSON.stringify(config())!==JSON.stringify(currentView().config);}
+ // Table/board is a personal display toggle: switching it (and the grouping the board adds) doesn't unsave a view.
+ function dirty(){const a={...config()},b=currentView().config||{};if(a.layout!==(b.layout||'table')){a.layout=b.layout;a.groupBy=b.groupBy;}return JSON.stringify(a)!==JSON.stringify({...b});}
  function records(){return listView.query(entity(),crmRecords(S(),entity()).filter(r=>r.archived===!!config().archive),config());}
  function reset(){menu=null;formsTab='forms';closePanel(false);}
  function resetAll(){knownFields={};drafts={};searches={};reset();}

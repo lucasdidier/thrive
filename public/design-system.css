@@ -1384,3 +1384,11 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 
 /* Feature icon tiles are fixed-size everywhere; generic `> span { flex: 1 }` rules must not stretch them. */
 span.feature-icon.feature-icon { flex: none; }
+
+/* Invoice drawer properties use the record-detail label/value layout (Nov 2026 UI audit). */
+.invoice-properties { gap: 10px; font-size: 13px; }
+.invoice-properties > div { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; justify-content: start; gap: 12px; min-height: 28px; }
+.invoice-properties > div > span:first-child { color: var(--ink-secondary); }
+.invoice-properties > div > :last-child { justify-self: start; text-align: left; font-weight: 450; font-variant-numeric: tabular-nums; }
+.invoice-properties .text-btn { max-width: 100%; padding: 0; font-size: 13px; text-align: left; }
+.invoice-summary + .invoice-properties { margin-top: 20px; }
