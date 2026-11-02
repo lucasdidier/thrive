@@ -28,3 +28,4 @@
 .settings-meeting-row p{margin:2px 0 0!important;font-size:12px!important;color:var(--ink-secondary)}
 .settings-meeting-list .settings-meeting-actions{display:flex;align-items:center;gap:4px;flex:none}
 @media(max-width:600px){.availability-form .field-row{grid-template-columns:1fr}.available-days-options{gap:4px}.available-days span{font-size:12px}.settings-meeting-list .settings-meeting-row{flex-wrap:wrap}.settings-meeting-actions{width:100%;justify-content:flex-end}}
+.availability-form>.settings-savebar{margin:4px 0 0}.availability-form>.settings-savebar>div{display:flex;gap:8px}

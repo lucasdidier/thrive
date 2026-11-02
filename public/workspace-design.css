@@ -274,3 +274,13 @@ dialog.drawer[data-pointer-motion][open]::backdrop{opacity:1;transition-duration
   .bulk-card-wrap:has(.bulk-card-check) .board-card{padding-left:48px}
   .bulk-list-select-all{min-height:44px}
 }
+
+/* Notifications follow the shared page frame: tabs under the topbar, content column below. */
+.crm-main .notifications-page{max-width:none;margin:0;padding:0}
+.notifications-page .feed-toolbar{padding:0 20px 0 0;border-bottom:1px solid var(--border-default);gap:12px}
+.notifications-page .feed-tabs.crm-section-tabs{border-bottom:0;gap:20px}
+.notifications-page .feed-tabs button{font-weight:inherit}
+.feed-actions{display:flex;align-items:center;gap:8px}
+.feed-body{max-width:920px;padding:24px 20px 64px}
+.feed-body>.feed-group:first-child{margin-top:0}
+@media(max-width:650px){.notifications-page .feed-toolbar{padding-right:16px}.feed-body{padding:16px}}

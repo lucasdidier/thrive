@@ -1322,3 +1322,30 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .date-picker footer button { height: 28px; padding: 0 8px; font-size: 12px; font-weight: 550; color: var(--link); }
 .date-picker footer button:last-child:not(:first-child) { color: var(--ink-secondary); }
 @media (pointer: coarse) { .date-picker-grid button { height: 40px; } .date-picker .date-picker-nav, .date-picker footer button { min-height: 40px; min-width: 40px; } }
+
+/* Empty states: one component everywhere (Nov 2026 UI audit). The related-record
+   empty state is the reference; context only decides the frame. */
+:is(.rel-empty, .crm-empty, .quiet-empty, .empty-state) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+:is(.crm-empty, .quiet-empty, .empty-state) { padding: 48px 24px; }
+:is(.rel-empty, .crm-empty, .quiet-empty, .empty-state) > .feature-icon { margin: 0 0 6px; }
+:is(.rel-empty, .crm-empty, .quiet-empty, .empty-state) :is(h1, h2, h3) { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--ink-primary); }
+:is(.rel-empty, .crm-empty, .quiet-empty, .empty-state) p { margin: 0; max-width: 44ch; font-size: 12px; line-height: 1.6; color: var(--ink-secondary); }
+:is(.rel-empty, .crm-empty, .quiet-empty, .empty-state) > :is(.btn, a.btn) { margin-top: 12px; }
+:is(.rel-empty, .crm-empty, .quiet-empty, .empty-state) > .btn + .btn { margin-top: 12px; }
+/* Page-level empty states get the dashed frame; table and widget ones stay unframed. */
+.notifications-empty, .home-empty { border: 1px dashed var(--border-default); border-radius: var(--radius-surface); background: var(--surface-base); }
+.dash-card .quiet-empty { padding: 32px 16px; flex: 1; }
+.dashboard-day-events .quiet-empty { padding: 16px 12px; }
+.dashboard-day-controls { margin-bottom: 12px; }
+.dashboard-day-controls .dash-calendar-controls { gap: 8px; }
+.dashboard-day-controls .btn { height: 32px; min-height: 32px; }
+.dashboard-day-controls .tracker-date-trigger.is-static { cursor: default; min-width: 128px; margin: 0; font-size: 13px; color: var(--ink-primary); }
+.dashboard-day-controls .tracker-date-trigger.is-static:hover { background: transparent; }
+.dashboard-day-controls .tracker-stepper > button:first-child svg { transform: rotate(180deg); }
+
+/* Row actions: quiet, right-aligned, overflow menu last (Nov 2026 UI audit). */
+.crm-table th:has(> .sr-only:only-child) { width: 1%; }
+.crm-table td .row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; white-space: nowrap; }
+.crm-table td .row-actions .btn:not(.icon-btn) { height: 28px; min-height: 28px; padding: 0 10px; font-size: 12px; }
+.crm-table .more-actions-trigger, .crm-table .record-list-actions { width: 28px; height: 28px; min-height: 28px; border-color: transparent; background: transparent; box-shadow: none; color: var(--ink-secondary); }
+.crm-table .more-actions-trigger:hover, .crm-table .record-list-actions:hover, .crm-table .more-actions-trigger[aria-expanded=true], .crm-table .record-list-actions[aria-expanded=true] { background: var(--surface-hover); color: var(--ink-primary); }
