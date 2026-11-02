@@ -64,3 +64,10 @@ body:has(.page-heading h1) .topbar-title h1,body:has(.settings-page) .topbar-tit
 @media(max-width:650px){.sidebar-toggle{display:none}.sidebar .nav{overflow-x:auto;overflow-y:hidden;flex:none}.sidebar-bottom{display:none}.sidebar-workspace .workspace-switch{max-width:100%}.workspace-menu{top:44px}}
 @media(prefers-reduced-motion:reduce){.sidebar-bottom .sidebar-onboarding{animation:none;--sidebar-orbit:120deg}}
 .sidebar .nav{align-content:start}
+
+/* The entire activity row is a native, keyboard-accessible record action. */
+.timeline-event-link{width:100%;text-align:left;font:inherit;color:var(--text);background:transparent;border-radius:6px;cursor:pointer}
+.timeline-event-link:hover{background:var(--hover)}
+.timeline-event-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.timeline-event .timeline-detail{display:block;font-size:12px;line-height:18px;color:var(--muted);margin:2px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.timeline-event .timeline-detail:empty{display:none}

@@ -16,3 +16,12 @@ test('split follow-up widgets preserve old preferences while allowing independen
  assert.equal(migrated.invoices,true);assert.equal(migrated.awaiting,false);
  assert.deepEqual(homeWidgetPreferences(JSON.parse(JSON.stringify(migrated))),migrated);
 });
+
+test('invoice events take precedence over their document icon and open numbered records or drafts',()=>{
+ assert.deepEqual(activityTarget(s,{text:'Invoice issued',kind:'document',detail:'INV-001 · Willow'}),{action:'invoice',id:'i1'});
+ const withDraft={...s,invoiceDrafts:[{id:'draft-1',title:'Tracked time'}]};
+ assert.deepEqual(activityTarget(withDraft,{text:'Invoice draft saved',kind:'document',detail:'Tracked time'}),{action:'invoice',id:'draft-1'});
+ assert.deepEqual(activityTarget(withDraft,{invoiceId:'draft-1',text:'Invoice draft saved'}),{action:'invoice',id:'draft-1'});
+ assert.deepEqual(activityTarget({...withDraft,invoiceDrafts:[...withDraft.invoiceDrafts,{id:'draft-2',title:'Tracked time'}]},{text:'Invoice draft saved',detail:'Tracked time'}),{action:'navigate',page:'invoices'});
+ assert.deepEqual(activityTarget(s,{text:'Time logged',kind:'project',detail:'Brand refresh · 1:00'}),{action:'navigate',page:'time'});
+});

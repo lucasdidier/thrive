@@ -43,3 +43,16 @@ test('audit uses specific types for updates and deletions, and agreements remain
  assert.ok(crmRecords(s,'contracts').some(r=>r.id===agreement.id));
  assert.ok(!workspaceSections.some(([id])=>id==='documents'));
 });
+
+test('activity and notification rows expose one keyboard action for the record or fallback list',async()=>{
+ const {parseDocument}=await import('htmlparser2');
+ const nodes=n=>[n,...(n.children||[]).flatMap(nodes)];
+ const s={...state(),projects:[{id:'p1',name:'Renamed project'}],invoices:[{id:'i1',number:'INV-001'}]};
+ const rows=[{text:'Project updated',projectId:'p1',detail:'Old name'},{text:'Invoice paid',invoiceId:'i1'},{text:'Contract deleted',documentId:'missing'},{text:'New email',threadId:'thread-1',subject:'Hello',page:'messages'}];
+ for(const notifications of [false,true]){
+  const html=timelineHTML(rows,{state:s,esc:v=>String(v??''),icon:()=>'',notifications});
+  const buttons=nodes(parseDocument(html)).filter(n=>n.name==='button');
+  assert.equal(buttons.length,rows.length);
+  assert.deepEqual(buttons.map(n=>[n.attribs.type,n.attribs['data-action'],n.attribs['data-id']||n.attribs['data-page']]),[['button','project','p1'],['button','invoice','i1'],['button','navigate','contracts'],['button','mail-project-thread','thread-1']]);
+ }
+});
