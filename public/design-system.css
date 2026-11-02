@@ -1341,12 +1341,18 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .dashboard-day-controls .tracker-date-trigger.is-static:hover { background: transparent; }
 .dashboard-day-controls .tracker-stepper > button:first-child svg { transform: rotate(180deg); }
 
-/* Row actions: quiet, right-aligned, overflow menu last (Nov 2026 UI audit). */
-.crm-table th:has(> .sr-only:only-child) { width: 1%; }
-.crm-table td .row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; white-space: nowrap; }
-.crm-table td .row-actions .btn:not(.icon-btn) { height: 28px; min-height: 28px; padding: 0 10px; font-size: 12px; }
-.crm-table .more-actions-trigger, .crm-table .record-list-actions { width: 28px; height: 28px; min-height: 28px; border-color: transparent; background: transparent; box-shadow: none; color: var(--ink-secondary); }
-.crm-table .more-actions-trigger:hover, .crm-table .record-list-actions:hover, .crm-table .more-actions-trigger[aria-expanded=true], .crm-table .record-list-actions[aria-expanded=true] { background: var(--surface-hover); color: var(--ink-primary); }
+/* Row actions: one overflow menu per row, revealed on hover/focus and pinned to the
+   visible right edge of the table frame so it never needs horizontal scrolling (Nov 2026 UI audit). */
+.crm-table th:has(> .sr-only:only-child), .crm-table td:has(> .row-actions) { position: sticky; right: 0; z-index: 2; width: 0; min-width: 0; max-width: 0; padding: 0 !important; border-left: 0 !important; overflow: visible; background: transparent !important; }
+.crm-table td > .row-actions { position: absolute; top: 50%; right: 16px; display: flex; align-items: center; gap: 4px; padding: 2px 0 2px 28px; transform: translateY(-50%); background: linear-gradient(to right, transparent, var(--row-actions-bg, var(--surface-base)) 24px); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s; }
+.crm-table tr:hover { --row-actions-bg: var(--surface-subtle); }
+.crm-table tr:is(:hover, :focus-within) td > .row-actions, .crm-table td > .row-actions:has([aria-expanded=true]) { opacity: 1; pointer-events: auto; }
+.crm-table .more-actions-trigger, .crm-table .record-list-actions { width: 28px; height: 28px; min-height: 28px; padding: 0; border: 1px solid var(--border-default); border-radius: var(--radius-control); background: var(--surface-base); box-shadow: none; color: var(--ink-secondary); }
+.crm-table .more-actions-trigger:hover, .crm-table .record-list-actions:hover, .crm-table .more-actions-trigger[aria-expanded=true], .crm-table .record-list-actions[aria-expanded=true] { background: var(--surface-hover); border-color: var(--border-control); color: var(--ink-primary); }
+@media (hover: none) { .crm-table td > .row-actions { opacity: 1; pointer-events: auto; } }
+@media (prefers-reduced-motion: reduce) { .crm-table td > .row-actions { transition: none; } }
+.more-actions-menu a.btn { display: flex; justify-content: flex-start; width: 100%; margin: 0; border: 0; background: transparent; color: var(--text); font-weight: 400; }
+.more-actions-menu a.btn:hover, .more-actions-menu a.btn:focus-visible { background: var(--hover); }
 
 /* Disabled controls keep their variant's shape; only primary turns neutral (Nov 2026 UI audit). */
 .btn:not(.primary):not(.accent):not(#create-trigger):disabled, .btn:not(.primary):not(.accent):not(#create-trigger):disabled:hover { background: var(--surface-base); border-color: var(--border-default); color: var(--ink-tertiary); opacity: .7; }
@@ -1357,3 +1363,30 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .record-identity .fluid-tags > div, .record-identity .fluid-tags > div > div { width: auto; }
 .record-identity .fluid-tags button.shrink-0 { opacity: 0; transition: opacity .12s; }
 .record-identity .fluid-tags:is(:hover, :focus-within) button.shrink-0 { opacity: 1; }
+.crm-table tr.selected { --row-actions-bg: var(--surface-selected); }
+
+/* Related records: the icon tile keeps its size; only the label flexes. */
+.related-record > span.feature-icon { flex: none; }
+/* Underline tabs: hover changes ink only, no filled block. */
+:is(.record-tabs, .crm-section-tabs) button:not([aria-pressed=true]):hover, .project-tabs a:not([aria-current=page]):hover { background: transparent; color: var(--ink-primary); }
+
+/* Type weight: Inter's 700 reads heavy at UI sizes. Unstyled emphasis uses 600;
+   record names and amounts use 550 (DESIGN.md typography). */
+:where(strong, b) { font-weight: 600; }
+.catalog-row > span > strong { font-size: 13px; font-weight: 550; }
+.catalog-row > strong { font-size: 13px; font-weight: 550; font-variant-numeric: tabular-nums; }
+.catalog-row small { font-size: 12px; }
+
+/* Column resizing (Nov 2026 UI audit): a hairline handle on each header's right edge. */
+.crm-table thead th[data-col] { position: relative; }
+.col-resize { position: absolute; top: 0; right: -4px; bottom: 0; z-index: 3; width: 8px; cursor: col-resize; touch-action: none; }
+.col-resize::after { content: ""; position: absolute; top: 25%; bottom: 25%; left: 3px; width: 2px; border-radius: 1px; background: transparent; transition: background-color .12s; }
+.crm-table thead tr:hover .col-resize::after { background: var(--border-default); }
+.col-resize:hover::after, .col-resize:focus-visible::after, .is-resizing-column .col-resize:active::after { top: 0; bottom: 0; background: var(--action-primary); }
+.col-resize:focus-visible { outline: none; }
+.is-resizing-column, .is-resizing-column * { cursor: col-resize !important; user-select: none; }
+.crm-table.is-sized { table-layout: fixed; min-width: 100%; }
+.crm-table.is-sized th:not([data-col]):not(:has(> .sr-only:only-child)) { width: 44px; }
+.crm-table.is-sized td { overflow: hidden; text-overflow: ellipsis; }
+.crm-table.is-sized td:has(> .row-actions) { overflow: visible; }
+@media (pointer: coarse) { .col-resize { display: none; } }

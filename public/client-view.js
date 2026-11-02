@@ -24,7 +24,7 @@ function notifyParent(type){if(embedded&&parentOrigin&&window.parent!==window)wi
 initSelects();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const token=location.pathname.split('/').filter(Boolean).at(-1),baseEndpoint=`/api/shared/${encodeURIComponent(token)}`,itemQuery=params.has('item')?'?'+new URLSearchParams({item:params.get('item')}):'',endpoint=baseEndpoint+itemQuery,uploadEndpoint=baseEndpoint+'/files'+itemQuery,main=document.querySelector('#client-main');
-const date=value=>new Date(value).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+const date=value=>new Date(value).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
 let current,choices=[],busy=false,requestId=crypto.randomUUID(),pendingBody=null,uploads=new Map();
 const icons={download:'M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4',print:'M6 9V3h12v6M6 18H3V9h18v9h-3M6 15h12v6H6z',check:'m5 12 4 4L19 6'};
 const icon=name=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${icons[name]}"></path></svg>`;

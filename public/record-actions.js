@@ -1,5 +1,8 @@
 // State-specific actions used by both table rows and board cards.
 export function documentRecordActions(state,entity,row){
+ const record=row.raw||row;
+ if(entity==='clients')return {items:[['Open client','client','clients'],['Edit client','edit-client','edit'],[record.archived?'Restore':'Archive','archive-client','documents']]};
+ if(entity==='projects')return {items:[['Open project','project','projects'],['Edit project','edit-project','edit'],[record.archived?'Restore':'Archive','archive-project','documents']]};
  if(entity==='invoices'){
   return row.status==='draft'
    ?{items:[['Edit draft','edit-invoice-draft','edit'],['Delete draft','delete-invoice-draft','close','destructive']]}
