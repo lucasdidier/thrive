@@ -111,8 +111,6 @@ dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
 #fb-editor .fb-settings>summary{margin-bottom:0}
 #fb-editor .form-design-grid>.field{margin:0;min-width:0}
 #fb-editor .fb-add{margin:16px 0 24px}
-#portal-settings .portal-editor-tabs{margin:16px 0}
-#portal-settings .portal-picker{margin:16px 0}
 /* Specialized builders keep their split preview; only editor controls change. */
 .editor-wizard .dialog-footer{position:relative;min-height:0;padding:14px 24px}
 .editor-wizard .document-controls .field,.editor-wizard .invoice-editor-controls .field{margin-bottom:18px}

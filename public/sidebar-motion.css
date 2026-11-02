@@ -10,8 +10,7 @@
  }
  :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar {clip-path:inset(0)}
  :root[data-sidebar-collapsed=true] .sidebar::after {
-  content:'';position:absolute;top:0;bottom:0;left:63px;width:1px;
-  background:var(--line);pointer-events:none;
+  content:'';position:absolute;top:0;bottom:0;left:63px;width:1px;pointer-events:none;
  }
  :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar::after {transform:translateX(164px)}
  :root[data-sidebar-collapsed=true] .sidebar-workspace {position:relative;justify-content:flex-start}
@@ -31,7 +30,7 @@
  :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search>span {display:block;flex:1}
  :root[data-sidebar-collapsed=true] .sidebar-quick-tools .sidebar-search kbd {display:block}
  :root[data-sidebar-collapsed=true] .sidebar .nav a {
-  justify-content:flex-start;gap:16px;padding:7px 16px;min-height:34px;
+  justify-content:flex-start;gap:16px;padding:7px 16px;
  }
  :root[data-sidebar-collapsed=true] .sidebar .nav a>svg {width:16px;height:16px;flex:none}
  :root[data-sidebar-collapsed=true] .nav-item-label,
@@ -40,15 +39,12 @@
   justify-content:flex-start;gap:16px;padding:8px 16px;
  }
  :root[data-sidebar-collapsed=true] .sidebar-bottom .setup-link>svg {width:16px;height:16px;flex:none}
- :root[data-sidebar-collapsed=true] .getting-started-wrap {padding:5px 5px 0}
- :root[data-sidebar-collapsed=true] .getting-started-trigger {
-  width:100%;min-height:32px;justify-content:flex-start;padding:5px 6px;gap:14px;
-  overflow:visible;background:transparent;
+ :root[data-sidebar-collapsed=true] .getting-started-trigger {justify-content:flex-start;
  }
  :root[data-sidebar-collapsed=true] .getting-started-trigger::after {inset:1.5px auto auto 1.5px;width:35px;height:29px}
  :root[data-sidebar-collapsed=true] .getting-started-orbit {left:0;width:38px;height:32px;aspect-ratio:auto}
- :root[data-sidebar-collapsed=true] .getting-started-count {order:-1;flex:none;width:26px;text-align:center}
- :root[data-sidebar-collapsed=true] .getting-started-label {display:block;white-space:nowrap}
+ :root[data-sidebar-collapsed=true] .getting-started-count {order:-1}
+ :root[data-sidebar-collapsed=true] .getting-started-label {display:block}
  :root[data-sidebar-collapsed=true] .sidebar-theme {margin:10px 5px 0;flex-direction:column;padding:3px;border:0;background:transparent}
  :root[data-sidebar-collapsed=true] .sidebar-theme button {justify-content:flex-start;gap:17px;padding:0 9px}
  :root[data-sidebar-collapsed=true] .sidebar-theme button svg {flex:none}

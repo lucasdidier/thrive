@@ -10,7 +10,7 @@ Thrive is a working tool for independent service businesses. The design should f
 
 `public/design-system.css` owns application colors, semantic roles, shared components, and responsive refinements. It loads after legacy feature sheets. Existing names (`--bg`, `--accent`, etc.) are compatibility aliases, so old and enhanced React controls consume the same values. Future feature styles must use these roles, never introduce another root palette or literal primary button color. Feature layout rules remain in their feature sheets.
 
-`public/design-system.html` is the live component reference. Its Light/Dark toggle previews the same CSS tokens without changing the saved workspace preference. `public/appearance.js` applies saved appearance before paint. `public/typography.css` owns the sole Inter font declaration and shared font stack, including account and client-page chrome.
+`node scripts/css-remove-overridden.mjs . [--write]` removes declarations that a later rule with the identical selector and media context always overrides on every page that loads the sheet; run it after layering new rules. `public/design-system.html` is the live component reference. Its Light/Dark toggle previews the same CSS tokens without changing the saved workspace preference. `public/appearance.js` applies saved appearance before paint. `public/typography.css` owns the sole Inter font declaration and shared font stack, including account and client-page chrome.
 
 ## Palette
 
