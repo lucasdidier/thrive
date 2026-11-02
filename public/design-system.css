@@ -1527,3 +1527,40 @@ p.notice::before, div.notice::before { position: absolute; left: 14px; top: 14px
 .settings-status { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--border-default); border-radius: var(--radius-surface); background: var(--surface-subtle); color: var(--ink-secondary); font-size: 13px; line-height: 1.55; }
 .settings-status svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--positive); }
 .settings-status svg.is-info { color: var(--info, var(--link)); }
+
+/* Scheduling: connected-calendar status row (Nov 2026 UI audit). */
+.schedule-sync { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 12px 8px 20px; border-bottom: 1px solid var(--border-default); font-size: 13px; color: var(--ink-secondary); }
+.schedule-sync-icon { flex: none; width: 16px; height: 16px; color: var(--positive); stroke: currentColor; fill: none; stroke-width: 2; }
+.schedule-sync-account { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.schedule-sync-account strong { color: var(--ink-primary); font-weight: 550; }
+.schedule-sync-meta::before { content: "·"; margin-right: 8px; color: var(--ink-tertiary); }
+.schedule-sync-actions { display: flex; gap: 4px; margin-left: auto; flex: none; }
+.schedule-sync-actions .btn { height: 30px; min-height: 30px; font-size: 13px; }
+@media (max-width: 650px) { .schedule-sync { flex-wrap: wrap; padding: 8px 16px; } .schedule-sync-meta { display: none; } }
+
+/* AI & MCP (Nov 2026 UI audit): settings sections, a visible server URL, quiet copy actions. */
+.mcp-guide { display: flex; flex-direction: column; gap: 32px; }
+.mcp-section { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+.mcp-section > header { padding-bottom: 12px; border-bottom: 1px solid var(--border-default); }
+.mcp-section > header h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--ink-primary); }
+.mcp-section > header p { margin: 4px 0 0; font-size: 13px; color: var(--ink-secondary); }
+.mcp-works-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 13px; color: var(--ink-secondary); }
+.mcp-works-with > span:first-child { color: var(--ink-tertiary); }
+.mcp-works-with .mcp-agent { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--ink-primary); font-weight: 500; }
+.mcp-works-with .mcp-agent img { width: 16px; height: 16px; border-radius: 3px; }
+.mcp-setup-card { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--border-default); border-radius: var(--radius-surface); background: var(--surface-base); }
+.mcp-setup-card > div { flex: 1; min-width: 0; }
+.mcp-setup-card strong { display: block; font-size: 13px; font-weight: 600; color: var(--ink-primary); }
+.mcp-setup-card p { margin: 2px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-secondary); }
+.mcp-setup-card .btn { flex: none; }
+.mcp-setup-preview pre { margin: 0; padding: 12px 14px; max-height: 260px; overflow: auto; border: 1px solid var(--border-default); border-radius: var(--radius-control); background: var(--surface-subtle); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; color: var(--ink-primary); }
+.mcp-manual { display: grid; gap: 6px; }
+.mcp-manual-label { font-size: 13px; color: var(--ink-secondary); }
+.mcp-manual-control { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 4px 4px 4px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-control); background: var(--surface-subtle); }
+.mcp-manual-control code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-primary); }
+.mcp-manual-control .btn { height: 30px; min-height: 30px; flex: none; }
+.mcp-manual small { font-size: 12px; color: var(--ink-secondary); }
+.mcp-section > .expandable-card { margin-top: -8px; }
+.mcp-prompts .settings-meeting-row p { font-style: normal; }
+.mcp-prompts .btn svg, .mcp-setup-card .btn svg, .mcp-manual-control .btn svg { width: 14px; height: 14px; }
+@media (max-width: 650px) { .mcp-setup-card { flex-direction: column; align-items: flex-start; } .mcp-setup-card .btn { width: 100%; } }
