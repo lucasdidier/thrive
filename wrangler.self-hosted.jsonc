@@ -1,0 +1,25 @@
+{
+  // Thrive on your own Cloudflare account (no ChatGPT Sites).
+  // Nonsecret settings only. Secrets: `npx wrangler secret put NAME --config wrangler.self-hosted.jsonc`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "thrive",
+  "main": "build/self-hosted-worker.ts",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "vars": {
+    "THRIVE_AUTH_MODE": "supabase",
+    "THRIVE_DATA_BACKEND": "supabase",
+    // Final HTTPS origin, no path. Update after the first deploy or when a custom domain is attached.
+    "THRIVE_APP_URL": "https://thrive.lucas-didier-3b9.workers.dev",
+    "SUPABASE_URL": "https://zhhysylxzgyjpwfkymjj.supabase.co",
+    // Only this confirmed Google account can sign in.
+    "THRIVE_OWNER_EMAIL": "owner@example.com",
+    "THRIVE_GOOGLE_LOGIN": "true",
+    "THRIVE_MICROSOFT_LOGIN": "false",
+    "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
+    "NYLAS_REGION": "eu",
+    "NYLAS_ENVIRONMENT": "sandbox",
+    "NYLAS_REDIRECT_URI": "https://thrive.lucas-didier-3b9.workers.dev/api/nylas/callback"
+  }
+}
