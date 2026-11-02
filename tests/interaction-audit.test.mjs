@@ -26,7 +26,7 @@ test('invoice search retains number, title and linked client/project context',()
  const state={clients:[{id:'c',name:'Solstice'}],projects:[{id:'p',clientId:'c',name:'Brand refresh'}]};
  const item=recordSearchFields(state,'invoices',{number:'INV-004',title:'Deposit',projectId:'p',status:'issued'});
  for(const query of ['INV-004','Deposit','Solstice','Brand refresh'])assert.ok([item.label,item.description,...item.keywords].join(' ').includes(query));
- assert.match(item.label,/INV-004/);assert.match(item.description,/Solstice · Brand refresh · issued/);
+ assert.match(item.label,/INV-004/);assert.match(item.description,/Solstice · Brand refresh · Issued/);
  const other=recordSearchFields({...state,clients:[{id:'c',name:'Another client'}]},'documents',{title:'Simple proposal',projectId:'p'});
  assert.match(other.description,/Another client/);
 });

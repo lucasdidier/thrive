@@ -7,7 +7,8 @@ export function createKanbanUI({getState,save,blocked,open,dialog,render,toast,e
  const enabled=()=>!!current()?.board&&!!boardDefaults[current().scope];
  const groups=()=>boardGroups(getState(),current().scope,current().config,current().fields||current().columns,current().list,current().rows).map(g=>current().scope==='projects'&&current().config.groupBy==='status'?{...g,label:projectStatus(getState(),{status:g.label}).name}:g);
  const availableFields=()=>boardFields(current().fields||current().columns);
- function normalize(){if(!enabled())return;const c=current().config;if(c.layout==='board'&&!availableFields().some(f=>f.key===c.groupBy))c.groupBy=boardDefaults[current().scope];}
+ const autoGrouped=new WeakSet(); // grouping the board added on its own, undone when returning to the table
+ function normalize(){if(!enabled())return;const c=current().config;if(c.layout==='board'&&!availableFields().some(f=>f.key===c.groupBy)){c.groupBy=boardDefaults[current().scope];autoGrouped.add(c);}}
  function layoutControl(){if(!enabled())return '';return `<div class="layout-switch" aria-label="View layout">${[['table','Table'],['board','Board']].map(([layout,label])=>`<button data-action="board-layout" data-layout="${layout}" aria-label="${label} view" aria-pressed="${(current().config.layout||'table')===layout}">${icon(layout)}</button>`).join('')}</div>`;}
  function board({cell,actions}){
   const c=current(),field=availableFields().find(f=>f.key===c.config.groupBy),cols=c.columns.filter(f=>c.config.columns.includes(f.key)&&f.key!=='name'&&f.key!==c.config.groupBy),hint=boardMoveHint(c.scope,field);
@@ -31,7 +32,7 @@ export function createKanbanUI({getState,save,blocked,open,dialog,render,toast,e
   }
  }
  function handleClick(action,el){if(!action.startsWith('board-')||!enabled())return false;
-  if(action==='board-layout'){reset();current().config.layout=el.dataset.layout;normalize();render();return true;}
+  if(action==='board-layout'){reset();const c=current().config;c.layout=el.dataset.layout;if(c.layout!=='board'&&autoGrouped.has(c)){c.groupBy='';autoGrouped.delete(c);}normalize();render();return true;}
   if(action==='board-move'){
    move=snapshot(el.dataset.id);const c=current(),row=c.list.find(r=>r.id===move.id),gs=groups();
    open('Move card',`<div class="dialog-body"><p class="board-move-name">${esc(row.name)}</p><label class="field">Column<select id="board-destination" aria-label="Destination column">${gs.map(g=>`<option value="${esc(g.key)}" ${g.key===move.fromKey?'selected':''}>${esc(g.label)} · ${g.rows.length}</option>`).join('')}</select></label><label class="field">Position<select id="board-position" aria-label="Card position" ${c.config.sort?'disabled':''}><option value="last">Last in column</option><option value="first">First in column</option></select></label><p class="hint">${esc(boardMoveHint(c.scope,availableFields().find(f=>f.key===c.config.groupBy)))}${c.config.sort?' Cards follow the current sort.':''}</p></div><div class="dialog-footer"><button class="btn" data-action="close">Cancel</button><button class="btn primary" data-action="board-apply">Move card</button></div>`);return true;

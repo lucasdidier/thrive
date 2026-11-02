@@ -1378,3 +1378,9 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .crm-table.is-sized td { overflow: hidden; text-overflow: ellipsis; }
 .crm-table.is-sized td:has(> .row-actions) { overflow: visible; }
 @media (pointer: coarse) { .col-resize { display: none; } }
+/* AI & MCP uses the same section heading scale as every settings page. */
+.settings-page .mcp-guide h2 { font-size: 14px; font-weight: 600; letter-spacing: 0; }
+.settings-page .settings-toggle-row.has-icon{justify-content:flex-start;gap:12px}.settings-toggle-row.has-icon>span:not(.feature-icon){flex:1}
+
+/* Feature icon tiles are fixed-size everywhere; generic `> span { flex: 1 }` rules must not stretch them. */
+span.feature-icon.feature-icon { flex: none; }
