@@ -1302,3 +1302,23 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .sidebar .sidebar-ai{width:calc(100% - 12px)}
  :root[data-sidebar-collapsed=true][data-sidebar-peek=true] .getting-started-trigger{width:100%}
 }
+
+/* Date picker popover: shared by every date field (Nov 2026 UI audit). */
+.date-picker { width: 280px; padding: 12px; border: 1px solid var(--border-default); border-radius: var(--radius-surface, 10px); background: var(--surface-base); color: var(--ink-primary); box-shadow: var(--shadow); }
+.date-picker header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 0 8px; }
+.date-picker header strong { font-size: 13px; font-weight: 600; }
+.date-picker button { min-width: 0; min-height: 0; border: 0; border-radius: var(--radius-control, 6px); background: transparent; color: inherit; font: inherit; cursor: pointer; transition: background-color .12s, color .12s; }
+.date-picker .date-picker-nav { display: grid; place-items: center; width: 28px; height: 28px; color: var(--ink-secondary); }
+.date-picker .date-picker-nav svg { width: 14px; height: 14px; }
+.date-picker .date-picker-back { transform: rotate(180deg); }
+.date-picker-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin: 0; text-align: center; }
+.date-picker-grid > span { display: grid; place-items: center; height: 28px; font-size: 11px; font-weight: 500; color: var(--ink-secondary); }
+.date-picker-grid button { height: 34px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.date-picker button:hover:not(:disabled) { background: var(--surface-hover); color: var(--ink-primary); }
+.date-picker-grid button[aria-current=date] { color: var(--link); font-weight: 650; }
+.date-picker-grid button[aria-pressed=true], .date-picker-grid button[aria-pressed=true]:hover { background: var(--action-primary); color: var(--action-ink); font-weight: 600; }
+.date-picker-grid button:disabled { color: var(--ink-tertiary, var(--muted)); opacity: .45; cursor: not-allowed; }
+.date-picker footer { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-default); }
+.date-picker footer button { height: 28px; padding: 0 8px; font-size: 12px; font-weight: 550; color: var(--link); }
+.date-picker footer button:last-child:not(:first-child) { color: var(--ink-secondary); }
+@media (pointer: coarse) { .date-picker-grid button { height: 40px; } .date-picker .date-picker-nav, .date-picker footer button { min-height: 40px; min-width: 40px; } }

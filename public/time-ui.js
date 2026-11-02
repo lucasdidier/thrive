@@ -53,5 +53,5 @@ export function createTimeUI(ctx){
  f.dataset.saving='true';const buttons=[...f.querySelectorAll('button,input,select')],disabled=buttons.map(b=>b.disabled);buttons.forEach(b=>b.disabled=true);
  void (async()=>{await save();if(blocked())throw Error('Changes are retained locally but are not synced. Retry saving to continue.');bulk.clear();render();ctx.invoiceDetail(f.dataset.savedDraft);toast('Time added to the invoice draft.');})().catch(e=>{f.querySelector('.form-error').textContent=e.message;}).finally(()=>{delete f.dataset.saving;buttons.forEach((b,i)=>b.disabled=disabled[i]);});
  }else return false;return true;}
- return {page,review,handleClick,handleChange,handleSubmit,mount:tracker.mount};
+ return {page,review,handleClick,handleChange,handleSubmit,mount:tracker.mount,timerRunning:tracker.running};
 }
