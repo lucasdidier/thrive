@@ -116,7 +116,6 @@ dialog .mail-link-insert>.btn{min-height:var(--editor-control-height);flex:none}
 .editor-wizard .document-controls .field,.editor-wizard .invoice-editor-controls .field{margin-bottom:18px}
 .editor-wizard :is(.document-controls,.invoice-editor-controls) .field-row>.field{margin:0}
 .editor-wizard .editor-context{margin-bottom:18px}
-.editor-wizard .step-intro{margin-bottom:20px}
 .editor-wizard [data-editor-step]>.hint{margin:0 0 18px}
 #time-entry-form .field-row{grid-template-columns:repeat(2,minmax(0,1fr))}
 .editor-wizard .billing-card{border:0;border-top:1px solid var(--line);border-radius:0;margin:24px 0 0;background:transparent}

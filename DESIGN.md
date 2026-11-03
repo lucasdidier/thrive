@@ -97,7 +97,16 @@ Sizes are deliberate: `xs` 20/13px for menus and navigation, `sm` 24/14px for co
 
 Dashboard browse actions use the shared blue `View all` label with a right arrow, aligned at the top right of the relevant widget or section heading. Do not repeat these actions in footers. Give each link or button a destination-specific accessible name.
 
-Headings and controls should stand on their own. Omit subtitles that restate a section’s purpose or describe what is already visible. Keep counts, date ranges, constraints, consequences, save state, and actionable recovery guidance. Empty states name what is missing and offer an action; avoid promotional filler. Render optional descriptions only when present so removed copy leaves no empty paragraph.
+Simple purpose, simple architecture, simple design, simple implementation (Linear, Apple Notes). If a screen needs explanatory copy to make sense, fix the layout instead.
+
+- Pages, settings sections, dialogs and cards: title only. No taglines, subtitles or section descriptions.
+- Fields: label only. No “(optional)” and no helper line under the input. Put format examples in the placeholder, limits in input attributes, and problems in the validation error.
+- Toggle and list rows: one label. A second line is for data (an email, a count, a date), not for explaining the control.
+- Empty states: icon, title and one action. A filtered empty state says “No matching …” and offers Clear search or Clear filters.
+- Consequences belong where the action happens: in the button label (“Send email”, “Record payment”) or a confirmation dialog for destructive or external actions. Use one `callout()` only when a constraint blocks the flow (for example, a project that already has billing).
+- Keep live status (`role="status"`), errors, counts and record data. Render optional text only when present, so nothing leaves an empty paragraph.
+
+For DX and AX, the copy lives in the markup, so an agent can grep `class="hint"` or `<small>` to audit it. New helper text needs a reason that fits one of the exceptions above.
 
 ### Settings and identity controls
 

@@ -58,10 +58,7 @@ main:focus:not(:focus-visible){outline:none}
 .settings-page .settings-embedded{border:0;background:transparent;border-radius:0}
 .settings-page .settings-embedded>.dialog-body{padding:0;gap:20px}
 .settings-page .connection-row{border:0;border-top:1px solid var(--line);border-radius:0;padding:18px 0}
-.connection-shortcuts{display:flex;gap:8px;flex-wrap:wrap}
 .connection-account p{margin:3px 0 0}
-.connection-details{font-size:12px;color:var(--muted)}
-.connection-details summary{cursor:pointer;color:var(--text);padding:8px 0}
 .settings-savebar{position:sticky;bottom:0;background:var(--bg);z-index:2}
 .settings-page-title>span{background:var(--surface-selected);border:0;color:var(--accent)}
 .branding-layout{display:grid;grid-template-columns:minmax(220px,1fr) minmax(240px,1fr);gap:32px;align-items:start}

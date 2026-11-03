@@ -788,7 +788,6 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .mail-compose-tools .mail-link-insert { align-items: end; }
 .mail-compose-tools .mail-link-insert .btn { margin-bottom: 16px; }
 .mail-compose-tools #mail-template-status:empty { display: none; }
-.mail-compose-note { margin-top: 16px; }
 .message-detail-head h2, .client-email-heading strong { overflow-wrap: anywhere; }
 @media (max-width:650px) {
   .messages-connection { flex-wrap: wrap; padding: 16px; }
@@ -1476,7 +1475,6 @@ dialog.editor-modal > #new-document-form > .dialog-footer { flex: none; }
 .editor-review-note { background: var(--surface-subtle); border: 1px solid var(--border-default); border-radius: var(--radius-surface); font-size: 13px; color: var(--ink-secondary); }
 .editor-review-note strong { color: var(--ink-primary); font-weight: 600; }
 .editor-wizard [data-editor-step] > h3 { margin: 0 0 16px; }
-.editor-wizard [data-editor-step] > h3:has(+ .step-intro) { margin-bottom: 4px; }
 .invoice-editor-totals { margin: 16px 0 24px auto; }
 .editor-review dd.is-missing { color: var(--ink-tertiary); font-style: normal; }
 

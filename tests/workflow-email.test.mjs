@@ -34,5 +34,5 @@ test('workflow editor renders email templates as text with email keyboard and re
  const input=html.match(/<input name="config-email"[^>]*>/)?.[0];
  assert.ok(input);assert.match(input,/type="text"/);assert.match(input,/inputmode="email"/);
  assert.match(input,/value="\{\{client.email\}\}"/);assert.match(input,/\brequired\b/);
- assert.match(html,/Enter an email address or a trigger variable/);
+ assert.match(input,/placeholder="name@example.com or \{\{client.email\}\}"/);
 });

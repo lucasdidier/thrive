@@ -14,15 +14,15 @@ test('catalog separates archives and moves a restored service back into the acti
  assert.match(html,/No archived services/);assert.equal(state.services[1].archived,false);
  ui.handleClick('service-view',{dataset:{view:'active'}});assert.match(html,/Brand workshop/);assert.match(html,/Legacy consulting/);
 });
-test('connected account has one shared reconnect action and shared disconnect explanation',()=>{
+test('connected account has one shared reconnect action and one disconnect action',()=>{
  const html=connectionSettings({configured:true,provider:'nylas',account:{email:'studio@example.com',provider:'microsoft',gmail:true,calendar:true}},helpers);
  assert.equal((html.match(/data-action="mail-connect"/g)||[]).length,1);
  assert.match(html,/data-mode="all" data-provider="microsoft"/);assert.match(html,/Connected<\/span>/);
- assert.match(html,/Disconnects email and calendar together/);
+ assert.match(html,/data-action="mail-disconnect-review"/);
 });
 test('incomplete grants ask to reconnect the same account with both capabilities',()=>{
  const html=connectionSettings({configured:true,account:{email:'studio@example.com',gmail:true,calendar:false}},helpers);
- assert.match(html,/Needs attention/);assert.match(html,/enable calendar access/);assert.match(html,/data-mode="all"/);
+ assert.match(html,/Needs attention/);assert.match(html,/Calendar access missing/);assert.match(html,/data-mode="all"/);
 });
 test('unconfigured account disables connections and escapes account names',()=>{
  const html=connectionSettings({configured:false,provider:'nylas'},helpers);

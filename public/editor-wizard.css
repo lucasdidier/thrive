@@ -11,7 +11,6 @@ dialog.editor-modal .document-workbench,dialog.editor-modal .invoice-workbench{g
 .editor-wizard [hidden]{display:none!important}
 .editor-wizard [data-editor-step]{outline:none;min-width:0}
 .editor-wizard [data-editor-step]>h3{font-size:16px;font-weight:600;color:var(--text)}
-.editor-wizard .step-intro{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 24px}
 .editor-wizard>.document-workbench,.editor-wizard>.invoice-workbench{flex:1;min-height:0;overflow:auto;align-items:start}
 .editor-wizard .document-controls,.editor-wizard .invoice-editor-controls{padding:24px;min-height:460px}
 .editor-wizard .document-live-pane,.editor-wizard .invoice-preview-pane{position:sticky;top:0;align-self:start;max-height:none;padding:24px;background:var(--bg)}

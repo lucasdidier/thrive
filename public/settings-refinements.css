@@ -23,38 +23,22 @@
 .catalog-empty{padding:40px 16px;text-align:center}
 .catalog-empty h3{font-size:14px;font-weight:500;margin:0 0 6px}
 .catalog-empty p{font-size:12px;color:var(--muted);margin:0}
-.connected-account-card{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:22px;min-width:0}
-.connected-account-header{display:flex;align-items:center;gap:12px;min-width:0}
-.connected-account-symbol{display:grid;place-items:center;width:38px;height:38px;background:var(--hover);border-radius:8px;flex:none;color:var(--muted)}
-.connected-account-header>div{min-width:0;flex:1}
-.connected-account-header h2{margin:0;font-size:14px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
-.connected-account-header p{margin:3px 0 0;color:var(--muted);font-size:12px}
-.connection-state{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11px;color:var(--muted)}
+.connected-account-card{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:16px;min-width:0;flex-wrap:wrap}
+.connected-account-symbol{display:grid;place-items:center;width:32px;height:32px;background:var(--hover);border-radius:8px;flex:none;color:var(--muted)}
+.connected-account-name{min-width:0;flex:1}
+.connected-account-name h2{margin:0;font-size:14px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
+.connected-account-name p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.connection-state{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12px;color:var(--muted)}
 .connection-state::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--faint)}
-.connection-state.is-connected::before{background:var(--accent)}
+.connection-state.is-connected::before{background:var(--positive,var(--accent))}
 .connection-state.needs-attention::before{background:var(--warning)}
-.connected-account-description,.connection-unavailable{font-size:13px;line-height:1.6;color:var(--muted);margin:18px 0}
 .connected-account-actions{display:flex;gap:8px;flex-wrap:wrap}
-.connected-account-shortcuts{display:flex;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
-.connected-account-shortcuts .btn{border:0;background:transparent;box-shadow:none;padding:0;min-height:28px;font-weight:450;color:var(--muted)}
-.connected-account-shortcuts .btn:hover{color:var(--text)}
-.connected-account-shortcuts svg{width:14px;height:14px}
-.connected-account-details{font-size:12px;color:var(--muted)}
-.connected-account-details summary{cursor:pointer;display:flex;align-items:center;gap:8px;width:fit-content;min-height:38px;list-style:none;font-weight:450;color:var(--text)}
-.connected-account-details summary::-webkit-details-marker{display:none}
-.connected-account-details summary svg{width:13px;height:13px}
-.connected-account-details[open] summary svg{transform:rotate(180deg)}
-.connected-account-details>div{max-width:65ch;padding:4px 0 12px;line-height:1.7}
-.connected-account-details p{margin:0 0 12px}
-.connected-account-disconnect{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
-.connection-test-note{font-size:11px}
 @container settings-detail (max-width:540px){
  .catalog-toolbar{gap:8px;align-items:stretch;flex-direction:column}
  .catalog-toolbar-actions{order:-1;padding:0 0 4px}.catalog-tabs{gap:24px}
  .catalog-panel .catalog-service-row{grid-template-columns:minmax(0,1fr) auto;gap:10px 16px}
  .catalog-service-name{grid-column:1/-1}.catalog-service-price{text-align:left}
  .catalog-service-row>.btn{grid-column:2;grid-row:2}
- .connected-account-header{flex-wrap:wrap}.connected-account-header>div{flex-basis:calc(100% - 50px)}.connection-state{margin-left:50px}
- .connected-account-card{padding:18px}
+ .connected-account-name{flex-basis:calc(100% - 44px)}.connection-state{margin-left:44px}.connected-account-actions{flex-basis:100%;padding-left:44px}
 }
-@media(max-width:650px){.catalog-tabs button,.connected-account-shortcuts .btn,.connected-account-details summary{min-height:44px}}
+@media(max-width:650px){.catalog-tabs button{min-height:44px}}
