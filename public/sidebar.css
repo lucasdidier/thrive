@@ -121,3 +121,24 @@
  .workspace{margin-left:0}
  body:has(.record-page)>.app-nav{display:none}
 }
+
+/* Settings navigation uses the main sidebar's type, spacing and states, on the white canvas. */
+@media (min-width:651px){
+ .settings-page .settings-navigation{background:var(--surface-base);padding:20px 10px;border-right:1px solid var(--line)}
+}
+.settings-page .settings-navigation>h2{margin:0 11px 14px;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.settings-page .settings-search{min-height:32px;height:32px;margin:0 0 14px;padding:0 11px;gap:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-base)}
+.settings-page .settings-search svg{width:16px;height:16px}
+.settings-page .settings-search input{font-size:13px}
+.settings-page .settings-nav-group{display:grid;gap:1px;margin:0 0 10px}
+.settings-page .settings-nav-group h3{height:26px;margin:0;padding:0 11px;line-height:28px;font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--faint)}
+.settings-page .settings-nav-group a{display:flex;align-items:center;gap:10px;height:30px;min-height:30px;margin:0;padding:0 11px;border-radius:8px;font-size:13px;font-weight:500;line-height:1;color:var(--text);white-space:nowrap}
+.settings-page .settings-nav-group a svg{width:16px;height:16px;flex:none;color:var(--muted)}
+.settings-page .settings-nav-group a:hover{background:var(--hover)}
+.settings-page .settings-nav-group a[aria-current=page]{background:var(--surface-selected);color:var(--text);font-weight:550}
+.settings-page .settings-nav-group a[aria-current=page]:hover{background:var(--surface-selected)}
+.settings-page .settings-nav-group a[aria-current=page] svg{color:var(--action-primary)}
+@media (max-width:650px){
+ .settings-page .settings-nav-group h3{display:none}
+ .settings-page .settings-nav-group a{height:40px}
+}
