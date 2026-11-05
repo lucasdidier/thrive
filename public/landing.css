@@ -37,10 +37,9 @@ code{font-family:var(--system-mono);font-size:.86em}
 /* Micro dots here and there: the same canvas grid, fading out at the edges of each field. */
 .dotfield{position:absolute;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.11) 1px,transparent 1.3px);background-size:22px 22px;-webkit-mask-image:radial-gradient(closest-side,#000 30%,transparent);mask-image:radial-gradient(closest-side,#000 30%,transparent)} /* taste-skill-ignore: canvas dot grid, asked for by the brief */
 main{position:relative;isolation:isolate;overflow-x:clip}
-.hero,.tour,.outputs,.claim{position:relative;isolation:isolate}
+.hero,.outputs,.claim{position:relative;isolation:isolate}
 .hero-stage{isolation:isolate}
-.hero-stage .dotfield{left:50%;top:0;width:min(1700px,150vw);height:100%;transform:translateX(-50%);-webkit-mask-image:radial-gradient(60% 75% at 50% 35%,#000 35%,transparent);mask-image:radial-gradient(60% 75% at 50% 35%,#000 35%,transparent)} /* taste-skill-ignore: fade-out mask for the canvas dot field */
-.tour .dotfield{right:-10%;top:40px;width:900px;height:700px}
+.hero-stage .dotfield{left:50%;top:-40px;width:min(1700px,150vw);height:calc(100% + 80px);transform:translateX(-50%);-webkit-mask-image:radial-gradient(60% 75% at 50% 35%,#000 35%,transparent);mask-image:radial-gradient(60% 75% at 50% 35%,#000 35%,transparent)} /* taste-skill-ignore: fade-out mask for the canvas dot field */
 .outputs .dotfield{left:-12%;top:120px;width:800px;height:700px}
 .claim .dotfield{left:50%;top:40px;width:1100px;height:640px;transform:translateX(-50%)}
 
@@ -62,25 +61,20 @@ main{position:relative;isolation:isolate;overflow-x:clip}
 @media (hover:hover) and (pointer:fine){.bar a:not(.btn,.mark):hover{color:var(--text)}}
 
 /* ---- Hero: what Thrive is, then the product itself ---- */
-.hero{padding-top:clamp(40px,5.5vw,80px)}
+.hero{padding-top:clamp(40px,4vw,56px)}
 .hero-head{display:grid;gap:32px}
-.hero h1{font-size:var(--t-xl)}
+.hero h1{font-size:clamp(44px,5.8vw,84px)}
 @media (min-width:900px){.hero h1 .line{display:inline-block}}
 .hero-row{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px 48px;align-items:end}
-.lede{color:#d3d8e3;max-width:50ch}
+.lede{color:#d3d8e3;max-width:60ch;text-wrap:pretty}
 .hero-cta{display:grid;gap:14px;justify-items:end}
-.act{display:flex;flex-wrap:wrap;gap:12px}
 .fine{color:var(--text-3);font-size:var(--t-s)}
 .fine a{color:var(--text-2)}
 .pending{padding:14px 18px;border-radius:12px;background:var(--panel-2);font-size:var(--t-s)}
-.hero-stage{position:relative;margin-top:clamp(40px,4.5vw,64px);padding:clamp(32px,4vw,56px) 0 0;height:clamp(440px,54vw,720px);overflow:hidden}
-.hero-shot{position:relative}
-@media (prefers-reduced-motion:no-preference){
- .js .hero-shot{animation:arrive 900ms var(--ease-out) 120ms both}
- @supports (animation-timeline:scroll()){.js .hero-shot .browser-view img{animation:lift linear both;animation-timeline:scroll(root);animation-range:0 90vh}}
-}
+.hero-stage{position:relative;margin-top:clamp(36px,3.6vw,52px);scroll-margin-top:72px}
+@media (prefers-reduced-motion:no-preference){.js .hero-stage>.wrap{animation:arrive 900ms var(--ease-out) 120ms both}}
 @keyframes arrive{from{opacity:0;transform:translateY(32px)}}
-@keyframes lift{to{transform:translateY(-6%)}}
+.stage-note{margin-top:18px;color:var(--text-3);font-size:13px;text-align:center}
 
 /* ---- Section heads ---- */
 .sec-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px 48px;align-items:end;margin-bottom:56px}
@@ -99,20 +93,16 @@ main{position:relative;isolation:isolate;overflow-x:clip}
 .browser-view img,.browser-view video{display:block;width:100%;height:auto}
 
 /* ---- Tour: every product screen behind a pill ---- */
-.tour{position:relative;padding:clamp(112px,13vw,184px) 0 0}
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
-.pills button{min-height:42px;padding:0 18px;border:0;border-radius:99px;background:var(--panel-2);color:var(--text-2);font:inherit;font-size:var(--t-s);font-weight:550;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,transform 160ms var(--ease-out)}
+.pills-rail{display:flex;justify-content:center;margin-bottom:28px}
+.pills{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;padding:5px;border-radius:24px;background:var(--panel)}
+.pills button{flex:none;min-height:38px;padding:0 14px;border:0;border-radius:99px;background:transparent;color:var(--text-2);font:inherit;font-size:14px;font-weight:550;white-space:nowrap;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,transform 160ms var(--ease-out)}
 .pills button[aria-selected=true]{background:var(--text);color:var(--bg)}
 @media (hover:hover) and (pointer:fine){.pills button:not([aria-selected=true]):hover{background:var(--panel-3);color:var(--text)}}
 .tour-panels{display:grid}
-.tour-panel{grid-area:1/1;display:grid;gap:32px;transition:opacity 260ms ease,transform 260ms var(--ease-out)}
+.tour-panel{grid-area:1/1;display:grid;align-content:start;gap:24px;transition:opacity 260ms ease,transform 260ms var(--ease-out)}
 .tour-panel[hidden]{display:grid!important;opacity:0;transform:translateY(10px);visibility:hidden}
-.tour-copy{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:12px 48px;align-items:start}
-.tour-copy h3{font-size:var(--t-m)}
-.tour-copy p{color:var(--text-2)}
-.ticks{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:12px;font-size:var(--t-s);font-weight:550}
-.ticks li{display:flex;align-items:center;gap:8px}
-.ticks li::before{content:"";width:5px;height:9px;margin:-3px 2px 0 2px;border:solid var(--blue-hi);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.cap{max-width:72ch;min-height:2lh;margin-inline:auto;color:var(--text-2);text-align:center;text-wrap:balance}
+.cap strong{color:var(--text);font-weight:600}
 
 /* ---- AI: an assistant you can try ---- */
 .ai{margin-top:clamp(112px,13vw,184px);padding:clamp(88px,10vw,144px) 0}
@@ -248,15 +238,14 @@ main{position:relative;isolation:isolate;overflow-x:clip}
  .js .rise{opacity:0;transform:translateY(24px);transition:opacity 700ms var(--ease-out),transform 700ms var(--ease-out);transition-delay:var(--d,0ms)}
  .js .rise.in{opacity:1;transform:none}
 }
-@media (prefers-reduced-motion:reduce){.tour-panel,.sheet-panel{transition:none}.thread{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.tour-panel,.sheet-panel{transition:none}.tour-panel[hidden]{display:none!important}.thread{scroll-behavior:auto}}
 
 /* ---- Tablet ---- */
 @media (max-width:1060px){
  .bar-links{display:none}
  .hero-row,.sec-head{grid-template-columns:1fr}
  .hero-cta{justify-items:start}
- .tour-copy{grid-template-columns:1fr}
- .out-grid,.faq-grid{grid-template-columns:1fr;gap:40px}
+  .out-grid,.faq-grid{grid-template-columns:1fr;gap:40px}
  .faq-head{position:static}
  .doc-cards{grid-template-columns:1fr 1fr}
  .console{grid-template-columns:1fr}
@@ -270,15 +259,18 @@ main{position:relative;isolation:isolate;overflow-x:clip}
  .hero{padding-top:40px}
  .hero-head{gap:24px}
  .hero h1{font-size:10.6vw}
- .act{display:grid;width:100%}
  .hero-cta{justify-items:stretch}
- .hero-stage{height:auto;padding-top:24px;margin-top:36px}
+ .hero-cta .btn{width:100%}
+ .hero-stage{margin-top:36px}
  .browser{border-radius:10px}
  .browser-bar{grid-template-columns:44px 1fr 8px;height:32px;padding:0 10px}
  .lights{gap:5px}.lights i{width:8px;height:8px}
  .address{height:20px;font-size:11px;padding:0 8px}
- .pills{gap:6px;margin-bottom:28px}
- .pills button{min-height:38px;padding:0 14px}
+ .pills-rail{margin-bottom:20px}
+ .pills{padding:4px;border-radius:20px}
+ .pills button{min-height:36px;padding:0 12px}
+ .cap{font-size:var(--t-s);text-align:left;margin-inline:0}
+ .stage-note{text-align:left}
  .doc-cards{grid-template-columns:1fr}
  .doc-cards button{padding:14px 44px 14px 16px}
  .sec-head{margin-bottom:36px}

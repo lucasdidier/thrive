@@ -17,7 +17,7 @@
 <header class="bar">
  <div class="wrap bar-row">
   <a class="mark" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a>
-  <nav class="bar-links" aria-label="Sections"><a href="#tour">Product</a><a href="#ai">AI</a><a href="#outputs">Documents</a><a href="#faq">FAQ</a></nav>
+  <nav class="bar-links" aria-label="Sections"><a href="#product">Product</a><a href="#ai">AI</a><a href="#outputs">Documents</a><a href="#faq">FAQ</a></nav>
   <div class="bar-act"><a href="/auth/sign-in">Sign in</a><a class="btn sm" href="#request">Claim a free spot</a></div>
  </div>
 </header>
@@ -27,69 +27,73 @@
  <div class="wrap hero-head">
   <h1 id="hero-title"><span class="line">All your client work,</span> <span class="line">in one place.</span></h1>
   <div class="hero-row">
-   <p class="lede">Thrive is the workspace for freelancers and small studios: clients, proposals, contracts, invoices, time and scheduling, connected. Workflows and your AI assistant take care of the follow-ups.</p>
+   <p class="lede">Thrive is the workspace for freelancers and small studios: clients, proposals, contracts, invoices, emails, time and scheduling, connected. Workflows and your AI assistant take care of the follow‑ups.</p>
    <div class="hero-cta">
-    <div class="act"><a class="btn" href="#request">Claim a free spot</a><a class="btn ghost" href="#tour">See it in action</a></div>
+    <a class="btn" href="#request">Claim a free spot</a>
     <p class="fine">Free for the first 100. No credit card.</p>
    </div>
   </div>
   <div id="pending" class="pending" role="status" hidden>That Google account isn’t on the beta list yet. Claim a spot below and we’ll email you when it’s ready.</div>
  </div>
- <div class="hero-stage">
+ <div id="product" class="hero-stage">
   <div class="dotfield" aria-hidden="true"></div>
-  <div class="wrap"><figure class="browser hero-shot" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#overview</span></span></div><div class="browser-view"><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a timer running on the Orbit website" fetchpriority="high"></div></figure></div>
- </div>
-</section>
-
-<section id="tour" class="tour" aria-labelledby="tour-title">
- <div class="dotfield" aria-hidden="true"></div>
- <div class="wrap">
-  <div class="sec-head">
-   <h2 id="tour-title">See it in action</h2>
-   <p>Every screen below is the real product with sample data. One record follows each client from the first inquiry to the last invoice.</p>
-  </div>
-  <div class="pills" role="tablist" aria-label="Product tour"><button type="button" role="tab" id="t-event" aria-controls="p-event" aria-selected="true" tabindex="0">Calendar</button><button type="button" role="tab" id="t-clients" aria-controls="p-clients" aria-selected="false" tabindex="-1">Clients</button><button type="button" role="tab" id="t-forms" aria-controls="p-forms" aria-selected="false" tabindex="-1">Forms</button><button type="button" role="tab" id="t-proposal" aria-controls="p-proposal" aria-selected="false" tabindex="-1">Proposals</button><button type="button" role="tab" id="t-project" aria-controls="p-project" aria-selected="false" tabindex="-1">Projects</button><button type="button" role="tab" id="t-time" aria-controls="p-time" aria-selected="false" tabindex="-1">Time</button><button type="button" role="tab" id="t-invoice" aria-controls="p-invoice" aria-selected="false" tabindex="-1">Invoices</button><button type="button" role="tab" id="t-scheduling" aria-controls="p-scheduling" aria-selected="false" tabindex="-1">Scheduling</button><button type="button" role="tab" id="t-workflows" aria-controls="p-workflows" aria-selected="false" tabindex="-1">Workflows</button><button type="button" role="tab" id="t-mcp" aria-controls="p-mcp" aria-selected="false" tabindex="-1">AI &amp; MCP</button></div>
-  <div class="tour-panels">
-   <div class="tour-panel" role="tabpanel" id="p-event" aria-labelledby="t-event">
-    <div class="tour-copy"><h3>Every meeting, with its guests and join link</h3><div><p>Your calendar sits on the home screen. Open a meeting to see who’s coming, join the call and jump to the client.</p><ul class="ticks"><li>Google and Outlook calendars</li><li>Guests, agenda and join link</li><li>One click to the client</li></ul></div></div>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#overview</span></span></div><div class="browser-view"><img src="/landing/event.webp" width="1800" height="1125" alt="Calendar event drawer with guests, meeting link and agenda" loading="lazy"></div></figure>
+  <div class="wrap">
+   <div class="pills-rail"><div class="pills" role="tablist" aria-label="Product screens"><button type="button" role="tab" id="t-home" aria-controls="p-home" aria-selected="true" tabindex="0">Home</button><button type="button" role="tab" id="t-clients" aria-controls="p-clients" aria-selected="false" tabindex="-1">Clients</button><button type="button" role="tab" id="t-forms" aria-controls="p-forms" aria-selected="false" tabindex="-1">Forms</button><button type="button" role="tab" id="t-proposal" aria-controls="p-proposal" aria-selected="false" tabindex="-1">Proposals</button><button type="button" role="tab" id="t-contracts" aria-controls="p-contracts" aria-selected="false" tabindex="-1">Contracts</button><button type="button" role="tab" id="t-project" aria-controls="p-project" aria-selected="false" tabindex="-1">Projects</button><button type="button" role="tab" id="t-time" aria-controls="p-time" aria-selected="false" tabindex="-1">Time</button><button type="button" role="tab" id="t-invoice" aria-controls="p-invoice" aria-selected="false" tabindex="-1">Invoices</button><button type="button" role="tab" id="t-emails" aria-controls="p-emails" aria-selected="false" tabindex="-1">Emails</button><button type="button" role="tab" id="t-event" aria-controls="p-event" aria-selected="false" tabindex="-1">Calendar</button><button type="button" role="tab" id="t-scheduling" aria-controls="p-scheduling" aria-selected="false" tabindex="-1">Scheduling</button><button type="button" role="tab" id="t-workflows" aria-controls="p-workflows" aria-selected="false" tabindex="-1">Workflows</button><button type="button" role="tab" id="t-mcp" aria-controls="p-mcp" aria-selected="false" tabindex="-1">AI &amp; MCP</button></div></div>
+   <div class="tour-panels">
+   <div class="tour-panel" role="tabpanel" id="p-home" aria-labelledby="t-home">
+    <p class="cap"><strong>Your day at a glance.</strong> Money in, today’s meetings, open projects and the running timer, as soon as you sign in.</p>
+    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#overview</span></span></div><div class="browser-view"><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a timer running on the Orbit website" fetchpriority="high"></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-clients" aria-labelledby="t-clients" hidden>
-    <div class="tour-copy"><h3>Clients on a board, your way</h3><div><p>Group clients by service, status or any custom field, and switch between table and board in one click.</p><ul class="ticks"><li>Custom fields and tags</li><li>Board and table views</li><li>Emails, files and notes per client</li></ul></div></div>
+    <p class="cap"><strong>Clients on a board, your way.</strong> Group by service, status or any custom field, and switch between table and board in one click.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#clients</span></span></div><div class="browser-view"><img src="/landing/clients.webp" width="1800" height="1125" alt="Clients board grouped by service" loading="lazy"></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-forms" aria-labelledby="t-forms" hidden>
-    <div class="tour-copy"><h3>Inquiries that set themselves up</h3><div><p>Each form response creates the client and the project, ready for a call and a proposal.</p><ul class="ticks"><li>Embed on your website</li><li>Client and project created for you</li><li>File uploads included</li></ul></div></div>
+    <p class="cap"><strong>Inquiries that set themselves up.</strong> Each form response creates the client and the project, ready for a call and a proposal.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#forms</span></span></div><div class="browser-view"><img src="/landing/forms.webp" width="1800" height="1125" alt="Form responses from six new inquiries, each linked to its client" loading="lazy"></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-proposal" aria-labelledby="t-proposal" hidden>
-    <div class="tour-copy"><h3>Proposals clients say yes to</h3><div><p>A branded proposal with its fee and payment schedule. Clients accept it from a link, and the deposit invoice follows.</p><ul class="ticks"><li>Start from your templates</li><li>Accept or sign online</li><li>Versions tracked</li></ul></div></div>
+    <p class="cap"><strong>Proposals clients say yes to.</strong> Your fee and payment schedule on a branded page. Clients accept from a link, and the deposit invoice follows.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#proposals</span></span></div><div class="browser-view"><img src="/landing/proposal.webp" width="1800" height="1125" alt="Accepted Juniper brand identity proposal open in client preview" loading="lazy"></div></figure>
    </div>
+   <div class="tour-panel" role="tabpanel" id="p-contracts" aria-labelledby="t-contracts" hidden>
+    <p class="cap"><strong>Contracts signed from a link.</strong> Your standard terms go into every contract. Clients sign online with their name, and you see who signed and when.</p>
+    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#contracts</span></span></div><div class="browser-view"><img src="/landing/contracts.webp" width="1800" height="1125" alt="Contracts list with the signed Brand identity agreement for Juniper Studio open" loading="lazy"></div></figure>
+   </div>
    <div class="tour-panel" role="tabpanel" id="p-project" aria-labelledby="t-project" hidden>
-    <div class="tour-copy"><h3>One page per project</h3><div><p>Fee, collected and tracked time up top, with every proposal, invoice, email and hour in one timeline.</p><ul class="ticks"><li>Budget against collected</li><li>Every document in one place</li><li>A full activity timeline</li></ul></div></div>
+    <p class="cap"><strong>One page per project.</strong> Fee, collected and tracked time up top, with every proposal, invoice, email and hour in one timeline.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#projects/p1</span></span></div><div class="browser-view"><img src="/landing/project.webp" width="1800" height="1125" alt="Project page with fee, collected amount, tracked time and activity" loading="lazy"></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-time" aria-labelledby="t-time" hidden>
-    <div class="tour-copy"><h3>A timer that’s always one click away</h3><div><p>Start it from any page, see the week at a glance, and turn unbilled hours into an invoice draft.</p><ul class="ticks"><li>Timer on every page</li><li>Weekly timesheet</li><li>Unbilled hours to invoice</li></ul></div></div>
+    <p class="cap"><strong>A timer one click away.</strong> Start it from any page, see the week at a glance, and turn unbilled hours into an invoice draft.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#time</span></span></div><div class="browser-view"><video src="/landing/time-live.mp4" poster="/landing/time-live.webp" width="1800" height="1124" muted loop playsinline preload="none" aria-label="Recording of the Time page: the timer on the Orbit website ticking, with the week’s totals"></video></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-invoice" aria-labelledby="t-invoice" hidden>
-    <div class="tour-copy"><h3>Invoices your clients understand</h3><div><p>Line items, tax and payment details on a clean page with your logo. Record payments as they land.</p><ul class="ticks"><li>Any currency, with tax</li><li>Deposits and milestones</li><li>Overdue invoices surface on their own</li></ul></div></div>
+    <p class="cap"><strong>Invoices your clients understand.</strong> Line items, tax and payment details on a clean page with your logo. Record payments as they land.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#invoices</span></span></div><div class="browser-view"><img src="/landing/invoice.webp" width="1800" height="1125" alt="Invoice INV-006 for Orbit, €8,831.40 including VAT" loading="lazy"></div></figure>
    </div>
+   <div class="tour-panel" role="tabpanel" id="p-emails" aria-labelledby="t-emails" hidden>
+    <p class="cap"><strong>Client emails, filed for you.</strong> Connect Gmail or Outlook and each conversation lands on its client and project, with replies you can track.</p>
+    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#messages</span></span></div><div class="browser-view"><img src="/landing/emails.webp" width="1800" height="1125" alt="Emails inbox with client conversations, the Juniper Studio thread open" loading="lazy"></div></figure>
+   </div>
+   <div class="tour-panel" role="tabpanel" id="p-event" aria-labelledby="t-event" hidden>
+    <p class="cap"><strong>Every meeting, with its guests and join link.</strong> Your calendar sits on the home screen. Open a meeting to see who’s coming, join the call and jump to the client.</p>
+    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#overview</span></span></div><div class="browser-view"><img src="/landing/event.webp" width="1800" height="1125" alt="Calendar event drawer with guests, meeting link and agenda" loading="lazy"></div></figure>
+   </div>
    <div class="tour-panel" role="tabpanel" id="p-scheduling" aria-labelledby="t-scheduling" hidden>
-    <div class="tour-copy"><h3>Booking pages that check your calendar</h3><div><p>Share a link for discovery calls or workshops. Thrive only offers times you’re free, and every booking lands on the client.</p><ul class="ticks"><li>Several meeting types</li><li>Buffers and notice periods</li><li>Follow-up drafts after each call</li></ul></div></div>
+    <p class="cap"><strong>Booking pages that check your calendar.</strong> Share a link for calls or workshops. Thrive only offers times you’re free, and every booking lands on the client.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#scheduling</span></span></div><div class="browser-view"><img src="/landing/scheduling.webp" width="1800" height="1125" alt="Scheduling page with five upcoming client meetings" loading="lazy"></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-workflows" aria-labelledby="t-workflows" hidden>
-    <div class="tour-copy"><h3>Follow-ups on autopilot</h3><div><p>Pick what happens and what Thrive should do next, from 77 triggers and 43 actions. Test it on a real record before it goes live.</p><ul class="ticks"><li>Up to 20 actions per workflow</li><li>Templates to start from</li><li>Every run logged</li></ul></div></div>
+    <p class="cap"><strong>Follow-ups on autopilot.</strong> Pick a trigger and what Thrive does next, from 77 triggers and 43 actions. Test it on a real record before it goes live.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#workflows</span></span></div><div class="browser-view"><img src="/landing/builder.webp" width="1800" height="1125" alt="Workflow editor: when a time entry is added, add a note to the linked client" loading="lazy"></div></figure>
    </div>
    <div class="tour-panel" role="tabpanel" id="p-mcp" aria-labelledby="t-mcp" hidden>
-    <div class="tour-copy"><h3>Works with your AI assistant</h3><div><p>Connect Claude, ChatGPT, Cursor or Codex over MCP. Agents act with your access and preview before they change anything.</p><ul class="ticks"><li>One address to connect</li><li>Previews before changes</li><li>Never sends without your OK</li></ul></div></div>
+    <p class="cap"><strong>Works with your AI assistant.</strong> Connect Claude, ChatGPT, Cursor or Codex over MCP. Agents act with your access and preview before they change anything.</p>
     <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#settings/mcp</span></span></div><div class="browser-view"><img src="/landing/mcp.webp" width="1800" height="1125" alt="AI and MCP settings with the server address and example prompts" loading="lazy"></div></figure>
    </div>
+   </div>
+   <p class="stage-note">The real product with fictional sample data.</p>
   </div>
  </div>
 </section>
@@ -195,7 +199,7 @@
  <div class="wrap foot-grid">
   <div class="foot-brand"><a class="mark" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a><p>The workspace for freelancers and small studios.</p></div>
   <nav class="foot-links" aria-label="Footer">
-   <ul><li><a href="#tour">Product</a></li><li><a href="#ai">AI and MCP</a></li><li><a href="#outputs">Documents</a></li></ul>
+   <ul><li><a href="#product">Product</a></li><li><a href="#ai">AI and MCP</a></li><li><a href="#outputs">Documents</a></li></ul>
    <ul><li><a href="#faq">Questions</a></li><li><a href="#request">Claim a free spot</a></li><li><a href="/auth/sign-in">Sign in</a></li></ul>
    <ul><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="mailto:hello@thrive.example" id="contact">Contact</a></li></ul>
   </nav>

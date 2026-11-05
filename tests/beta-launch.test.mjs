@@ -131,6 +131,14 @@ test('landing, legal pages and production config ship together',()=>{
  assert.doesNotMatch(prod,/SECRET|API_KEY"\s*:/);
 });
 
+test('the hero product switcher shows a screen for every section in the app sidebar',async()=>{
+ const {workspaceSections}=await import('../public/sidebar-sections.js');
+ const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
+ const hero=landing.slice(landing.indexOf('<section class="hero"'),landing.indexOf('</section>'));
+ const shown=new Set([...hero.matchAll(/class="url">thrivehq\.com\/#([a-z-]+)/g)].map(m=>m[1]));
+ for(const [id,label] of workspaceSections)assert.ok(shown.has(id),`${label} has no screen in the hero`);
+});
+
 test('landing page claims match the real workflow catalog and MCP tools',async()=>{
  const {triggers,actions}=await import('../public/workflow-domain.js');
  const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');

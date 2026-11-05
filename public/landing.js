@@ -14,7 +14,8 @@ function tabs(list,{vertical=false,onShow=()=>{}}={}){
   t.addEventListener('keydown',e=>{const n=keys[e.key];if(n){e.preventDefault();show(all[(i+n+all.length)%all.length],true);}if(e.key==='Home'){e.preventDefault();show(all[0],true);}if(e.key==='End'){e.preventDefault();show(all.at(-1),true);}});
  });
 }
-// The recorded clip plays only while its tab shows, and never with reduced motion.
+// Product screens in the hero. The recorded clip plays only while its tab shows, and never
+// with reduced motion.
 tabs($('.pills'),{onShow:()=>$$('.tour-panel video').forEach(v=>{if(!v.closest('.tour-panel').hidden&&!reduce.matches)v.play().catch(()=>{});else v.pause();})});
 tabs($('.doc-cards'),{vertical:true});
 
@@ -73,7 +74,7 @@ if(!reduce.matches){
  const pending=new Set();
  const due=()=>{for(const el of pending)if(el.getBoundingClientRect().top<innerHeight*.92){el.classList.add('in');pending.delete(el);}};
  const rise=els=>els.forEach((el,i)=>{if(el.getBoundingClientRect().top<innerHeight)return;el.classList.add('rise');el.style.setProperty('--d',`${Math.min(i,4)*80}ms`);pending.add(el);});
- [['#tour .sec-head > *','.pills','.tour-panels'],['#ai .sec-head > *','.console','.promises li'],['.out-index > *','.out-stage'],['.faq-head > *','.faq-list'],['.claim-inner > *']].forEach(g=>rise(g.flatMap(s=>$$(s))));
+ [['#ai .sec-head > *','.console','.promises li'],['.out-index > *','.out-stage'],['.faq-head > *','.faq-list'],['.claim-inner > *']].forEach(g=>rise(g.flatMap(s=>$$(s))));
  addEventListener('scroll',()=>requestAnimationFrame(due),{passive:true});
 }
 

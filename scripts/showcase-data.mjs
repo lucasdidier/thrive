@@ -84,10 +84,21 @@ export function showcaseWorkspace(s,now=new Date()){
  ].forEach(([typeId,name,contact,email,brief],i)=>{
   for(let d=1+i;d<20;d++){const slots=availableSlots(s,typeId,day(now,d),now.getTime());if(slots.length){bookMeeting(s,typeId,{start:slots[Math.min(slots.length-1,2+i*3)],name,contact,email,brief},'showcase-meeting-'+i,now.getTime());break;}}
  });
+ // Contracts at each stage, so the Contracts page has real rows. Created before Juniper's
+ // so the signed Juniper contract stays first (the client-contract shot uses it).
+ const contract=(name,title,scope,stage,signer)=>{
+  const cl=s.clients.find(c=>c.name===name);if(!cl||s.documents.some(d=>d.kind==='contract'&&d.clientId===cl.id))return;
+  const proj=s.projects.find(x=>x.clientId===cl.id);
+  const d=createDocument(s,{clientId:cl.id,projectId:proj?.id,kind:'contract',title,showPricing:false,scope});
+  if(stage!=='draft')publishDocument(s,d.id);if(stage==='signed')respondDocument(s,d.id,1,'sign',{name:signer,consent:true});
+ };
+ contract('Paper & Pine','Brand refresh agreement','Morgan Studio will refresh the Paper & Pine identity: logo, palette and packaging system.','draft');
+ contract('Forma','Editorial design agreement','Morgan Studio will design the layout system for The autumn edition, 96 pages, print-ready.','signed','Emma Davis');
+ contract('Orbit','Website development agreement','Morgan Studio will design and build Phase 2 of the Orbit website: design system, case study templates and launch support.','sent');
  // A signed contract and a client portal, so the client-facing pages have real content.
  const juniper=s.clients.find(c=>c.name==='Juniper Studio');
  if(juniper&&!s.documents.some(d=>d.kind==='contract'&&d.clientId===juniper.id)){
-  const c=createDocument(s,{clientId:juniper.id,kind:'contract',title:'Brand identity agreement',showPricing:false,
+  const c=createDocument(s,{clientId:juniper.id,projectId:s.projects.find(x=>x.clientId===juniper.id&&x.name==='Juniper brand identity')?.id,kind:'contract',title:'Brand identity agreement',showPricing:false,
    scope:'Morgan Studio will design a visual identity for Juniper Studio, as set out in the accepted proposal “Juniper brand identity”.',
    deliverables:'Primary logo and supporting marks\nColour palette and typography\nBrand guide (PDF)',
    terms:'Fee: €6,000.00 in three payments: €3,000.00 deposit on signature, €1,800.00 when the logo and palette are approved, €1,200.00 on delivery.\nTwo rounds of revisions are included at each stage.\nRights to the final files transfer to Juniper Studio once the final invoice is paid.'});
@@ -101,6 +112,25 @@ export function showcaseWorkspace(s,now=new Date()){
  const live=p('Orbit website');
  if(live&&!(s.runningTimers||[]).length)startTimer(s,{projectId:live.id,task:'Development',note:'Homepage hero animation'},'workspace-owner',now.getTime()-72*60000);
  return s;
+}
+
+// Client email conversations for the Emails page, in the shape listConversations returns.
+export function showcaseThreads(s,now=new Date()){
+ const ago=h=>new Date(now.getTime()-h*3600000).toISOString();
+ const me='alex@morgan.example';
+ const thread=(id,name,subject,messages)=>{
+  const c=s.clients.find(x=>x.name===name);if(!c)return null;
+  const msgs=messages.map(([dir,hours,body],i)=>({id:`${id}-m${i}`,from:dir==='in'?c.email:me,to:dir==='in'?me:c.email,subject:i?'Re: '+subject:subject,date:ago(hours),body,bodyFormat:'text',direction:dir==='in'?'incoming':'outgoing'}));
+  return {id,provider:'nylas',subject,messages:msgs,truncated:false,updatedAt:msgs.at(-1).date,clientId:c.id,projectId:s.projects.find(p=>p.clientId===c.id)?.id||null,archived:false};
+ };
+ return [
+  thread('t1','Juniper Studio','Logo lockups · final round',[['out',30,'Hi Sophie,\n\nThe final lockups are in your portal: primary, stacked and the monogram. Let me know which colour you prefer for the wordmark.\n\nAlex'],['in',2,'Hi Alex,\n\nLove them! Could we see the wordmark in the darker green too? Then we’re ready to sign off.\n\nSophie']]),
+  thread('t2','Northstar Labs','Seed-round launch site',[['in',5,'Hi Alex,\n\nThanks for the call today. Sharing our pitch deck and the two sites we like. Could you send a proposal by Friday?\n\nPriya']]),
+  thread('t3','Orbit','Phase 2 invoice',[['out',8,'Hi James,\n\nHere’s the invoice for Phase 2 of the website. You can pay online from the link, and the case study templates are live on staging.\n\nThanks,\nAlex']]),
+  thread('t4','Harbor & Vine','Label refresh · print specs',[['in',26,'Hi Alex,\n\nOur printer needs 3 mm bleed and CMYK files. Is that OK for the six SKUs?\n\nTom'],['out',24,'Hi Tom,\n\nNo problem, I’ll set up the dielines with 3 mm bleed. Expect the first round next Tuesday.\n\nAlex']]),
+  thread('t5','Ember Coffee','Seasonal packaging moodboard',[['in',47,'Hi Alex,\n\nThe winter moodboard is perfect. Can we add a version with the copper foil?\n\nLeo']]),
+  thread('t6','Bloom Florals','Subscription shop scope',[['in',52,'Hi Alex,\n\nLooking forward to our call. We’d like weekly and monthly plans, plus gift cards.\n\nHana']]),
+ ].filter(Boolean);
 }
 
 // Calendar events for the dashboard, in the shape listNylasEvents returns.

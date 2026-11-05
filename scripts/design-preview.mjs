@@ -17,7 +17,7 @@ initScheduling(state,'Europe/Lisbon');
 initWorkflows(state);
 // THRIVE_SHOWCASE=1: richer fictional data, a connected calendar and no preview banner, for landing page screenshots.
 const showcase=process.env.THRIVE_SHOWCASE==='1';
-const {showcaseWorkspace,showcaseEvents}=showcase?await import('./showcase-data.mjs'):{};
+const {showcaseWorkspace,showcaseEvents,showcaseThreads}=showcase?await import('./showcase-data.mjs'):{};
 const {clientProjection}=showcase?await import('../server/sharing.mjs'):{};
 if(showcase)showcaseWorkspace(state);
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
@@ -35,7 +35,7 @@ const server=createServer(async(req,res)=>{
    }
   }
   if(showcase&&url.pathname==='/api/communications'){
-   if(req.method==='GET')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true,gmail:false}},threads:[]});
+   if(req.method==='GET')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true,gmail:true,lastSync:new Date(Date.now()-6*60000).toISOString()}},threads:showcaseThreads(state),operations:[]});
    return json({events:showcaseEvents(),nextCursor:null});
   }
   if(showcase&&url.pathname==='/api/scheduler')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true}},pages:Object.fromEntries(state.scheduling.types.map(t=>[t.id,{published:true,url:'https://thrivehq.com/book/morgan-studio/'+t.id}])),meetings:[]});

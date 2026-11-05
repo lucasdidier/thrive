@@ -27,6 +27,8 @@ const shots={
  workflows:{hideTimer:true,hash:'workflows'},
  proposal:{hideTimer:true,hash:'proposals',steps:[`document.querySelector('[data-action="document"][data-id="doc-p1"]').click()`,`document.querySelector('[data-action="doc-client"]').click()`]},
  scheduling:{hideTimer:true,hash:'scheduling'},
+ contracts:{hideTimer:true,hash:'contracts',steps:[`document.querySelector('[data-action="document"]').click()`]},
+ emails:{hideTimer:true,hash:'messages'},
  builder:{hideTimer:true,hash:'workflows',steps:[`document.querySelector('[data-action="wf-edit"]').click()`]},
  // The pages clients open from a link (real client view, fictional data).
  'client-proposal':{path:'/share/document.doc-p1',w:1120,h:900},
