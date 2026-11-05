@@ -105,3 +105,23 @@ form .btn{justify-self:start}
 .tool small{font:inherit;opacity:.75}
 .tool .dot{width:7px;height:7px;border-radius:50%;background:var(--positive)}
 @media (max-width:860px){.ai{grid-template-columns:1fr;gap:32px}}
+/* Founding 100 offer */
+.pill.offer{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);background:color-mix(in srgb,var(--primary) 8%,var(--bg));border-color:color-mix(in srgb,var(--primary) 30%,var(--line));transition:border-color .15s}
+.pill.offer:hover{border-color:var(--primary)}
+.pill.offer strong{color:var(--link);font-weight:650}
+.pulse{position:relative;width:8px;height:8px;border-radius:50%;background:var(--primary)}
+.pulse::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--primary);animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.6}to{transform:scale(3);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pulse::after{animation:none}}
+.fine{margin:14px 0 0;color:var(--muted);font-size:14px}
+.kicker{margin:0 0 10px;color:var(--link);font-size:13px;font-weight:650;letter-spacing:.08em;text-transform:uppercase}
+.founding{margin:96px auto 64px;padding:64px 48px;text-align:center;border-radius:20px;background:radial-gradient(120% 140% at 50% 0%,color-mix(in srgb,var(--primary) 14%,var(--bg)),var(--subtle) 70%);border:1px solid color-mix(in srgb,var(--primary) 20%,var(--line))}
+.founding h2{font-size:clamp(30px,4.6vw,46px);letter-spacing:-.03em}
+.founding .lead{margin-top:8px}
+.perks{list-style:none;margin:40px auto 0;padding:0;max-width:880px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:left}
+.perks li{display:grid;align-content:start;gap:4px;padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.perks li::before{content:"✓";display:grid;place-items:center;width:24px;height:24px;margin-bottom:8px;border-radius:50%;background:var(--primary);color:var(--on-primary);font-size:13px;font-weight:700}
+.perks span{color:var(--muted);font-size:15px}
+.request-card{border-color:color-mix(in srgb,var(--primary) 25%,var(--line))}
+@media (max-width:760px){.perks{grid-template-columns:1fr}.founding{padding:40px 20px;margin-top:64px}}
+.request-card .kicker{color:var(--link)}

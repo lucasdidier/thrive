@@ -5,7 +5,7 @@
 <meta name="color-scheme" content="light dark">
 <title>Thrive — Run your service business in one place</title>
 <meta name="description" content="Clients, projects, proposals, contracts, invoices, time and scheduling in one connected workspace for independent service businesses.">
-<meta property="og:title" content="Thrive"><meta property="og:description" content="Clients, projects, proposals, invoices, time and scheduling in one workspace."><meta property="og:image" content="/landing/overview.webp">
+<meta property="og:title" content="Thrive"><meta property="og:description" content="Clients, projects, proposals, invoices, time and scheduling in one workspace. The first 100 users get free access."><meta property="og:image" content="/landing/overview.webp">
 <link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/typography.css"><link rel="stylesheet" href="/landing.css">
 </head>
@@ -17,11 +17,12 @@
 
 <main>
 <section class="hero wrap">
- <p class="pill">Private beta</p>
+ <a class="pill offer" href="#request"><span class="pulse" aria-hidden="true"></span>Early access · <strong>Free for the first 100</strong></a>
  <h1>Run your service business in one place.</h1>
  <p class="lead">Clients, projects, proposals, contracts, invoices, time and scheduling, all connected. Built for freelancers and small studios.</p>
- <div class="actions"><a class="btn primary" href="#request">Request access</a><a class="btn ghost" href="/auth/sign-in">I have an invite</a></div>
- <div id="pending" class="notice" role="status" hidden>That Google account isn’t on the beta list yet. Request access below and we’ll email you when your spot is ready.</div>
+ <div class="actions"><a class="btn primary" href="#request">Claim your free spot</a><a class="btn ghost" href="/auth/sign-in">I have an invite</a></div>
+ <p class="fine">No credit card. Just your Google account.</p>
+ <div id="pending" class="notice" role="status" hidden>That Google account isn’t on the beta list yet. Claim a free spot below and we’ll email you when it’s ready.</div>
  <figure class="shot hero-shot"><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a running timer"></figure>
 </section>
 
@@ -72,19 +73,31 @@
 </section>
 
 
+<section class="wrap founding" aria-labelledby="founding-title">
+ <p class="kicker">The founding 100</p>
+ <h2 id="founding-title">The first 100 users get Thrive free.</h2>
+ <p class="lead">We’re opening Thrive to a small group of freelancers and studios first. Get in early, and your access is on us.</p>
+ <ul class="perks">
+  <li><strong>Free access</strong><span>No credit card, nothing to cancel.</span></li>
+  <li><strong>Shape what we build</strong><span>Your feedback goes straight to the roadmap.</span></li>
+  <li><strong>New features first</strong><span>Try everything before anyone else does.</span></li>
+ </ul>
+</section>
+
 <section id="request" class="wrap request">
  <div class="request-card">
-  <h2>Request access</h2>
-  <p>We’re letting people in a few at a time.</p>
+  <p class="kicker">Limited to 100 spots</p>
+  <h2>Claim your free spot</h2>
+  <p>Spots go in the order people ask. We’re letting people in a few at a time.</p>
   <form id="request-form" novalidate>
    <div class="two"><label>Name<input name="name" autocomplete="name" maxlength="80" required placeholder="Alex Morgan"></label><label>Business<input name="business" autocomplete="organization" maxlength="80" placeholder="Juniper Studio"></label></div>
    <label>Google account email<input name="email" type="email" autocomplete="email" maxlength="254" required placeholder="name@gmail.com"></label>
    <label>What do you do?<textarea name="work" rows="3" maxlength="500" placeholder="Brand design for small businesses, mostly fixed-fee projects…"></textarea></label>
    <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
    <p class="error" role="alert"></p>
-   <button class="btn primary" type="submit">Request access</button>
+   <button class="btn primary" type="submit">Claim my free spot</button>
   </form>
-  <div class="done" role="status" hidden><h3>You’re on the list</h3><p>We’ll email you when your spot is ready.</p></div>
+  <div class="done" role="status" hidden><h3>You’re in line 🎉</h3><p>Your request is saved. We’ll email you as soon as your free spot is ready.</p></div>
  </div>
 </section>
 </main>

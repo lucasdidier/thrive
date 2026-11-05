@@ -121,7 +121,7 @@ test('a failing scheduled job alerts and does not stop the others',async()=>{
 });
 test('landing, legal pages and production config ship together',()=>{
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
- for(const s of ['id="request-form"','name="website"','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
+ for(const s of ['Free for the first 100','id="request-form"','name="website"','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
  for(const img of [...landing.matchAll(/src="\/landing\/([a-z]+\.webp)"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+img,import.meta.url)),img);
  assert.equal((landing.match(/role="tab"/g)||[]).length,(landing.match(/role="tabpanel"/g)||[]).length);
  for(const page of ['privacy','terms'])assert.match(readFileSync(new URL(`../ui/${page}.html`,import.meta.url),'utf8'),/Last updated/);
