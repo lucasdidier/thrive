@@ -12,39 +12,65 @@
 <body>
 <header class="top"><div class="wrap top-row">
  <a class="brand" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a>
- <nav><a href="#tour">Tour</a><a href="#features">Features</a><a class="btn ghost" href="/auth/sign-in">Sign in</a></nav>
+ <nav><a href="#automate">Automation</a><a href="#tour">Tour</a><a href="#faq">FAQ</a><a class="btn ghost" href="/auth/sign-in">Sign in</a></nav>
 </div></header>
 
 <main>
-<section class="hero wrap">
+<section class="hero">
+ <div class="wrap">
  <a class="pill offer" href="#request"><span class="pulse" aria-hidden="true"></span>Early access · <strong>Free for the first 100</strong></a>
  <h1>Run your service business in one place.</h1>
- <p class="lead">Clients, projects, proposals, contracts, invoices, time and scheduling, all connected. Built for freelancers and small studios.</p>
+ <p class="lead">Clients, projects, proposals, contracts, invoices, time and scheduling, all connected. Automate the busywork yourself, or hand it to your AI assistant.</p>
  <div class="actions"><a class="btn primary" href="#request">Claim your free spot</a><a class="btn ghost" href="/auth/sign-in">I have an invite</a></div>
  <p class="fine">No credit card. Just your Google account.</p>
  <div id="pending" class="notice" role="status" hidden>That Google account isn’t on the beta list yet. Claim a free spot below and we’ll email you when it’s ready.</div>
- <figure class="shot hero-shot"><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a running timer"></figure>
+ <div class="hero-stage">
+  <figure class="frame hero-frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/overview</span></div><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a running timer"></figure>
+  <div class="float float-a" aria-hidden="true"><span class="float-ico ok">✓</span><span><strong>Proposal accepted</strong><small>Juniper Studio · €6,000</small></span></div>
+  <div class="float float-b" aria-hidden="true"><span class="float-ico bolt">⚡</span><span><strong>Workflow ran</strong><small>Tagged Northstar Labs “New inquiry”</small></span></div>
+  <div class="float float-c" aria-hidden="true"><span class="float-ico spark">✦</span><span><strong>Claude</strong><small>2 reminder drafts ready to review</small></span></div>
+ </div>
+ <p class="made-for">Made for <span>designers</span><span>developers</span><span>consultants</span><span>photographers</span><span>copywriters</span><span>coaches</span><span>small studios</span></p>
+ </div>
 </section>
 
-<section id="tour" class="wrap tour" aria-labelledby="tour-title">
- <h2 id="tour-title">See it in action</h2>
- <div class="tour-tabs" role="tablist" aria-label="Product tour"><button type="button" role="tab" id="tab-event" aria-controls="panel-event" aria-selected="true" tabindex="0">Calendar</button><button type="button" role="tab" id="tab-project" aria-controls="panel-project" aria-selected="false" tabindex="-1">Projects</button><button type="button" role="tab" id="tab-invoice" aria-controls="panel-invoice" aria-selected="false" tabindex="-1">Invoices</button><button type="button" role="tab" id="tab-time" aria-controls="panel-time" aria-selected="false" tabindex="-1">Time</button><button type="button" role="tab" id="tab-clients" aria-controls="panel-clients" aria-selected="false" tabindex="-1">Clients</button><button type="button" role="tab" id="tab-forms" aria-controls="panel-forms" aria-selected="false" tabindex="-1">Forms</button><button type="button" role="tab" id="tab-workflows" aria-controls="panel-workflows" aria-selected="false" tabindex="-1">Workflows</button><button type="button" role="tab" id="tab-mcp" aria-controls="panel-mcp" aria-selected="false" tabindex="-1">AI &amp; MCP</button></div>
- <div class="tour-panel" role="tabpanel" id="panel-event" aria-labelledby="tab-event"><div class="tour-copy"><h3>Every meeting, with its guests and join link</h3><p>Your calendar sits on the home screen. Open a meeting to see who’s coming, join the call, and jump to the client.</p></div><figure class="shot"><img src="/landing/event.webp" width="1800" height="1125" alt="Calendar event drawer with guests, meeting link and description"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-project" aria-labelledby="tab-project" hidden><div class="tour-copy"><h3>One page per project</h3><p>Fee, collected and tracked time up top, with every proposal, invoice, email and hour in one timeline.</p></div><figure class="shot"><img src="/landing/project.webp" width="1800" height="1125" alt="Project page with fee, collected amount, tracked time and activity" loading="lazy"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-invoice" aria-labelledby="tab-invoice" hidden><div class="tour-copy"><h3>Invoices your clients understand</h3><p>Line items, tax and payment details on a clean page with your logo. Share a link and record payments as they land.</p></div><figure class="shot"><img src="/landing/invoice.webp" width="1800" height="1125" alt="Invoice preview with line items, tax and payment instructions" loading="lazy"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-time" aria-labelledby="tab-time" hidden><div class="tour-copy"><h3>A timer that’s always one click away</h3><p>Start it from anywhere, see the week at a glance, and turn unbilled hours into an invoice draft.</p></div><figure class="shot"><img src="/landing/time.webp" width="1800" height="1125" alt="Time tracker with a running timer and the week’s totals" loading="lazy"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-clients" aria-labelledby="tab-clients" hidden><div class="tour-copy"><h3>Clients on a board, your way</h3><p>Group clients by service, status or any custom field. Switch between table and board in one click.</p></div><figure class="shot"><img src="/landing/clients.webp" width="1800" height="1125" alt="Clients board grouped by service" loading="lazy"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-forms" aria-labelledby="tab-forms" hidden><div class="tour-copy"><h3>Inquiries that set themselves up</h3><p>Each form response creates the client and the project, ready for a proposal.</p></div><figure class="shot"><img src="/landing/forms.webp" width="1800" height="1125" alt="Form submissions list with new client inquiries" loading="lazy"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-workflows" aria-labelledby="tab-workflows" hidden><div class="tour-copy"><h3>Follow-ups on autopilot</h3><p>Tag new inquiries, note logged time, invoice deposits on signature. Every run is logged.</p></div><figure class="shot"><img src="/landing/workflows.webp" width="1800" height="1125" alt="Workflows list with triggers, actions and last run" loading="lazy"></figure></div>
- <div class="tour-panel" role="tabpanel" id="panel-mcp" aria-labelledby="tab-mcp" hidden><div class="tour-copy"><h3>Works with your AI assistant</h3><p>Connect Claude, ChatGPT, Cursor or Codex over MCP. Agents act with your access and preview before they change anything.</p></div><figure class="shot"><img src="/landing/mcp.webp" width="1800" height="1125" alt="AI and MCP settings with the server URL and example prompts" loading="lazy"></figure></div>
+<section id="automate" class="automate" aria-labelledby="automate-title">
+ <div class="wrap">
+  <div class="automate-head">
+   <p class="kicker">Workflows + AI</p>
+   <h2 id="automate-title">Automate anything.<br><span class="grad">Or just ask your AI to.</span></h2>
+   <p class="lead">Pick a trigger and an action to build a workflow in seconds. Or describe it in plain words: your AI assistant builds it over MCP, tests it on a real record, and turns it on when you say so.</p>
+   <ul class="stats"><li><strong>77</strong><span>triggers</span></li><li><strong>43</strong><span>actions</span></li><li><strong>0</strong><span>lines of code</span></li></ul>
+  </div>
+  <div class="automate-grid">
+   <div class="chat dark" aria-label="Example: an AI assistant creating workflows in Thrive">
+    <div class="chat-head"><span class="chat-dot"></span>Your AI assistant · connected to Thrive</div>
+    <div class="msg you">When a client signs a contract, create the deposit invoice and tag them “Active”.</div>
+    <div class="tool"><span class="dot"></span>thrive_get_catalog <small>triggers and actions</small></div>
+    <div class="msg bot">Each Thrive workflow has one trigger and one action, so I’ll set up two:
+     <ol class="wf"><li><b>Contract signed</b> → Create deposit invoice</li><li><b>Contract signed</b> → Add client tag “Active”</li></ol></div>
+    <div class="tool"><span class="dot"></span>thrive_test_workflow <small>on “Juniper brand identity”, nothing saved</small></div>
+    <div class="msg bot">Test passed: a €3,000 deposit draft would be created for Juniper Studio. Turn both on?</div>
+    <div class="msg you">Yes, go.</div>
+    <div class="tool"><span class="dot"></span>workflow.save <small>× 2 · enabled</small></div>
+    <div class="msg bot">Both are live. Every run shows up in <strong>Run history</strong>.</div>
+   </div>
+   <div class="automate-side">
+    <figure class="frame glow"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/workflows</span></div><img src="/landing/builder.webp" width="1800" height="1125" alt="Workflow editor: when a time entry is added, add a note to the linked client" loading="lazy"></figure>
+    <ul class="recipes" aria-label="Example workflows"><li><span class="when">Form submitted</span><span class="arrow" aria-hidden="true">→</span><span class="then">Create project</span></li><li><span class="when">Proposal accepted</span><span class="arrow" aria-hidden="true">→</span><span class="then">Create contract draft</span></li><li><span class="when">Contract signed</span><span class="arrow" aria-hidden="true">→</span><span class="then">Create deposit invoice</span></li><li><span class="when">Invoice fully paid</span><span class="arrow" aria-hidden="true">→</span><span class="then">Add client tag</span></li><li><span class="when">Meeting completed</span><span class="arrow" aria-hidden="true">→</span><span class="then">Draft meeting follow-up</span></li><li><span class="when">Time entry added</span><span class="arrow" aria-hidden="true">→</span><span class="then">Add client note</span></li></ul>
+   </div>
+  </div>
+ </div>
 </section>
 
 <section class="wrap ai" aria-labelledby="ai-title">
  <div class="ai-copy">
-  <p class="pill">MCP enabled</p>
-  <h2 id="ai-title">Ask your AI assistant to do the busywork</h2>
+  <p class="kicker">MCP enabled</p>
+  <h2 id="ai-title">Your AI assistant, with your whole business in context</h2>
   <p>Thrive speaks MCP, the open standard AI assistants use to work with apps. Ask in plain words: your assistant reads your clients, projects and invoices, drafts the next step, and shows you a preview first.</p>
-  <ul class="ai-works"><li>Claude</li><li>ChatGPT</li><li>Cursor</li><li>Codex</li></ul>
+  <ul class="prompts" aria-label="Things you can ask"><li>“Which invoices are overdue?”</li><li>“Import these 40 clients from my CSV.”</li><li>“When am I free on Friday afternoon?”</li><li>“Draft a follow-up for today’s discovery call.”</li><li>“Summarize everything with Juniper this month.”</li></ul>
+  <ul class="safe"><li><b>Preview first.</b> Changes are checked on a copy before they’re saved.</li><li><b>You send.</b> No email or invite goes out without your explicit OK.</li><li><b>Your access only.</b> Agents see exactly what you see, nothing more.</li></ul>
+  <ul class="ai-works" aria-label="Works with"><li>Claude</li><li>ChatGPT</li><li>Cursor</li><li>Codex</li></ul>
  </div>
  <div class="chat" aria-label="Example conversation with an AI assistant using Thrive">
   <div class="msg you">Which invoices are overdue? Draft a friendly reminder for each.</div>
@@ -55,6 +81,33 @@
   <div class="tool"><span class="dot"></span>emailDraft.save <small>2 drafts, not sent</small></div>
   <div class="msg bot">Both reminders are saved as drafts in <strong>Emails</strong>. Nothing has been sent. Review them and send when you’re happy.</div>
  </div>
+</section>
+
+<section class="wrap journey" aria-labelledby="journey-title">
+ <p class="kicker">One connected flow</p>
+ <h2 id="journey-title">From first inquiry to final payment</h2>
+ <ol class="steps">
+  <li><a href="#tour" data-tab="forms"><span>1</span><strong>Inquiry</strong><small>A form creates the client and project</small></a></li>
+  <li><a href="#tour" data-tab="scheduling"><span>2</span><strong>Discovery call</strong><small>They book a time you’re free</small></a></li>
+  <li><a href="#tour" data-tab="proposal"><span>3</span><strong>Proposal</strong><small>Accepted or signed online</small></a></li>
+  <li><a href="#tour" data-tab="time"><span>4</span><strong>The work</strong><small>Track time against the project</small></a></li>
+  <li><a href="#tour" data-tab="invoice"><span>5</span><strong>Paid</strong><small>Deposit, milestones and final invoice</small></a></li>
+ </ol>
+</section>
+
+<section id="tour" class="wrap tour" aria-labelledby="tour-title">
+ <h2 id="tour-title">See it in action</h2>
+ <div class="tour-tabs" role="tablist" aria-label="Product tour"><button type="button" role="tab" id="tab-event" aria-controls="panel-event" aria-selected="true" tabindex="0">Calendar</button><button type="button" role="tab" id="tab-clients" aria-controls="panel-clients" aria-selected="false" tabindex="-1">Clients</button><button type="button" role="tab" id="tab-forms" aria-controls="panel-forms" aria-selected="false" tabindex="-1">Forms</button><button type="button" role="tab" id="tab-proposal" aria-controls="panel-proposal" aria-selected="false" tabindex="-1">Proposals</button><button type="button" role="tab" id="tab-project" aria-controls="panel-project" aria-selected="false" tabindex="-1">Projects</button><button type="button" role="tab" id="tab-time" aria-controls="panel-time" aria-selected="false" tabindex="-1">Time</button><button type="button" role="tab" id="tab-invoice" aria-controls="panel-invoice" aria-selected="false" tabindex="-1">Invoices</button><button type="button" role="tab" id="tab-scheduling" aria-controls="panel-scheduling" aria-selected="false" tabindex="-1">Scheduling</button><button type="button" role="tab" id="tab-workflows" aria-controls="panel-workflows" aria-selected="false" tabindex="-1">Workflows</button><button type="button" role="tab" id="tab-mcp" aria-controls="panel-mcp" aria-selected="false" tabindex="-1">AI & MCP</button></div>
+ <div class="tour-panel" role="tabpanel" id="panel-event" aria-labelledby="tab-event"><div class="tour-copy"><h3>Every meeting, with its guests and join link</h3><p>Your calendar sits on the home screen. Open a meeting to see who’s coming, join the call, and jump to the client.</p><ul class="ticks"><li>Google and Outlook calendars</li><li>Guests, agenda and join link</li><li>One click to the client record</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/calendar</span></div><img src="/landing/event.webp" width="1800" height="1125" alt="Calendar event drawer with guests, meeting link and description"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-clients" aria-labelledby="tab-clients" hidden><div class="tour-copy"><h3>Clients on a board, your way</h3><p>Group clients by service, status or any custom field. Switch between table and board in one click.</p><ul class="ticks"><li>Custom fields and tags</li><li>Board and table views</li><li>Emails, files and notes per client</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/clients</span></div><img src="/landing/clients.webp" width="1800" height="1125" alt="Clients board grouped by service" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-forms" aria-labelledby="tab-forms" hidden><div class="tour-copy"><h3>Inquiries that set themselves up</h3><p>Each form response creates the client and the project, ready for a proposal.</p><ul class="ticks"><li>Embed on your website</li><li>Client and project created for you</li><li>File uploads included</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/forms</span></div><img src="/landing/forms.webp" width="1800" height="1125" alt="Form submissions list with new client inquiries" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-proposal" aria-labelledby="tab-proposal" hidden><div class="tour-copy"><h3>Proposals clients say yes to</h3><p>Send a clean, branded proposal with its fee and payment schedule. Clients accept online, and the deposit invoice follows.</p><ul class="ticks"><li>Start from your templates</li><li>Accept or sign online</li><li>Versions and revisions tracked</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/proposals</span></div><img src="/landing/proposal.webp" width="1800" height="1125" alt="Client view of an accepted proposal with fee and payment schedule" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-project" aria-labelledby="tab-project" hidden><div class="tour-copy"><h3>One page per project</h3><p>Fee, collected and tracked time up top, with every proposal, invoice, email and hour in one timeline.</p><ul class="ticks"><li>Budget versus collected</li><li>Every document in one place</li><li>A full activity timeline</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/projects/p1</span></div><img src="/landing/project.webp" width="1800" height="1125" alt="Project page with fee, collected amount, tracked time and activity" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-time" aria-labelledby="tab-time" hidden><div class="tour-copy"><h3>A timer that’s always one click away</h3><p>Start it from anywhere, see the week at a glance, and turn unbilled hours into an invoice draft.</p><ul class="ticks"><li>Timer in every page</li><li>Weekly timesheet</li><li>Unbilled hours to invoice</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/time</span></div><img src="/landing/time.webp" width="1800" height="1125" alt="Time tracker with a running timer and the week’s totals" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-invoice" aria-labelledby="tab-invoice" hidden><div class="tour-copy"><h3>Invoices your clients understand</h3><p>Line items, tax and payment details on a clean page with your logo. Share a link and record payments as they land.</p><ul class="ticks"><li>Any currency, with tax</li><li>Deposits and milestones</li><li>Overdue follow-ups</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/invoices</span></div><img src="/landing/invoice.webp" width="1800" height="1125" alt="Invoice preview with line items, tax and payment instructions" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-scheduling" aria-labelledby="tab-scheduling" hidden><div class="tour-copy"><h3>Booking pages that check your calendar</h3><p>Share a link for discovery calls or workshops. Thrive only offers times you’re free, and every booking lands on the client.</p><ul class="ticks"><li>Several meeting types</li><li>Buffers and notice periods</li><li>Follow-up drafts after each call</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/scheduling</span></div><img src="/landing/scheduling.webp" width="1800" height="1125" alt="Scheduling page with upcoming booked meetings" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-workflows" aria-labelledby="tab-workflows" hidden><div class="tour-copy"><h3>Follow-ups on autopilot</h3><p>Tag new inquiries, note logged time, invoice deposits on signature. Every run is logged.</p><ul class="ticks"><li>77 triggers, 43 actions</li><li>Test on a real record first</li><li>Full run history</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/workflows</span></div><img src="/landing/workflows.webp" width="1800" height="1125" alt="Workflows list with triggers, actions and last run" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-mcp" aria-labelledby="tab-mcp" hidden><div class="tour-copy"><h3>Works with your AI assistant</h3><p>Connect Claude, ChatGPT, Cursor or Codex over MCP. Agents act with your access and preview before they change anything.</p><ul class="ticks"><li>One URL to connect</li><li>Previews before changes</li><li>Never sends without your OK</li></ul></div><figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>thrivehq.com/settings/mcp</span></div><img src="/landing/mcp.webp" width="1800" height="1125" alt="AI and MCP settings with the server URL and example prompts" loading="lazy"></figure></div>
 </section>
 
 <section id="features" class="wrap features">
@@ -72,6 +125,16 @@
  </div>
 </section>
 
+<section id="faq" class="wrap faq" aria-labelledby="faq-title">
+ <h2 id="faq-title">Questions</h2>
+ <details><summary>Who is Thrive for?</summary><p>Independent service businesses: freelancers and small studios who sell projects, packages or hourly work. Designers, developers, consultants, photographers, copywriters and coaches all fit well. If you need payroll, inventory or a large team, Thrive isn’t built for that yet.</p></details>
+ <details><summary>Is it really free?</summary><p>Yes, for the first 100 people we let in. You don’t need a credit card. If we ever introduce paid plans, we’ll tell you at least 30 days ahead, and you can take your data with you.</p></details>
+ <details><summary>Which AI assistants work with Thrive?</summary><p>Any assistant that supports MCP, including Claude, ChatGPT, Cursor and Codex. You paste one URL and sign in. Agents act with your access, preview changes first, and never send email or calendar invites without your explicit OK.</p></details>
+ <details><summary>Can I create my own automations?</summary><p>Yes. Each workflow pairs one of 77 triggers with one of 43 actions, like “Proposal accepted → Create contract draft”. Build them in the editor, start from a template, or ask your AI assistant to build and test them for you.</p></details>
+ <details><summary>Do I need Gmail or Google Calendar?</summary><p>You sign in with a Google account. Connecting Gmail, Outlook or a calendar is optional, and unlocks client emails, meeting details and booking pages.</p></details>
+ <details><summary>Can clients pay online?</summary><p>Not yet. Thrive creates your invoices, shares them as a link with your payment details, and tracks payments as you record them. Online card payments are on the roadmap.</p></details>
+ <details><summary>Is my data safe?</summary><p>Your workspace is private to your account and backed up every night. You can ask us for a full copy at any time. Read our <a href="/privacy">Privacy Policy</a> for the details.</p></details>
+</section>
 
 <section class="wrap founding" aria-labelledby="founding-title">
  <p class="kicker">The founding 100</p>
@@ -100,6 +163,7 @@
   <div class="done" role="status" hidden><h3>You’re in line 🎉</h3><p>Your request is saved. We’ll email you as soon as your free spot is ready.</p></div>
  </div>
 </section>
+
 </main>
 
 <footer class="foot"><div class="wrap foot-row"><span>© <span id="year">2026</span> Thrive</span><nav><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:hello@thrive.example" id="contact">Contact</a></nav></div></footer>

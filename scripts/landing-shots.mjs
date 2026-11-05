@@ -24,6 +24,9 @@ const shots={
  clients:{hideTimer:true,hash:'clients'},
  forms:{hideTimer:true,hash:'forms',steps:[`__click('button','Submissions')`]},
  workflows:{hideTimer:true,hash:'workflows'},
+ proposal:{hideTimer:true,hash:'proposals',steps:[`document.querySelector('[data-action="document"][data-id="doc-p1"]').click()`,`document.querySelector('[data-action="doc-client"]').click()`]},
+ scheduling:{hideTimer:true,hash:'scheduling'},
+ builder:{hideTimer:true,hash:'workflows',steps:[`document.querySelector('[data-action="wf-edit"]').click()`]},
  mcp:{hideTimer:true,hash:'settings/mcp',steps:[`document.querySelectorAll('code,.mcp-endpoint,[class*=endpoint]').forEach(e=>{e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://thrivehq.com')});[...document.querySelectorAll('*')].filter(e=>!e.children.length&&/127\\.0\\.0\\.1:\\d+/.test(e.textContent)).forEach(e=>e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://thrivehq.com'))`]},
 };
 

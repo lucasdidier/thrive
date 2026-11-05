@@ -36,6 +36,7 @@ const server=createServer(async(req,res)=>{
    if(req.method==='GET')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true,gmail:false}},threads:[]});
    return json({events:showcaseEvents(),nextCursor:null});
   }
+  if(showcase&&url.pathname==='/api/scheduler')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true}},pages:Object.fromEntries(state.scheduling.types.map(t=>[t.id,{published:true,url:'https://thrivehq.com/book/morgan-studio/'+t.id}])),meetings:[]});
   if(url.pathname==='/api/communications'&&req.method==='GET')return json({connection:{provider:'none',account:null,configured:false},threads:[]});
   return json({error:'This isolated design preview has no external connections.'},503);
  }

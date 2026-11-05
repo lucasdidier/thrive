@@ -129,3 +129,13 @@ test('landing, legal pages and production config ship together',()=>{
  for(const s of ['"THRIVE_ACCESS": "invite"','RATE_LIMIT_SIGNUP','"binding": "BACKUPS"','"observability"'])assert.ok(prod.includes(s),s);
  assert.doesNotMatch(prod,/SECRET|API_KEY"\s*:/);
 });
+
+test('landing page automation claims match the real workflow catalog',async()=>{
+ const {triggers,actions}=await import('../public/workflow-domain.js');
+ const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
+ assert.ok(landing.includes(`<strong>${triggers.length}</strong><span>triggers`),'trigger count');
+ assert.ok(landing.includes(`<strong>${actions.length}</strong><span>actions`),'action count');
+ const tl=new Set(triggers.map(t=>t.label)),al=new Set(actions.map(a=>a.label));
+ for(const [,when,then] of landing.matchAll(/<span class="when">([^<]+)<\/span><span class="arrow"[^>]*>→<\/span><span class="then">([^<]+)<\/span>/g)){assert.ok(tl.has(when),when);assert.ok(al.has(then),then);}
+ for(const name of [...landing.matchAll(/data-tab="([a-z]+)"/g)].map(m=>m[1]))assert.ok(landing.includes(`id="tab-${name}"`),name);
+});

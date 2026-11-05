@@ -8,6 +8,7 @@ import {startTimer} from '../public/timer-domain.js';
 import {saveInvoiceDraft,issueInvoiceDraft} from '../public/invoice-domain.js';
 import {saveWorkflow,runWorkflows,initWorkflows} from '../public/workflow-domain.js';
 import {initCRM} from '../public/crm-domain.js';
+import {initScheduling,saveMeetingType,availableSlots,bookMeeting} from '../public/scheduling-domain.js';
 
 const day=(base,offset)=>{const d=new Date(base);d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10);};
 const at=(base,offset,h,m=0)=>{const d=new Date(base);d.setDate(d.getDate()+offset);d.setHours(h,m,0,0);return d;};
@@ -69,6 +70,19 @@ export function showcaseWorkspace(s,now=new Date()){
  }
  runWorkflows(s,before);
 
+ // Booking pages and upcoming meetings booked through them.
+ initScheduling(s,'Europe/Lisbon');
+ saveMeetingType(s,{name:'Brand workshop',description:'A working session to shape your brand direction.',duration:90,buffer:15,location:'Google Meet',active:true});
+ saveMeetingType(s,{name:'Project check-in',description:'A quick update on progress and next steps.',duration:30,buffer:10,location:'Google Meet',active:true});
+ const types=s.scheduling.types;
+ [['discovery','Northstar Labs','Priya Shah','priya@northstar.example','Seed-round launch site'],
+  [types[1]?.id,'Harbor & Vine','Tom Reed','tom@harborvine.example','Label refresh kickoff'],
+  [types[2]?.id,'Orbit','James Wilson','james@orbit.example','Phase 2 review'],
+  ['discovery','Bloom Florals','Hana Sato','hana@bloomflorals.example','Subscription shop scope'],
+  [types[1]?.id,'Atlas Fitness','Nina Alvarez','nina@atlasfit.example','Identity direction'],
+ ].forEach(([typeId,name,contact,email,brief],i)=>{
+  for(let d=1+i;d<20;d++){const slots=availableSlots(s,typeId,day(now,d),now.getTime());if(slots.length){bookMeeting(s,typeId,{start:slots[Math.min(slots.length-1,2+i*3)],name,contact,email,brief},'showcase-meeting-'+i,now.getTime());break;}}
+ });
  // Clients open on the board grouped by service.
  initCRM(s).active.clients='board';
  // A timer that has been running for 1 h 12 min.
