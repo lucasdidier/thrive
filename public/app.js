@@ -1,3 +1,4 @@
+import {installTooltips} from './tooltip.js';
 import {initPlaceholders} from './placeholders.js';
 import {featureIcon} from './feature-icon.js';
 import {clientLogo} from './client-logo.js';
@@ -64,7 +65,7 @@ initWorkflows(state);
 const workspaceSync=createWorkspaceSync(account);
 try{state=upgradeWorkspace(await workspaceSync.connect(state));}catch(err){document.querySelector('#main').innerHTML=`<div class="crm-empty"><h2>Workspace unavailable</h2><p>Your browser data has been preserved. Reload to reconnect.</p><a class="btn" href="${account.enabled?'/auth/sign-in':'/signin-with-chatgpt?return_to=%2F'}">Sign in</a></div>`;throw err;}
 try{Object.assign(account,await workspaceRequest());Object.assign(state.settings,account.profile);}catch{account.workspaces=[];}
-initPlaceholders();initSelects({getOptionVisual:(select,option)=>selectIdentity(state,select.name,option?.value)});
+installTooltips();initPlaceholders();initSelects({getOptionVisual:(select,option)=>selectIdentity(state,select.name,option?.value)});
 let workflowSnapshot=snapshotWorkspace(state);
 let page=location.hash.slice(1)||'overview',filter='all',query='',setupDraft,toastTimer;
 const dialog=document.querySelector('#dialog');

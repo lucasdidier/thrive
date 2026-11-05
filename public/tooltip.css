@@ -1,0 +1,8 @@
+/* Shared tooltip for icon-only controls and the collapsed sidebar rail. */
+.tooltip{position:fixed;z-index:2147483000;max-width:260px;padding:6px 10px;border-radius:8px;background:#1f2128;color:#fff;font-size:13px;font-weight:500;line-height:1.35;letter-spacing:-.005em;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px rgb(16 24 40 / .18);opacity:0;transform:translate(var(--tip-x,0),var(--tip-y,2px));transition:opacity .12s ease,transform .12s ease}
+.tooltip[data-side=right]{--tip-x:-3px;--tip-y:0}
+.tooltip[data-side=top]{--tip-y:-2px}
+.tooltip.is-on{opacity:1;transform:none}
+:root[data-theme=dark] .tooltip{background:#f1f3f7;color:#1a1b1e;box-shadow:0 4px 14px rgb(0 0 0 / .4)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tooltip{background:#f1f3f7;color:#1a1b1e}}
+@media (prefers-reduced-motion:reduce){.tooltip{transition:none;transform:none}}
