@@ -1,5 +1,5 @@
 import {documentLabel} from '../public/document-labels.js';
-import {notifyFormResponse} from './form-notifications.mjs';
+import {notifyFormResponse,notifyDocumentResponse} from './form-notifications.mjs';
 import {portalProjection,portalEntry,portalFormResponse} from '../public/portal-domain.js';
 import {validateDocumentDesign,pricingVisible} from '../public/document-design.js';
 import {validQuantity} from '../public/pricing.js';
@@ -73,7 +73,7 @@ function validateInput(body,entity){
   if(body.selections!==undefined&&(!Array.isArray(body.selections)||body.selections.length>20||body.selections.some(s=>!s||typeof s.id!=='string'||s.id.length>100||!validQuantity(s.quantity))))throw new StoreError('Check your service selections.');
  }
 }
-export async function respondToShare(db,token,body,item=null,{env,notify=notifyFormResponse}={}){
+export async function respondToShare(db,token,body,item=null,{env,notify=notifyFormResponse,notifyDocument=notifyDocumentResponse}={}){
  const deliver=async(owner,state,key)=>{if(!env)return;const sub=state.submissions.find(s=>s.key===key);if(sub)try{await notify(db,owner,sub.id,env);}catch{console.warn("Form notification could not be delivered; response remains saved.");}};
  for(let attempt=0;attempt<3;attempt++){
   const current=await resolveSharedResource(db,token,item),{state,link,owner,revision,portalContext}=current;
@@ -102,7 +102,7 @@ export async function respondToShare(db,token,body,item=null,{env,notify=notifyF
   }
   const events=[];runWorkflows(next,before,e=>events.push(e));validateWorkspace(next,state);
   const result={ok:true,message:link.entity==='form'?'Your request has been received.':`${documentLabel(next.documents.find(d=>d.id===link.recordId))} ${body.action==='decline'?'declined':body.action==='sign'?'signed':'accepted'}.`};
-  try{const saved=await commitWorkspace(db,owner,revision,next,key,hash,result,events);if(link.entity==='form')await deliver(owner,next,`${link.recordId}:${key}`);return {ok:saved.ok,message:saved.message};}catch(e){if(e.status!==409||attempt===2)throw e;}
+  try{const saved=await commitWorkspace(db,owner,revision,next,key,hash,result,events);if(link.entity==='form')await deliver(owner,next,`${link.recordId}:${key}`);else if(env)try{await notifyDocument(db,owner,link.recordId,link.version,body.action,env);}catch{console.warn('Document notification could not be delivered; the response remains saved.');}return {ok:saved.ok,message:saved.message};}catch(e){if(e.status!==409||attempt===2)throw e;}
  }
 }
 export async function handleShared(request,db,token,env){try{

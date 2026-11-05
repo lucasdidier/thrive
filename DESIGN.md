@@ -101,12 +101,25 @@ Simple purpose, simple architecture, simple design, simple implementation (Linea
 
 - Pages, settings sections, dialogs and cards: title only. No taglines, subtitles or section descriptions.
 - Fields: label only. No “(optional)” and no helper line under the input. Put format examples in the placeholder, limits in input attributes, and problems in the validation error.
+- Every empty text field shows a placeholder: a realistic example value (“Juniper Studio”, “name@example.com”, “1:30”), never an instruction. `public/placeholders.js` fills one in from the field's label and type, so new fields follow the rule automatically. Set an explicit `placeholder` when a better example exists.
 - Toggle and list rows: one label. A second line is for data (an email, a count, a date), not for explaining the control.
 - Empty states: icon, title and one action. A filtered empty state says “No matching …” and offers Clear search or Clear filters.
 - Consequences belong where the action happens: in the button label (“Send email”, “Record payment”) or a confirmation dialog for destructive or external actions. Use one `callout()` only when a constraint blocks the flow (for example, a project that already has billing).
 - Keep live status (`role="status"`), errors, counts and record data. Render optional text only when present, so nothing leaves an empty paragraph.
 
 For DX and AX, the copy lives in the markup, so an agent can grep `class="hint"` or `<small>` to audit it. New helper text needs a reason that fits one of the exceptions above.
+
+### Settings structure
+
+Settings follow the shape of agency tools (Harvest, Productive, HoneyBook, Dubsado):
+
+- **Account:** Profile, Appearance, Notifications. Notifications are personal.
+- **Workspace:** General, Branding, Client portal, Custom fields, Sidebar, Activity log.
+- **Projects & documents:** Projects, Proposals, Contracts.
+- **Billing:** Rates & currencies, Services & packages, Invoices.
+- **Integrations:** Email & calendar, AI & MCP.
+
+A feature with its own page keeps its own settings there; Scheduling availability is a tab of Scheduling. Each page holds one form with one save bar. Templates are chosen from galleries of real previews, never from a bare dropdown.
 
 ### Settings and identity controls
 

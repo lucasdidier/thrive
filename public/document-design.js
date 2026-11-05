@@ -12,5 +12,5 @@ export const documentTemplates=[
 ];
 export const defaultDocumentDesign=s=>({...defaultInvoiceDesign(),...(s?.settings?.invoiceDesign||{}),footer:'',...(s?.settings?.documentDesign||{}),...(s?.settings?.workspaceLogo!==undefined?{logo:s.settings.workspaceLogo}:{})});
 export const validateDocumentDesign=validateInvoiceDesign;
-export function templateContent(id,{business='',client=''}={}){const t=documentTemplates.find(t=>t.id===id);if(!t)throw Error('Choose a document template.');const fill=text=>text.replace(/\[[^\]]*\]/g,'').replace(/{{business}}/g,()=>business).replace(/{{client}}/g,()=>client);return {templateId:t.id,kind:t.kind,title:t.name,scope:fill(t.scope),deliverables:fill(t.deliverables),terms:fill(t.terms),showPricing:t.showPricing,selectionMode:t.selectionMode};}
+export function templateContent(id,{business='',client='',templates=documentTemplates}={}){const t=templates.find(t=>t.id===id);if(!t)throw Error('Choose a document template.');const fill=text=>text.replace(/\[[^\]]*\]/g,'').replace(/{{business}}/g,()=>business).replace(/{{client}}/g,()=>client);return {templateId:t.id,kind:t.kind,title:t.name,scope:fill(t.scope),deliverables:fill(t.deliverables),terms:fill(t.terms),showPricing:t.showPricing,selectionMode:t.selectionMode};}
 export const pricingVisible=d=>d.showPricing!==false;

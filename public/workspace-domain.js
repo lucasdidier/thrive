@@ -1,3 +1,4 @@
+import {documentDefaults,allTemplates} from './document-defaults.js';
 import {workspaceBranding} from './workspace-branding.js';
 import {upgradeProjects} from './project-migration.js';
 import {normalizedProjectStatus} from './project-status.js';
@@ -31,10 +32,11 @@ export function upgradeWorkspace(s){
 export function createDocument(s,data){
  const client=s.clients.find(c=>c.id===data.clientId&&!c.archived);if(!client)throw Error('Choose an active client.');
  const p=data.projectId?s.projects.find(p=>p.id===data.projectId):null;if(data.projectId&&(!p||p.clientId!==client.id||p.archived||p.status==='cancelled'))throw Error('Choose an active project for this client.');
- const starter=data.templateId?templateContent(data.templateId,{business:s.settings.business,client:client.name}):{};data={...starter,...data};const design=validateDocumentDesign(data.design||defaultDocumentDesign(s));
+ const starter=data.templateId?templateContent(data.templateId,{business:s.settings.business,client:client.name,templates:allTemplates(s)}):{};data={...starter,...data};const design=validateDocumentDesign(data.design||defaultDocumentDesign(s));
  const kind=data.kind||'proposal';if(!kindLabels[kind])throw Error('Choose a document type.');
+ const defaults=documentDefaults(s,kind==='agreement'?'contract':kind);if(defaults.terms)data.terms=[clean(data.terms),defaults.terms.trim()].filter(Boolean).join('\n\n');
  const budget=p?.budget||0;
- const d={id:uid(),currency:p?.budgetCurrency||p?.currency||client.currency||s.settings.currency||'USD',design,templateId:data.templateId||null,showPricing:data.showPricing??true,selectionMode:data.selectionMode||'advanced',title:clean(data.title)||starter.title||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance',clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document'&&data.showPricing!==false&&!['time-agreement','retainer'].includes(data.templateId),budget,billingPlan:copy(p?.billingPlan||[]),scope:data.scope??p?.proposal??'',deliverables:data.deliverables||'',terms:data.terms||'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
+ const d={id:uid(),currency:p?.budgetCurrency||p?.currency||client.currency||s.settings.currency||'USD',design,templateId:data.templateId||null,showPricing:data.showPricing??true,selectionMode:data.selectionMode||'advanced',title:clean(data.title)||starter.title||`${client.name} ${kind==='agreement'?'agreement':kindLabels[kind].toLowerCase()}`,kind,responseMode:defaults.responseMode||(kind==='contract'||kind==='agreement'?'signature':kind==='document'?'none':'acceptance'),clientId:client.id,projectId:p?.id||null,billing:!!p&&!p.billingDocumentId&&kind!=='document'&&data.showPricing!==false&&!['time-agreement','retainer'].includes(data.templateId),budget,billingPlan:copy(p?.billingPlan||[]),scope:data.scope??p?.proposal??'',deliverables:data.deliverables||'',terms:data.terms||'',due:p?.due||'',status:'draft',archived:false,currentVersion:null,versions:[],createdAt:today(),updatedAt:today()};
  if(d.billing){p.billingDocumentId=d.id;if(budget&&!d.billingPlan.length)d.billingPlan=defaultPlan(budget,s.settings.deposit);}
  s.documents.unshift(d);documentActivity(s,d,'created');return d;
 }

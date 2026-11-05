@@ -41,19 +41,27 @@ export async function checkNylasEvent(db,owner,env,meetingId,fetcher=fetch){cons
 export async function cancelNylasEvent(db,owner,env,meetingId,fetcher=fetch){const id='calendar:'+meetingId;let row=await operation(db,owner,id);if(!row)return {status:'not-created'};let info=JSON.parse(row.result);if(info.provider!=='nylas')throw new StoreError('Cancel the existing invitation in its original calendar provider first.',409);if(row.status==='cancelled'||row.status==='failed')return result(row);if(row.status!=='created'){await checkNylasEvent(db,owner,env,meetingId,fetcher);row=await operation(db,owner,id);info=JSON.parse(row.result);if(row.status!=='created')throw new StoreError('The invitation is still unconfirmed. Check event status before cancelling.',409);}const api=await service(db,owner,env,'calendar',fetcher);if(info.accountEmail!==api.account.email)throw new StoreError('Reconnect the account used for this invitation.');try{await api.call('/events/'+encodeURIComponent(info.nylasEventId)+'?'+new URLSearchParams({calendar_id:info.calendarId,notify_participants:'true'}),{method:'DELETE'});}catch(e){if(e.providerStatus!==404)throw new StoreError('Nylas did not confirm cancellation. The meeting is unchanged; retry to check.',502);}return finish(db,owner,id,'cancelled',info);}
 
 // Separate from user-composed mail: the caller resolves the account recipient.
-export async function sendNylasNotification(db,owner,env,submissionId,to,message,fetcher=fetch){
- const id='form-notification:'+submissionId,prior=await operation(db,owner,id);
+export function sendNylasNotification(db,owner,env,submissionId,to,message,fetcher=fetch){return sendOwnerNotification(db,owner,env,'form-notification:'+submissionId,to,message,fetcher);}
+// Owner notifications prefer Thrive's own sender (Resend) so they never depend on a connected mailbox.
+// Without one configured, they fall back to the connected account. Each id is delivered at most once.
+export async function sendOwnerNotification(db,owner,env,id,to,message,fetcher=fetch){
+ const prior=await operation(db,owner,id);
  if(prior)return result(prior);
  if(!validEmail(to))throw new StoreError('A verified account email is required.');
- const marker=await hashRequest({owner,id}),info={provider:'nylas',submissionId,to,subject:message.subject,marker};
+ const system=!!(env?.RESEND_API_KEY&&env?.THRIVE_NOTIFICATIONS_FROM);
+ const marker=await hashRequest({owner,id}),info={provider:system?'resend':'nylas',notification:id,to,subject:message.subject,marker};
  if(!await claim(db,owner,id,await hashRequest({to,message}),info))return result(await operation(db,owner,id));
+ if(system){
+  try{const r=await fetcher('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':marker},body:JSON.stringify({from:env.THRIVE_NOTIFICATIONS_FROM,to:[to],subject:message.subject,text:message.body})});const body=await r.json().catch(()=>({}));if(!r.ok||!body.id)return finish(db,owner,id,r.status>=400&&r.status<500?'failed':'unknown',{...info,error:'Notification delivery was not confirmed.'});return finish(db,owner,id,'sent',{...info,resendId:body.id});}
+  catch{return finish(db,owner,id,'unknown',{...info,error:'Notification delivery was not confirmed.'});}
+ }
  let api;
- try{api=await service(db,owner,env,'gmail',fetcher);}catch{return finish(db,owner,id,'failed',{...info,error:'Connect an email account in Workspace settings to receive form notifications.'});}
+ try{api=await service(db,owner,env,'gmail',fetcher);}catch{return finish(db,owner,id,'failed',{...info,error:'No notification sender is configured.'});}
  try{
   const {data:sent}=await api.call('/messages/send',{method:'POST',body:JSON.stringify({to:[{email:to}],subject:message.subject,body:message.body,is_plaintext:true,metadata:{key1:marker}})});
   if(!sent?.id)throw Error('Missing delivery confirmation');
   return finish(db,owner,id,'sent',{...info,nylasMessageId:sent.id});
- }catch(e){return finish(db,owner,id,[400,401,403,404,422,429].includes(e.providerStatus)?'failed':'unknown',{...info,error:'Email delivery was not confirmed. The form response is saved in Thrive.'});}
+ }catch(e){return finish(db,owner,id,[400,401,403,404,422,429].includes(e.providerStatus)?'failed':'unknown',{...info,error:'Email delivery was not confirmed.'});}
 }
 
 // Read the connected mailbox directly for one owned client, with no date cutoff.

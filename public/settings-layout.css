@@ -4,7 +4,6 @@
 .settings-page .settings-content{max-height:none;height:100%;overscroll-behavior:contain}
 .settings-content>#settings-content,.settings-content>.settings-page-heading{width:100%;max-width:880px;min-width:0}
 #settings-content{container:settings-detail / inline-size}
-.settings-page-title{align-items:flex-start}
 .settings-page-title>div{min-width:0}
 .settings-page-title p{font-size:13px;line-height:1.6}
 body:has(.settings-page) .topbar-title h1{display:block;font-size:13px;font-weight:400;color:var(--muted)}

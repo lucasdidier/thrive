@@ -1,4 +1,4 @@
-import {recordCurrency,billingCurrency} from './currency.js';
+import {recordCurrency,billingCurrency,defaultHourlyRate} from './currency.js';
 import {invoiceDefaults,validateInvoiceDefaults} from './invoice-defaults.js';
 import {uid,today,addActivity} from './domain.js';
 
@@ -6,7 +6,7 @@ const clean=x=>String(x??'').trim();
 const validRate=r=>Number.isSafeInteger(r)&&r>=0&&r<=100000000;
 export const timeMinutes=t=>t.minutes??Math.round(Number(t.hours)*60);
 export const timeDuration=t=>{const m=typeof t==='number'?t:timeMinutes(t);return `${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`;};
-export const hourlyRate=(s,p)=>p?.hourlyRate??s.settings.hourlyRate??0;
+export const hourlyRate=(s,p)=>p?.hourlyRate??defaultHourlyRate(s,p?recordCurrency(s,p):undefined);
 export const entryRate=(s,t)=>t.rate??hourlyRate(s,s.projects.find(p=>p.id===t.projectId));
 export const timeSources=i=>(i.items||[]).flatMap(l=>l.timeSources||[]);
 export function timeClaim(s,id){for(const i of s.invoices||[])if(timeSources(i).some(x=>x.id===id))return {status:'billed',invoiceId:i.id,label:i.number,rate:timeSources(i).find(x=>x.id===id).rate};for(const d of s.invoiceDrafts||[])if(timeSources(d).some(x=>x.id===id))return {status:'reserved',invoiceId:d.id,label:d.title,rate:timeSources(d).find(x=>x.id===id).rate};return null;}
@@ -24,7 +24,7 @@ export function saveTimeEntry(s,data,id){
  if(note.length>200)throw Error('Keep the work description to 200 characters or fewer.');
  if(!validRate(rate))throw Error('Enter a valid hourly rate.');
  if(data.billable!==undefined&&typeof data.billable!=='boolean')throw Error('Billable must be true or false.');
- const t={id:old?.id||uid(),projectId:p.id,currency:old?recordCurrency(s,old):recordCurrency(s,{projectId:p.id}),minutes,hours:minutes/60,date,note,task,rate,billable:data.billable??old?.billable??p.billable??true,archived:false,createdAt:old?.createdAt||new Date().toISOString()};
+ const t={id:old?.id||uid(),projectId:p.id,currency:old?recordCurrency(s,old):recordCurrency(s,{projectId:p.id}),minutes,hours:minutes/60,date,note,task,rate,billable:data.billable??old?.billable??p.billable??s.settings.billableDefault??true,archived:false,createdAt:old?.createdAt||new Date().toISOString()};
  if(old){Object.assign(old,t);delete old.timerSeconds;}else s.time.push(t);addActivity(s,old?'Time entry updated':'Time logged',`${p.name} · ${timeDuration(t)}`,'project');return old||t;
 }
 export function archiveTimeEntry(s,id,archived=true){const t=s.time.find(t=>t.id===id);if(!t)throw Error('Time entry not found.');if((s.runningTimers||[]).some(r=>r.entryId===id))throw Error('Stop the timer before archiving this entry.');if(timeClaim(s,id))throw Error('Linked time cannot be archived. Delete its invoice draft or remove its line first.');if(typeof archived!=='boolean')throw Error('Archived must be true or false.');t.archived=archived;return t;}

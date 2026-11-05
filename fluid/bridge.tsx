@@ -29,6 +29,8 @@ import {
 const featureGlyph=(name:string)=>function FeatureGlyph({className=""}:{className?:string}) {
   return <span className={`feature-icon feature-icon--sm ${className}`} aria-hidden="true" dangerouslySetInnerHTML={{__html:appIcon(name)}} />;
 };
+const glyphs=new Map<string,any>();
+const optionGlyph=(name:string)=>{if(!glyphs.has(name))glyphs.set(name,featureGlyph(name));return glyphs.get(name);};
 const UserRound=featureGlyph('clients'), BriefcaseBusiness=featureGlyph('projects'), FileText=featureGlyph('documents'), Signature=featureGlyph('signature'), Receipt=featureGlyph('invoices'), ClipboardList=featureGlyph('forms'), Mail=featureGlyph('mail'), Workflow=featureGlyph('workflows'), Tag=featureGlyph('tag'), Settings=featureGlyph('settings'), House=featureGlyph('home'), Clock=featureGlyph('clock'), Calendar=featureGlyph('calendar'), Notifications=featureGlyph('notifications');
 
 type Context = {
@@ -136,10 +138,13 @@ function Picker({
     };
   }, [source]);
   const describedBy = [source.getAttribute("aria-describedby"), error ? errorId : ""].filter(Boolean).join(" ");
+  // An option's data-icon names a workspace glyph shown in the row and the field.
   const items = Array.from(source.options).map((o) => ({
     value: o.value || "__empty",
     label: o.textContent || "",
+    icon: o.dataset.icon || "",
   }));
+  const selectedIcon = items.find((i) => i.value === (value || "__empty"))?.icon;
   return (
     <>
     <Combobox
@@ -148,11 +153,11 @@ function Picker({
       disabled={source.matches(":disabled")}
       onValueChange={(v) => emit(source, v === "__empty" ? "" : v)}
     >
-      <ComboboxInput ref={inputRef} aria-label={labelFor(source)} aria-required={source.required} aria-invalid={error ? true : undefined} aria-describedby={describedBy || undefined} />
+      <ComboboxInput ref={inputRef} icon={selectedIcon ? optionGlyph(selectedIcon) : undefined} aria-label={labelFor(source)} aria-required={source.required} aria-invalid={error ? true : undefined} aria-describedby={describedBy || undefined} />
       <ComboboxContent container={container}>
         <ComboboxList>
           {(item: any) => (
-            <ComboboxItem key={item.value} value={item.value}>
+            <ComboboxItem key={item.value} value={item.value} icon={item.icon ? optionGlyph(item.icon) : undefined}>
               {item.label}
             </ComboboxItem>
           )}

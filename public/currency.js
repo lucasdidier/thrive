@@ -1,8 +1,14 @@
 // Workspace defaults and record currencies. Amounts are integer hundredths; no FX conversion.
-export const currencies={USD:'US dollar',EUR:'Euro',GBP:'British pound',CAD:'Canadian dollar',AUD:'Australian dollar',NZD:'New Zealand dollar',CHF:'Swiss franc',SEK:'Swedish krona',NOK:'Norwegian krone',DKK:'Danish krone',PLN:'Polish złoty',BRL:'Brazilian real',INR:'Indian rupee',SGD:'Singapore dollar',HKD:'Hong Kong dollar',ZAR:'South African rand',MXN:'Mexican peso'};
+// Active ISO 4217 currencies. Names come from Intl so every runtime labels them the same way.
+const currencyCodes='AED AFN ALL AMD ANG AOA ARS AUD AWG AZN BAM BBD BDT BGN BHD BIF BMD BND BOB BRL BSD BTN BWP BYN BZD CAD CDF CHF CLP CNY COP CRC CUP CVE CZK DJF DKK DOP DZD EGP ERN ETB EUR FJD FKP GBP GEL GHS GIP GMD GNF GTQ GYD HKD HNL HTG HUF IDR ILS INR IQD IRR ISK JMD JOD JPY KES KGS KHR KMF KPW KRW KWD KYD KZT LAK LBP LKR LRD LSL LYD MAD MDL MGA MKD MMK MNT MOP MRU MUR MVR MWK MXN MYR MZN NAD NGN NIO NOK NPR NZD OMR PAB PEN PGK PHP PKR PLN PYG QAR RON RSD RUB RWF SAR SBD SCR SDG SEK SGD SHP SLE SOS SRD SSP STN SVC SYP SZL THB TJS TMT TND TOP TRY TTD TWD TZS UAH UGX USD UYU UZS VES VND VUV WST XAF XCD XOF XPF YER ZAR ZMW'.split(' ');
+const currencyNames=new Intl.DisplayNames(['en'],{type:'currency'}),capitalize=s=>s[0].toUpperCase()+s.slice(1);
+export const currencies=Object.fromEntries(currencyCodes.map(code=>[code,capitalize(currencyNames.of(code)||code)]));
 export function currencyCode(state){const code=state?(state.settings?.currency||'USD'):(globalThis.document?.documentElement?.dataset.currency||'USD');return Object.hasOwn(currencies,code)?code:'USD';}
 export function formatMoney(cents,code=currencyCode()){return new Intl.NumberFormat('en-US',{style:'currency',currency:code,minimumFractionDigits:cents%100?2:0,maximumFractionDigits:2}).format(cents/100);}
 export function currencyLocked(s){return ['projects','documents','invoices','invoiceDrafts','services','time','submissions'].some(k=>s[k]?.length)||!!s.settings.hourlyRate||['client','project'].some(k=>s.customFields?.[k]?.some(f=>f.type==='currency'))||s.automation?.workflows?.some(w=>w.steps?.some(x=>x.config?.amount));}
+// Each billing currency can carry its own default hourly rate; the default currency uses settings.hourlyRate.
+export function defaultHourlyRate(s,code=currencyCode(s)){return code!==currencyCode(s)&&s.settings?.currencyRates?.[code]!=null?s.settings.currencyRates[code]:s.settings?.hourlyRate??0;}
+export const billingCurrencies=s=>[...new Set([currencyCode(s),...Object.keys(s.settings?.currencyRates||{})])].filter(code=>Object.hasOwn(currencies,code));
 export function recordCurrency(s,record){return record?.budgetCurrency||record?.currency||s.projects.find(p=>p.id===record?.projectId)?.currency||currencyCode(s);}
 // Materialize inherited values before changing defaults. No exchange-rate conversion.
 export function preserveRecordCurrencies(s){

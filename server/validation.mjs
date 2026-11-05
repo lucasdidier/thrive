@@ -1,8 +1,10 @@
+import {validateNotificationSettings} from '../public/notification-settings.js';
+import {validateDocumentDefaults,validateDocumentTemplates} from '../public/document-defaults.js';
 import {validateTimers} from '../public/timer-domain.js';
 import {validateGettingStarted} from '../public/getting-started.js';
 import {validateInvoiceDefaults} from '../public/invoice-defaults.js';
 import {saveProjectStatuses} from '../public/project-status.js';
-import {validateCurrency,recordCurrency} from '../public/currency.js';
+import {validateCurrency,recordCurrency,currencies} from '../public/currency.js';
 import {validateOnboarding} from '../public/onboarding-domain.js';
 import {validatePortal} from '../public/portal-domain.js';
 import {calculateInvoice} from '../public/invoice-domain.js';
@@ -24,6 +26,11 @@ export function validateWorkspace(s,old){
  if(s.settings.portalDefaults){const p=s.settings.portalDefaults;if(typeof p.title!=='string'||!p.title.trim()||p.title.length>100||typeof p.intro!=='string'||p.intro.length>1000||!p.sections||['documents','forms','invoices','projects','meetings'].some(k=>typeof p.sections[k]!=='boolean'))throw Error('Invalid workspace portal defaults.');}
  if(s.settings.emailFollowUps!==undefined){const choices=s.settings.emailFollowUps;if(!choices||typeof choices!=='object'||Array.isArray(choices)||Object.keys(choices).length>2000)throw Error('Invalid email reply preferences.');for(const [id,choice]of Object.entries(choices)){if(!id||id.length>512||!choice||typeof choice.messageId!=='string'||!choice.messageId||choice.messageId.length>512||!['reply','done'].includes(choice.status))throw Error('Invalid email reply preference.');}}
  if(s.settings.formEmailNotifications!==undefined&&typeof s.settings.formEmailNotifications!=='boolean')throw Error('Invalid form notification setting.');
+ if(s.settings.notifications!==undefined)validateNotificationSettings(s.settings.notifications);
+ if(s.settings.documentTemplates!==undefined)validateDocumentTemplates(s.settings.documentTemplates);
+ if(s.settings.documentDefaults!==undefined)validateDocumentDefaults(s.settings.documentDefaults,s);
+ if(s.settings.billableDefault!==undefined&&typeof s.settings.billableDefault!=='boolean')throw Error('Invalid billable default.');
+ if(s.settings.currencyRates!==undefined){const r=s.settings.currencyRates;if(!r||typeof r!=='object'||Array.isArray(r)||Object.keys(r).length>30||Object.entries(r).some(([code,rate])=>!Object.hasOwn(currencies,code)||!Number.isSafeInteger(rate)||rate<0||rate>100000000))throw Error('Invalid currency rates.');}
  for(const key of ['clients','projects','documents','forms','submissions','invoices','time','activity','workflows']){if(!Array.isArray(s[key]))throw Error(`Missing workspace collection: ${key}.`);const ids=new Set();for(const r of s[key]){if(!r||typeof r.id!=='string'||ids.has(r.id))throw Error(`Invalid or duplicate ${key} record.`);ids.add(r.id);}}
  for(const c of s.clients){if(c.type!==undefined&&!['company','individual'].includes(c.type))throw Error('Invalid client type.');if(c.logo!==undefined&&(typeof c.logo!=='string'||c.logo.length>150000||(c.logo&&!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(c.logo))))throw Error('Invalid client logo.');}
  for(const m of s.scheduling?.meetings||[])if(m.projectId&&!s.projects.some(p=>p.id===m.projectId&&p.clientId===m.clientId))throw Error('Invalid meeting project.');

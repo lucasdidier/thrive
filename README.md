@@ -306,6 +306,21 @@ Quick actions and workspace search share the Cmd/Ctrl+K palette, with icons, cre
 
 Getting started is a six-step sidebar popover: import/add clients, connect both email and calendar, add a service, create a workflow, create an invoice (including a saved draft), and create a proposal or contract. Existing records count automatically. Completed and skipped steps persist with the workspace; skipped steps can be reopened or undone. The colored button stroke stops when all steps are complete and respects reduced motion. The old `#onboarding` route opens Home with the checklist; the full onboarding page and forced setup redirect have been removed. Business details, country, and currency remain editable in Workspace settings, subject to the existing currency lock.
 
+## Settings and notifications
+
+Settings groups and page rules are in `DESIGN.md` (Settings structure). Workspace defaults:
+
+- **Rates & currencies** (`settings.currencyRates`, `settings.billableDefault`): each billing currency has its own default hourly rate. The default currency's rate stays in `settings.hourlyRate`. Changing the default currency keeps existing record currencies; there is no exchange-rate conversion.
+- **Proposals and Contracts** (`settings.documentDefaults`, `settings.documentTemplates`): default template, client response, deposit and standard terms. Built-in templates can be edited (stored as an override with the same id) or saved as new templates. Documents copy template text when created, so template edits never change existing documents.
+- **Invoices**: due days, tax, layout and payment instructions on one page. `#settings/payments` and `#settings/invoices` redirect there; `#settings/scheduling` redirects to Scheduling.
+
+Owner emails (Account settings → Notifications, `settings.notifications`):
+
+- **Instant emails** for form responses and for proposals or contracts accepted, signed or declined.
+- **A daily or weekly summary** at 8:00 in the workspace time zone (`scheduling.timeZone`). It covers meetings, overdue invoices, documents awaiting a response, projects due soon, unbilled time, emails to reply to and new form responses. It runs from an hourly Cron Trigger in `wrangler.self-hosted.jsonc`.
+
+Delivery uses Thrive's own sender when `RESEND_API_KEY` and `THRIVE_NOTIFICATIONS_FROM` are set. Otherwise it falls back to the connected email account. Each email has a delivery id, so retries never send twice.
+
 ## Nylas email and scheduling
 
 Set `THRIVE_COMMUNICATIONS_PROVIDER=nylas` to use Nylas v3 for the existing in-app Messages and Scheduling experience. Supabase sign-in remains separate. Users connect their own Google or Microsoft account through hosted OAuth with PKCE; connection state is single-use, expiring, and bound to the signed-in Thrive account. Grant IDs stay on the server. No shared grant ID is accepted from a browser.
