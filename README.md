@@ -306,6 +306,10 @@ Quick actions and workspace search share the Cmd/Ctrl+K palette, with icons, cre
 
 Getting started is a six-step sidebar popover: import/add clients, connect both email and calendar, add a service, create a workflow, create an invoice (including a saved draft), and create a proposal or contract. Existing records count automatically. Completed and skipped steps persist with the workspace; skipped steps can be reopened or undone. The colored button stroke stops when all steps are complete and respects reduced motion. The old `#onboarding` route opens Home with the checklist; the full onboarding page and forced setup redirect have been removed. Business details, country, and currency remain editable in Workspace settings, subject to the existing currency lock.
 
+## Closed beta (production)
+
+Production runs with `THRIVE_ACCESS=invite` (`wrangler.production.jsonc`): Google sign-in only, for emails in `thrive_beta_invites`. Signed-out visitors see the landing page (`ui/landing.html`) with a rate-limited access request form (`/api/beta`, stored in `thrive_beta_requests`). On first sign-in, an invited account gets `app_metadata.thrive_beta`; deleting the invite row clears it. `/privacy` and `/terms` are static pages. Public writes are rate limited per IP (`server/guard.mjs`); 5xx responses, browser errors and failed scheduled jobs email `THRIVE_ADMIN_EMAIL` at most once per error type per hour. The hourly cron also emails new invites and writes a nightly backup to the `BACKUPS` R2 bucket (`server/backup.mjs`). Setup steps: `docs/launch.md`.
+
 ## Settings and notifications
 
 Settings groups and page rules are in `DESIGN.md` (Settings structure). Workspace defaults:
