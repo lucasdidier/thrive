@@ -30,7 +30,7 @@ export function createRecordPanel(ctx){
  function creationMenu(entity,r){
   if(r.archived)return '';
   const clientId=entity==='client'?r.id:r.clientId,projectId=entity==='project'?r.id:'';
-  const creation=[['projects','Project','new-project'],['clock','Time entry','log-time'],['mail','Email','mail-new'],['documents','Document','new-document'],['forms','Form','new-form'],['calendar','Meeting','booking-preview'],['invoices','Invoice','new-invoice']];
+  const creation=[['projects','Project','new-project'],['time','Time entry','log-time'],['mail','Email','mail-new'],['documents','Document','new-document'],['forms','Form','new-form'],['calendar','Meeting','booking-preview'],['invoices','Invoice','new-invoice']];
   const attrs=`data-client="${esc(clientId)}" data-project="${esc(projectId)}"`;
   return `<details class="record-create"><summary class="btn" aria-label="Create for ${entity}">${icon('plus')}New${icon('down')}</summary><div class="record-create-menu">${creation.map(([ico,label,action])=>`<button type="button" class="crm-menu-item" data-action="${action}" ${attrs} ${action==='log-time'?`data-id="${esc(projectId)}"`:''}>${featureIcon(ico,'xs')}${label}</button>`).join('')}</div></details>`;
  }
