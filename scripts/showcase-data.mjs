@@ -2,7 +2,8 @@
 // domain functions so every record is valid. All names and emails are made up (.example).
 import {readFileSync} from 'node:fs';
 import {saveClient,createProject} from '../public/domain.js';
-import {submitForm} from '../public/workspace-domain.js';
+import {submitForm,createDocument,publishDocument,respondDocument} from '../public/workspace-domain.js';
+import {savePortal,portalCandidates} from '../public/portal-domain.js';
 import {saveTimeEntry} from '../public/time-domain.js';
 import {startTimer} from '../public/timer-domain.js';
 import {saveInvoiceDraft,issueInvoiceDraft} from '../public/invoice-domain.js';
@@ -83,6 +84,17 @@ export function showcaseWorkspace(s,now=new Date()){
  ].forEach(([typeId,name,contact,email,brief],i)=>{
   for(let d=1+i;d<20;d++){const slots=availableSlots(s,typeId,day(now,d),now.getTime());if(slots.length){bookMeeting(s,typeId,{start:slots[Math.min(slots.length-1,2+i*3)],name,contact,email,brief},'showcase-meeting-'+i,now.getTime());break;}}
  });
+ // A signed contract and a client portal, so the client-facing pages have real content.
+ const juniper=s.clients.find(c=>c.name==='Juniper Studio');
+ if(juniper&&!s.documents.some(d=>d.kind==='contract'&&d.clientId===juniper.id)){
+  const c=createDocument(s,{clientId:juniper.id,kind:'contract',title:'Brand identity agreement',showPricing:false,
+   scope:'Morgan Studio will design a visual identity for Juniper Studio, as set out in the accepted proposal “Juniper brand identity”.',
+   deliverables:'Primary logo and supporting marks\nColour palette and typography\nBrand guide (PDF)',
+   terms:'Fee: €6,000.00 in three payments: €3,000.00 deposit on signature, €1,800.00 when the logo and palette are approved, €1,200.00 on delivery.\nTwo rounds of revisions are included at each stage.\nRights to the final files transfer to Juniper Studio once the final invoice is paid.'});
+  publishDocument(s,c.id);respondDocument(s,c.id,1,'sign',{name:'Sophie Chen',consent:true});
+  const options=portalCandidates(s,juniper.id);
+  savePortal(s,juniper.id,{enabled:true,title:'Juniper Studio × Morgan Studio',intro:'Everything for your brand identity project in one place: documents to review, invoices and progress.',sections:{documents:true,invoices:true,projects:true,forms:false,meetings:false},documents:options.documents.map(d=>d.id),invoices:options.invoices.map(i=>i.id),projects:options.projects.map(p=>p.id)});
+ }
  // Clients open on the board grouped by service.
  initCRM(s).active.clients='board';
  // A timer that has been running for 1 h 12 min.

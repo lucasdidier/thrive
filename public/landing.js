@@ -4,44 +4,19 @@ const wait=ms=>new Promise(r=>setTimeout(r,reduce.matches?0:ms));
 $('#year').textContent=new Date().getFullYear();
 if(new URLSearchParams(location.search).get('access')==='pending'){$('#pending').hidden=false;history.replaceState(null,'','/');}
 
-// ---- From inquiry to payment: tabs that advance on their own until you take over. ----
-{
- const list=$('.stages'),tabs=$$('.stages [role=tab]'),bar=$('.stage-track i'),toggle=$('.stage-toggle'),DUR=6500;
- let cur=0,auto=!reduce.matches,held=false,paused=false,visible=false,t0=null,elapsed=0;
- const fill=p=>bar.style.setProperty('--p',String(Math.min(1,p)));
- function show(i,{user=false,focus=false}={}){
-  cur=(i+tabs.length)%tabs.length;elapsed=0;t0=null;
-  tabs.forEach((t,j)=>{const on=j===cur;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;});
-  if(focus)tabs[cur].focus();
-  // The recorded clip plays only while its stage shows, and never with reduced motion.
-  $$('.stage video').forEach(v=>{if(!v.closest('.stage').hidden&&!reduce.matches)v.play().catch(()=>{});else v.pause();});
-  if(user)stop();
-  fill(auto?cur/tabs.length:(cur+1)/tabs.length);
- }
- function stop(){auto=false;list.classList.remove('playing');toggle.hidden=true;}
- function frame(ts){
-  if(!auto)return;
-  if(held||paused||!visible||document.hidden){t0=null;}
-  else{if(t0!==null)elapsed+=ts-t0;t0=ts;if(elapsed>=DUR)show(cur+1);fill((cur+elapsed/DUR)/tabs.length);}
-  requestAnimationFrame(frame);
- }
- tabs.forEach((t,i)=>{
-  t.addEventListener('click',()=>show(i,{user:true}));
-  t.addEventListener('keydown',e=>{const n={ArrowRight:1,ArrowLeft:-1}[e.key];if(n){e.preventDefault();show(i+n,{user:true,focus:true});}if(e.key==='Home'){e.preventDefault();show(0,{user:true,focus:true});}if(e.key==='End'){e.preventDefault();show(tabs.length-1,{user:true,focus:true});}});
+// ---- Tabs: the product tour and the client pages. Arrow keys move between them. ----
+function tabs(list,{vertical=false,onShow=()=>{}}={}){
+ const all=[...list.querySelectorAll('[role=tab]')];
+ const show=(tab,focus)=>{all.forEach(t=>{const on=t===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;});if(focus)tab.focus();onShow(tab);};
+ const keys=vertical?{ArrowDown:1,ArrowUp:-1,ArrowRight:1,ArrowLeft:-1}:{ArrowRight:1,ArrowLeft:-1};
+ all.forEach((t,i)=>{
+  t.addEventListener('click',()=>show(t));
+  t.addEventListener('keydown',e=>{const n=keys[e.key];if(n){e.preventDefault();show(all[(i+n+all.length)%all.length],true);}if(e.key==='Home'){e.preventDefault();show(all[0],true);}if(e.key==='End'){e.preventDefault();show(all.at(-1),true);}});
  });
- show(0);
- if(auto){
-  list.classList.add('playing');toggle.hidden=false;
-  toggle.addEventListener('click',()=>{paused=!paused;toggle.textContent=paused?'Play':'Pause';});
-  const zone=$('#chain .wrap');
-  zone.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')held=true;});
-  zone.addEventListener('pointerleave',()=>{held=false;});
-  zone.addEventListener('focusin',e=>{if(e.target!==toggle)held=true;});
-  zone.addEventListener('focusout',()=>{held=false;});
-  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;},{threshold:.4}).observe($('.stage-panels'));
-  requestAnimationFrame(frame);
- }
 }
+// The recorded clip plays only while its tab shows, and never with reduced motion.
+tabs($('.pills'),{onShow:()=>$$('.tour-panel video').forEach(v=>{if(!v.closest('.tour-panel').hidden&&!reduce.matches)v.play().catch(()=>{});else v.pause();})});
+tabs($('.doc-cards'),{vertical:true});
 
 // ---- The AI assistant: pick a prompt, watch it work. ----
 // Scripted replies on fictional data. Tool names are Thrive's real MCP tools and actions.
@@ -86,16 +61,6 @@ if(new URLSearchParams(location.search).get('access')==='pending'){$('#pending')
  }));
 }
 
-// ---- What clients see: one document at a time. ----
-{
- const tabs=$$('.out-names [role=tab]');
- const show=(tab,focus)=>{tabs.forEach(t=>{const on=t===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;});if(focus)tab.focus();};
- tabs.forEach((t,i)=>{
-  t.addEventListener('click',()=>show(t));
-  t.addEventListener('keydown',e=>{const n={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1}[e.key];if(n){e.preventDefault();show(tabs[(i+n+tabs.length)%tabs.length],true);}if(e.key==='Home'){e.preventDefault();show(tabs[0],true);}if(e.key==='End'){e.preventDefault();show(tabs.at(-1),true);}});
- });
-}
-
 // ---- Copy the MCP address ----
 $$('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{
  try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied';}catch{b.textContent='Select and copy';}
@@ -108,7 +73,7 @@ if(!reduce.matches){
  const pending=new Set();
  const due=()=>{for(const el of pending)if(el.getBoundingClientRect().top<innerHeight*.92){el.classList.add('in');pending.delete(el);}};
  const rise=els=>els.forEach((el,i)=>{if(el.getBoundingClientRect().top<innerHeight)return;el.classList.add('rise');el.style.setProperty('--d',`${Math.min(i,4)*80}ms`);pending.add(el);});
- [['#chain .sec-head > *','.stages','.stage-panels'],['#ai .sec-head > *','.console','.promises li'],['.out-index > *','.out-stage'],['.faq-head > *','.faq-list'],['.claim-inner > *']].forEach(g=>rise(g.flatMap(s=>$$(s))));
+ [['#tour .sec-head > *','.pills','.tour-panels'],['#ai .sec-head > *','.console','.promises li'],['.out-index > *','.out-stage'],['.faq-head > *','.faq-list'],['.claim-inner > *']].forEach(g=>rise(g.flatMap(s=>$$(s))));
  addEventListener('scroll',()=>requestAnimationFrame(due),{passive:true});
 }
 

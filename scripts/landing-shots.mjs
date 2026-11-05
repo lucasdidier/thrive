@@ -28,6 +28,11 @@ const shots={
  proposal:{hideTimer:true,hash:'proposals',steps:[`document.querySelector('[data-action="document"][data-id="doc-p1"]').click()`,`document.querySelector('[data-action="doc-client"]').click()`]},
  scheduling:{hideTimer:true,hash:'scheduling'},
  builder:{hideTimer:true,hash:'workflows',steps:[`document.querySelector('[data-action="wf-edit"]').click()`]},
+ // The pages clients open from a link (real client view, fictional data).
+ 'client-proposal':{path:'/share/document.doc-p1',w:1120,h:900},
+ 'client-contract':{path:'/share/contract.latest',w:1120,h:900},
+ 'client-invoice':{path:'/share/invoice.latest',w:1120,h:900},
+ 'client-portal':{path:'/share/portal.c1',w:1120,h:900},
  mcp:{hideTimer:true,hash:'settings/mcp',steps:[`document.querySelectorAll('code,.mcp-endpoint,[class*=endpoint]').forEach(e=>{e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://thrivehq.com')});[...document.querySelectorAll('*')].filter(e=>!e.children.length&&/127\\.0\\.0\\.1:\\d+/.test(e.textContent)).forEach(e=>e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://thrivehq.com'))`]},
 };
 
@@ -54,7 +59,8 @@ try{
  let n=0;
  for(const [name,shot] of Object.entries(shots)){
   if(only.length&&!only.includes(name))continue;
-  await c.send('Page.navigate',{url:`http://127.0.0.1:${PORT}/?shot=${n++}#${shot.hash}`});
+  await c.send('Emulation.setDeviceMetricsOverride',{width:shot.w||W,height:shot.h||H,deviceScaleFactor:2,mobile:false});
+  await c.send('Page.navigate',{url:shot.path?`http://127.0.0.1:${PORT}${shot.path}?shot=${n++}`:`http://127.0.0.1:${PORT}/?shot=${n++}#${shot.hash}`});
   await sleep(2200);
   await evaluate(helpers);
   if(shot.hideTimer)await evaluate(`document.head.insertAdjacentHTML('beforeend','<style>#running-timer{display:none!important}</style>')`);
@@ -63,7 +69,7 @@ try{
   await sleep(500);
   const {data}=await c.send('Page.captureScreenshot',{format:'png'});
   const png=path.join(profile,name+'.png');writeFileSync(png,Buffer.from(data,'base64'));
-  execFileSync('magick',[png,'-resize','1800x','-quality','84',path.join(root,'public/landing',name+SUFFIX+'.webp')]);
+  execFileSync('magick',[png,'-resize',`${Math.round((shot.w||W)*1.25)}x`,'-quality','84',path.join(root,'public/landing',name+SUFFIX+'.webp')]);
   console.log('✓',name);
  }
  c.close();

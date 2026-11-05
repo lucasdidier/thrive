@@ -34,12 +34,22 @@ code{font-family:var(--system-mono);font-size:.86em}
 /* The workflow editor's canvas, used as the ground under the product (asked for by the brief). */
 .dots{background-color:var(--bg-2);background-image:radial-gradient(rgba(255,255,255,.085) 1px,transparent 1.3px);background-size:22px 22px} /* taste-skill-ignore: canvas dot grid from the product's workflow editor */
 
+/* Micro dots here and there: the same canvas grid, fading out at the edges of each field. */
+.dotfield{position:absolute;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.11) 1px,transparent 1.3px);background-size:22px 22px;-webkit-mask-image:radial-gradient(closest-side,#000 30%,transparent);mask-image:radial-gradient(closest-side,#000 30%,transparent)} /* taste-skill-ignore: canvas dot grid, asked for by the brief */
+main{position:relative;isolation:isolate;overflow-x:clip}
+.hero,.tour,.outputs,.claim{position:relative;isolation:isolate}
+.hero-stage{isolation:isolate}
+.hero-stage .dotfield{left:50%;top:0;width:min(1700px,150vw);height:100%;transform:translateX(-50%);-webkit-mask-image:radial-gradient(60% 75% at 50% 35%,#000 35%,transparent);mask-image:radial-gradient(60% 75% at 50% 35%,#000 35%,transparent)} /* taste-skill-ignore: fade-out mask for the canvas dot field */
+.tour .dotfield{right:-10%;top:40px;width:900px;height:700px}
+.outputs .dotfield{left:-12%;top:120px;width:800px;height:700px}
+.claim .dotfield{left:50%;top:40px;width:1100px;height:640px;transform:translateX(-50%)}
+
 /* One button shape, fully round. Press feedback everywhere; hover only on fine pointers. */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border:0;border-radius:99px;background:var(--blue);color:#fff;font:inherit;font-size:var(--t-s);font-weight:600;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform 160ms var(--ease-out),background-color 160ms ease,color 160ms ease}
 .btn.sm{min-height:38px;padding:0 16px}
 .btn.ghost{background:var(--panel-2);color:var(--text)}
 .text-btn{padding:6px 2px;border:0;background:none;color:var(--blue-hi);font:inherit;font-size:var(--t-s);font-weight:600;cursor:pointer}
-:is(.btn,.stages button,.out-names button,.text-btn,.asks button):active{transform:scale(.97)}
+:is(.btn,.pills button,.text-btn,.asks button):active{transform:scale(.97)}
 @media (hover:hover) and (pointer:fine){.btn:hover{background:var(--blue-press)}.btn.ghost:hover{background:var(--panel-3)}.text-btn:hover{color:var(--text)}}
 
 /* ---- Header ---- */
@@ -63,12 +73,11 @@ code{font-family:var(--system-mono);font-size:.86em}
 .fine{color:var(--text-3);font-size:var(--t-s)}
 .fine a{color:var(--text-2)}
 .pending{padding:14px 18px;border-radius:12px;background:var(--panel-2);font-size:var(--t-s)}
-.hero-stage{margin-top:clamp(40px,4.5vw,64px);padding-top:clamp(32px,4vw,56px);height:clamp(420px,52vw,700px);overflow:hidden}
-.hero-shot{overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:var(--paper)} /* taste-skill-ignore: edge of a real screen (data-ui) */
-.hero-shot img{display:block;width:100%;height:auto}
+.hero-stage{position:relative;margin-top:clamp(40px,4.5vw,64px);padding:clamp(32px,4vw,56px) 0 0;height:clamp(440px,54vw,720px);overflow:hidden}
+.hero-shot{position:relative}
 @media (prefers-reduced-motion:no-preference){
  .js .hero-shot{animation:arrive 900ms var(--ease-out) 120ms both}
- @supports (animation-timeline:scroll()){.js .hero-shot img{animation:lift linear both;animation-timeline:scroll(root);animation-range:0 90vh}}
+ @supports (animation-timeline:scroll()){.js .hero-shot .browser-view img{animation:lift linear both;animation-timeline:scroll(root);animation-range:0 90vh}}
 }
 @keyframes arrive{from{opacity:0;transform:translateY(32px)}}
 @keyframes lift{to{transform:translateY(-6%)}}
@@ -78,33 +87,32 @@ code{font-family:var(--system-mono);font-size:.86em}
 .sec-head h2,.out-index h2,.faq-head h2{font-size:var(--t-l)}
 .sec-head p{color:var(--text-2);max-width:46ch}
 
-/* ---- Chain: the stages of a client project ---- */
-.chain{padding:clamp(112px,13vw,184px) 0 0}
-.stages{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:40px}
-.stages button{display:grid;justify-items:start;gap:2px;padding:20px 0 0;border:0;background:none;color:var(--text-3);font:inherit;text-align:left;cursor:pointer;transition:color 200ms ease,transform 160ms var(--ease-out)}
-.stages strong{font-size:var(--t-b);font-weight:600;color:var(--text-2);transition:color 200ms ease}
-.stages small{font-size:var(--t-s)}
-.stages [aria-selected=true] strong{color:var(--text)}
-.stages [aria-selected=true] small{color:var(--blue-hi)}
-@media (hover:hover) and (pointer:fine){.stages button:hover strong{color:var(--text)}}
-.stage-track{position:absolute;left:0;right:0;top:0;height:2px;background:var(--panel-3);border-radius:2px;overflow:hidden}
-.stage-track i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(var(--p,.2));background:var(--blue-hi);transition:transform 400ms var(--ease-out)}
-.stages.playing .stage-track i{transition:transform 120ms linear}
-.stage-toggle{display:block;margin:-28px 0 12px auto}
-.stage-toggle[hidden]{display:none}
-.stage-panels{display:grid}
-.stage{grid-area:1/1;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;align-items:start;transition:opacity 300ms ease}
-.stage[hidden]{display:grid!important;opacity:0;visibility:hidden}
-.stage-copy{display:grid;gap:16px;padding-top:8px}
-.stage-copy h3{font-size:var(--t-m)}
-.stage-copy p{color:var(--text-2)}
-.rule{position:relative;display:grid;gap:14px;justify-items:start;margin-top:8px;font-size:var(--t-s);font-weight:600}
-.rule::before{content:"";position:absolute;left:22px;top:24px;bottom:24px;width:1px;background:rgba(255,255,255,.16)} /* taste-skill-ignore: the workflow wire between When and Then */
-.rule span{position:relative;display:grid;gap:1px;padding:9px 14px;border-radius:10px;background:var(--panel-2);color:var(--text)}
-.rule small{color:var(--text-3);font-size:var(--t-s);font-weight:500}
-.rule span:last-child{color:var(--blue-hi)}
-.screen{overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:var(--r);background:var(--paper)} /* taste-skill-ignore: edge of a real screen (data-ui) */
-.screen img,.screen video{display:block;width:100%;height:auto}
+/* ---- Browser window around every product screen ---- */
+.browser{margin:0;overflow:hidden;border-radius:14px;background:#e9ebef;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 90px -30px rgba(0,0,0,.85)} /* taste-skill-ignore: a real browser window floating over the page (data-ui) */
+.browser-bar{display:grid;grid-template-columns:72px 1fr 72px;align-items:center;height:42px;padding:0 14px;background:#e9ebef}
+.lights{display:flex;gap:7px}
+.lights i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.address{justify-self:center;display:flex;align-items:center;gap:7px;width:min(420px,100%);height:26px;padding:0 12px;border-radius:7px;background:#fff;color:#4a5162;font-size:13px;letter-spacing:.005em}
+.address svg{flex:none;width:12px;height:12px;fill:none;stroke:#6b7282;stroke-width:1.6}
+.url{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.browser-view{background:var(--paper)}
+.browser-view img,.browser-view video{display:block;width:100%;height:auto}
+
+/* ---- Tour: every product screen behind a pill ---- */
+.tour{position:relative;padding:clamp(112px,13vw,184px) 0 0}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
+.pills button{min-height:42px;padding:0 18px;border:0;border-radius:99px;background:var(--panel-2);color:var(--text-2);font:inherit;font-size:var(--t-s);font-weight:550;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,transform 160ms var(--ease-out)}
+.pills button[aria-selected=true]{background:var(--text);color:var(--bg)}
+@media (hover:hover) and (pointer:fine){.pills button:not([aria-selected=true]):hover{background:var(--panel-3);color:var(--text)}}
+.tour-panels{display:grid}
+.tour-panel{grid-area:1/1;display:grid;gap:32px;transition:opacity 260ms ease,transform 260ms var(--ease-out)}
+.tour-panel[hidden]{display:grid!important;opacity:0;transform:translateY(10px);visibility:hidden}
+.tour-copy{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:12px 48px;align-items:start}
+.tour-copy h3{font-size:var(--t-m)}
+.tour-copy p{color:var(--text-2)}
+.ticks{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:12px;font-size:var(--t-s);font-weight:550}
+.ticks li{display:flex;align-items:center;gap:8px}
+.ticks li::before{content:"";width:5px;height:9px;margin:-3px 2px 0 2px;border:solid var(--blue-hi);border-width:0 2px 2px 0;transform:rotate(45deg)}
 
 /* ---- AI: an assistant you can try ---- */
 .ai{margin-top:clamp(112px,13vw,184px);padding:clamp(88px,10vw,144px) 0}
@@ -168,40 +176,28 @@ code{font-family:var(--system-mono);font-size:.86em}
 .promises li{color:var(--text-2);max-width:34ch}
 .promises strong{display:block;margin-bottom:6px;color:var(--text);font-size:var(--t-b);font-weight:620}
 
-/* ---- What clients see: documents on the canvas ---- */
-.outputs{padding:clamp(112px,13vw,184px) 0 0}
-.out-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start}
-.out-index{display:grid;gap:24px;position:sticky;top:120px}
+/* ---- What clients see: cards, and the real client page in a browser ---- */
+.outputs{position:relative;padding:clamp(112px,13vw,184px) 0 0}
+.out-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;align-items:start}
+.out-index{display:grid;gap:20px;align-content:start}
 .out-index>p{color:var(--text-2);max-width:40ch}
-.out-names{display:grid;justify-items:start;gap:6px;margin-top:16px}
-.out-names button{padding:4px 0;border:0;background:none;color:var(--text-3);font:inherit;font-size:var(--t-l);font-weight:620;letter-spacing:-.04em;line-height:1.08;text-align:left;cursor:pointer;transition:color 200ms ease,transform 160ms var(--ease-out)}
-.out-names button[aria-selected=true]{color:var(--text)}
-@media (hover:hover) and (pointer:fine){.out-names button:hover{color:var(--text)}}
-.out-stage{position:relative;display:grid;min-height:680px;overflow:hidden;border-radius:20px}
-.sheet{grid-area:1/1;align-self:start;justify-self:start;width:560px;max-width:calc(100% - 64px);margin:56px 0 0 56px;min-height:640px;padding:44px 48px;border-radius:6px 6px 0 0;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.55;transition:opacity 220ms ease,transform 220ms var(--ease-out)}
-.sheet.narrow{width:460px}
-.sheet[hidden]{display:block!important;opacity:0;transform:translateY(12px);visibility:hidden}
-.sheet-from{display:flex;justify-content:space-between;gap:16px;margin-bottom:36px;font-size:14px;color:var(--ink-2)}
-.sheet-from strong{color:var(--ink);font-weight:650}
-.sheet h3{font-size:30px;letter-spacing:-.025em;margin-bottom:6px}
-.sheet h4{margin:22px 0 4px;font-size:15px;font-weight:650}
-.sheet-meta{margin-bottom:22px!important;color:var(--ink-2);font-size:14px}
-.sheet p+p{margin-top:12px}
-.sheet table{width:100%;margin-top:24px;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums}
-.sheet caption{text-align:left;font-weight:650;font-size:15px;padding-bottom:8px}
-.sheet th,.sheet td{padding:12px 0;border-top:1px solid var(--rule);text-align:left;font-weight:500;vertical-align:top}
-.sheet td{text-align:right;padding-left:16px;white-space:nowrap}
-.sheet thead th{color:var(--ink-2);font-size:13px;font-weight:550;border-top:0}
-.sheet thead th:not(:first-child){text-align:right}
-.sheet th small{display:block;color:var(--ink-2);font-size:13px;font-weight:450}
-.sheet tfoot th,.sheet tfoot td{font-weight:650}
-.sheet tfoot .total th,.sheet tfoot .total td{font-size:17px;border-top:2px solid var(--ink)}
-.sheet-state{margin-top:24px!important;padding:10px 14px;border-radius:8px;background:var(--paper-2);font-size:14px}
-.sheet-state.ok{background:var(--ok-bg);color:#0b5a33;font-weight:550}
-.sign{display:grid;gap:2px;margin-top:28px;padding:16px;border-radius:8px;background:var(--paper-2)}
-.sign span,.sign small{color:var(--ink-2);font-size:13px}
-.sign strong{font-size:22px;letter-spacing:-.01em}
-.doc-link{color:#2946b5;text-decoration:underline;text-underline-offset:3px}
+.doc-cards{display:grid;gap:10px;margin-top:12px}
+.doc-cards button{position:relative;display:grid;gap:4px;width:100%;padding:18px 52px 18px 20px;border:0;border-radius:14px;background:var(--panel-2);color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:background-color 180ms ease,transform 160ms var(--ease-out)}
+.doc-cards button::after{content:"";position:absolute;right:22px;top:50%;width:8px;height:8px;margin-top:-5px;border:solid var(--text-3);border-width:2px 2px 0 0;transform:rotate(45deg);transition:transform 180ms var(--ease-out),border-color 180ms ease}
+.doc-cards button[aria-selected=true]{background:#232c45}
+.doc-cards button[aria-selected=true] .card-top strong{color:#fff}
+.doc-cards button[aria-selected=true] .card-text{color:#d3d9ea}
+.doc-cards button[aria-selected=true]::after{border-color:var(--blue-hi);transform:translateX(3px) rotate(45deg)}
+@media (hover:hover) and (pointer:fine){.doc-cards button:not([aria-selected=true]):hover{background:var(--panel-3)}.doc-cards button:not([aria-selected=true]):hover::after{transform:translateX(3px) rotate(45deg)}}
+.doc-cards button:active{transform:scale(.985)}
+.card-top{display:flex;align-items:center;gap:10px}
+.card-top strong{font-size:var(--t-b);font-weight:620}
+.chip{padding:1px 9px;border-radius:99px;background:rgba(110,231,168,.12);color:#8ef0b9;font-size:var(--t-s);font-weight:600}
+.chip.due{background:rgba(245,180,91,.14);color:#f7c77d}
+.card-text{color:var(--text-2);font-size:var(--t-s)}
+.out-stage{display:grid}
+.sheet-panel{grid-area:1/1;transition:opacity 240ms ease,transform 240ms var(--ease-out)}
+.sheet-panel[hidden]{display:block!important;opacity:0;transform:translateY(10px);visibility:hidden}
 
 /* ---- FAQ ---- */
 .faq{padding:clamp(112px,13vw,184px) 0 0}
@@ -231,8 +227,6 @@ code{font-family:var(--system-mono);font-size:.86em}
 .claim-form input:focus-visible{outline:2px solid var(--blue-hi);outline-offset:2px}
 .claim-form .btn{min-height:52px}
 .claim-form button:disabled{opacity:.6;cursor:progress}
-.rule.across{grid-auto-flow:column;gap:40px;justify-content:center;justify-items:stretch;text-align:left}
-.rule.across::before{left:20%;right:20%;top:50%;bottom:auto;width:auto;height:1px} /* taste-skill-ignore: the workflow wire between When and Then */
 .error{grid-column:1/-1;color:#ff9b9b;font-size:var(--t-s);font-weight:600}
 .error:empty{display:none}
 .trap{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -254,21 +248,21 @@ code{font-family:var(--system-mono);font-size:.86em}
  .js .rise{opacity:0;transform:translateY(24px);transition:opacity 700ms var(--ease-out),transform 700ms var(--ease-out);transition-delay:var(--d,0ms)}
  .js .rise.in{opacity:1;transform:none}
 }
-@media (prefers-reduced-motion:reduce){.stage,.sheet{transition:none}.thread{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.tour-panel,.sheet-panel{transition:none}.thread{scroll-behavior:auto}}
 
 /* ---- Tablet ---- */
 @media (max-width:1060px){
  .bar-links{display:none}
  .hero-row,.sec-head{grid-template-columns:1fr}
  .hero-cta{justify-items:start}
- .stage{grid-template-columns:1fr;gap:28px}
+ .tour-copy{grid-template-columns:1fr}
  .out-grid,.faq-grid{grid-template-columns:1fr;gap:40px}
- .out-index,.faq-head{position:static}
+ .faq-head{position:static}
+ .doc-cards{grid-template-columns:1fr 1fr}
  .console{grid-template-columns:1fr}
  .side{order:-1}
  .asks{grid-template-columns:1fr 1fr}
 }
-@media (max-width:900px){.stages small{display:none}.stages strong{font-size:var(--t-s)}}
 /* ---- Phone: its own composition ---- */
 @media (max-width:640px){
  :root{--t-b:17px}
@@ -278,16 +272,16 @@ code{font-family:var(--system-mono);font-size:.86em}
  .hero h1{font-size:10.6vw}
  .act{display:grid;width:100%}
  .hero-cta{justify-items:stretch}
- .hero-stage{height:360px;padding-top:28px;margin-top:40px}
- .hero-shot{width:760px}
+ .hero-stage{height:auto;padding-top:24px;margin-top:36px}
+ .browser{border-radius:10px}
+ .browser-bar{grid-template-columns:44px 1fr 8px;height:32px;padding:0 10px}
+ .lights{gap:5px}.lights i{width:8px;height:8px}
+ .address{height:20px;font-size:11px;padding:0 8px}
+ .pills{gap:6px;margin-bottom:28px}
+ .pills button{min-height:38px;padding:0 14px}
+ .doc-cards{grid-template-columns:1fr}
+ .doc-cards button{padding:14px 44px 14px 16px}
  .sec-head{margin-bottom:36px}
- .stages{gap:6px;margin-bottom:28px}
- .stages button{padding-top:16px}
- .stage-toggle{margin:-16px 0 12px auto}
- .screen{height:300px}
- .screen img,.screen video{width:720px;max-width:none;transform:translateX(var(--mx,-124px))}
- #p-proposal .screen{--mx:-392px}
- #p-paid .screen{--mx:-300px}
  .ai{padding:72px 0}
  .asks{grid-template-columns:1fr}
  .asks button:nth-child(n+5){display:none}
@@ -298,18 +292,10 @@ code{font-family:var(--system-mono);font-size:.86em}
  .msg{max-width:94%}
  .call .out{display:none}
  .promises{grid-template-columns:1fr;gap:24px}
- .out-names{display:flex;flex-wrap:wrap;gap:2px 18px;margin-top:4px}
- .out-names button{font-size:var(--t-m);letter-spacing:-.02em}
- .out-stage{min-height:0;height:560px}
- .sheet,.sheet.narrow{width:auto;max-width:none;margin:16px 16px 0;padding:24px 22px;min-height:0;font-size:14px}
- .sheet h3{font-size:24px}
- .sheet-from{margin-bottom:24px}
  .faq summary{padding:18px 20px}
  .faq details p{padding:0 20px 20px}
  .claim-form{grid-template-columns:1fr}
  .claim h2{font-size:11vw}
- .rule.across{grid-auto-flow:row;justify-items:start;gap:14px}
- .rule.across::before{left:22px;right:auto;top:24px;bottom:24px;width:1px;height:auto}
  .foot-grid{grid-template-columns:1fr}
  .foot-links{grid-template-columns:1fr 1fr}
  .foot-legal{flex-direction:column}

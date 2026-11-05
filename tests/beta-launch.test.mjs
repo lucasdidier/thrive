@@ -137,10 +137,6 @@ test('landing page claims match the real workflow catalog and MCP tools',async()
  const landing=read('ui/landing.html'),script=read('public/landing.js'),server=read('server/mcp.mjs')+read('server/operations.mjs');
  assert.ok(landing.includes(`${triggers.length} triggers`),'trigger count');
  assert.ok(landing.includes(`${actions.length} actions`),'action count');
- const tl=new Set(triggers.map(t=>t.label)),al=new Set(actions.map(a=>a.label));
- const rules=[...landing.matchAll(/<p class="rule"><span><small>When<\/small>([^<]+)<\/span><span><small>Then<\/small>([^<]+)<\/span><\/p>/g)];
- assert.ok(rules.length>=5,'each stage shows its workflow');
- for(const [,when,then] of rules){assert.ok(tl.has(when),when);assert.ok(al.has(then.replace(/ “[^”]+”$/,'')),then);}
  // The AI examples only name tools and actions the MCP server really has.
  for(const [,tool] of (landing+script).matchAll(/\b(thrive_[a-z_]+)/g))assert.ok(server.includes(`'${tool}'`),tool);
  const ids=new Set(actions.map(a=>a.id));
