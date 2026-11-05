@@ -131,11 +131,14 @@ test('landing, legal pages and production config ship together',()=>{
 });
 
 test('landing page automation claims match the real workflow catalog',async()=>{
- const {triggers,actions}=await import('../public/workflow-domain.js');
+ const {triggers,actions,triggerById,actionById,relatedEntities}=await import('../public/workflow-domain.js');
+ const {flows}=await import('../public/landing-flows.js');
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
- assert.ok(landing.includes(`<strong>${triggers.length}</strong><span>triggers`),'trigger count');
- assert.ok(landing.includes(`<strong>${actions.length}</strong><span>actions`),'action count');
- const tl=new Set(triggers.map(t=>t.label)),al=new Set(actions.map(a=>a.label));
- for(const [,when,then] of landing.matchAll(/<span class="when">([^<]+)<\/span><span class="arrow"[^>]*>→<\/span><span class="then">([^<]+)<\/span>/g)){assert.ok(tl.has(when),when);assert.ok(al.has(then),then);}
- for(const name of [...landing.matchAll(/data-tab="([a-z]+)"/g)].map(m=>m[1]))assert.ok(landing.includes(`id="tab-${name}"`),name);
+ assert.ok(landing.includes(`${triggers.length} triggers`),'trigger count');
+ assert.ok(landing.includes(`${actions.length} actions`),'action count');
+ for(const [id,f] of Object.entries(flows)){
+  const t=triggerById(id);assert.ok(t,id);assert.equal(t.label,f.label);
+  assert.ok(landing.includes(`data-value="${id}"`),id+' offered');
+  for(const [actionId] of f.actions){const a=actionById(actionId);assert.ok(a,actionId);if(a.target)assert.ok(relatedEntities(t.entity).includes(a.target),`${id} → ${actionId}`);}
+ }
 });
