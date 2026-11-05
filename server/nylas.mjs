@@ -80,6 +80,23 @@ export async function clientNylasEmails(db,owner,env,clientId,{cursor='',message
 }
 
 // Read the connected primary calendar without importing private event details into workspace state.
+// Event details for the calendar drawer. Descriptions arrive as HTML from most providers:
+// reduce them to plain text here so the browser never renders provider markup.
+const entities={'&nbsp;':' ','&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#39;':"'"};
+export function plainDescription(html){return String(html||'').replace(/<br\s*\/?>|<\/(p|div|li|h\d|tr)>/gi,'\n').replace(/<li[^>]*>/gi,'• ').replace(/<a\s[^>]*href="(https?:[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi,(m,href,text)=>{const t=text.replace(/<[^>]+>/g,'').trim();return !t||t===href?href:`${t} (${href})`;}).replace(/<[^>]+>/g,'').replace(/&(nbsp|amp|lt|gt|quot|#39);/g,m=>entities[m]).replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim().slice(0,5000);}
+const safeUrl=v=>{try{const u=new URL(String(v||''));return u.protocol==='https:'&&!u.username&&!u.password?u.href:'';}catch{return '';}};
+const meetingPattern=/https:\/\/[^\s<>"')\]]*(?:meet\.google\.com|zoom\.us|teams\.microsoft\.com|teams\.live\.com|whereby\.com|webex\.com|around\.co|meet\.jit\.si)[^\s<>"')\]]*/i;
+const meetingProviders=[[/meet\.google/i,'Google Meet'],[/zoom\.us/i,'Zoom'],[/teams\.(microsoft|live)/i,'Microsoft Teams'],[/whereby/i,'Whereby'],[/webex/i,'Webex']];
+const rsvp={yes:'accepted',no:'declined',maybe:'tentative'};
+const person=p=>({name:String(p?.name||'').slice(0,120),email:String(p?.email||'').slice(0,254).toLowerCase()});
+export function eventDetails(e){
+ const description=plainDescription(e.description);
+ const url=safeUrl(e.conferencing?.details?.url)||safeUrl((String(e.location||'').match(meetingPattern)||[])[0])||safeUrl((description.match(meetingPattern)||[])[0]);
+ const provider=url?(meetingProviders.find(([re])=>re.test(url))?.[1]||String(e.conferencing?.provider||'Video call').slice(0,40)):'';
+ const organizer=e.organizer?.email?person(e.organizer):null;
+ const guests=list(e.participants).filter(p=>p?.email).slice(0,100).map(p=>({...person(p),status:rsvp[p.status]||'pending'}));
+ return {description,meeting:url?{url,provider,code:String(e.conferencing?.details?.meeting_code||'').slice(0,40)}:null,organizer,guests,calendarUrl:safeUrl(e.html_link),recurring:!!(e.recurrence?.length||e.master_event_id)};
+}
 export async function listNylasEvents(db,owner,env,start,end,cursor,fetcher=fetch){
  if(!Number.isFinite(Date.parse(start))||!Number.isFinite(Date.parse(end))||Date.parse(end)<=Date.parse(start)||Date.parse(end)-Date.parse(start)>32*86400000)throw new StoreError('Choose a calendar range of up to 32 days.');
  if(cursor!=null&&(typeof cursor!=='string'||cursor.length>4096))throw new StoreError('Invalid calendar page.');
@@ -87,6 +104,6 @@ export async function listNylasEvents(db,owner,env,start,end,cursor,fetcher=fetc
  const query=new URLSearchParams({calendar_id:'primary',start:String(Math.floor(Date.parse(start)/1000)),end:String(Math.ceil(Date.parse(end)/1000)),limit:'100',show_cancelled:'false',expand_recurring:'true'});
  if(cursor)query.set('page_token',cursor);
  const r=await api.call('/events?'+query);
- const events=list(r.data).filter(e=>e.status!=='cancelled').map(e=>{const w=e.when||{},allDay=!!(w.date||w.start_date);return {id:e.id,title:e.title||'Untitled event',location:e.location||'',allDay,start:allDay?w.date||w.start_date:new Date((w.start_time??w.time)*1000).toISOString(),end:allDay?w.end_date||w.date:new Date((w.end_time??w.time)*1000).toISOString()};});
+ const events=list(r.data).filter(e=>e.status!=='cancelled').map(e=>{const w=e.when||{},allDay=!!(w.date||w.start_date);return {id:e.id,title:e.title||'Untitled event',location:e.location||'',allDay,start:allDay?w.date||w.start_date:new Date((w.start_time??w.time)*1000).toISOString(),end:allDay?w.end_date||w.date:new Date((w.end_time??w.time)*1000).toISOString(),...eventDetails(e)};});
  return {events,nextCursor:r.next_cursor||null};
 }

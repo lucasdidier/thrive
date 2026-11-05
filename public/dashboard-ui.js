@@ -10,6 +10,7 @@ import {moneyGroups,recordCurrency,formatMoney} from './currency.js';
 import {timeDuration} from './time-domain.js';
 import {invoiceStatus} from './domain.js';
 import {projectNextStep} from './attention-domain.js';
+import {calendarEventPanel} from './calendar-event-panel.js';
 export function createDashboard({storageKey,recentActivity,getState:S,getPage,render,icon,esc,btn,badge,open}){
  let offset=0,calendar={loaded:false,loading:false,connected:false,events:[],error:''},requestId=0,eventPage=0,rangePreset='all',totalsRange=null,customRange={start:localDateKey(new Date()),end:localDateKey(new Date())};
  const refresh=()=>{if(getPage()!=='overview')return;const opened=document.querySelector('#home-widgets:popover-open'),focused=document.activeElement?.dataset.homeToggle,control=document.activeElement?.id;render();if(control)document.getElementById(control)?.focus();if(opened){menu()?.showPopover();if(focused)menu()?.querySelector(`[data-home-toggle="${focused}"]`)?.focus();}};
@@ -27,7 +28,7 @@ export function createDashboard({storageKey,recentActivity,getState:S,getPage,re
  async function load(){const id=++requestId;calendar.loading=true;calendar.error='';refresh();try{const status=await api();if(id!==requestId)return;calendar.connected=status.connection.provider==='nylas'&&!!status.connection.account?.calendar;calendar.account=status.connection.account?.email;calendar.events=[];if(calendar.connected){const week=calendarDay(offset),events=[];let cursor;do{const result=await api({action:'calendar-events',start:week.start.toISOString(),end:week.end.toISOString(),...(cursor?{cursor}:{})});if(id!==requestId)return;events.push(...result.events);cursor=result.nextCursor;}while(cursor);calendar.events=[...new Map(events.map(e=>[e.id,e])).values()];}calendar.loaded=true;}catch(e){if(id===requestId)calendar.error=e.message;}finally{if(id===requestId){calendar.loading=false;refresh();}}}
  document.addEventListener('click',e=>{
   const eventButton=e.target.closest('[data-calendar-event]');
-  if(eventButton){const entry=calendar.events.find(x=>x.id===eventButton.dataset.calendarEvent);if(entry)open(esc(entry.title),`<div class="dialog-body"><p>${entry.allDay?'All day · '+esc(entry.start):esc(new Date(entry.start).toLocaleString('en-US',{dateStyle:'full',timeStyle:'short'}))}</p>${!entry.allDay?`<p>Until ${esc(new Date(entry.end).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}))}</p>`:''}${entry.location?`<p>${esc(entry.location)}</p>`:''}</div>`);return;}
+  if(eventButton){const entry=calendar.events.find(x=>x.id===eventButton.dataset.calendarEvent);if(entry)open(esc(entry.title),calendarEventPanel(entry,{state:S(),icon,esc,account:calendar.account||''}));return;}
   const button=e.target.closest('[data-dashboard]');if(!button)return;
   const action=button.dataset.dashboard;
   if(action==='events-prev'||action==='events-next'){eventPage=Math.max(0,eventPage+(action==='events-next'?1:-1));refresh();return;}
