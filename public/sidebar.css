@@ -1,0 +1,123 @@
+/* App sidebar (Harvest layout). Owns the whole sidebar; loads after design-system.css.
+   Geometry: nav padding 6 + border 1 + content padding 10 + item padding 11 puts every icon
+   at x = 28–44, the centre of the 72px rail. Collapsing only animates the width, so icons
+   never move and labels are simply clipped and faded. */
+:root{--nav-w:236px;--nav-w-rail:72px;--nav-t:220ms;--nav-ease:cubic-bezier(.2,0,0,1);--record-sidebar:var(--nav-w)}
+:root[data-sidebar-collapsed=true]{--nav-w:var(--nav-w-rail)}
+
+.app-nav{position:fixed;inset:0 auto 0 0;z-index:30;width:var(--nav-w);padding:6px;box-sizing:border-box;font-size:13px}
+.app-nav__inner{position:relative;display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--surface-navigation);border:1px solid var(--line);border-radius:12px}
+:where(.app-nav) :where(button,a){font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+.app-nav svg{width:16px;height:16px;flex:none}
+
+/* Top: brand (workspace switcher) and the collapse toggle */
+.app-nav__top{display:flex;align-items:center;height:56px;padding:8px 10px 0;flex:none}
+.app-nav__brand{display:flex;align-items:center;gap:9px;height:40px;padding:0 5px;margin:0;border:0;border-radius:8px;background:none;cursor:pointer;min-width:0;max-width:calc(100% - 36px)}
+.app-nav__brand:hover,.app-nav__brand[aria-expanded=true]{background:var(--hover)}
+.app-nav__logo{width:28px;height:28px;flex:none;border-radius:8px}
+.app-nav__wordmark{font-size:21px;font-weight:650;letter-spacing:-.6px;color:var(--text);white-space:nowrap}
+.app-nav__toggle{position:absolute;top:21px;right:17px;z-index:2;display:grid;place-items:center;width:28px;height:28px;padding:0;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+.app-nav__toggle:hover{background:var(--hover);color:var(--text)}
+
+/* Items */
+.app-nav__item{position:relative;display:flex;align-items:center;gap:10px;width:100%;height:30px;padding:0 11px;margin:0;border:0;border-radius:8px;background:none;color:var(--text);font-weight:500;text-align:left;text-decoration:none;white-space:nowrap;overflow:hidden;cursor:pointer;box-sizing:border-box}
+.app-nav__item>svg{color:var(--muted)}
+.app-nav__item:hover{background:var(--hover)}
+.app-nav__item.is-active{background:var(--surface-selected);font-weight:550}
+.app-nav__item.is-active>svg{color:var(--action-primary)}
+.app-nav__label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.app-nav :is(.app-nav__label,.app-nav__wordmark,.app-nav__group-label){transition:opacity 140ms ease}
+
+/* Search */
+.app-nav__search{padding:4px 10px 6px;flex:none}
+.app-nav__search-btn{height:32px;border:1px solid var(--line);background:var(--surface-base);color:var(--muted);font-weight:450}
+.app-nav__search-btn:hover{border-color:var(--border-control,var(--line));background:var(--surface-base);color:var(--text)}
+.app-nav__search-btn>span{flex:1}
+.app-nav__search-btn kbd{font:11px var(--system-font);color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:0 4px;line-height:17px}
+
+/* Sections */
+.app-nav__sections{flex:1;min-height:0;overflow:hidden auto;padding:2px 10px 10px;scrollbar-width:thin;overscroll-behavior:contain}
+.app-nav__group{display:grid;gap:1px}
+.app-nav__group+.app-nav__group{margin-top:4px}
+.app-nav__group-label{height:26px;padding:0 11px;line-height:28px;font-size:12px;color:var(--faint);white-space:nowrap;overflow:hidden;transition:height var(--nav-t) var(--nav-ease),opacity 140ms ease}
+.app-nav__customize{margin-top:10px;padding-top:9px;border-top:1px dashed var(--border-control,var(--line))}
+.app-nav__customize-btn,.app-nav__customize-btn>svg{color:var(--link)}
+.app-nav__customize-btn:hover{background:color-mix(in srgb,var(--link) 9%,transparent)}
+.app-nav__eye{display:grid;margin-left:auto;color:var(--muted)}
+.app-nav__item.is-editing.is-hidden>svg,.app-nav__item.is-editing.is-hidden .app-nav__label{opacity:.45}
+.app-nav__item.is-editing.is-hidden .app-nav__label{text-decoration:line-through;text-decoration-color:var(--faint)}
+.app-nav__sections.is-customizing .app-nav__group{animation:app-nav-in 180ms var(--nav-ease)}
+@keyframes app-nav-in{from{opacity:.4;transform:translateY(-2px)}}
+
+/* Footer: app links, setup progress, account card + notifications */
+.app-nav__footer{flex:none;padding:8px 10px 10px;border-top:1px solid var(--line);display:grid;gap:8px}
+.app-nav__bottom-items{display:grid;gap:1px}
+.app-nav__setup-btn.getting-started-trigger{width:100%;height:34px;min-height:34px;padding:0 11px;justify-content:flex-start;gap:10px;border-radius:8px;font-size:12px;white-space:nowrap}
+.app-nav__setup-btn .getting-started-label{flex:1;text-align:left}
+.app-nav__account-row{display:flex;align-items:center;gap:4px;padding-top:8px;border-top:1px solid var(--line);margin-inline:-10px;padding-inline:10px}
+.app-nav__account{display:flex;align-items:center;gap:10px;flex:1;min-width:0;height:48px;padding:0 3px;border:0;border-radius:10px;background:none;text-align:left;cursor:pointer}
+.app-nav__account:hover,.app-nav__account[aria-expanded=true]{background:var(--hover)}
+.app-nav__account .account-avatar{width:32px;height:32px;font-size:12px}
+.app-nav__identity{display:grid;line-height:1.25;white-space:nowrap}
+.app-nav__identity strong{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis}
+.app-nav__identity small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.app-nav__bell{position:relative;display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:8px;color:var(--muted)}
+.app-nav__bell:hover,.app-nav__bell.is-active{background:var(--hover);color:var(--text)}
+.app-nav__dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--action-primary);box-shadow:0 0 0 2px var(--surface-navigation)}
+
+/* Menus */
+.app-nav__menu{min-width:240px}
+.app-nav__menu-head{display:flex;align-items:center;gap:10px;padding:8px 8px 6px}
+.app-nav__menu-head>span:last-child{display:grid;min-width:0;line-height:1.3}
+.app-nav__menu-head strong{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-nav__menu-head small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-nav__menu-head .account-avatar{width:36px;height:36px}
+.app-nav__menu-logo{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--hover);flex:none;overflow:hidden}
+.app-nav__menu-logo img{width:100%;height:100%;object-fit:contain}
+.app-nav__theme{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 4px 10px;min-height:36px;font-size:13px}
+.app-nav__theme>div{display:flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:8px}
+.app-nav__menu .app-nav__theme button{display:grid;place-items:center;width:30px;min-width:30px;height:26px;min-height:26px;padding:0;border-radius:6px}
+.app-nav__theme button[aria-pressed=true]{background:var(--hover);color:var(--text)}
+
+/* Desktop motion and the collapsed rail */
+@media (min-width:651px){
+ :root .workspace,:root[data-sidebar-collapsed] .workspace{margin-left:var(--nav-w)}
+ :root[data-sidebar-ready=true] .app-nav{transition:width var(--nav-t) var(--nav-ease)}
+ :root[data-sidebar-ready=true] .workspace{transition:margin-left var(--nav-t) var(--nav-ease)}
+ :root[data-sidebar-ready=true] .app-nav__toggle{transition:right var(--nav-t) var(--nav-ease),top var(--nav-t) var(--nav-ease),background .15s,border-color .15s,box-shadow .15s}
+ body:has(> .design-preview-notice) .app-nav{top:30px}
+ :root[data-sidebar-collapsed=true] :is(.app-nav__label,.app-nav__wordmark,.app-nav__eye){opacity:0;pointer-events:none}
+ :root[data-sidebar-collapsed=true] .app-nav__group-label{height:8px;opacity:0}
+ :root[data-sidebar-collapsed=true] .app-nav__brand{max-width:100%}
+ :root[data-sidebar-collapsed=true] .app-nav__toggle{right:-14px;top:24px;background:var(--surface-base);border-color:var(--line);box-shadow:0 1px 3px rgb(16 24 40 / .12)}
+ :root[data-sidebar-collapsed=true] .app-nav__toggle svg{transform:scaleX(-1)}
+ :root[data-sidebar-collapsed=true] .app-nav__search-btn kbd{display:none}
+ :root[data-sidebar-collapsed=true] .app-nav__setup-btn .getting-started-count{margin-left:-3px}
+ :root[data-sidebar-collapsed=true] .app-nav__account-row{flex-direction:column-reverse;align-items:stretch;gap:2px}
+ :root[data-sidebar-collapsed=true] .app-nav__bell{width:38px}
+}
+@media (prefers-reduced-motion:reduce){
+ .app-nav,.workspace,.app-nav__toggle,.app-nav__group-label,.app-nav :is(.app-nav__label,.app-nav__wordmark){transition:none!important}
+ .app-nav__sections.is-customizing .app-nav__group{animation:none}
+}
+
+/* Phones: brand and account on one row, navigation as a scrolling strip */
+@media (max-width:650px){
+ .app-nav{position:sticky;top:0;width:100%;padding:0}
+ .app-nav__inner{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"top search footer" "nav nav nav";border-width:0 0 1px;border-radius:0;height:auto;overflow:visible}
+ .app-nav__top{grid-area:top;height:52px;padding:6px 8px}
+ .app-nav__search{grid-area:search;padding:0;align-self:center}
+ .app-nav__search-btn{width:40px;height:40px;padding:0;justify-content:center}
+ .app-nav__search-btn :is(span,kbd){display:none}
+ .app-nav__footer{grid-area:footer;border:0;padding:0 8px 0 4px;align-self:center}
+ .app-nav__bottom-items,.app-nav__setup,.app-nav__identity{display:none}
+ .app-nav__account-row{border:0;padding:0;margin:0}
+ .app-nav__account{width:40px;height:40px;padding:4px;flex:none}
+ .app-nav__sections{grid-area:nav;display:flex;gap:4px;overflow:auto hidden;padding:0 8px 8px;scrollbar-width:none}
+ .app-nav__group{display:flex;gap:4px}
+ .app-nav__group+.app-nav__group{margin:0}
+ .app-nav__group-label,.app-nav__customize,.app-nav__toggle{display:none}
+ .app-nav__item{width:auto;height:40px;flex:none;padding:0 12px}
+ .workspace{margin-left:0}
+ body:has(.record-page)>.app-nav{display:none}
+}

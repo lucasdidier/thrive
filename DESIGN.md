@@ -51,7 +51,7 @@ Titles use −0.025em tracking, body stays normal. Monetary figures use tabular 
 
 ## Geometry
 
-4px spacing base. Tight groups use 8–12px; panel padding 20px; section gaps 24–32px. Desktop sidebar 228px, collapsed rail 64px. Topbar 56px. Page gutters 32px, tablet 24px, phone 16px. Desktop action buttons 30px, form-footer actions 32px, icon buttons 28px, fields 36px. Coarse-pointer touch targets stay 44px. Mobile navigation targets 44px. Control radius 6px; badges 4px; workspace panels 10px; dialogs 12px. Cards use a thin border and no resting shadow. Shadows indicate floating menus and overlays. Desktop menu rows use a 30px minimum height, 12px text, 14px icons, and 4px inner corners; group labels use 11px text with compact spacing. Create is 208px wide. Mobile and coarse-pointer menus keep 44px rows. Settings navigation uses 32px desktop rows.
+4px spacing base. Tight groups use 8–12px; panel padding 20px; section gaps 24–32px. Desktop sidebar 236px, collapsed rail 72px. Topbar 56px. Page gutters 32px, tablet 24px, phone 16px. Desktop action buttons 30px, form-footer actions 32px, icon buttons 28px, fields 36px. Coarse-pointer touch targets stay 44px. Mobile navigation targets 44px. Control radius 6px; badges 4px; workspace panels 10px; dialogs 12px. Cards use a thin border and no resting shadow. Shadows indicate floating menus and overlays. Desktop menu rows use a 30px minimum height, 12px text, 14px icons, and 4px inner corners; group labels use 11px text with compact spacing. Create is 208px wide. Mobile and coarse-pointer menus keep 44px rows. Settings navigation uses 32px desktop rows.
 
 ## Components
 
@@ -72,7 +72,7 @@ New visitors begin in light mode. Saved Light and Dark choices remain respected.
 
 Interactions use short color transitions (120ms). Pointer presses compress buttons to 98%; keyboard actions and reduced-motion preferences stay still. Preserve the existing purposeful sidebar and drawer interactions, keyboard access, reduced-motion support, and high-contrast mode. No page entrance animation or perpetual onboarding orbit.
 
-Sidebar pin/unpin and hover reveal use the shared drawer curve over 260ms, with 160ms label fades. Commit the destination layout once and bridge positions with transforms; never animate width or page margins each frame. Rapid reversal starts at the currently painted position. Keyboard and reduced-motion changes are immediate; mobile retains its static navigation layout.
+Sidebar (Harvest layout, `public/sidebar.css`): workspace switcher on the logo and the collapse toggle on top, search, navigation groups, a dashed separator before the blue Customize link, then Use with AI and Settings, the Getting started slot, and one account card (photo, name, business) beside the notifications bell. Collapsing animates only the width (220ms, `cubic-bezier(.2,0,0,1)`) and the page margin with it. Every icon sits at the rail’s centre in both states, so nothing moves; labels fade and clip. No hover reveal. Customize edits visibility in place.
 
 ## Responsive behavior
 
@@ -123,7 +123,7 @@ A feature with its own page keeps its own settings there; Scheduling availabilit
 
 ### Settings and identity controls
 
-Account menu has one Edit profile destination and Getting started. The entire account row, avatar included, is a single hover/click target; photo editing belongs on Profile. Appearance stays in the sidebar, with an account settings page for System and mobile access. Workspace settings live in the workspace menu, not as a duplicated sidebar item. Use with AI gets a restrained blue-tinted navigation surface.
+The account card opens the account menu: My profile, Notification settings, Appearance and Sign out. Workspace settings are separate, under Settings in the sidebar and in the logo’s workspace menu. Photo editing belongs on Profile.
 
 Project defaults owns hourly rate, deposit and statuses. Client/project Custom fields and Scheduling are workspace settings destinations. Rates may be overridden on individual client/project records, never through a second project editor in Time.
 

@@ -12,5 +12,7 @@ export function createNotificationsUI({getState:S,getPage,render,save,open,btn,i
  function recent(limit=4,emptyHTML='',renderRows){if(!loaded&&!loading&&!error)queueMicrotask(()=>load());const items=activityFeed(S(),threads).slice(0,limit);if(!items.length){if(error)return `<div class="dash-feed-status"><p role="alert">${esc(error)}</p>${btn('Try again','notifications-refresh')}</div>`;if(!loaded)return '<div class="dash-feed-status" role="status">Loading activity…</div>';return emptyHTML||timelineHTML([],{esc,icon,state:S()});}return (renderRows?renderRows(items):timelineHTML(items,{esc,icon,state:S()}));}
  function history(){open('Recent activity',`<div class="dialog-body">${timelineHTML(activityFeed(S(),threads),{esc,icon,state:S()})}</div>`);}
  function click(a,el){if(a==='notifications-view'){view=el.dataset.view;render();return true;}if(a==='notifications-inbox'){location.hash='notifications';return true;}if(a==='activity-inbox'){history();return true;}if(a==='notifications-refresh'){void load(true,true);return true;}if(a==='notifications-read'){const prior=S().settings.readNotifications||[];S().settings.readNotifications=[...new Set([...prior,...rows().map(activityKey)])];save();render();toast('Notifications marked as read.');return true;}return false;}
- return {page,recent,click};
+ // Unread count for the sidebar bell; never triggers a load on its own.
+ const unreadCount=()=>{try{return rows().filter(n=>!isRead(S(),n)).length;}catch{return 0;}};
+ return {page,recent,click,unreadCount};
 }

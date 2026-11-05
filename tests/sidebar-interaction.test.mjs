@@ -1,57 +1,62 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {initSidebarUI} from '../public/sidebar-ui.js';
+import {sidebarHTML} from '../public/sidebar-content.js';
+import {sidebarGroups,workspaceSections,pageSections} from '../public/sidebar-sections.js';
 
-test('collapsed navigation keeps its first click; only blank space and the toggle expand',()=>{
- const original={document:globalThis.document,localStorage:globalThis.localStorage,matchMedia:globalThis.matchMedia};
- const listeners={},root={dataset:{}},button={setAttribute(){}};
- globalThis.document={documentElement:root,querySelector:()=>button,addEventListener(type,fn){listeners[type]=fn;}};
- globalThis.localStorage={getItem:()=> 'true',setItem(){}};
- globalThis.matchMedia=()=>({matches:true});
+function fixture(saved='false'){
+ const original={document:globalThis.document,localStorage:globalThis.localStorage,requestAnimationFrame:globalThis.requestAnimationFrame};
+ const listeners={},root={dataset:{}},writes=[],attrs={},button={setAttribute(k,v){attrs[k]=v;}};
+ globalThis.document={documentElement:root,querySelector:()=>button,querySelectorAll:()=>[],getElementById:()=>null,addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
+ globalThis.localStorage={getItem:()=>saved,setItem:(...a)=>writes.push(a)};
+ globalThis.requestAnimationFrame=fn=>fn();
+ const ui=initSidebarUI('audit');
+ const click=kind=>{let prevented=false;for(const fn of listeners.click)fn({target:{closest:s=>s==='[data-sidebar-toggle]'&&kind==='toggle'?button:null},preventDefault(){prevented=true;}});return prevented;};
+ return {ui,root,writes,attrs,click,restore:()=>Object.assign(globalThis,original)};
+}
+test('the toggle collapses and expands, saves the choice and labels itself',()=>{
+ const f=fixture();
  try{
-  initSidebarUI('audit');
-  const click=(kind)=>{
-   let prevented=false,stopped=false;
-   listeners.click({target:{closest(selector){if(selector==='[data-sidebar-toggle]')return kind==='toggle'?button:null;if(selector==='#sidebar')return root;if(selector==='a,button,input,select,textarea,summary,[role=button]')return kind==='link'?{}:null;return null;}},preventDefault(){prevented=true;},stopImmediatePropagation(){stopped=true;}});
-   return {prevented,stopped};
-  };
-  assert.deepEqual(click('link'),{prevented:false,stopped:false});
-  assert.equal(root.dataset.sidebarCollapsed,'true');
-  assert.deepEqual(click('blank'),{prevented:true,stopped:true});
-  assert.equal(root.dataset.sidebarCollapsed,'false');
-  click('toggle');assert.equal(root.dataset.sidebarCollapsed,'true');
- }finally{Object.assign(globalThis,original);}
+  assert.equal(f.root.dataset.sidebarCollapsed,'false');assert.equal(f.root.dataset.sidebarReady,'true');
+  assert.equal(f.click('toggle'),true);assert.equal(f.root.dataset.sidebarCollapsed,'true');
+  assert.deepEqual(f.writes.at(-1),['audit:sidebar-collapsed','true']);assert.equal(f.attrs['aria-label'],'Expand sidebar');assert.equal(f.attrs['aria-expanded'],'false');
+  f.click('toggle');assert.equal(f.root.dataset.sidebarCollapsed,'false');assert.equal(f.attrs['aria-label'],'Collapse sidebar');
+ }finally{f.restore();}
+});
+test('a saved collapsed sidebar opens collapsed; other clicks never toggle it',()=>{
+ const f=fixture('true');
+ try{assert.equal(f.root.dataset.sidebarCollapsed,'true');assert.equal(f.click('link'),false);assert.equal(f.root.dataset.sidebarCollapsed,'true');assert.equal(f.writes.length,0);}finally{f.restore();}
 });
 
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon=n=>`<svg data-i="${n}"></svg>`;
+const state=(extra={})=>({settings:{name:'Alex Morgan',business:'Juniper Studio',...extra},clients:[],projects:[],documents:[],invoices:[],forms:[],time:[]});
+const render=(s,opts={})=>sidebarHTML(s,{esc,icon,account:{enabled:true,user:{email:'alex@example.com'}},page:'projects',groups:sidebarGroups,hidden:id=>s.settings.sidebarSections?.[id]===false,shortcut:'⌘ K',...opts});
 
-test('hover previews a collapsed sidebar without changing the saved preference',()=>{
- const original={document:globalThis.document,localStorage:globalThis.localStorage,matchMedia:globalThis.matchMedia};
- const listeners={},root={dataset:{}},writes=[],sidebar={addEventListener(type,fn){listeners[type]=fn;}};
- globalThis.document={documentElement:root,querySelector:()=>null,getElementById:()=>sidebar,addEventListener(){}};
- globalThis.localStorage={getItem:()=> 'true',setItem:(...args)=>writes.push(args)};
- globalThis.matchMedia=()=>({matches:true});
- try{initSidebarUI('hover');listeners.pointerenter({pointerType:'mouse'});assert.equal(root.dataset.sidebarCollapsed,'true');assert.equal(root.dataset.sidebarPeek,'true');listeners.pointerleave();assert.equal(root.dataset.sidebarCollapsed,'true');assert.equal(root.dataset.sidebarPeek,'false');assert.equal(writes.length,0);listeners.pointerenter({pointerType:'touch'});assert.equal(root.dataset.sidebarCollapsed,'true');}finally{Object.assign(globalThis,original);}
+test('the sidebar follows the Harvest layout: one account card with notifications, settings apart from the profile',()=>{
+ const html=render(state(),{unread:3});
+ const order=['app-nav__brand','app-nav__search','app-nav__sections','app-nav__customize','data-action="mcp-guide"','data-action="workspace-settings"','getting-started-trigger','app-nav__account','app-nav__bell'];
+ const at=order.map(s=>html.indexOf(s));assert.ok(at.every(i=>i>=0),order.filter((s,i)=>at[i]<0).join());
+ assert.deepEqual([...at].sort((a,b)=>a-b),at);
+ const card=html.slice(html.indexOf('class="app-nav__account"'),html.indexOf('</button>',html.indexOf('class="app-nav__account"')));
+ for(const s of ['account-avatar','Alex Morgan','Juniper Studio'])assert.ok(card.includes(s),s);
+ assert.match(html,/aria-label="Notifications, 3 unread"/);assert.ok(html.includes('app-nav__dot'));
+ assert.ok(!html.includes('href="#notifications" class="app-nav__item'),'notifications are not a nav item');
+ assert.match(html,/href="#projects" class="app-nav__item is-active" title="Projects" aria-current="page"/);
+ const menu=html.slice(html.indexOf('id="account-menu"'),html.indexOf('id="getting-started-menu"'));
+ for(const s of ['data-action="profile"','#settings/notifications','data-action="sidebar-theme"','data-action="signout"'])assert.ok(menu.includes(s),s);
+ assert.ok(!render(state()).includes('app-nav__dot'));
 });
-
-
-test('hover exit keeps an open menu visible and keyboard focus reveals clipped controls',()=>{
- const original={document:globalThis.document,localStorage:globalThis.localStorage,matchMedia:globalThis.matchMedia};
- const listeners={},root={dataset:{}},control={},outside={};let menuOpen=false;
- const sidebar={addEventListener(type,fn){listeners[type]=fn;},contains(node){return node===control;}};
- globalThis.document={documentElement:root,activeElement:outside,querySelector:()=>menuOpen?{}:null,getElementById:()=>sidebar,addEventListener(){}};
- globalThis.localStorage={getItem:()=> 'true',setItem(){throw new Error('Preview must not persist');}};
- globalThis.matchMedia=()=>({matches:true});
- try{
-  initSidebarUI('hover');
-  listeners.pointerenter({pointerType:'mouse'});menuOpen=true;listeners.pointerleave();
-  assert.equal(root.dataset.sidebarPeek,'true');
-  menuOpen=false;listeners.pointerleave();assert.equal(root.dataset.sidebarPeek,'false');
-  root.dataset.inputModality='keyboard';document.activeElement=control;listeners.focusin();
-  assert.equal(root.dataset.sidebarPeek,'true');
-  listeners.pointerleave();assert.equal(root.dataset.sidebarPeek,'true');
-  listeners.focusout({relatedTarget:outside});assert.equal(root.dataset.sidebarPeek,'false');
-  assert.equal(root.dataset.sidebarCollapsed,'true');
-  root.dataset.inputModality='keyboard';listeners.pointerenter({pointerType:'mouse'});
-  assert.equal(root.dataset.inputModality,'pointer');
- }finally{Object.assign(globalThis,original);}
+test('customizing shows every section with a visibility toggle; hidden sections stay out of the nav',()=>{
+ const s=state({sidebarSections:{contracts:false}});
+ assert.ok(!render(s).includes('href="#contracts"'));
+ const editing=render(s,{customizing:true});
+ assert.equal((editing.match(/data-action="sidebar-visibility"/g)||[]).length,workspaceSections.length);
+ assert.match(editing,/is-editing is-hidden" data-action="sidebar-visibility" data-id="contracts" aria-pressed="false"/);
+ assert.ok(editing.includes('data-action="sidebar-customize-done"'));
+ assert.ok(pageSections.some(([id])=>id==='notifications')&&!workspaceSections.some(([id])=>id==='notifications'));
+});
+test('user-provided names are escaped in the sidebar',()=>{
+ const html=render(state({name:'<img src=x>',business:'"><b>'}));
+ assert.ok(!html.includes('<img src=x>')&&!html.includes('"><b>'));
 });

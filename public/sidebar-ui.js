@@ -1,36 +1,40 @@
-import {createSidebarMotion} from './sidebar-motion.js';
 import {navigateActionMenu} from './menu-keyboard.js';
+// Collapse state, toggle and sidebar menus. The motion itself is a CSS width transition
+// (sidebar.css): icons keep their position, so there is nothing to choreograph here.
 export function initSidebarUI(storageKey){
  const root=document.documentElement,key=storageKey+':sidebar-collapsed';
  try{root.dataset.sidebarCollapsed=localStorage.getItem(key)==='true'?'true':'false';}catch{root.dataset.sidebarCollapsed='false';}
- let pinnedCollapsed=root.dataset.sidebarCollapsed==='true',inside=false;
- const motion=createSidebarMotion(root);
  root.dataset.inputModality='pointer';
  document.addEventListener('pointerdown',()=>{root.dataset.inputModality='pointer';},true);
- document.addEventListener('keydown',e=>{if(['Tab','Enter',' ','ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(e.key)){root.dataset.inputModality='keyboard';motion.cancel();}},true);
- const desktop=()=>matchMedia('(min-width:651px)').matches;
+ document.addEventListener('keydown',e=>{if(['Tab','Enter',' ','ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(e.key))root.dataset.inputModality='keyboard';},true);
+ // Transitions start after the first paint so a saved collapsed state never animates on load.
+ globalThis.requestAnimationFrame?.(()=>requestAnimationFrame(()=>{root.dataset.sidebarReady='true';}));
+ const collapsed=()=>root.dataset.sidebarCollapsed==='true';
  const popovers=['workspace-menu','account-menu','getting-started-menu'];
  function position(panel){
   const trigger=document.querySelector(`[popovertarget="${panel.id}"]:not([popovertargetaction])`);if(!trigger)return;
-  const r=trigger.getBoundingClientRect(),above=panel.id!=='workspace-menu'&&desktop();
+  const r=trigger.getBoundingClientRect(),above=panel.id!=='workspace-menu';
   panel.style.left=`${Math.max(12,Math.min(r.left,innerWidth-panel.offsetWidth-12))}px`;
   panel.style.top=`${Math.max(12,Math.min(above?r.top-panel.offsetHeight-8:r.bottom+8,innerHeight-panel.offsetHeight-12))}px`;
  }
- function apply(collapsed){motion.run(()=>{pinnedCollapsed=collapsed;root.dataset.sidebarPeek='false';root.dataset.sidebarCollapsed=String(collapsed);sync();});try{localStorage.setItem(key,String(collapsed));}catch{}document.querySelectorAll?.('#sidebar [popover]:popover-open').forEach(position);}
- function sync(){const button=document.querySelector('[data-sidebar-toggle]'),collapsed=pinnedCollapsed;if(button){button.setAttribute('aria-label',collapsed?'Expand sidebar':'Collapse sidebar');button.setAttribute('title',collapsed?'Expand sidebar':'Collapse sidebar');button.setAttribute('aria-expanded',String(!collapsed));}}
- document.addEventListener('click',e=>{const toggle=e.target.closest('[data-sidebar-toggle]');if(toggle){e.preventDefault();e.stopImmediatePropagation();apply(!pinnedCollapsed);return;}if(desktop()&&root.dataset.sidebarCollapsed==='true'&&root.dataset.sidebarPeek!=='true'&&e.target.closest('#sidebar')&&!e.target.closest('a,button,input,select,textarea,summary,[role=button]')){e.preventDefault();e.stopImmediatePropagation();apply(false);return;}for(const id of ['workspace-menu','account-menu'])if(e.target.closest(`#${id} [data-action]`))document.getElementById(id)?.hidePopover();},true);
- document.addEventListener('toggle',e=>{if(!popovers.includes(e.target.id))return;const trigger=document.querySelector(`[popovertarget="${e.target.id}"]:not([popovertargetaction])`);trigger?.setAttribute('aria-expanded',String(e.newState==='open'));if(e.newState==='open')position(e.target);else if(!inside)peek(false);},true);
+ function sync(){
+  const button=document.querySelector('[data-sidebar-toggle]'),label=collapsed()?'Expand sidebar':'Collapse sidebar';
+  if(button){button.setAttribute('aria-label',label);button.setAttribute('title',label);button.setAttribute('aria-expanded',String(!collapsed()));}
+ }
+ function apply(next){
+  document.querySelectorAll?.('#sidebar [popover]:popover-open').forEach(p=>p.hidePopover());
+  root.dataset.sidebarCollapsed=String(next);sync();
+  try{localStorage.setItem(key,String(next));}catch{}
+ }
+ document.addEventListener('click',e=>{
+  if(e.target.closest('[data-sidebar-toggle]')){e.preventDefault();apply(!collapsed());return;}
+  for(const id of ['workspace-menu','account-menu'])if(e.target.closest(`#${id} [data-action],#${id} a`))document.getElementById(id)?.hidePopover();
+ },true);
+ document.addEventListener('toggle',e=>{if(!popovers.includes(e.target.id))return;document.querySelector(`[popovertarget="${e.target.id}"]:not([popovertargetaction])`)?.setAttribute('aria-expanded',String(e.newState==='open'));if(e.newState==='open')position(e.target);},true);
  document.addEventListener('keydown',e=>{
   const panel=e.target.closest?.('#workspace-menu,#account-menu,#getting-started-menu');
   if(panel)navigateActionMenu(e,panel,{trigger:document.querySelector(`[popovertarget="${panel.id}"]:not([popovertargetaction])`),close:()=>panel.hidePopover()});
  });
- function peek(show,focusLeaving=false){if(!pinnedCollapsed||!desktop()||root.dataset.sidebarPeek===String(show))return;if(!show&&(document.querySelector?.('#sidebar [popover]:popover-open')||(!focusLeaving&&root.dataset.inputModality==='keyboard'&&sidebar?.contains?.(document.activeElement))))return;motion.run(()=>{root.dataset.sidebarPeek=String(show);});}
- const sidebar=document.getElementById?.('sidebar');
- sidebar?.addEventListener('pointerenter',e=>{if(e.pointerType==='touch')return;inside=true;root.dataset.inputModality='pointer';if(matchMedia('(hover:hover) and (pointer:fine)').matches)peek(true);});
- sidebar?.addEventListener('pointerleave',()=>{inside=false;peek(false);});
- // Reveal clipped controls immediately for keyboard navigation, without changing the saved layout.
- sidebar?.addEventListener('focusin',()=>{if(root.dataset.inputModality==='keyboard')peek(true);});
- sidebar?.addEventListener('focusout',e=>{if(!inside&&!sidebar.contains(e.relatedTarget))peek(false,true);});
- if(typeof window!=='undefined')window.addEventListener('resize',()=>{motion.cancel();document.querySelectorAll('#sidebar [popover]:popover-open').forEach(position);});
- return {sync};
+ if(typeof window!=='undefined')window.addEventListener('resize',()=>document.querySelectorAll('#sidebar [popover]:popover-open').forEach(position));
+ return {sync,toggle:()=>apply(!collapsed())};
 }
