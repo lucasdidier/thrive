@@ -28,14 +28,14 @@ Shortlist, in order of preference. Check availability in the registrar; `.app` f
 
 "Thrive" is a crowded name (Thrive Global, Thrive Market, Thrive Themes). Search the trademark registers for your market before you print anything.
 
-Then replace every `REPLACE_DOMAIN` in `wrangler.production.jsonc` with the bare domain, for example `getthrive.app`.
+The production config already uses `thrivehq.com`. After buying it, go to Cloudflare → thrivehq.com → Email → Email Routing and forward `hello@thrivehq.com` to your Gmail, so replies to the support address reach you. Notification emails come from `notifications@thrivehq.com` through Resend, so that address needs no mailbox.
 
 ## 2. Supabase production project
 
 1. Create the project at supabase.com/dashboard. Name it `Thrive production`, choose an EU region (Frankfurt), and keep the database password in your password manager. Use the Pro plan: it includes daily backups with 7 days' retention, and the project never pauses.
 2. In the SQL Editor, run each file in `supabase/migrations/` in name order: `202610180001_thrive.sql`, `202610190001_nylas.sql`, then `202611050001_beta.sql`.
 3. Go to Authentication → Sign In / Providers. Turn **Email off** (beta access is Google only) and **Google on**; you'll paste its keys in step 3 below.
-4. Go to Authentication → URL Configuration. Set Site URL to `https://YOUR-DOMAIN` and add the redirect URL `https://YOUR-DOMAIN/auth/callback`.
+4. Go to Authentication → URL Configuration. Set Site URL to `https://thrivehq.com` and add the redirect URL `https://thrivehq.com/auth/callback`.
 5. Put the project reference (from Settings → General) into `SUPABASE_URL` in `wrangler.production.jsonc`.
 6. Invite yourself in the SQL Editor: `insert into thrive_beta_invites(email) values ('owner@example.com');`
 
@@ -44,24 +44,24 @@ Then replace every `REPLACE_DOMAIN` in `wrangler.production.jsonc` with the bare
 This is identity only. Gmail and Calendar keep going through Nylas.
 
 1. In console.cloud.google.com, create a project called `Thrive`.
-2. Go to Google Auth Platform → Branding. Set app name `Thrive`, logo `docs/brand/thrive-google-consent-120.png`, home page `https://YOUR-DOMAIN`, privacy policy `https://YOUR-DOMAIN/privacy`, terms `https://YOUR-DOMAIN/terms`, and add `YOUR-DOMAIN` as an authorized domain.
+2. Go to Google Auth Platform → Branding. Set app name `Thrive`, logo `docs/brand/thrive-google-consent-120.png`, home page `https://thrivehq.com`, privacy policy `https://thrivehq.com/privacy`, terms `https://thrivehq.com/terms`, and add `thrivehq.com` as an authorized domain.
 3. Under Audience, choose External.
 4. Under Data Access, keep only `openid`, `email` and `profile`. These are non-sensitive, so you only need brand verification (a few days) and no security assessment.
 5. Under Clients → Create client → Web application:
-   - Authorized JavaScript origin: `https://YOUR-DOMAIN`.
+   - Authorized JavaScript origin: `https://thrivehq.com`.
    - Authorized redirect URI: `https://PROJECT-REF.supabase.co/auth/v1/callback`.
 6. Paste the client ID and secret into Supabase → Google provider.
 7. Click **Publish app**, then submit brand verification. Until it's approved, users see the app name without the logo, but sign-in works.
 
 ## 4. Resend (notification emails)
 
-1. Sign up at resend.com, then go to Domains → Add domain, enter `YOUR-DOMAIN` and pick the region **eu-west-1**.
+1. Sign up at resend.com, then go to Domains → Add domain, enter `thrivehq.com` and pick the region **eu-west-1**.
 2. Click **Auto configure** to add the DNS records through Cloudflare, or copy them into Cloudflare DNS yourself. Wait until the domain shows as Verified.
 3. Go to API Keys → Create. Choose Sending access, limited to your domain.
 4. Store the key on both Workers:
    - `cd ~/Documents/ChatGPT/Thrive/prototype && npx wrangler secret put RESEND_API_KEY --config wrangler.production.jsonc`
    - `cd ~/Documents/ChatGPT/Thrive/prototype && npx wrangler secret put RESEND_API_KEY --config wrangler.self-hosted.jsonc`
-5. For staging, also add `"THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@YOUR-DOMAIN>"` to the `vars` in `wrangler.self-hosted.jsonc`.
+5. For staging, also add `"THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@thrivehq.com>"` to the `vars` in `wrangler.self-hosted.jsonc`.
 
 Resend sends access requests, invites, error alerts, document notifications and summary emails.
 
@@ -89,7 +89,7 @@ cd ~/Documents/ChatGPT/Thrive/prototype && npx wrangler secret put NYLAS_TOKEN_E
 ```
 
 - **Supabase keys:** get them from the production project under Settings → API Keys.
-- **Nylas:** reuse the sandbox app (5 connections in total across staging and production), and add `https://YOUR-DOMAIN/api/nylas/callback` to its Hosted authentication callback URLs.
+- **Nylas:** reuse the sandbox app (5 connections in total across staging and production), and add `https://thrivehq.com/api/nylas/callback` to its Hosted authentication callback URLs.
 - **Encryption key:** for `NYLAS_TOKEN_ENCRYPTION_KEY`, generate a new value with `openssl rand -base64 32`.
 
 ## 7. Legal pages
@@ -105,7 +105,7 @@ Have a lawyer read them before you take payments.
 ## 8. Deploy and check
 
 1. Deploy: `cd ~/Documents/ChatGPT/Thrive/prototype && PATH=~/.asdf/installs/nodejs/24.9.0/bin:$PATH npm run build:production && PATH=~/.asdf/installs/nodejs/24.9.0/bin:$PATH npm run deploy:production`
-2. Open `https://YOUR-DOMAIN` in a private window. You should see the landing page.
+2. Open `https://thrivehq.com` in a private window. You should see the landing page.
 3. Submit the request form with a second email. You should receive the "Beta request" email.
 4. Sign in with Google as yourself. Your empty workspace opens.
 5. Sign in with an uninvited Google account. You land back on the page with "isn't on the beta list yet".
