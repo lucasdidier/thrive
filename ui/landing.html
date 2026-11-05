@@ -12,7 +12,7 @@
 <body>
 <header class="top"><div class="wrap top-row">
  <a class="brand" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a>
- <nav><a href="#features">Features</a><a class="btn ghost" href="/auth/sign-in">Sign in</a></nav>
+ <nav><a href="#tour">Tour</a><a href="#features">Features</a><a class="btn ghost" href="/auth/sign-in">Sign in</a></nav>
 </div></header>
 
 <main>
@@ -22,7 +22,38 @@
  <p class="lead">Clients, projects, proposals, contracts, invoices, time and scheduling, all connected. Built for freelancers and small studios.</p>
  <div class="actions"><a class="btn primary" href="#request">Request access</a><a class="btn ghost" href="/auth/sign-in">I have an invite</a></div>
  <div id="pending" class="notice" role="status" hidden>That Google account isn’t on the beta list yet. Request access below and we’ll email you when your spot is ready.</div>
- <figure class="shot hero-shot"><img src="/landing/overview.webp" width="1600" height="889" alt="Thrive home screen with business totals, calendar and open projects"></figure>
+ <figure class="shot hero-shot"><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a running timer"></figure>
+</section>
+
+<section id="tour" class="wrap tour" aria-labelledby="tour-title">
+ <h2 id="tour-title">See it in action</h2>
+ <div class="tour-tabs" role="tablist" aria-label="Product tour"><button type="button" role="tab" id="tab-event" aria-controls="panel-event" aria-selected="true" tabindex="0">Calendar</button><button type="button" role="tab" id="tab-project" aria-controls="panel-project" aria-selected="false" tabindex="-1">Projects</button><button type="button" role="tab" id="tab-invoice" aria-controls="panel-invoice" aria-selected="false" tabindex="-1">Invoices</button><button type="button" role="tab" id="tab-time" aria-controls="panel-time" aria-selected="false" tabindex="-1">Time</button><button type="button" role="tab" id="tab-clients" aria-controls="panel-clients" aria-selected="false" tabindex="-1">Clients</button><button type="button" role="tab" id="tab-forms" aria-controls="panel-forms" aria-selected="false" tabindex="-1">Forms</button><button type="button" role="tab" id="tab-workflows" aria-controls="panel-workflows" aria-selected="false" tabindex="-1">Workflows</button><button type="button" role="tab" id="tab-mcp" aria-controls="panel-mcp" aria-selected="false" tabindex="-1">AI &amp; MCP</button></div>
+ <div class="tour-panel" role="tabpanel" id="panel-event" aria-labelledby="tab-event"><div class="tour-copy"><h3>Every meeting, with its guests and join link</h3><p>Your calendar sits on the home screen. Open a meeting to see who’s coming, join the call, and jump to the client.</p></div><figure class="shot"><img src="/landing/event.webp" width="1800" height="1125" alt="Calendar event drawer with guests, meeting link and description"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-project" aria-labelledby="tab-project" hidden><div class="tour-copy"><h3>One page per project</h3><p>Fee, collected and tracked time up top, with every proposal, invoice, email and hour in one timeline.</p></div><figure class="shot"><img src="/landing/project.webp" width="1800" height="1125" alt="Project page with fee, collected amount, tracked time and activity" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-invoice" aria-labelledby="tab-invoice" hidden><div class="tour-copy"><h3>Invoices your clients understand</h3><p>Line items, tax and payment details on a clean page with your logo. Share a link and record payments as they land.</p></div><figure class="shot"><img src="/landing/invoice.webp" width="1800" height="1125" alt="Invoice preview with line items, tax and payment instructions" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-time" aria-labelledby="tab-time" hidden><div class="tour-copy"><h3>A timer that’s always one click away</h3><p>Start it from anywhere, see the week at a glance, and turn unbilled hours into an invoice draft.</p></div><figure class="shot"><img src="/landing/time.webp" width="1800" height="1125" alt="Time tracker with a running timer and the week’s totals" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-clients" aria-labelledby="tab-clients" hidden><div class="tour-copy"><h3>Clients on a board, your way</h3><p>Group clients by service, status or any custom field. Switch between table and board in one click.</p></div><figure class="shot"><img src="/landing/clients.webp" width="1800" height="1125" alt="Clients board grouped by service" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-forms" aria-labelledby="tab-forms" hidden><div class="tour-copy"><h3>Inquiries that set themselves up</h3><p>Each form response creates the client and the project, ready for a proposal.</p></div><figure class="shot"><img src="/landing/forms.webp" width="1800" height="1125" alt="Form submissions list with new client inquiries" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-workflows" aria-labelledby="tab-workflows" hidden><div class="tour-copy"><h3>Follow-ups on autopilot</h3><p>Tag new inquiries, note logged time, invoice deposits on signature. Every run is logged.</p></div><figure class="shot"><img src="/landing/workflows.webp" width="1800" height="1125" alt="Workflows list with triggers, actions and last run" loading="lazy"></figure></div>
+ <div class="tour-panel" role="tabpanel" id="panel-mcp" aria-labelledby="tab-mcp" hidden><div class="tour-copy"><h3>Works with your AI assistant</h3><p>Connect Claude, ChatGPT, Cursor or Codex over MCP. Agents act with your access and preview before they change anything.</p></div><figure class="shot"><img src="/landing/mcp.webp" width="1800" height="1125" alt="AI and MCP settings with the server URL and example prompts" loading="lazy"></figure></div>
+</section>
+
+<section class="wrap ai" aria-labelledby="ai-title">
+ <div class="ai-copy">
+  <p class="pill">MCP enabled</p>
+  <h2 id="ai-title">Ask your AI assistant to do the busywork</h2>
+  <p>Thrive speaks MCP, the open standard AI assistants use to work with apps. Ask in plain words: your assistant reads your clients, projects and invoices, drafts the next step, and shows you a preview first.</p>
+  <ul class="ai-works"><li>Claude</li><li>ChatGPT</li><li>Cursor</li><li>Codex</li></ul>
+ </div>
+ <div class="chat" aria-label="Example conversation with an AI assistant using Thrive">
+  <div class="msg you">Which invoices are overdue? Draft a friendly reminder for each.</div>
+  <div class="tool"><span class="dot"></span>thrive_list_records <small>invoices · overdue</small></div>
+  <div class="msg bot">Two are overdue:
+   <table><tr><td>INV-004 · Juniper Studio</td><td>€1,800</td><td class="late">21 days</td></tr><tr><td>INV-005 · Orbit</td><td>€3,000</td><td class="late">12 days</td></tr></table>
+  </div>
+  <div class="tool"><span class="dot"></span>emailDraft.save <small>2 drafts, not sent</small></div>
+  <div class="msg bot">Both reminders are saved as drafts in <strong>Emails</strong>. Nothing has been sent. Review them and send when you’re happy.</div>
+ </div>
 </section>
 
 <section id="features" class="wrap features">
@@ -40,10 +71,6 @@
  </div>
 </section>
 
-<section class="wrap showcase">
- <div class="row"><div><h2>See every project at a glance</h2><p>Status, client, fee and due date in a table you can filter, sort and group.</p></div><figure class="shot"><img src="/landing/projects.webp" width="1600" height="889" alt="Projects table with status, client, fee and due date" loading="lazy"></figure></div>
- <div class="row flip"><div><h2>Know what’s paid and what’s late</h2><p>Invoices show their balance and status, and Thrive reminds you about the overdue ones.</p></div><figure class="shot"><img src="/landing/invoices.webp" width="1600" height="889" alt="Invoices table with paid and overdue invoices" loading="lazy"></figure></div>
-</section>
 
 <section id="request" class="wrap request">
  <div class="request-card">

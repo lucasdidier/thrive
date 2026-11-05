@@ -19,3 +19,7 @@ form.addEventListener('submit',async event=>{
  }catch(e){error.textContent=e.message;}
  finally{button.disabled=false;}
 });
+// Product tour tabs: click or arrow keys.
+const tabs=[...document.querySelectorAll('.tour-tabs [role=tab]')];
+function select(tab,focus=false){for(const t of tabs){const on=t===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;}if(focus)tab.focus();}
+tabs.forEach((t,i)=>{t.addEventListener('click',()=>select(t));t.addEventListener('keydown',e=>{const n={ArrowRight:1,ArrowLeft:-1}[e.key];if(n){e.preventDefault();select(tabs[(i+n+tabs.length)%tabs.length],true);}if(e.key==='Home'){e.preventDefault();select(tabs[0],true);}if(e.key==='End'){e.preventDefault();select(tabs.at(-1),true);}});});

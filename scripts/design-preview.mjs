@@ -14,6 +14,10 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 let state=upgradeWorkspace(seed()),revision=1;
 initScheduling(state,'Europe/Lisbon');
 initWorkflows(state);
+// THRIVE_SHOWCASE=1: richer fictional data, a connected calendar and no preview banner, for landing page screenshots.
+const showcase=process.env.THRIVE_SHOWCASE==='1';
+const {showcaseWorkspace,showcaseEvents}=showcase?await import('./showcase-data.mjs'):{};
+if(showcase)showcaseWorkspace(state);
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
 const server=createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');
@@ -28,6 +32,10 @@ const server=createServer(async(req,res)=>{
     try{const data=JSON.parse(body);if(data.expected_revision!==revision)return json({error:'The preview changed. Reload to continue.'},409);state=data.state;revision++;return json({state,revision});}catch{return json({error:'Invalid preview data.'},400);}
    }
   }
+  if(showcase&&url.pathname==='/api/communications'){
+   if(req.method==='GET')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true,gmail:false}},threads:[]});
+   return json({events:showcaseEvents(),nextCursor:null});
+  }
   if(url.pathname==='/api/communications'&&req.method==='GET')return json({connection:{provider:'none',account:null,configured:false},threads:[]});
   return json({error:'This isolated design preview has no external connections.'},503);
  }
@@ -37,8 +45,9 @@ const server=createServer(async(req,res)=>{
   const file=pages[name]?path.join(root,pages[name]):path.resolve(root,'public','.'+name);
   if(!pages[name]&&!file.startsWith(path.join(root,'public')+path.sep))return json({error:'Not found'},404);
   let data=await readFile(file);
-  if(name==='/')data=Buffer.from(data.toString().replace('<body>','<body><div class="design-preview-notice" role="status">Design exploration <span>Fictional sample data · changes last until this preview restarts</span></div>'));
+  if(name==='/'&&!showcase)data=Buffer.from(data.toString().replace('<body>','<body><div class="design-preview-notice" role="status">Design exploration <span>Fictional sample data · changes last until this preview restarts</span></div>'));
   res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(data);
  }catch{res.writeHead(404);res.end('Not found');}
 });
-server.listen(4174,'127.0.0.1',()=>console.log('Thrive design exploration: http://127.0.0.1:4174/'));
+const port=Number(process.env.PORT)||4174;
+server.listen(port,'127.0.0.1',()=>console.log(`Thrive ${showcase?'showcase':'design exploration'}: http://127.0.0.1:${port}/`));
