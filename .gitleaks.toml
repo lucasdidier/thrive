@@ -1,0 +1,11 @@
+# Keep all built-in detectors. These two public domain names were mistaken for
+# API keys because adjacent entries contain "api"/"key" in a minified array.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Two verified domain names in the vendored public email-provider list"
+condition = "AND"
+paths = ['''(^|/)public/free-email-domains\.js$''']
+regexTarget = "secret"
+regexes = ['''^(api\.qwen3-30b-a3b\.xyz|meilwuzus1\.xyz)$''']

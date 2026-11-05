@@ -1,0 +1,20 @@
+# Copy to .dev.vars ONLY for npm run dev:self-hosted (Supabase mode).
+# No variables are needed for the local preview described in README.md.
+# Use separate Supabase and Nylas projects for development.
+THRIVE_AUTH_MODE=supabase
+THRIVE_DATA_BACKEND=supabase
+THRIVE_APP_URL=http://127.0.0.1:5173
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
+THRIVE_GOOGLE_LOGIN=false
+THRIVE_MICROSOFT_LOGIN=false
+
+# Optional. Leave credential values empty to keep Nylas unavailable.
+THRIVE_COMMUNICATIONS_PROVIDER=nylas
+NYLAS_REGION=eu
+NYLAS_ENVIRONMENT=sandbox
+NYLAS_CLIENT_ID=
+NYLAS_API_KEY=
+NYLAS_TOKEN_ENCRYPTION_KEY=
+NYLAS_REDIRECT_URI=http://127.0.0.1:5173/api/nylas/callback
