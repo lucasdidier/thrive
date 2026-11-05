@@ -14,7 +14,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 let state=upgradeWorkspace(seed()),revision=1;
 initScheduling(state,'Europe/Lisbon');
 initWorkflows(state);
-const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg'};
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
 const server=createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');
  const json=(data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
@@ -33,8 +33,9 @@ const server=createServer(async(req,res)=>{
  }
  try{
   const name=decodeURIComponent(url.pathname);
-  const file=name==='/'?path.join(root,'ui/index.html'):path.resolve(root,'public','.'+name);
-  if(file!==path.join(root,'ui/index.html')&&!file.startsWith(path.join(root,'public')+path.sep))return json({error:'Not found'},404);
+  const pages={'/':'ui/index.html','/landing':'ui/landing.html','/privacy':'ui/privacy.html','/terms':'ui/terms.html'};
+  const file=pages[name]?path.join(root,pages[name]):path.resolve(root,'public','.'+name);
+  if(!pages[name]&&!file.startsWith(path.join(root,'public')+path.sep))return json({error:'Not found'},404);
   let data=await readFile(file);
   if(name==='/')data=Buffer.from(data.toString().replace('<body>','<body><div class="design-preview-notice" role="status">Design exploration <span>Fictional sample data · changes last until this preview restarts</span></div>'));
   res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(data);

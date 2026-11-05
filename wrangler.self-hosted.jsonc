@@ -8,6 +8,11 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "triggers": { "crons": ["0 * * * *"] },
+  "observability": { "enabled": true },
+  "ratelimits": [
+    { "name": "RATE_LIMIT_SIGNUP", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } },
+    { "name": "RATE_LIMIT_PUBLIC", "namespace_id": "1002", "simple": { "limit": 30, "period": 60 } }
+  ],
   "vars": {
     "THRIVE_AUTH_MODE": "supabase",
     "THRIVE_DATA_BACKEND": "supabase",

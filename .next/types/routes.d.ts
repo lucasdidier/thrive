@@ -22,14 +22,16 @@ declare global {
 declare namespace VinextRouteTypes {
   type PageRoute = never;
   type LayoutRoute = "/";
-  type RouteHandlerRoute = "/" | "/api/account-migration" | "/api/auth" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/nylas/callback" | "/api/scheduler" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/api/workspaces" | "/auth/[view]" | "/auth/callback" | "/embed/form/[token]" | "/mcp" | "/share/[token]";
-  type AppRoute = "/" | "/api/account-migration" | "/api/auth" | "/api/communications" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/nylas/callback" | "/api/scheduler" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/api/workspaces" | "/auth/[view]" | "/auth/callback" | "/embed/form/[token]" | "/mcp" | "/share/[token]";
+  type RouteHandlerRoute = "/" | "/api/account-migration" | "/api/auth" | "/api/beta" | "/api/communications" | "/api/errors" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/nylas/callback" | "/api/scheduler" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/api/workspaces" | "/auth/[view]" | "/auth/callback" | "/embed/form/[token]" | "/mcp" | "/privacy" | "/share/[token]" | "/terms";
+  type AppRoute = "/" | "/api/account-migration" | "/api/auth" | "/api/beta" | "/api/communications" | "/api/errors" | "/api/form-files" | "/api/form-files/[id]" | "/api/google/callback" | "/api/nylas/callback" | "/api/scheduler" | "/api/shared/[token]" | "/api/shared/[token]/files" | "/api/workspace" | "/api/workspaces" | "/auth/[view]" | "/auth/callback" | "/embed/form/[token]" | "/mcp" | "/privacy" | "/share/[token]" | "/terms";
 
   interface ParamMap {
     "/": {};
     "/api/account-migration": {};
     "/api/auth": {};
+    "/api/beta": {};
     "/api/communications": {};
+    "/api/errors": {};
     "/api/form-files": {};
     "/api/form-files/[id]": { id: string; };
     "/api/google/callback": {};
@@ -43,7 +45,9 @@ declare namespace VinextRouteTypes {
     "/auth/callback": {};
     "/embed/form/[token]": { token: string; };
     "/mcp": {};
+    "/privacy": {};
     "/share/[token]": { token: string; };
+    "/terms": {};
   }
 
   interface LayoutSlotMap {

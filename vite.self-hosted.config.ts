@@ -11,7 +11,8 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
   return {
     plugins: [vinext(), cloudflare({
-      configPath: "wrangler.self-hosted.jsonc",
+      // THRIVE_TARGET=production builds against wrangler.production.jsonc.
+      configPath: process.env.THRIVE_TARGET === "production" ? "wrangler.production.jsonc" : "wrangler.self-hosted.jsonc",
       viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
       inspectorPort: false,
     })],

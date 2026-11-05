@@ -17,6 +17,9 @@
     "build:self-hosted": "node scripts/build-fluid.mjs && vite build --config vite.self-hosted.config.ts",
     "dev:self-hosted": "node scripts/build-fluid.mjs && vite --config vite.self-hosted.config.ts --host 127.0.0.1",
     "deploy:self-hosted": "wrangler deploy --config dist/server/wrangler.json",
+    "check:production": "node scripts/check-production.mjs",
+    "build:production": "node scripts/check-production.mjs && THRIVE_TARGET=production npm run build:self-hosted",
+    "deploy:production": "node scripts/check-production.mjs && wrangler deploy --config dist/server/wrangler.json",
     "db:local": "node scripts/migrate-local.mjs"
   },
   "dependencies": {

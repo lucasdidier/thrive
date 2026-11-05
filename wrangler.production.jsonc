@@ -1,0 +1,40 @@
+{
+  // Thrive production: real beta users, separate Supabase project, custom domain.
+  // Staging (your own workspace on the "Thrive staging" project) stays in wrangler.self-hosted.jsonc.
+  // Secrets: `npx wrangler secret put NAME --config wrangler.production.jsonc`.
+  // `npm run deploy:production` refuses to run while any REPLACE_ value remains.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "thrive-production",
+  "main": "build/self-hosted-worker.ts",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [{ "pattern": "REPLACE_DOMAIN", "custom_domain": true }],
+  // Hourly: summaries at 8:00 local time, invite emails, nightly backup at 03:00 UTC.
+  "triggers": { "crons": ["0 * * * *"] },
+  "observability": { "enabled": true },
+  // Abuse limits per client IP: access requests 3/min; sign-in, client responses and form posts 30/min.
+  "ratelimits": [
+    { "name": "RATE_LIMIT_SIGNUP", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } },
+    { "name": "RATE_LIMIT_PUBLIC", "namespace_id": "1002", "simple": { "limit": 30, "period": 60 } }
+  ],
+  "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "thrive-backups" }],
+  "vars": {
+    "THRIVE_AUTH_MODE": "supabase",
+    "THRIVE_DATA_BACKEND": "supabase",
+    "THRIVE_APP_URL": "https://REPLACE_DOMAIN",
+    "SUPABASE_URL": "https://REPLACE_PROJECT_REF.supabase.co",
+    // Closed beta: invited Google accounts only (table thrive_beta_invites).
+    "THRIVE_ACCESS": "invite",
+    // Receives access requests and error alerts.
+    "THRIVE_ADMIN_EMAIL": "owner@example.com",
+    "THRIVE_SUPPORT_EMAIL": "hello@REPLACE_DOMAIN",
+    "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@REPLACE_DOMAIN>",
+    "THRIVE_GOOGLE_LOGIN": "true",
+    "THRIVE_MICROSOFT_LOGIN": "false",
+    "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
+    "NYLAS_REGION": "eu",
+    "NYLAS_ENVIRONMENT": "sandbox",
+    "NYLAS_REDIRECT_URI": "https://REPLACE_DOMAIN/api/nylas/callback"
+  }
+}
