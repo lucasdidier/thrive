@@ -1,6 +1,7 @@
 // Captures the landing page screenshots from the showcase preview (fictional data).
 //   node scripts/landing-shots.mjs            all shots
 //   node scripts/landing-shots.mjs time mcp   only these
+//   THEME=dark node scripts/landing-shots.mjs  dark app theme, written as <name>-dark.webp
 // Starts its own showcase server and headless Chrome; writes public/landing/<name>.webp.
 import {spawn,execFileSync} from 'node:child_process';
 import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
@@ -10,7 +11,7 @@ import {fileURLToPath} from 'node:url';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const chrome=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const PORT=4176,DEBUG=9336,W=1440,H=900;
+const PORT=4176,DEBUG=9336,W=1440,H=900,THEME=process.env.THEME==='dark'?'dark':'light',SUFFIX=THEME==='dark'?'-dark':'';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 // Page helpers, injected before each shot's steps.
@@ -46,7 +47,8 @@ try{
  const c=await cdp(page.webSocketDebuggerUrl);
  await c.send('Page.enable');await c.send('Runtime.enable');
  await c.send('Emulation.setDeviceMetricsOverride',{width:W,height:H,deviceScaleFactor:2,mobile:false});
- await c.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'},{name:'prefers-reduced-motion',value:'reduce'}]});
+ await c.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:THEME},{name:'prefers-reduced-motion',value:'reduce'}]});
+ await c.send('Page.addScriptToEvaluateOnNewDocument',{source:`try{localStorage.setItem('thrive-theme','${THEME}')}catch{}`});
  const evaluate=async expr=>{const r=await c.send('Runtime.evaluate',{expression:expr,awaitPromise:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.exception?.description||r.exceptionDetails.text);return r.result.value;};
  const only=process.argv.slice(2);
  let n=0;
@@ -61,7 +63,7 @@ try{
   await sleep(500);
   const {data}=await c.send('Page.captureScreenshot',{format:'png'});
   const png=path.join(profile,name+'.png');writeFileSync(png,Buffer.from(data,'base64'));
-  execFileSync('magick',[png,'-resize','1800x','-quality','84',path.join(root,'public/landing',name+'.webp')]);
+  execFileSync('magick',[png,'-resize','1800x','-quality','84',path.join(root,'public/landing',name+SUFFIX+'.webp')]);
   console.log('✓',name);
  }
  c.close();

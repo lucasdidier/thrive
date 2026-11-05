@@ -122,23 +122,27 @@ test('a failing scheduled job alerts and does not stop the others',async()=>{
 test('landing, legal pages and production config ship together',()=>{
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
  for(const s of ['Free for the first 100','id="request-form"','name="website"','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
- for(const img of [...landing.matchAll(/src="\/landing\/([a-z]+\.webp)"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+img,import.meta.url)),img);
+ for(const img of [...landing.matchAll(/src="\/landing\/([a-z-]+\.webp)"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+img,import.meta.url)),img);
  assert.equal((landing.match(/role="tab"/g)||[]).length,(landing.match(/role="tabpanel"/g)||[]).length);
+ for(const media of [...landing.matchAll(/(?:src|poster)="\/landing\/([a-z-]+\.(?:mp4|webp))"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+media,import.meta.url)),media);
  for(const page of ['privacy','terms'])assert.match(readFileSync(new URL(`../ui/${page}.html`,import.meta.url),'utf8'),/Last updated/);
  const prod=readFileSync(new URL('../wrangler.production.jsonc',import.meta.url),'utf8');
  for(const s of ['"THRIVE_ACCESS": "invite"','RATE_LIMIT_SIGNUP','"binding": "BACKUPS"','"observability"'])assert.ok(prod.includes(s),s);
  assert.doesNotMatch(prod,/SECRET|API_KEY"\s*:/);
 });
 
-test('landing page automation claims match the real workflow catalog',async()=>{
- const {triggers,actions,triggerById,actionById,relatedEntities}=await import('../public/workflow-domain.js');
- const {flows}=await import('../public/landing-flows.js');
- const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
+test('landing page claims match the real workflow catalog and MCP tools',async()=>{
+ const {triggers,actions}=await import('../public/workflow-domain.js');
+ const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');
+ const landing=read('ui/landing.html'),script=read('public/landing.js'),server=read('server/mcp.mjs')+read('server/operations.mjs');
  assert.ok(landing.includes(`${triggers.length} triggers`),'trigger count');
  assert.ok(landing.includes(`${actions.length} actions`),'action count');
- for(const [id,f] of Object.entries(flows)){
-  const t=triggerById(id);assert.ok(t,id);assert.equal(t.label,f.label);
-  assert.ok(landing.includes(`data-value="${id}"`),id+' offered');
-  for(const [actionId] of f.actions){const a=actionById(actionId);assert.ok(a,actionId);if(a.target)assert.ok(relatedEntities(t.entity).includes(a.target),`${id} → ${actionId}`);}
- }
+ const tl=new Set(triggers.map(t=>t.label)),al=new Set(actions.map(a=>a.label));
+ const rules=[...landing.matchAll(/<p class="rule"><span><small>When<\/small>([^<]+)<\/span><span><small>Then<\/small>([^<]+)<\/span><\/p>/g)];
+ assert.ok(rules.length>=5,'each stage shows its workflow');
+ for(const [,when,then] of rules){assert.ok(tl.has(when),when);assert.ok(al.has(then.replace(/ “[^”]+”$/,'')),then);}
+ // The AI examples only name tools and actions the MCP server really has.
+ for(const [,tool] of (landing+script).matchAll(/\b(thrive_[a-z_]+)/g))assert.ok(server.includes(`'${tool}'`),tool);
+ const ids=new Set(actions.map(a=>a.id));
+ for(const [,id] of (landing+script).matchAll(/\b([a-z][A-Za-z]*\.[a-z_]+) [×·]/g))assert.ok(ids.has(id)||server.includes(`'${id}'`),id);
 });
