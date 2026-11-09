@@ -179,6 +179,9 @@ dialog.drawer.document-workbench-dialog{width:min(1280px,100vw);max-width:100vw}
 #record-project-form .project-budget-pair{display:grid;grid-template-columns:minmax(0,2fr) minmax(110px,1fr)}
 #record-project-form .project-details-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 #record-project-form .project-budget-pair>.field,#record-project-form .project-details-pair>.field{min-width:0}
+/* A proposal or contract owns the fee: the budget card links there. Hours budgets sit beside tracked time. */
+#record-project-form .callout .text-btn{justify-self:start;margin:0;padding:2px 0 0}
+.project-summary dd small{margin-left:6px;font-size:13px;font-weight:400;letter-spacing:0;color:var(--ink-secondary)}
 #record-project-form textarea[name=notes],#record-client-form textarea[name=notes]{min-height:88px;height:88px;resize:vertical}
 #record-project-form .settings-section-body>.field:last-child,#record-client-form .settings-section-body>.field:last-child{margin-bottom:0}
 
