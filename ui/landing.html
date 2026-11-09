@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#05070c">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <title>Thrive — All your client work, in one place</title>
-<meta name="description" content="The workspace for freelancers and small studios: clients, proposals, contracts, invoices, time and scheduling, connected. Workflows and your AI assistant take care of the follow-ups. Free for the first 100.">
-<meta property="og:title" content="Thrive — All your client work, in one place"><meta property="og:description" content="Clients, proposals, contracts, invoices, time and scheduling in one workspace for freelancers and small studios. The first 100 users get free access."><meta property="og:image" content="/landing/overview.webp">
+<meta name="description" content="Clients, proposals, contracts, invoices, emails, time and scheduling in one workspace for freelancers and small studios. Open source: host it yourself for free, or use Thrive Cloud for $10 a month after a 7-day free trial.">
+<meta property="og:title" content="Thrive — All your client work, in one place"><meta property="og:description" content="The open source workspace for freelancers and small studios. Host it yourself for free, or try Thrive Cloud free for 7 days."><meta property="og:image" content="/landing/overview.webp">
 <link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/typography.css"><link rel="stylesheet" href="/landing.css">
-<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="/typography.css"><link rel="stylesheet" href="/title-fonts.css"><link rel="stylesheet" href="/landing.css">
+<script>(()=>{const d=document.documentElement,dark=matchMedia('(prefers-color-scheme: dark)');d.classList.add('js');let p='system';try{p=localStorage.getItem('thrive-theme')||'system'}catch{}const apply=()=>{d.dataset.theme=p==='light'||p==='dark'?p:dark.matches?'dark':'light'};apply();dark.addEventListener('change',()=>{if(p!=='light'&&p!=='dark')apply()});window.thriveTheme={get:()=>p==='light'||p==='dark'?p:'system',set:v=>{p=v;try{localStorage.setItem('thrive-theme',v)}catch{}apply()}}})()</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="bar">
  <div class="wrap bar-row">
   <a class="mark" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a>
-  <nav class="bar-links" aria-label="Sections"><a href="#product">Product</a><a href="#ai">AI</a><a href="#outputs">Documents</a><a href="#faq">FAQ</a></nav>
-  <div class="bar-act"><a href="/auth/sign-in">Sign in</a><a class="btn sm" href="#request">Claim a free spot</a></div>
+  <nav class="bar-links" aria-label="Sections"><a href="#features">Features</a><a href="#ai">AI</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></nav>
+  <div class="bar-act"><a class="gh-link" href="https://github.com/lucasdidier/thrive" aria-label="Thrive on GitHub"><svg class="gh" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a><a href="/auth/sign-in">Sign in</a><a class="btn sm" href="#request">Start free trial</a></div>
  </div>
 </header>
 
@@ -26,83 +26,214 @@
 <section class="hero" aria-labelledby="hero-title">
  <div class="wrap hero-head">
   <h1 id="hero-title"><span class="line">All your client work,</span> <span class="line">in one place.</span></h1>
-  <div class="hero-row">
-   <p class="lede">Thrive is the workspace for freelancers and small studios: clients, proposals, contracts, invoices, emails, time and scheduling, connected. Workflows and your AI assistant take care of the follow‑ups.</p>
-   <div class="hero-cta">
-    <a class="btn" href="#request">Claim a free spot</a>
-    <p class="fine">Free for the first 100. No credit card.</p>
-   </div>
+  <p class="lede">Clients, proposals, invoices, time and email in one workspace for freelancers and small studios.</p>
+  <div class="hero-cta">
+   <div class="hero-btns"><a class="btn" href="#request">Start free trial<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></a><a class="btn gh-btn" href="https://github.com/lucasdidier/thrive"><svg class="gh" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>View repo</a></div>
+   <p class="fine">7 days free, then $10 a month. Or host it yourself, free.</p>
   </div>
-  <div id="pending" class="pending" role="status" hidden>That Google account isn’t on the beta list yet. Claim a spot below and we’ll email you when it’s ready.</div>
+  <div id="pending" class="pending" role="status" hidden>That account doesn’t have access yet. <a href="#request">Request access</a>.</div>
  </div>
  <div id="product" class="hero-stage">
   <div class="dotfield" aria-hidden="true"></div>
   <div class="wrap">
-   <div class="pills-rail"><div class="pills" role="tablist" aria-label="Product screens"><button type="button" role="tab" id="t-home" aria-controls="p-home" aria-selected="true" tabindex="0">Home</button><button type="button" role="tab" id="t-clients" aria-controls="p-clients" aria-selected="false" tabindex="-1">Clients</button><button type="button" role="tab" id="t-forms" aria-controls="p-forms" aria-selected="false" tabindex="-1">Forms</button><button type="button" role="tab" id="t-proposal" aria-controls="p-proposal" aria-selected="false" tabindex="-1">Proposals</button><button type="button" role="tab" id="t-contracts" aria-controls="p-contracts" aria-selected="false" tabindex="-1">Contracts</button><button type="button" role="tab" id="t-project" aria-controls="p-project" aria-selected="false" tabindex="-1">Projects</button><button type="button" role="tab" id="t-time" aria-controls="p-time" aria-selected="false" tabindex="-1">Time</button><button type="button" role="tab" id="t-invoice" aria-controls="p-invoice" aria-selected="false" tabindex="-1">Invoices</button><button type="button" role="tab" id="t-emails" aria-controls="p-emails" aria-selected="false" tabindex="-1">Emails</button><button type="button" role="tab" id="t-event" aria-controls="p-event" aria-selected="false" tabindex="-1">Calendar</button><button type="button" role="tab" id="t-scheduling" aria-controls="p-scheduling" aria-selected="false" tabindex="-1">Scheduling</button><button type="button" role="tab" id="t-workflows" aria-controls="p-workflows" aria-selected="false" tabindex="-1">Workflows</button><button type="button" role="tab" id="t-mcp" aria-controls="p-mcp" aria-selected="false" tabindex="-1">AI &amp; MCP</button></div></div>
-   <div class="tour-panels">
-   <div class="tour-panel" role="tabpanel" id="p-home" aria-labelledby="t-home">
-    <p class="cap"><strong>Your day at a glance.</strong> Money in, today’s meetings, open projects and the running timer, as soon as you sign in.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#overview</span></span></div><div class="browser-view"><img src="/landing/overview.webp" width="1800" height="1125" alt="Thrive home: business totals, today’s calendar, open projects and a timer running on the Orbit website" fetchpriority="high"></div></figure>
+   <div class="switch-rail"><div class="switch" role="tablist" aria-label="Thrive, section by section">
+    <button type="button" role="tab" id="t-home" aria-controls="p-home" aria-selected="true" tabindex="0"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 17h8M11.018 2.764 4.235 8.039c-.453.353-.68.53-.843.75a2 2 0 0 0-.318.65C3 9.704 3 9.991 3 10.565V17.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874C4.52 21 5.08 21 6.2 21h11.6c1.12 0 1.68 0 2.108-.218a2 2 0 0 0 .874-.874C21 19.48 21 18.92 21 17.8v-7.235c0-.574 0-.861-.074-1.126a2.002 2.002 0 0 0-.318-.65c-.163-.22-.39-.397-.843-.75l-6.783-5.275c-.351-.273-.527-.41-.72-.462a1 1 0 0 0-.523 0c-.194.052-.37.189-.721.462Z"></path></svg>Home</button>
+    <button type="button" role="tab" id="t-clients" aria-controls="p-clients" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 21v-2a4.002 4.002 0 0 0-3-3.874M15.5 3.291a4.001 4.001 0 0 1 0 7.418M17 21c0-1.864 0-2.796-.305-3.53a4 4 0 0 0-2.164-2.165C13.796 15 12.864 15 11 15H8c-1.864 0-2.796 0-3.53.305a4 4 0 0 0-2.166 2.164C2 18.204 2 19.136 2 21M13.5 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"></path></svg>Clients</button>
+    <button type="button" role="tab" id="t-proposals" aria-controls="p-proposals" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2.27V6.4c0 .56 0 .84.109 1.054a1 1 0 0 0 .437.437c.214.11.494.11 1.054.11h4.13M16 13H8m8 4H8m2-8H8m6-7H8.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C4 4.28 4 5.12 4 6.8v10.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C6.28 22 7.12 22 8.8 22h6.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C20 19.72 20 18.88 20 17.2V8l-6-6Z"></path></svg>Proposals</button>
+    <button type="button" role="tab" id="t-contracts" aria-controls="p-contracts" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 6 6.502 7.3c-.363.072-.545.108-.692.197a1 1 0 0 0-.325.312c-.094.144-.138.324-.225.684L2 22m0 0 13.507-3.26c.36-.087.54-.13.684-.225a1 1 0 0 0 .312-.325c.088-.148.125-.329.197-.692L18 11M2 22l7.586-7.586m11.283-6.546L16.13 3.131c-.396-.396-.594-.594-.822-.668a1 1 0 0 0-.618 0c-.228.074-.426.272-.822.668l-.738.737c-.396.397-.594.595-.668.823a1 1 0 0 0 0 .618c.074.228.272.426.668.822l4.738 4.737c.396.396.594.595.822.669a1 1 0 0 0 .618 0c.228-.075.426-.273.822-.669l.738-.737c.396-.396.594-.594.668-.822a1 1 0 0 0 0-.618c-.074-.229-.272-.427-.668-.823ZM11 11a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"></path></svg>Contracts</button>
+    <button type="button" role="tab" id="t-invoices" aria-controls="p-invoices" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.8c0-1.68 0-2.52.327-3.162a3 3 0 0 1 1.311-1.311C6.28 3 7.12 3 8.8 3h6.4c1.68 0 2.52 0 3.162.327a3 3 0 0 1 1.311 1.311C20 5.28 20 6.12 20 7.8V21l-2.75-2-2.5 2L12 19l-2.75 2-2.5-2L4 21V7.8Z"></path></svg>Invoices</button>
+    <button type="button" role="tab" id="t-time" aria-controls="p-time" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9.5v4l2.5 1.5M12 5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm0 0V2m-2 0h4m6.329 3.592-1.5-1.5.75.75m-15.908.75 1.5-1.5-.75.75"></path></svg>Time</button>
+    <button type="button" role="tab" id="t-emails" aria-controls="p-emails" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 7 8.165 5.715c.661.463.992.695 1.351.784a2 2 0 0 0 .968 0c.36-.09.69-.32 1.351-.784L22 7M6.8 20h10.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C22 17.72 22 16.88 22 15.2V8.8c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311C19.72 4 18.88 4 17.2 4H6.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C2 6.28 2 7.12 2 8.8v6.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C4.28 20 5.12 20 6.8 20Z"></path></svg>Emails</button>
+    <button type="button" role="tab" id="t-scheduling" aria-controls="p-scheduling" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10H3m13-8v4M8 2v4m2.5 8 1.5-1v5m-1.25 0h2.5M7.8 22h8.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C21 19.72 21 18.88 21 17.2V8.8c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311C18.72 4 17.88 4 16.2 4H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C3 6.28 3 7.12 3 8.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C5.28 22 6.12 22 7.8 22Z"></path></svg>Scheduling</button>
+    <button type="button" role="tab" id="t-workflows" aria-controls="p-workflows" aria-selected="false" tabindex="-1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v10.2c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C5.28 18 6.12 18 7.8 18H15m0 0a3 3 0 1 0 6 0 3 3 0 0 0-6 0ZM3 8h12m0 0a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z"></path></svg>Workflows</button>
+   </div></div>
+   <figure class="browser" data-ui>
+    <div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url" id="mini-url">runonthrive.com/#overview</span></span></div>
+    <div class="mini" id="mini">
+     <div class="m-app">
+      <aside class="m-side" aria-hidden="true"></aside>
+      <div class="m-views">
+      <section class="m-view" role="tabpanel" id="p-home" aria-labelledby="t-home" data-url="runonthrive.com/#overview"></section>
+      <section class="m-view" role="tabpanel" id="p-clients" aria-labelledby="t-clients" data-url="runonthrive.com/#clients" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-proposals" aria-labelledby="t-proposals" data-url="runonthrive.com/#proposals" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-contracts" aria-labelledby="t-contracts" data-url="runonthrive.com/#contracts" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-invoices" aria-labelledby="t-invoices" data-url="runonthrive.com/#invoices" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-time" aria-labelledby="t-time" data-url="runonthrive.com/#time" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-emails" aria-labelledby="t-emails" data-url="runonthrive.com/#messages" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-scheduling" aria-labelledby="t-scheduling" data-url="runonthrive.com/#scheduling" hidden></section>
+      <section class="m-view" role="tabpanel" id="p-workflows" aria-labelledby="t-workflows" data-url="runonthrive.com/#workflows" hidden></section>
+      </div>
+     </div>
+    </div>
+   </figure>
+   <p class="stage-note">Click a pulsing spot to try it.</p>
+   <div class="agents-line">
+    <p>Everything you see here, your AI assistant can do too. <a href="#ai">See how</a></p>
+    <ul class="logos" aria-label="Works with">
+     <li><span class="logo-tile"><span class="logo logo-claude" role="img" aria-label="Claude"></span></span></li>
+     <li><span class="logo-tile"><span class="logo logo-codex" role="img" aria-label="Codex"></span></span></li>
+     <li><span class="logo-tile"><span class="logo logo-cursor" role="img" aria-label="Cursor"></span></span></li>
+     <li><span class="logo-tile"><span class="logo logo-copilot" role="img" aria-label="GitHub Copilot"></span></span></li>
+    </ul>
    </div>
-   <div class="tour-panel" role="tabpanel" id="p-clients" aria-labelledby="t-clients" hidden>
-    <p class="cap"><strong>Clients on a board, your way.</strong> Group by service, status or any custom field, and switch between table and board in one click.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#clients</span></span></div><div class="browser-view"><img src="/landing/clients.webp" width="1800" height="1125" alt="Clients board grouped by service" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-forms" aria-labelledby="t-forms" hidden>
-    <p class="cap"><strong>Inquiries that set themselves up.</strong> Each form response creates the client and the project, ready for a call and a proposal.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#forms</span></span></div><div class="browser-view"><img src="/landing/forms.webp" width="1800" height="1125" alt="Form responses from six new inquiries, each linked to its client" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-proposal" aria-labelledby="t-proposal" hidden>
-    <p class="cap"><strong>Proposals clients say yes to.</strong> Your fee and payment schedule on a branded page. Clients accept from a link, and the deposit invoice follows.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#proposals</span></span></div><div class="browser-view"><img src="/landing/proposal.webp" width="1800" height="1125" alt="Accepted Juniper brand identity proposal open in client preview" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-contracts" aria-labelledby="t-contracts" hidden>
-    <p class="cap"><strong>Contracts signed from a link.</strong> Your standard terms go into every contract. Clients sign online with their name, and you see who signed and when.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#contracts</span></span></div><div class="browser-view"><img src="/landing/contracts.webp" width="1800" height="1125" alt="Contracts list with the signed Brand identity agreement for Juniper Studio open" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-project" aria-labelledby="t-project" hidden>
-    <p class="cap"><strong>One page per project.</strong> Fee, collected and tracked time up top, with every proposal, invoice, email and hour in one timeline.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#projects/p1</span></span></div><div class="browser-view"><img src="/landing/project.webp" width="1800" height="1125" alt="Project page with fee, collected amount, tracked time and activity" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-time" aria-labelledby="t-time" hidden>
-    <p class="cap"><strong>A timer one click away.</strong> Start it from any page, see the week at a glance, and turn unbilled hours into an invoice draft.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#time</span></span></div><div class="browser-view"><video src="/landing/time-live.mp4" poster="/landing/time-live.webp" width="1800" height="1124" muted loop playsinline preload="none" aria-label="Recording of the Time page: the timer on the Orbit website ticking, with the week’s totals"></video></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-invoice" aria-labelledby="t-invoice" hidden>
-    <p class="cap"><strong>Invoices your clients understand.</strong> Line items, tax and payment details on a clean page with your logo. Record payments as they land.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#invoices</span></span></div><div class="browser-view"><img src="/landing/invoice.webp" width="1800" height="1125" alt="Invoice INV-006 for Orbit, €8,831.40 including VAT" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-emails" aria-labelledby="t-emails" hidden>
-    <p class="cap"><strong>Client emails, filed for you.</strong> Connect Gmail or Outlook and each conversation lands on its client and project, with replies you can track.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#messages</span></span></div><div class="browser-view"><img src="/landing/emails.webp" width="1800" height="1125" alt="Emails inbox with client conversations, the Juniper Studio thread open" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-event" aria-labelledby="t-event" hidden>
-    <p class="cap"><strong>Every meeting, with its guests and join link.</strong> Your calendar sits on the home screen. Open a meeting to see who’s coming, join the call and jump to the client.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#overview</span></span></div><div class="browser-view"><img src="/landing/event.webp" width="1800" height="1125" alt="Calendar event drawer with guests, meeting link and agenda" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-scheduling" aria-labelledby="t-scheduling" hidden>
-    <p class="cap"><strong>Booking pages that check your calendar.</strong> Share a link for calls or workshops. Thrive only offers times you’re free, and every booking lands on the client.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#scheduling</span></span></div><div class="browser-view"><img src="/landing/scheduling.webp" width="1800" height="1125" alt="Scheduling page with five upcoming client meetings" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-workflows" aria-labelledby="t-workflows" hidden>
-    <p class="cap"><strong>Follow-ups on autopilot.</strong> Pick a trigger and what Thrive does next, from 77 triggers and 43 actions. Test it on a real record before it goes live.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#workflows</span></span></div><div class="browser-view"><img src="/landing/builder.webp" width="1800" height="1125" alt="Workflow editor: when a time entry is added, add a note to the linked client" loading="lazy"></div></figure>
-   </div>
-   <div class="tour-panel" role="tabpanel" id="p-mcp" aria-labelledby="t-mcp" hidden>
-    <p class="cap"><strong>Works with your AI assistant.</strong> Connect Claude, ChatGPT, Cursor or Codex over MCP. Agents act with your access and preview before they change anything.</p>
-    <figure class="browser" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/#settings/mcp</span></span></div><div class="browser-view"><img src="/landing/mcp.webp" width="1800" height="1125" alt="AI and MCP settings with the server address and example prompts" loading="lazy"></div></figure>
-   </div>
-   </div>
-   <p class="stage-note">The real product with fictional sample data.</p>
+  </div>
+ </div>
+</section>
+
+<section id="features" class="features" aria-labelledby="features-title">
+ <div class="wrap">
+  <h2 id="features-title" class="center-title">Everything you need to run your freelance business</h2>
+  <div class="bento">
+
+   <article class="feat s7" data-section="clients">
+    <div class="feat-text"><h3>Clients</h3><p>One record per client, with everything attached.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui rec">
+      <div class="rec-head"><span class="av" style="--av:#2f6b4f">J</span><div class="who"><strong>Juniper Studio</strong><span>Sophie Chen, Branding</span></div><span class="tag">Client</span></div>
+      <div class="rec-links"><span>Projects <b>1</b></span><span>Documents <b class="swap"><i class="o2">1</i><i class="in2">2</i></b></span><span>Invoices <b>1</b></span><span>Emails <b>6</b></span></div>
+      <ol class="feed">
+       <li class="row3"><i class="dot ok"></i><span>Payment recorded for the deposit</span><em>€3,000</em></li>
+       <li class="row2"><i class="dot"></i><span>Contract signed by Sophie Chen</span><em>Today</em></li>
+       <li class="row1"><i class="dot"></i><span>Proposal accepted</span><em>Today</em></li>
+       <li><i class="dot"></i><span>Inquiry from your website</span><em>Nov 2</em></li>
+      </ol>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s5" data-section="projects">
+    <div class="feat-text"><h3>Projects</h3><p>Fee, payments and hours on one page.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui proj">
+      <div class="proj-head"><strong>Juniper brand identity</strong><span class="chip-s">In progress</span></div>
+      <dl class="stats3"><div><dt>Fee</dt><dd>€6,000</dd></div><div><dt>Collected</dt><dd class="swap"><i class="o2">€3,000</i><i class="in2">€4,800</i></dd></div><div><dt>Tracked</dt><dd>21h</dd></div></dl>
+      <div class="meter"><span class="fill"></span></div>
+      <p class="meter-note swap"><i class="o2">50% of the fee collected</i><i class="in2">80% of the fee collected</i></p>
+     </div>
+     <div class="toast in2"><i class="dot ok"></i>Milestone payment recorded, €1,800</div>
+    </div>
+   </article>
+
+   <article class="feat s5" data-section="forms">
+    <div class="feat-text"><h3>Forms</h3><p>Each inquiry creates the client and the project.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui form">
+      <p class="form-title">Start a project with Morgan Studio</p>
+      <div class="fld"><span>Name</span><b><span class="type1">Priya Shah</span></b></div>
+      <div class="fld"><span>Email</span><b><span class="type2">priya@northstar.example</span></b></div>
+      <div class="fld"><span>Budget</span><b><span class="type3">€8,000 to €12,000</span></b></div>
+      <div class="form-end swap"><span class="o4"><span class="ui-btn primary press4">Send inquiry</span></span><span class="results"><span class="res in4"><i class="ck"></i>Client created: <b>Northstar Labs</b></span><span class="res in5"><i class="ck"></i>Project opened: <b>Launch site</b></span></span></div>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s7" data-section="proposals">
+    <div class="feat-text"><h3>Proposals</h3><p>Clients accept from a link. The deposit invoice follows.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui doc">
+      <p class="kicker doc-brand"><span class="brand-m">M</span>Morgan Studio · Proposal</p>
+      <p class="doc-title">Juniper brand identity</p>
+      <ul class="sched"><li><span>Deposit<small>On acceptance</small></span><b>€3,000</b></li><li><span>Milestone<small>When the logo is approved</small></span><b>€1,800</b></li><li><span>Final payment</span><b>€1,200</b></li></ul>
+      <div class="doc-foot"><span class="total">Total <b>€6,000</b></span><span class="swap"><span class="o2"><span class="ui-btn primary press2">Accept proposal</span></span><span class="chip-ok in2"><i class="ck"></i>Accepted</span></span></div>
+      <p class="doc-after in3"><i class="dot ok"></i>Deposit invoice INV-007 created and sent to the client portal</p>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s6" data-section="contracts">
+    <div class="feat-text"><h3>Contracts</h3><p>Signed online, with who and when on record.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui sign">
+      <p class="kicker">Brand identity agreement</p>
+      <ol class="terms"><li><b>Scope.</b> Morgan Studio delivers the brand identity described in the accepted proposal.</li><li><b>Payment.</b> A 50% deposit on signature, the rest on the schedule in the proposal.</li><li><b>Ownership.</b> Final files belong to Juniper Studio once paid in full.</li></ol>
+      <div class="sig"><span class="sig-label">Signature</span><span class="sig-name write1">Sophie Chen</span></div>
+      <p class="sig-meta in3"><i class="dot ok"></i>Signed by Sophie Chen on Nov 9, 2026 at 14:32</p>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s6" data-section="invoices">
+    <div class="feat-text"><h3>Invoices</h3><p>Your logo, clear totals and how to pay.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui inv">
+      <div class="inv-head"><div><p class="kicker">Invoice for Orbit</p><p class="doc-title">INV-006</p></div><span class="swap"><span class="chip-due o2">Outstanding</span><span class="chip-ok in2">Paid</span></span></div>
+      <ul class="lines"><li><span>Website design</span><b>€4,500.00</b></li><li><span>Development</span><b>€2,680.00</b></li><li><span>VAT 23%</span><b>€1,651.40</b></li></ul>
+      <div class="inv-foot"><span>Balance due</span><b class="swap"><i class="o2">€8,831.40</i><i class="in2">€0.00</i></b></div>
+      <span class="ui-btn press2">Record payment</span>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s5" data-section="time">
+    <div class="feat-text"><h3>Time</h3><p>A timer on every page. Unbilled hours become an invoice.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui timer"><span class="live"></span><div class="who"><strong>Development</strong><span>Orbit website</span></div><b class="clock" data-clock="4333">01:12:13</b><span class="ui-btn sm">Stop</span></div>
+     <div class="ui week">
+      <ul class="bars"><li style="--h:62%"><i></i><span>Mon</span></li><li style="--h:84%"><i></i><span>Tue</span></li><li style="--h:48%"><i></i><span>Wed</span></li><li style="--h:70%"><i></i><span>Thu</span></li><li class="today" style="--h:58%"><i class="grow2"></i><span>Fri</span></li></ul>
+      <div class="week-foot"><span>Unbilled <b>21h</b></span><span class="link">Invoice unbilled time</span></div>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s7" data-section="messages">
+    <div class="feat-text"><h3>Emails</h3><p>Gmail or Outlook, filed by client and project.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui inbox">
+      <div class="mail row1"><span class="av" style="--av:#6750c9">N</span><div class="who"><strong>Northstar Labs</strong><span>Seed-round launch site</span></div><span class="tags"><span class="tag-c in2">Northstar Labs</span><span class="tag-p in3">Launch site</span></span></div>
+      <div class="mail"><span class="av" style="--av:#2f6b4f">J</span><div class="who"><strong>Juniper Studio</strong><span>Logo lockups, final round</span></div><span class="tags"><span class="tag-c">Juniper Studio</span><span class="tag-p">Brand identity</span></span></div>
+      <div class="mail"><span class="av" style="--av:#b5562c">E</span><div class="who"><strong>Ember Coffee</strong><span>Seasonal packaging moodboard</span></div><span class="tags"><span class="tag-c">Ember Coffee</span><span class="tag-p">Packaging</span></span></div>
+      <div class="mail"><span class="av" style="--av:#b0457a">B</span><div class="who"><strong>Bloom Florals</strong><span>Subscription shop scope</span></div><span class="tags"><span class="tag-c">Bloom Florals</span></span></div>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s6" data-section="scheduling">
+    <div class="feat-text"><h3>Scheduling</h3><p>Booking pages that only offer your free times.</p></div>
+    <div class="demo" aria-hidden="true">
+     <div class="ui book">
+      <div class="book-head"><span class="brand-m">M</span><div class="who"><strong>Discovery call</strong><span>30 minutes with Alex Morgan</span></div></div>
+      <p class="book-day">Thursday, November 12</p>
+      <div class="slots"><span>9:00</span><span class="busy">10:30</span><span class="pick"><span class="pick-on in2"></span><span class="pick-t">14:00</span></span><span>16:00</span><span class="busy">17:30</span></div>
+      <p class="booked in3"><i class="dot ok"></i>Booked with Priya Shah, on Northstar Labs</p>
+     </div>
+    </div>
+   </article>
+
+   <article class="feat s6" data-section="workflows">
+    <div class="feat-text"><h3>Workflows</h3><p>77 triggers and 43 actions, tested before they go live.</p></div>
+    <div class="demo canvas" aria-hidden="true">
+     <div class="flow">
+      <div class="node"><span class="node-k">When</span><strong>Proposal accepted</strong><i class="ck in1"></i></div>
+      <span class="wire grow2"></span>
+      <div class="node"><span class="node-k">Then</span><strong>Create a contract draft</strong><i class="ck in3"></i></div>
+      <span class="wire grow4"></span>
+      <div class="node"><span class="node-k">Then</span><strong>Draft a welcome email</strong><i class="ck in5"></i></div>
+     </div>
+     <span class="pass in5"><i class="ck"></i>Test passed on Juniper Studio</span>
+    </div>
+   </article>
+
   </div>
  </div>
 </section>
 
 <section id="ai" class="ai dots" aria-labelledby="ai-title">
  <div class="wrap">
-  <div class="sec-head">
-   <h2 id="ai-title">Works with the AI you already use</h2>
-   <p>Thrive speaks MCP, the open standard AI assistants use to work with apps. Your assistant reads your workspace, drafts the next step and builds workflows, and it always asks before anything goes out. Pick a prompt to try it.</p>
+  <div class="ai-head">
+   <h2 id="ai-title">Your AI assistant can do everything you can</h2>
+   <div class="agents" role="group" aria-label="Examples by assistant">
+    <button type="button" aria-pressed="true" data-agent="0"><span class="logo logo-claude" role="img" aria-label="Claude"></span></button>
+    <button type="button" aria-pressed="false" data-agent="1"><span class="logo logo-codex" role="img" aria-label="Codex"></span></button>
+    <button type="button" aria-pressed="false" data-agent="2"><span class="logo logo-cursor" role="img" aria-label="Cursor"></span></button>
+    <button type="button" aria-pressed="false" data-agent="3"><span class="logo logo-copilot" role="img" aria-label="GitHub Copilot"></span></button>
+   </div>
+   <ul class="says">
+    <li class="on"><span>Claude finds overdue invoices and drafts the reminders</span><code>thrive_list_records</code></li>
+    <li><span>Codex imports 40 clients from your spreadsheet</span><code>thrive_import_clients</code></li>
+    <li><span>Cursor builds a workflow and tests it on a real client</span><code>thrive_test_workflow</code></li>
+    <li><span>Copilot finds a free hour on Friday for your next call</span><code>thrive_calendar_availability</code></li>
+   </ul>
+   <p class="ai-lede">Thrive speaks MCP, so your assistant works in it like you do. Nothing goes out without your OK.</p>
   </div>
   <div class="console" data-ui>
    <div class="chat">
@@ -129,15 +260,14 @@
      <button type="button" data-ask="paid">Tag every client who paid this month.</button>
     </div>
     <p class="side-label">Connect your assistant</p>
-    <div class="addr"><code>https://thrivehq.com/mcp</code><button type="button" class="text-btn" data-copy="https://thrivehq.com/mcp">Copy</button></div>
-    <p class="side-note">Add it in Claude, ChatGPT, Cursor or Codex, then sign in to Thrive in your browser. There are no passwords or cookies to paste.</p>
+    <div class="addr"><code>https://runonthrive.com/mcp</code><button type="button" class="text-btn" data-copy="https://runonthrive.com/mcp">Copy</button></div>
+    <p class="side-note">Add this address to your assistant, then sign in.</p>
    </div>
   </div>
-  <p class="console-note">Example conversation with fictional sample data.</p>
   <ul class="promises">
-   <li><strong>Preview first.</strong> Every change is checked on a copy of your workspace before anything is saved.</li>
-   <li><strong>You press send.</strong> No email or calendar invite goes out without your explicit OK.</li>
-   <li><strong>Your access, nothing more.</strong> Agents see exactly what you see, and every action is logged.</li>
+   <li><strong>Preview first.</strong> Changes are checked on a copy before they’re saved.</li>
+   <li><strong>You press send.</strong> No email or invite goes out without your OK.</li>
+   <li><strong>Your access only.</strong> Agents see what you see, and every action is logged.</li>
   </ul>
  </div>
 </section>
@@ -147,15 +277,50 @@
  <div class="wrap out-grid">
   <div class="out-index">
    <h2 id="outputs-title">What your clients see</h2>
-   <p>Every document opens as a link with your logo. Clients accept, sign and see how to pay without creating an account.</p>
-   <div class="doc-cards" role="tablist" aria-label="Client pages" aria-orientation="vertical"><button type="button" role="tab" id="o-proposal" aria-controls="sheet-proposal" aria-selected="true" tabindex="0"><span class="card-top"><strong>Proposal</strong><span class="chip">Accepted</span></span><span class="card-text">Fee and payment schedule, accepted online</span></button><button type="button" role="tab" id="o-contract" aria-controls="sheet-contract" aria-selected="false" tabindex="-1"><span class="card-top"><strong>Contract</strong><span class="chip">Signed</span></span><span class="card-text">Signed with a typed signature and timestamp</span></button><button type="button" role="tab" id="o-invoice" aria-controls="sheet-invoice" aria-selected="false" tabindex="-1"><span class="card-top"><strong>Invoice</strong><span class="chip due">Outstanding</span></span><span class="card-text">Line items, tax and how to pay</span></button><button type="button" role="tab" id="o-portal" aria-controls="sheet-portal" aria-selected="false" tabindex="-1"><span class="card-top"><strong>Client portal</strong><span class="chip">Shared</span></span><span class="card-text">One link for every document and invoice</span></button></div>
+   <p>A private link with your logo. No account to create.</p>
+   <div class="doc-cards" role="tablist" aria-label="Client pages" aria-orientation="vertical"><button type="button" role="tab" id="o-proposal" aria-controls="sheet-proposal" aria-selected="true" tabindex="0"><span class="card-top"><strong>Proposal</strong><span class="chip due" data-card-status="proposal">Awaiting response</span></span><span class="card-text">Accepted from the link</span></button><button type="button" role="tab" id="o-contract" aria-controls="sheet-contract" aria-selected="false" tabindex="-1"><span class="card-top"><strong>Contract</strong><span class="chip due" data-card-status="contract">Awaiting response</span></span><span class="card-text">Signed with a typed name</span></button><button type="button" role="tab" id="o-invoice" aria-controls="sheet-invoice" aria-selected="false" tabindex="-1"><span class="card-top"><strong>Invoice</strong><span class="chip due" data-card-status="invoice">Outstanding</span></span><span class="card-text">Shows how to pay</span></button><button type="button" role="tab" id="o-portal" aria-controls="sheet-portal" aria-selected="false" tabindex="-1"><span class="card-top"><strong>Client portal</strong></span><span class="card-text">Everything in one place</span></button></div>
   </div>
   <div class="out-stage">
-   <div class="sheet-panel" role="tabpanel" id="sheet-proposal" aria-labelledby="o-proposal"><figure class="browser client" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/share/juniper-brand-identity</span></span></div><div class="browser-view"><img src="/landing/client-proposal.webp" width="1400" height="1125" alt="Client page of the Juniper brand identity proposal, accepted, with its payment schedule" loading="lazy"></div></figure></div>
-   <div class="sheet-panel" role="tabpanel" id="sheet-contract" aria-labelledby="o-contract" hidden><figure class="browser client" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/share/brand-identity-agreement</span></span></div><div class="browser-view"><img src="/landing/client-contract.webp" width="1400" height="1125" alt="Client page of the signed Brand identity agreement with deliverables and terms" loading="lazy"></div></figure></div>
-   <div class="sheet-panel" role="tabpanel" id="sheet-invoice" aria-labelledby="o-invoice" hidden><figure class="browser client" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/share/inv-006</span></span></div><div class="browser-view"><img src="/landing/client-invoice.webp" width="1400" height="1125" alt="Client page of invoice INV-006 for Orbit, €8,831.40 including VAT" loading="lazy"></div></figure></div>
-   <div class="sheet-panel" role="tabpanel" id="sheet-portal" aria-labelledby="o-portal" hidden><figure class="browser client" data-ui><div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url">thrivehq.com/share/juniper-studio</span></span></div><div class="browser-view"><img src="/landing/client-portal.webp" width="1400" height="1125" alt="Juniper Studio’s client portal listing what needs attention, projects and shared documents" loading="lazy"></div></figure></div>
+   <figure class="browser" data-ui>
+    <div class="browser-bar" aria-hidden="true"><span class="lights"><i></i><i></i><i></i></span><span class="address"><svg viewBox="0 0 16 16"><path d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/></svg><span class="url" id="client-url">runonthrive.com/share/juniper-brand-identity</span></span></div>
+    <div class="mini cmini" id="client-mini">
+     <div class="c-app">
+      <section class="c-view" role="tabpanel" id="sheet-proposal" aria-labelledby="o-proposal" data-url="runonthrive.com/share/juniper-brand-identity"></section>
+      <section class="c-view" role="tabpanel" id="sheet-contract" aria-labelledby="o-contract" data-url="runonthrive.com/share/brand-identity-agreement" hidden></section>
+      <section class="c-view" role="tabpanel" id="sheet-invoice" aria-labelledby="o-invoice" data-url="runonthrive.com/share/inv-001" hidden></section>
+      <section class="c-view" role="tabpanel" id="sheet-portal" aria-labelledby="o-portal" data-url="runonthrive.com/share/juniper-studio" hidden></section>
+     </div>
+    </div>
+   </figure>
   </div>
+ </div>
+</section>
+
+<section id="pricing" class="pricing" aria-labelledby="pricing-title">
+ <div class="wrap">
+  <div class="center-head">
+   <h2 id="pricing-title">Every feature, either way</h2>
+   <p>Thrive is open source. Run it yourself, or let us run it for you.</p>
+  </div>
+  <div class="plans">
+   <article class="plan-card">
+    <p class="plan-name">Host it yourself</p>
+    <p class="plan-price"><strong>Free</strong></p>
+    <p class="plan-note">MIT licence. Runs on your own Cloudflare account.</p>
+    <a class="btn gh-btn wide" href="https://github.com/lucasdidier/thrive"><svg class="gh" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>View repo</a>
+    <p class="plan-fine">You handle updates and backups.</p>
+   </article>
+   <article class="plan-card is-cloud">
+    <p class="plan-name">Thrive Cloud</p>
+    <p class="plan-price"><strong>$10</strong><span>/month</span></p>
+    <p class="plan-note">We host it, back it up every night and keep it updated.</p>
+    <a class="btn wide" href="#request">Start free trial<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></a>
+    <p class="plan-fine">7-day free trial</p>
+   </article>
+  </div>
+  <ul class="checks wide-checks" aria-label="Included either way">
+   <li>Clients and projects</li><li>Proposals and contracts</li><li>Invoices</li><li>Time tracking</li><li>Gmail and Outlook</li><li>Scheduling</li><li>Forms</li><li>Workflows</li><li>Client portal</li><li>AI assistant over MCP</li>
+  </ul>
  </div>
 </section>
 
@@ -163,16 +328,16 @@
  <div class="wrap faq-grid">
   <div class="faq-head">
    <h2 id="faq-title">Questions</h2>
-   <p>Something else? Write to <a href="mailto:hello@thrive.example">hello@thrive.example</a>.</p>
+   <p>Ask us at <a href="mailto:hello@thrive.example">hello@thrive.example</a>.</p>
   </div>
   <div class="faq-list">
-   <details open><summary>Who is Thrive for?</summary><p>Freelancers and small studios who sell projects, packages or hourly work: designers, developers, consultants, photographers, copywriters and coaches. If you need payroll, inventory or a large team, Thrive isn’t built for that yet.</p></details>
-   <details><summary>Is my data safe?</summary><p>Your workspace is private to your account and backed up every night. You can ask for a full copy at any time. The <a href="/privacy">Privacy Policy</a> has the details.</p></details>
-   <details><summary>Is it really free?</summary><p>Yes, for the first 100 people we let in, with no credit card. If we ever introduce paid plans, we’ll tell you at least 30 days ahead, and you can take a copy of your data with you.</p></details>
-   <details><summary>Can I automate my own follow-ups?</summary><p>Yes. A workflow pairs a trigger, such as “Proposal accepted”, with the actions that should follow. There are 77 triggers and 43 actions, and one workflow can chain up to 20 actions. Build them in the editor, start from a template, or ask your AI assistant.</p></details>
-   <details><summary>Which AI assistants work with it?</summary><p>Any assistant that supports MCP, including Claude, ChatGPT, Cursor and Codex. You add one address and sign in. Agents can read your records, draft emails and build workflows, and they preview changes before saving them.</p></details>
-   <details><summary>Do I need Gmail or Google Calendar?</summary><p>You sign in with a Google account. Connecting Gmail, Outlook or a calendar is optional, and unlocks client emails, meeting details and booking pages.</p></details>
-   <details><summary>Can clients pay online?</summary><p>Not yet. Thrive issues invoices as links with your payment details, and tracks payments as you record them. Card payments are on the roadmap.</p></details>
+   <details><summary>Who is Thrive for?</summary><p>Freelancers and small studios who sell projects, packages or hours. It isn’t built for payroll, inventory or large teams.</p></details>
+   <details><summary>How much does it cost?</summary><p>Thrive Cloud is $10 a month after a 7-day free trial. Hosting it yourself is free. Every feature is in both.</p></details>
+   <details><summary>Can I host it myself?</summary><p>Yes. Thrive is open source under the MIT licence, and the code and setup steps are <a href="https://github.com/lucasdidier/thrive">on GitHub</a>.</p></details>
+   <details><summary>Is it ready for real client work?</summary><p>Yes, it’s used with real clients. It’s still a beta: clients can’t pay online yet, and signatures are typed names with a timestamp.</p></details>
+   <details><summary>Is my data safe?</summary><p>Your workspace is private and backed up every night. Lists export to CSV, and you can ask for a full copy anytime. See the <a href="/privacy">Privacy Policy</a>.</p></details>
+   <details><summary>Which AI assistants work with it?</summary><p>Any that supports MCP, including Claude, ChatGPT, Cursor, Codex and Copilot. Changes are previewed before they’re saved.</p></details>
+   <details><summary>Do I need a Google account?</summary><p>No. Sign in with Google, or with a one-time code we send to your email.</p></details>
   </div>
  </div>
 </section>
@@ -180,17 +345,17 @@
 <section id="request" class="claim" aria-labelledby="claim-title">
  <div class="dotfield" aria-hidden="true"></div>
  <div class="wrap claim-inner">
-  <h2 id="claim-title">The first 100 get Thrive free.</h2>
-  <p class="claim-lede">Free access to every feature, a direct line to us, and new features before anyone else. We let people in a few at a time, in the order they ask.</p>
+  <h2 id="claim-title">Start your free trial.</h2>
+  <p class="claim-lede">We’re letting people in a few at a time. Leave your email and we’ll send your invite.</p>
   <form id="request-form" class="claim-form" novalidate>
    <label><span class="sr">Your name</span><input id="c-name" name="name" autocomplete="name" maxlength="80" required placeholder="Your name"></label>
-   <label><span class="sr">Google account email</span><input id="c-email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="Google account email"></label>
-   <button type="submit" class="btn">Claim my spot</button>
+   <label><span class="sr">Email</span><input id="c-email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="Email"></label>
+   <button type="submit" class="btn">Request access</button>
    <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
    <p class="error" role="alert"></p>
   </form>
-  <div class="done" role="status" tabindex="-1" hidden><p class="claim-lede"><strong>You’re in line.</strong> We’ll email you as soon as your free spot is ready.</p></div>
-  <p class="fine">No credit card. Leave whenever you like. Already invited? <a href="/auth/sign-in">Sign in with Google</a>.</p>
+  <div class="done" role="status" tabindex="-1" hidden><p class="claim-lede"><strong>You’re on the list.</strong> We’ll email your invite.</p></div>
+  <p class="fine">Or <a href="https://github.com/lucasdidier/thrive">host it yourself</a>. Already have an account? <a href="/auth/sign-in">Sign in</a>.</p>
  </div>
 </section>
 </main>
@@ -199,12 +364,12 @@
  <div class="wrap foot-grid">
   <div class="foot-brand"><a class="mark" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a><p>The workspace for freelancers and small studios.</p></div>
   <nav class="foot-links" aria-label="Footer">
-   <ul><li><a href="#product">Product</a></li><li><a href="#ai">AI and MCP</a></li><li><a href="#outputs">Documents</a></li></ul>
-   <ul><li><a href="#faq">Questions</a></li><li><a href="#request">Claim a free spot</a></li><li><a href="/auth/sign-in">Sign in</a></li></ul>
-   <ul><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="mailto:hello@thrive.example" id="contact">Contact</a></li></ul>
+   <ul><li><a href="#product">Product</a></li><li><a href="#features">Features</a></li><li><a href="#ai">AI and MCP</a></li><li><a href="#outputs">Client pages</a></li></ul>
+   <ul><li><a href="#pricing">Pricing</a></li><li><a href="#faq">Questions</a></li><li><a href="#request">Start free trial</a></li><li><a href="/auth/sign-in">Sign in</a></li></ul>
+   <ul><li><a href="https://github.com/lucasdidier/thrive">GitHub</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li><li><a href="/llms.txt">llms.txt</a></li><li><a href="mailto:hello@thrive.example" id="contact">Contact</a></li></ul>
   </nav>
  </div>
- <div class="wrap foot-legal"><span>© <span id="year">2026</span> Thrive. Screens show fictional sample data.</span><a href="#main">Back to top</a></div>
+ <div class="wrap foot-legal"><span>© <span id="year">2026</span> Thrive. Screens show fictional sample data.</span><div class="theme" role="radiogroup" aria-label="Appearance"><button type="button" role="radio" data-theme-choice="system" aria-checked="true" aria-label="System" title="System"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8m-4-4v4m-5.2-4h10.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C22 14.72 22 13.88 22 12.2V7.8c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311C19.72 3 18.88 3 17.2 3H6.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C2 5.28 2 6.12 2 7.8v4.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C4.28 17 5.12 17 6.8 17Z"/></svg></button><button type="button" role="radio" data-theme-choice="light" aria-checked="false" aria-label="Light" title="Light"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2m0 16v2M4 12H2m4.314-5.686L4.9 4.9m12.786 1.414L19.1 4.9M6.314 17.69 4.9 19.104m12.786-1.414 1.414 1.414M22 12h-2m-3 0a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z"/></svg></button><button type="button" role="radio" data-theme-choice="dark" aria-checked="false" aria-label="Dark" title="Dark"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 15.844a10.424 10.424 0 0 1-4.306.925c-5.779 0-10.463-4.684-10.463-10.462 0-1.536.33-2.994.925-4.307A10.464 10.464 0 0 0 2 11.538C2 17.316 6.684 22 12.462 22c4.243 0 7.896-2.526 9.538-6.156Z"/></svg></button></div><a href="#main">Back to top</a></div>
 </footer>
 <script type="module" src="/landing.js"></script>
 </body>

@@ -1,0 +1,17 @@
+# Thrive
+
+> A workspace for freelancers and small studios: clients, proposals, contracts, invoices, emails, time, forms, scheduling and workflows, connected. Open source (MIT): host it yourself for free from https://github.com/lucasdidier/thrive, or use Thrive Cloud for $10 a month after a 7-day free trial. Every feature is in both.
+
+Thrive suits people who sell projects, packages or hourly work. It doesn't take online payments yet, and it has no shared team workspaces yet.
+
+## Connect an AI assistant
+
+- MCP server: https://runonthrive.com/mcp
+- Works with assistants that support MCP, including Claude, ChatGPT, Cursor and Codex. The user signs in to Thrive in their browser.
+- Agents act with the user's access. They preview changes before saving, and email or calendar invites need the user's explicit OK.
+
+## Pages
+
+- [Landing page](https://runonthrive.com/): what Thrive does, and the beta request form
+- [Privacy](https://runonthrive.com/privacy)
+- [Terms](https://runonthrive.com/terms)

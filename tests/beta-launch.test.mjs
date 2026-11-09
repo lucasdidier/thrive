@@ -126,7 +126,9 @@ test('a failing scheduled job alerts and does not stop the others',async()=>{
 });
 test('landing, legal pages and production config ship together',()=>{
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
- for(const s of ['Free for the first 100','id="request-form"','name="website"','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
+ for(const s of ['7 days free, then $10 a month.','id="request-form"','name="website"','https://github.com/lucasdidier/thrive','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
+ // Until open sign-up and the 7-day trial exist, every "Start free trial" asks for access instead.
+ assert.ok(landing.includes('id="request"')&&!landing.includes('/auth/sign-up'),'trial buttons lead to the request form');
  for(const img of [...landing.matchAll(/src="\/landing\/([a-z-]+\.webp)"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+img,import.meta.url)),img);
  assert.equal((landing.match(/role="tab"/g)||[]).length,(landing.match(/role="tabpanel"/g)||[]).length);
  for(const media of [...landing.matchAll(/(?:src|poster)="\/landing\/([a-z-]+\.(?:mp4|webp))"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+media,import.meta.url)),media);
@@ -138,12 +140,28 @@ test('landing, legal pages and production config ship together',()=>{
  assert.doesNotMatch(prod,/SECRET|API_KEY"\s*:/);
 });
 
-test('the hero product switcher shows a screen for every section in the app sidebar',async()=>{
+test('every section in the app sidebar is on the landing page, in the hero app or a feature card',async()=>{
  const {workspaceSections}=await import('../public/sidebar-sections.js');
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
- const hero=landing.slice(landing.indexOf('<section class="hero"'),landing.indexOf('</section>'));
- const shown=new Set([...hero.matchAll(/class="url">thrivehq\.com\/#([a-z-]+)/g)].map(m=>m[1]));
- for(const [id,label] of workspaceSections)assert.ok(shown.has(id),`${label} has no screen in the hero`);
+ const hero=landing.slice(landing.indexOf('<section class="hero"'),landing.indexOf('<section id="features"'));
+ const shown=new Set([...hero.matchAll(/data-url="runonthrive\.com\/#([a-z-]+)"/g)].map(m=>m[1]));
+ const cards=new Set([...landing.matchAll(/class="feat [^"]*" data-section="([a-z-]+)"/g)].map(m=>m[1]));
+ for(const [id,label] of workspaceSections)assert.ok(shown.has(id)||cards.has(id),`${label} is in neither the hero app nor a feature card`);
+ // Every hero tab opens a view that public/landing-app.js draws (it imports browser paths, so read it as text).
+ const app=readFileSync(new URL('../public/landing-app.js',import.meta.url),'utf8');
+ const panels=[...hero.matchAll(/class="m-view" role="tabpanel" id="p-([a-z]+)"/g)].map(m=>m[1]);
+ assert.ok(panels.length>=9,'hero views');
+ for(const id of panels)assert.match(app,new RegExp(`\\n ${id}:\\(\\)=>`),id);
+});
+
+test('landing pricing offers self-hosting or Thrive Cloud, the same in the page and llms.txt',()=>{
+ const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');
+ const landing=read('ui/landing.html'),llms=read('public/llms.txt'),license=read('LICENSE');
+ // "Open source" is only true while the licence says so.
+ assert.match(license,/^MIT License/);
+ for(const s of ['Host it yourself','Thrive Cloud','<strong>$10</strong>','7-day free trial','MIT licence'])assert.ok(landing.includes(s),s);
+ for(const s of ['$10 a month','7-day free trial','github.com/lucasdidier/thrive','MIT'])assert.ok(llms.includes(s),s);
+ assert.ok(!/first 10|first 100|\$5 a month|Claim (your|a|my) spot/i.test(landing+llms),'old early-access offer');
 });
 
 test('landing page claims match the real workflow catalog and MCP tools',async()=>{
@@ -152,6 +170,7 @@ test('landing page claims match the real workflow catalog and MCP tools',async()
  const landing=read('ui/landing.html'),script=read('public/landing.js'),server=read('server/mcp.mjs')+read('server/operations.mjs');
  assert.ok(landing.includes(`${triggers.length} triggers`),'trigger count');
  assert.ok(landing.includes(`${actions.length} actions`),'action count');
+ assert.ok(existsSync(new URL('../public/llms.txt',import.meta.url)),'llms.txt');
  // The AI examples only name tools and actions the MCP server really has.
  for(const [,tool] of (landing+script).matchAll(/\b(thrive_[a-z_]+)/g))assert.ok(server.includes(`'${tool}'`),tool);
  const ids=new Set(actions.map(a=>a.id));
