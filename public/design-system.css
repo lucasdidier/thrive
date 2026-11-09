@@ -1675,10 +1675,30 @@ p.notice::before, div.notice::before { position: absolute; left: 14px; top: 14px
 .gallery-card.is-default .template-thumb { border-color: var(--action-primary); box-shadow: 0 0 0 1px var(--action-primary); }
 .template-thumb-paper { position: absolute; top: 0; left: 0; width: 312.5%; transform: scale(.32); transform-origin: top left; pointer-events: none; }
 .template-thumb-paper > * { margin: 0 !important; box-shadow: none !important; }
-.gallery-card-meta { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.gallery-card-meta strong { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gallery-card-actions { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; min-height: 28px; }
-.gallery-card-actions .btn { min-height: 28px; padding-inline: 8px; font-size: 12px; }
+.gallery-card-meta { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 20px; }
+.gallery-card-meta strong { min-width: 0; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gallery-card-meta .badge { flex: none; }
+.gallery-card-preview { position: relative; }
+.gallery-card-actions { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.gallery-card-actions .btn { min-height: 30px; padding-inline: 10px; font-size: 12px; }
+.gallery-card-actions .btn svg { width: 14px; height: 14px; }
+/* Mouse: the actions fade in over the bottom of the preview (the paper is always white). */
+@media (hover: hover) and (pointer: fine) {
+  .gallery-card-actions { position: absolute; inset: auto 1px 1px; padding: 28px 12px 12px; border-radius: 0 0 calc(var(--radius-surface) - 1px) calc(var(--radius-surface) - 1px); background: linear-gradient(to top, rgb(255 255 255 / 96%) 55%, rgb(255 255 255 / 0)); opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity var(--duration-feedback) ease, transform var(--duration-feedback) ease; }
+  .gallery-card-preview:hover .gallery-card-actions, .gallery-card-preview:focus-within .gallery-card-actions { opacity: 1; transform: none; pointer-events: auto; }
+}
+/* Touch: no hover, so both buttons sit under the name. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .gallery-card-preview { display: contents; }
+  .gallery-card-actions { order: 3; }
+  .gallery-card-actions .btn { flex: 1; min-height: 36px; }
+}
+@media (prefers-reduced-motion: reduce) { .gallery-card-actions { transition: none; transform: none; } }
+/* View: the template at full size in a wide dialog. */
+#dialog.template-view-dialog, dialog.template-view-dialog { width: min(760px, calc(100vw - 32px)); max-width: 760px; }
+.template-view { padding: 0; }
+.template-view-paper { max-height: min(74vh, 1000px); overflow: auto; padding: 24px; background: var(--surface-subtle); }
+.template-view-paper > * { margin: 0 auto !important; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 8%); }
 .template-new { align-items: center; justify-content: center; aspect-ratio: 3 / 4; border: 1px dashed var(--border-control); border-radius: var(--radius-surface); background: transparent; color: var(--muted); font: 500 13px/1.4 var(--system-font); cursor: pointer; gap: 8px; }
 .template-new svg { width: 18px; height: 18px; }
 .template-new:hover { color: var(--text); border-color: var(--faint); background: var(--surface-subtle, var(--hover)); }
