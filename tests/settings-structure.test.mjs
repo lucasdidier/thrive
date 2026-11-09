@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {notificationSettings,validateNotificationSettings} from '../public/notification-settings.js';
 import {documentDefaults,validateDocumentDefaults} from '../public/document-defaults.js';
 import {buildSummary,summaryDue,localClock} from '../public/summary-domain.js';
+import {emailLayout} from '../public/email-layout.js';
 import {currencies,defaultHourlyRate,billingCurrencies} from '../public/currency.js';
 import {verticals,verticalIcons,starterServices} from '../public/catalog-starters.js';
 import {countries} from '../public/onboarding-domain.js';
@@ -58,6 +59,7 @@ test('summary goes out at 8:00 local time and lists what needs attention',()=>{
  s.invoices.push({id:'i1',number:'INV-9',clientId:'c1',issued:'2026-10-01',due:'2026-10-15',amount:50000,paid:0,currency:'EUR'});
  const msg=buildSummary(s,{now,origin:'https://thrive.example'});
  assert.match(msg.body,/Overdue invoices\n· INV-9 · Forma · €500/);assert.match(msg.body,/thrive.example\/#invoices/);
+ assert.match(msg.html,/^<!doctype html>/);assert.match(msg.html,/INV-9/);assert.match(msg.html,/href="https:\/\/thrive\.example\/#invoices"/);assert.match(msg.html,/#settings\/notifications/);
  s.settings.notifications={...notificationSettings(s),sections:{...notificationSettings(s).sections,overdueInvoices:false}};
  assert.equal(buildSummary(s,{now}),null);
 });
@@ -99,4 +101,9 @@ test('empty fields get an example placeholder from their label and type',()=>{
  assert.equal(placeholderFor(el('Business name')),'Juniper Studio');
  assert.equal(placeholderFor(el('Email address','email')),'name@example.com');
  assert.equal(placeholderFor(el('Notes','', 'TEXTAREA')),'Add notes…');
+});
+test('summary email layout escapes record text and links only to http(s) addresses',()=>{
+ const html=emailLayout({origin:'javascript:alert(1)',title:'<b>Studio</b>',sections:[{title:'Overdue invoices',count:'1',href:'javascript:alert(1)',rows:[{title:'<img src=x onerror=alert(1)>',detail:'"Forma"',value:'€500',flag:'Late',tone:'negative'}]}],action:{label:'Open Thrive',href:'javascript:alert(1)'}});
+ assert.ok(!html.includes('<img src=x'));assert.ok(!html.includes('javascript:'));
+ assert.match(html,/&lt;b&gt;Studio&lt;\/b&gt;/);assert.match(html,/&quot;Forma&quot;/);assert.match(html,/>Late</);
 });

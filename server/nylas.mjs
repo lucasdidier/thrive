@@ -52,13 +52,13 @@ export async function sendOwnerNotification(db,owner,env,id,to,message,fetcher=f
  const marker=await hashRequest({owner,id}),info={provider:system?'resend':'nylas',notification:id,to,subject:message.subject,marker};
  if(!await claim(db,owner,id,await hashRequest({to,message}),info))return result(await operation(db,owner,id));
  if(system){
-  try{const r=await fetcher('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':marker},body:JSON.stringify({from:env.THRIVE_NOTIFICATIONS_FROM,to:[to],subject:message.subject,text:message.body})});const body=await r.json().catch(()=>({}));if(!r.ok||!body.id)return finish(db,owner,id,r.status>=400&&r.status<500?'failed':'unknown',{...info,error:'Notification delivery was not confirmed.'});return finish(db,owner,id,'sent',{...info,resendId:body.id});}
+  try{const r=await fetcher('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':marker},body:JSON.stringify({from:env.THRIVE_NOTIFICATIONS_FROM,to:[to],subject:message.subject,text:message.body,...(message.html?{html:message.html}:{})})});const body=await r.json().catch(()=>({}));if(!r.ok||!body.id)return finish(db,owner,id,r.status>=400&&r.status<500?'failed':'unknown',{...info,error:'Notification delivery was not confirmed.'});return finish(db,owner,id,'sent',{...info,resendId:body.id});}
   catch{return finish(db,owner,id,'unknown',{...info,error:'Notification delivery was not confirmed.'});}
  }
  let api;
  try{api=await service(db,owner,env,'gmail',fetcher);}catch{return finish(db,owner,id,'failed',{...info,error:'No notification sender is configured.'});}
  try{
-  const {data:sent}=await api.call('/messages/send',{method:'POST',body:JSON.stringify({to:[{email:to}],subject:message.subject,body:message.body,is_plaintext:true,metadata:{key1:marker}})});
+  const {data:sent}=await api.call('/messages/send',{method:'POST',body:JSON.stringify({to:[{email:to}],subject:message.subject,body:message.html||message.body,is_plaintext:!message.html,metadata:{key1:marker}})});
   if(!sent?.id)throw Error('Missing delivery confirmation');
   return finish(db,owner,id,'sent',{...info,nylasMessageId:sent.id});
  }catch(e){return finish(db,owner,id,[400,401,403,404,422,429].includes(e.providerStatus)?'failed':'unknown',{...info,error:'Email delivery was not confirmed.'});}
