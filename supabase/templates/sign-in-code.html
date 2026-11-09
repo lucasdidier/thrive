@@ -1,0 +1,16 @@
+<!--
+  Supabase Auth email for "Email me a code" sign-in.
+  Paste into Supabase → Authentication → Emails → Templates, in BOTH
+  "Magic link or OTP" and "Confirm sign up" (new users get the second one).
+  Subject: {{ .Token }} is your Thrive sign-in code
+  Editing templates needs custom SMTP (Resend), see docs/launch.md.
+-->
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Helvetica,Arial,sans-serif;max-width:440px;margin:0 auto;padding:32px 24px;color:#20242d">
+  <p style="font-size:20px;font-weight:650;letter-spacing:-0.5px;margin:0 0 28px">thrive</p>
+  <h1 style="font-size:22px;font-weight:650;letter-spacing:-0.5px;margin:0 0 12px">Your sign-in code</h1>
+  <p style="font-size:15px;line-height:1.5;color:#626a78;margin:0 0 20px">Enter this code on the Thrive sign-in page. It expires in an hour.</p>
+  <p style="font-size:32px;font-weight:650;letter-spacing:8px;margin:0 0 28px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">{{ .Token }}</p>
+  <p style="font-size:14px;line-height:1.5;color:#626a78;margin:0 0 6px">Or sign in with this link, on the device where you asked for the code:</p>
+  <p style="font-size:14px;margin:0 0 32px"><a href="{{ .ConfirmationURL }}" style="color:#3154d5">Sign in to Thrive</a></p>
+  <p style="font-size:12px;line-height:1.5;color:#626a78;margin:0">If you didn’t ask to sign in, you can ignore this email.</p>
+</div>

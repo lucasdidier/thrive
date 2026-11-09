@@ -38,7 +38,7 @@ const server=createServer(async(req,res)=>{
    if(req.method==='GET')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true,gmail:true,lastSync:new Date(Date.now()-6*60000).toISOString()}},threads:showcaseThreads(state),operations:[]});
    return json({events:showcaseEvents(),nextCursor:null});
   }
-  if(showcase&&url.pathname==='/api/scheduler')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true}},pages:Object.fromEntries(state.scheduling.types.map(t=>[t.id,{published:true,url:'https://thrivehq.com/book/morgan-studio/'+t.id}])),meetings:[]});
+  if(showcase&&url.pathname==='/api/scheduler')return json({connection:{provider:'nylas',configured:true,account:{email:'alex@morgan.example',calendar:true}},pages:Object.fromEntries(state.scheduling.types.map(t=>[t.id,{published:true,url:'https://runonthrive.com/book/morgan-studio/'+t.id}])),meetings:[]});
   // Showcase only: the real client pages for a record, at /share/<entity>.<id> (read-only).
   if(showcase&&url.pathname.startsWith('/api/shared/')&&req.method==='GET'){
    try{

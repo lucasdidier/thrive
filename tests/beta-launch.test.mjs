@@ -30,16 +30,17 @@ function fakeAdmin(tables={},users=[]){
  return {db,log,from,auth:{admin:{updateUserById:async(id,attrs)=>{log.push(['auth','update',id,attrs]);return {error:null};},listUsers:async({page})=>({data:{users:page===1?users:[]},error:null})}},storage:{from:()=>({download:async()=>({data:new Blob(['file-bytes'])})})}};
 }
 
-test('invite mode accepts only Google accounts flagged for the beta',async()=>{
+test('invite mode accepts confirmed Google or email-code accounts flagged for the beta',async()=>{
  assert.equal(hasBetaAccess(member),true);assert.equal(hasBetaAccess(invited),false);
- assert.equal(hasBetaAccess({...member,app_metadata:{provider:'email',thrive_beta:true}}),false);
+ assert.equal(hasBetaAccess({...member,app_metadata:{provider:'email',thrive_beta:true}}),true);
+ assert.equal(hasBetaAccess({...member,app_metadata:{provider:'azure',thrive_beta:true}}),false);
  assert.equal(hasBetaAccess({...member,email_confirmed_at:null}),false);
  const req=new Request('https://thrive.test/api/workspace');
  assert.equal(await verifiedAccount({client:authMock(invited).factory().client},req,env),null);
  assert.equal((await verifiedAccount({client:authMock(member).factory().client},req,env)).owner,'supabase:u1');
 });
-test('invite mode offers Google only and blocks password signup before calling Supabase',async()=>{
- const config=accountConfig(env);assert.equal(config.inviteOnly,true);assert.deepEqual(config.providers,{google:true,microsoft:false});
+test('invite mode offers Google and email codes, and blocks passwords before calling Supabase',async()=>{
+ const config=accountConfig(env);assert.equal(config.inviteOnly,true);assert.equal(config.emailCode,true);assert.deepEqual(config.providers,{google:true,microsoft:false});
  for(const action of ['signup','signin','forgot']){const r=await handleAuth(post('/api/auth',{action,email:'a@b.test',password:'twelve-characters'}),env,{contextFactory:authMock(null).factory});assert.equal(r.status,403);assert.match((await r.json()).error,/private beta/);}
  const r=await handleAuth(post('/api/auth',{action:'oauth',provider:'google'}),env,{contextFactory:authMock(null).factory});assert.equal(r.status,200);
 });
@@ -53,13 +54,17 @@ test('signed-out visitors see the landing page in invite mode',async()=>{
  const r=await accountHome(new Request('https://thrive.test/'),env,'APP',{contextFactory:authMock(null).factory,landing:'LANDING'});assert.equal(await r.text(),'LANDING');
  const app=await accountHome(new Request('https://thrive.test/'),env,'APP',{contextFactory:authMock(member).factory,landing:'LANDING'});assert.equal(await app.text(),'APP');
 });
-test('granting access requires an invite and flags the account without touching other metadata',async()=>{
+test('granting access requires an invite and a confirmed Google or email-code account',async()=>{
  const admin=fakeAdmin({thrive_beta_invites:[{email:'sam@example.test'}]});
  assert.equal(await grantBetaAccess(invited,env,{admin}),true);
  const update=admin.log.find(l=>l[0]==='auth');assert.deepEqual(update[3],{app_metadata:{provider:'google',thrive_beta:true}});
  assert.ok(admin.db.thrive_beta_invites[0].accepted_at);
  assert.equal(await grantBetaAccess({...invited,id:'u2',email:'other@example.test'},env,{admin:fakeAdmin()}),false);
- assert.equal(await grantBetaAccess({...invited,app_metadata:{provider:'email'}},env,{admin}),false);
+ assert.equal(await grantBetaAccess({...invited,app_metadata:{provider:'azure'}},env,{admin}),false);
+ const codeAdmin=fakeAdmin({thrive_beta_invites:[{email:'sam@example.test'}]});
+ assert.equal(await grantBetaAccess({...invited,email_confirmed_at:null,app_metadata:{provider:'email'}},env,{admin:codeAdmin}),false);
+ assert.equal(await grantBetaAccess({...invited,app_metadata:{provider:'email'}},env,{admin:codeAdmin}),true);
+ assert.deepEqual(codeAdmin.log.find(l=>l[0]==='auth')[3],{app_metadata:{provider:'email',thrive_beta:true}});
 });
 test('access requests validate, ignore bots and repeats, and notify the admin once',async()=>{
  const admin=fakeAdmin(),sent=[];const send=async(_db,owner,_env,id,to,msg)=>{sent.push({owner,id,to,msg});return {status:'sent'};};

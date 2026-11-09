@@ -9,7 +9,7 @@
   "compatibility_date": "2026-05-15",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
-  "routes": [{ "pattern": "thrivehq.com", "custom_domain": true }],
+  "routes": [{ "pattern": "runonthrive.com", "custom_domain": true }],
   // Hourly: summaries at 8:00 local time, invite emails, nightly backup at 03:00 UTC.
   "triggers": { "crons": ["0 * * * *"] },
   "observability": { "enabled": true },
@@ -22,19 +22,19 @@
   "vars": {
     "THRIVE_AUTH_MODE": "supabase",
     "THRIVE_DATA_BACKEND": "supabase",
-    "THRIVE_APP_URL": "https://thrivehq.com",
-    "SUPABASE_URL": "https://REPLACE_PROJECT_REF.supabase.co",
+    "THRIVE_APP_URL": "https://runonthrive.com",
+    "SUPABASE_URL": "https://vacyeyashxsekeitkrcg.supabase.co",
     // Closed beta: invited Google accounts only (table thrive_beta_invites).
     "THRIVE_ACCESS": "invite",
     // Receives access requests and error alerts.
     "THRIVE_ADMIN_EMAIL": "owner@example.com",
-    "THRIVE_SUPPORT_EMAIL": "hello@thrivehq.com",
-    "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@thrivehq.com>",
+    "THRIVE_SUPPORT_EMAIL": "hello@runonthrive.com",
+    "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@runonthrive.com>",
     "THRIVE_GOOGLE_LOGIN": "true",
     "THRIVE_MICROSOFT_LOGIN": "false",
     "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
     "NYLAS_REGION": "eu",
     "NYLAS_ENVIRONMENT": "sandbox",
-    "NYLAS_REDIRECT_URI": "https://thrivehq.com/api/nylas/callback"
+    "NYLAS_REDIRECT_URI": "https://runonthrive.com/api/nylas/callback"
   }
 }

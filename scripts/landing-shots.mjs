@@ -35,7 +35,7 @@ const shots={
  'client-contract':{path:'/share/contract.latest',w:1120,h:900},
  'client-invoice':{path:'/share/invoice.latest',w:1120,h:900},
  'client-portal':{path:'/share/portal.c1',w:1120,h:900},
- mcp:{hideTimer:true,hash:'settings/mcp',steps:[`document.querySelectorAll('code,.mcp-endpoint,[class*=endpoint]').forEach(e=>{e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://thrivehq.com')});[...document.querySelectorAll('*')].filter(e=>!e.children.length&&/127\\.0\\.0\\.1:\\d+/.test(e.textContent)).forEach(e=>e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://thrivehq.com'))`]},
+ mcp:{hideTimer:true,hash:'settings/mcp',steps:[`document.querySelectorAll('code,.mcp-endpoint,[class*=endpoint]').forEach(e=>{e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://runonthrive.com')});[...document.querySelectorAll('*')].filter(e=>!e.children.length&&/127\\.0\\.0\\.1:\\d+/.test(e.textContent)).forEach(e=>e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://runonthrive.com'))`]},
 };
 
 async function cdp(url){

@@ -1,4 +1,4 @@
-// Closed beta (THRIVE_ACCESS=invite): Google sign-in for invited emails only.
+// Closed beta (THRIVE_ACCESS=invite): invited emails sign in with Google or an emailed code.
 // Invites live in thrive_beta_invites; accepted users carry app_metadata.thrive_beta,
 // which users cannot edit, so workspace requests need no extra lookup.
 import {StoreError} from './store.mjs';
@@ -9,19 +9,25 @@ import {sendOwnerNotification} from './nylas.mjs';
 export const inviteOnly=env=>env.THRIVE_ACCESS==='invite';
 export const adminEmail=env=>String(env.THRIVE_ADMIN_EMAIL||'').trim().toLowerCase();
 const SYSTEM='system';
-const google=user=>user?.app_metadata?.provider==='google'&&!!user.email_confirmed_at;
-export const hasBetaAccess=user=>google(user)&&user.app_metadata?.thrive_beta===true;
+// A confirmed email reached through Google or an emailed sign-in code.
+const verified=user=>['google','email'].includes(user?.app_metadata?.provider)&&!!user.email_confirmed_at&&!!user.email;
+export const hasBetaAccess=user=>verified(user)&&user.app_metadata?.thrive_beta===true;
 const cleanEmail=v=>{const e=String(v||'').trim().toLowerCase();if(e.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))throw new StoreError('Enter a valid email address.');return e;};
 const line=(v,max)=>String(v??'').replace(/[\r\n]+/g,' ').trim().slice(0,max);
 
-// First Google sign-in for an invited email: flag the account and mark the invite accepted.
+// Whether an email is on the invite list. Deleting the row revokes access.
+export async function isInvited(email,env,{admin=adminClient(env)}={}){
+ const {data,error}=await admin.from('thrive_beta_invites').select('email').eq('email',String(email).trim().toLowerCase()).maybeSingle();
+ if(error)throw new StoreError('Account service unavailable.',503);
+ return !!data;
+}
+
+// First sign-in for an invited email: flag the account and mark the invite accepted.
 export async function grantBetaAccess(user,env,{admin=adminClient(env)}={}){
  if(hasBetaAccess(user))return true;
- if(!google(user))return false;
+ if(!verified(user))return false;
  const email=user.email.toLowerCase();
- const {data:invite,error}=await admin.from('thrive_beta_invites').select('email').eq('email',email).maybeSingle();
- if(error)throw new StoreError('Account service unavailable.',503);
- if(!invite)return false;
+ if(!await isInvited(email,env,{admin}))return false;
  const granted=await admin.auth.admin.updateUserById(user.id,{app_metadata:{...user.app_metadata,thrive_beta:true}});
  if(granted.error)throw new StoreError('Account service unavailable.',503);
  await admin.from('thrive_beta_invites').update({accepted_at:new Date().toISOString()}).eq('email',email).is('accepted_at',null);
@@ -53,7 +59,7 @@ export async function sendBetaInvites(env,{admin=adminClient(env),send=sendOwner
  if(error)throw Error('Invite lookup failed.');
  const db=new SupabaseDatabase(admin);let sent=0;
  for(const {email} of data||[]){
-  const r=await send(db,SYSTEM,env,'beta-invite:'+email,email,{subject:'You’re invited to Thrive',body:['Your spot in the Thrive beta is ready.','',`Sign in with Google using ${email}:`,`${origin}/auth/sign-in`,'','Reply to this email if anything gets in your way.'].join('\n')}).catch(()=>null);
+  const r=await send(db,SYSTEM,env,'beta-invite:'+email,email,{subject:'You’re invited to Thrive',body:['Your spot in the Thrive beta is ready.','',`Sign in with Google, or ask for an email code, using ${email}:`,`${origin}/auth/sign-in`,'','Reply to this email if anything gets in your way.'].join('\n')}).catch(()=>null);
   if(r?.status==='sent'){await admin.from('thrive_beta_invites').update({emailed_at:new Date().toISOString()}).eq('email',email);sent++;}
  }
  return {sent};

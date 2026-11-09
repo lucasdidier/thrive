@@ -1,5 +1,38 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<link rel="stylesheet" href="/typography.css"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="referrer" content="no-referrer"><title>Thrive — Account</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/auth.css"></head>
-<body><header class="auth-header"><a href="/" class="brand" aria-label="Thrive home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-9c0-6 5-9 10-9 0 7-4 10-10 10M12 17C12 10 6 7 2 8c0 6 4 9 10 9"/></svg>thrive</a><button id="appearance" class="quiet" aria-label="Change appearance">◐</button></header><main class="auth-main"><div class="auth-card"><div class="auth-heading"><div class="app-mark" aria-hidden="true">t</div><h1 id="heading">Your Thrive account</h1><p id="subtitle">Loading…</p></div><div id="notice" class="notice" role="status" hidden></div><div id="content"></div><p id="error" class="error" role="alert"></p><footer id="footer"></footer></div></main><script type="module" src="/auth.js"></script></body></html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="referrer" content="no-referrer">
+<title>Sign in — Thrive</title><link rel="icon" href="/favicon.svg">
+<script src="/appearance.js"></script>
+<link rel="stylesheet" href="/typography.css"><link rel="stylesheet" href="/auth.css">
+</head>
+<body>
+<div class="auth-layout">
+ <section class="auth-side">
+  <header class="auth-header"><a href="/" class="brand" aria-label="Thrive home"><img src="/favicon.svg" alt="" width="28" height="28">thrive</a></header>
+  <main class="auth-main">
+   <div class="auth-card">
+    <h1 id="heading">Sign in to Thrive</h1>
+    <p id="subtitle" class="subtitle" hidden></p>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <div id="content"></div>
+    <p id="error" class="error" role="alert"></p>
+    <footer id="footer"></footer>
+   </div>
+  </main>
+ </section>
+ <aside class="auth-showcase" aria-hidden="true">
+  <div class="showcase-copy">
+   <h2>All your client work, in one place</h2>
+   <p>Clients, proposals, invoices, time and email in one workspace for freelancers and small studios.</p>
+  </div>
+  <div class="showcase-frame"><img src="/landing/overview.webp" alt="" width="1800" height="1125" decoding="async"></div>
+  <div class="showcase-toast">
+   <span class="toast-icon"><svg viewBox="0 0 24 24"><path d="M4 20h16M6 16l9.5-9.5a2.1 2.1 0 0 1 3 3L9 19H6v-3Z"/></svg></span>
+   <div><strong>Sophie Chen signed your contract</strong><span>Brand identity agreement · just now</span></div>
+  </div>
+ </aside>
+</div>
+<script type="module" src="/auth.js"></script>
+</body>
+</html>
