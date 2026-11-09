@@ -186,7 +186,7 @@ dialog .dialog-footer .btn { min-height: var(--control-height-form); padding: 6p
 :root[data-input-modality=keyboard] :is(.btn, .icon-btn, .crm-tool) { transition: none; }
 :root[data-input-modality=keyboard] :is(button, a, summary, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 .text-btn, .relation-link { color: var(--link); }
-.text-btn:hover, .relation-link:hover { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.text-btn:hover { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Home is an actionable business ledger. Data and row actions retain their
    existing behavior; panels give follow-up, delivery, and the week clear homes. */
@@ -464,8 +464,10 @@ body:has(> .design-preview-notice) .sidebar { top: 30px; }
 .settings-page .hourly-rate-control { display: flex; align-items: center; gap: 10px; width: 280px; max-width: 100%; min-height: 40px; padding-inline: 12px; border: 1px solid var(--border-control); border-radius: var(--radius-control); background: var(--input); cursor: text; }
 .settings-page .hourly-rate-control > input { flex: 1; width: 0; min-width: 0; min-height: 38px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--text); font-variant-numeric: tabular-nums; appearance: textfield; -moz-appearance: textfield; }
 .settings-page .hourly-rate-control > input:focus { outline: none; box-shadow: none; }
-.settings-page .hourly-rate-control > input::-webkit-inner-spin-button,
-.settings-page .hourly-rate-control > input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+/* Number fields are plain typed fields: no spin buttons. Arrow keys still step the value. */
+input[type=number] { appearance: textfield; -moz-appearance: textfield; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .hourly-rate-currency, .hourly-rate-unit { flex: none; color: var(--muted); font-size: 13px; font-weight: 400; }
 .hourly-rate-currency { font-weight: 500; }
 .settings-profile-heading .image-upload { width: 56px; height: 56px; border-radius: 8px; }
@@ -974,6 +976,11 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .crm-table .relation-pill:has(>.avatar){gap:6px;max-width:100%;padding:2px 5px 2px 2px}
 .crm-table .relation-pill>.avatar{width:20px;height:20px;min-width:20px;flex:0 0 20px;font-size:9px;border-radius:4px}
 .crm-table .relation-pill>.relation-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Pills tint whatever is behind them, so they stay visible on a hovered row; hover deepens the tint. */
+.crm-table .relation-pill{background:color-mix(in srgb,var(--text) 6%,transparent)}
+.relation-link{transition:background-color var(--duration-feedback) ease}
+@media(hover:hover) and (pointer:fine){.relation-link:hover{background:color-mix(in srgb,var(--text) 11%,transparent)}}
+.relation-link:active{background:color-mix(in srgb,var(--text) 15%,transparent)}
 
 /* Home uses the same related-record rows as project and client details. */
 .dashboard [hidden] { display: none !important; }

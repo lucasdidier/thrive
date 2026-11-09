@@ -13,7 +13,7 @@
 .line-source-note:empty{display:none}
 .line-number{min-width:0;text-align:right}
 .editor-wizard .line-number input{text-align:right;appearance:textfield}
-.line-number input::-webkit-inner-spin-button,.line-number input::-webkit-outer-spin-button{appearance:none;margin:0}
+
 .line-number small{display:block;color:var(--muted);padding:2px 5px 0}
 .line-mobile-label{display:none}
 .line-item-total{text-align:right;font-weight:600;overflow-wrap:anywhere}
