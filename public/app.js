@@ -193,7 +193,6 @@ document.addEventListener('click',e=>{
  else if(a==='filter'){filter=el.dataset.filter;render()}
  else if(a==='navigate'){draftGuard.leave(()=>{dialog.close();go(el.dataset.page)});}
  else if(a==='deposit'){const invoice=generateDeposit(state,id);void saveThen(()=>{render();invoiceDetail(invoice.id);toast('Deposit invoice ready.');})}
- else if(a==='toggle-workflow'){const w=state.workflows.find(w=>w.id===id);w.enabled=!w.enabled;void saveThen(()=>{render();toast(w.enabled?'Deposit workflow enabled.':'Deposit workflow paused. You can still create invoices manually.');})}
  else if(a==='workflow')workflowDetail(id);
  else if(a==='suggest'){const text=document.querySelector('#setup-prompt').value.trim();if(text.length<10)throw new Error('Describe your services and payment terms.');setupDraft=suggestSetup(text);setupPreview()}
  else if(a==='example'){document.querySelector('#setup-prompt').value=({design:'I’m a brand designer. I take 50% upfront, work in discovery, design, and handoff, and review every proposal.',web:'I build websites. I take a 40% deposit and work through discovery, design, development, and launch.',consult:'I’m a strategy consultant. I take 30% upfront, then move through discovery, strategy, and recommendations.'})[el.dataset.kind]}

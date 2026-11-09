@@ -11,10 +11,12 @@ test('acceptance and payment retries never duplicate the deposit or collected am
  assert.equal(recordPayment(s,i.id),true);assert.equal(recordPayment(s,i.id),false);
  assert.equal(totals(s).paid,base.paid+200000);assert.equal(s.projects.find(p=>p.id==='p4').status,'planned');
 });
-test('paused automation accepts the agreement without silently creating an invoice',()=>{
- const s=seed();s.workflows[0].enabled=false;publishProposal(s,'p4');acceptProposal(s,'p4',1);
- assert.equal(s.invoices.filter(i=>i.projectId==='p4').length,0);
- assert.equal(generateDeposit(s,'p4').amount,200000);
+test('the billing schedule, not a workspace switch, decides whether acceptance invoices the deposit',()=>{
+ const auto=seed();auto.workflows[0].enabled=false;publishProposal(auto,'p4');
+ assert.equal(acceptProposal(auto,'p4',1).amount,200000);
+ const owner=seed();owner.projects.find(p=>p.id==='p4').billingPlan.forEach(r=>{r.trigger='manual';});publishProposal(owner,'p4');acceptProposal(owner,'p4',1);
+ assert.equal(owner.invoices.filter(i=>i.projectId==='p4').length,0);
+ assert.throws(()=>generateDeposit(owner,'p4'),/No deposit is scheduled/);
 });
 test('new settings do not rewrite existing project terms',()=>{
  const s=seed();s.settings.deposit=30;
