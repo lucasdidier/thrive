@@ -7,7 +7,7 @@ Thrive runs twice on Cloudflare:
 | Worker | `thrive` (workers.dev) | `thrive-production` (your domain) |
 | Config | `wrangler.self-hosted.jsonc` | `wrangler.production.jsonc` |
 | Supabase | Thrive staging | Thrive production (new) |
-| Who signs in | You only (`THRIVE_OWNER_EMAIL`) | Invited Google accounts (`THRIVE_ACCESS=invite`) |
+| Who signs in | You only (`THRIVE_OWNER_EMAIL`) | Anyone, with Google or an emailed code (`THRIVE_ACCESS=open`; `invite` limits it to `thrive_beta_invites`) |
 | Deploy | `npm run build:self-hosted && npm run deploy:self-hosted` | `npm run build:production && npm run deploy:production` |
 
 `npm run check:production` lists every placeholder still to fill. The production build refuses to run until there are none.

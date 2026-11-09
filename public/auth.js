@@ -15,9 +15,10 @@ function googleButtons(){document.querySelectorAll('[data-provider]').forEach(bu
 // Invite-only beta: Google, or a one-time code sent to an invited email.
 function codeSignIn(){
  clearInterval(resendTimer);resendTimer=undefined;notice('');
- heading('Sign in to Thrive');
+ const joining=config.openSignup&&view==='sign-up';
+ heading(joining?'Create your Thrive account':'Sign in to Thrive',joining?'No password needed. Your account is created when you first sign in.':'');
  $('content').innerHTML=`<button class="btn" type="button" data-provider="google">${google}Continue with Google</button><div class="divider">or</div><form id="code-form" class="stack" novalidate><label class="sr-only" for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email" required maxlength="254" value="${esc(lastEmail)}"><button class="btn primary" type="submit">Email me a code${arrow}</button></form>`;
- $('footer').innerHTML='Not invited yet? <a href="/#request">Request access</a>';
+ $('footer').innerHTML=config.inviteOnly?'Not invited yet? <a href="/#request">Request access</a>':joining?'Already have an account? <a href="/auth/sign-in">Sign in</a>':'New to Thrive? <a href="/auth/sign-up">Create an account</a>';
  googleButtons();
  $('code-form').onsubmit=async event=>{event.preventDefault();const email=$('email').value.trim();if(!$('email').checkValidity()||!email){showError('Enter a valid email address.');$('email').focus();return;}lastEmail=email;if((await action({action:'email-code',email}))?.sent)codeStep();};
  controls();
@@ -35,7 +36,7 @@ function codeStep(){
 }
 
 function render(){
- if(config.inviteOnly&&config.emailCode){codeSignIn();return;}
+ if(config.emailCode){codeSignIn();return;}
  if(config.ownerOnly||config.inviteOnly){heading('Sign in to Thrive',config.inviteOnly?'Thrive is in private beta. Continue with your invited Google account.':'This workspace is private. Continue with your authorized Google account.');$('content').innerHTML=`<button class="btn" data-provider="google">${google}Continue with Google</button>`;$('footer').innerHTML=config.inviteOnly?'Not invited yet? <a href="/#request">Request access</a>':'New account registration is closed.';googleButtons();controls();return;}
 
  if(view==='confirm'){heading('Confirm your email','Continue to your Thrive account.');$('content').innerHTML='<button class="btn primary" id="confirm">Continue</button>';$('confirm').onclick=()=>action({action:'confirm',token_hash:params.get('token_hash'),type:params.get('type')});$('footer').innerHTML='<a href="/auth/sign-in">Back to sign in</a>';controls();return;}

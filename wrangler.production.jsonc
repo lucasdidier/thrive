@@ -24,8 +24,9 @@
     "THRIVE_DATA_BACKEND": "supabase",
     "THRIVE_APP_URL": "https://runonthrive.com",
     "SUPABASE_URL": "https://vacyeyashxsekeitkrcg.supabase.co",
-    // Closed beta: invited Google accounts only (table thrive_beta_invites).
-    "THRIVE_ACCESS": "invite",
+    // Open sign-up: anyone can create an account with Google or an emailed code, free for now.
+    // "invite" restricts sign-in to emails in thrive_beta_invites.
+    "THRIVE_ACCESS": "open",
     // Receives access requests and error alerts.
     "THRIVE_ADMIN_EMAIL": "owner@example.com",
     "THRIVE_SUPPORT_EMAIL": "hello@runonthrive.com",

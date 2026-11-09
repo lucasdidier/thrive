@@ -7,6 +7,10 @@ import {adminClient,SupabaseDatabase} from './supabase-store.mjs';
 import {sendOwnerNotification} from './nylas.mjs';
 
 export const inviteOnly=env=>env.THRIVE_ACCESS==='invite';
+// Open sign-up (THRIVE_ACCESS=open): anyone may create an account with Google or an emailed code.
+export const openAccess=env=>env.THRIVE_ACCESS==='open';
+// Invite-only and open deployments are passwordless and show the landing page to signed-out visitors.
+export const passwordless=env=>inviteOnly(env)||openAccess(env);
 export const adminEmail=env=>String(env.THRIVE_ADMIN_EMAIL||'').trim().toLowerCase();
 const SYSTEM='system';
 // A confirmed email reached through Google or an emailed sign-in code.
@@ -65,12 +69,16 @@ export async function sendBetaInvites(env,{admin=adminClient(env),send=sendOwner
  return {sent};
 }
 
-// Every account with beta access (for summaries). Pages through all users.
-export async function betaUsers(admin){
+// Every account, paged (up to 10,000).
+async function allUsers(admin){
  const users=[];
  for(let page=1;page<=50;page++){
   const {data,error}=await admin.auth.admin.listUsers({page,perPage:200});if(error)throw Error('Account lookup failed.');
   users.push(...(data?.users||[]));if((data?.users||[]).length<200)break;
  }
- return users.filter(hasBetaAccess);
+ return users;
 }
+// Every account with beta access (for summaries).
+export const betaUsers=async admin=>(await allUsers(admin)).filter(hasBetaAccess);
+// Open sign-up: every account with a confirmed email (for summaries).
+export const confirmedUsers=async admin=>(await allUsers(admin)).filter(u=>!!u.email&&!!u.email_confirmed_at);

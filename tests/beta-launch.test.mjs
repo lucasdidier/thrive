@@ -138,7 +138,7 @@ test('landing, legal pages and production config ship together',()=>{
  // /landing previews the page on any deployment (staging included) and stays out of search results.
  assert.match(readFileSync(new URL('../app/landing/route.ts',import.meta.url),'utf8'),/landing\.html\?raw[\s\S]*'X-Robots-Tag':'noindex'/);
  const prod=readFileSync(new URL('../wrangler.production.jsonc',import.meta.url),'utf8');
- for(const s of ['"THRIVE_ACCESS": "invite"','RATE_LIMIT_SIGNUP','"binding": "BACKUPS"','"observability"'])assert.ok(prod.includes(s),s);
+ for(const s of ['"THRIVE_ACCESS": "open"','RATE_LIMIT_SIGNUP','"binding": "BACKUPS"','"observability"'])assert.ok(prod.includes(s),s);
  assert.doesNotMatch(prod,/SECRET|API_KEY"\s*:/);
 });
 

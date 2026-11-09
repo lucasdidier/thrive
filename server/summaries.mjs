@@ -4,15 +4,16 @@ import {workspaceOwner} from './workspace-directory.mjs';
 import {summaryDue,buildSummary} from '../public/summary-domain.js';
 import {sendOwnerNotification} from './nylas.mjs';
 import {appOrigin} from './auth.mjs';
-import {inviteOnly,betaUsers} from './beta.mjs';
+import {inviteOnly,openAccess,betaUsers,confirmedUsers} from './beta.mjs';
 
 // Hourly cron: each workspace gets its summary at 8:00 in its own time zone.
 // Read-only on workspaces; delivery ids make reruns within the hour harmless.
 export async function runSummaries(env,{now=new Date(),send=sendOwnerNotification,backend=dataBackend}={}){
- if(env.THRIVE_DATA_BACKEND!=='supabase'||(!env.THRIVE_OWNER_EMAIL&&!inviteOnly(env)))return {sent:0};
+ if(env.THRIVE_DATA_BACKEND!=='supabase'||(!env.THRIVE_OWNER_EMAIL&&!inviteOnly(env)&&!openAccess(env)))return {sent:0};
  const {db}=backend(env);
  let users;
  if(inviteOnly(env))users=await betaUsers(db.client);
+ else if(openAccess(env))users=await confirmedUsers(db.client);
  else{
   const {data,error}=await db.client.auth.admin.listUsers({perPage:200});
   if(error)throw Error('Account lookup failed.');

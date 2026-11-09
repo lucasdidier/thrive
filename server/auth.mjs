@@ -2,16 +2,16 @@ import {createServerClient,parseCookieHeader,serializeCookieHeader} from '@supab
 import {StoreError} from './store.mjs';
 import {json,readBody,errorResponse} from './http.mjs';
 import {supabaseURL} from './supabase-store.mjs';
-import {inviteOnly,hasBetaAccess,grantBetaAccess,isInvited} from './beta.mjs';
+import {inviteOnly,openAccess,passwordless,hasBetaAccess,grantBetaAccess,isInvited} from './beta.mjs';
 import {nativeGoogle,startGoogleSignIn,finishGoogleSignIn,clearGoogleCookie} from './google-signin.mjs';
 export const accountsEnabled=env=>env.THRIVE_AUTH_MODE==='supabase';
-export const ownerEmail=env=>inviteOnly(env)?'':String(env.THRIVE_OWNER_EMAIL||'').trim().toLowerCase();
-// Owner-only and invite-only deployments accept no passwords. Owner-only is Google only;
-// invite-only also accepts a code emailed to an invited address.
-const googleOnly=env=>!!ownerEmail(env)||inviteOnly(env);
-const emailCodes=env=>accountsEnabled(env)&&inviteOnly(env);
+export const ownerEmail=env=>passwordless(env)?'':String(env.THRIVE_OWNER_EMAIL||'').trim().toLowerCase();
+// Owner-only, invite-only and open deployments accept no passwords. Owner-only is Google only;
+// invite-only also accepts a code emailed to an invited address, open sign-up to any address.
+const googleOnly=env=>!!ownerEmail(env)||passwordless(env);
+const emailCodes=env=>accountsEnabled(env)&&passwordless(env);
 const CODE_ACTIONS=['email-code','verify-code'];
-export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),providers:{google:enabled&&(inviteOnly(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
+export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(openAccess(env)?{openSignup:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),providers:{google:enabled&&(passwordless(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
 // Supabase can return to its configured Site URL when a callback URL is not
 // allowlisted. Complete that same PKCE exchange before checking the session.
 export async function accountHome(request,env,html,{contextFactory=authContext,landing}={}){
@@ -27,7 +27,7 @@ export function authContext(request,env,fetcher=fetch){
  const client=createServerClient(supabaseURL(env),key,{global:{fetch:fetcher},cookieOptions:{name:'thrive-auth',httpOnly:true,secure:origin.startsWith('https:'),sameSite:'lax',path:'/'},cookies:{getAll:()=>[...cookies].map(([name,value])=>({name,value})),setAll:values=>{for(const c of values){cookies.set(c.name,c.value);changes.set(c.name,c);}}}});
  return {client,origin,finish(response,extraCookies=[]){const headers=new Headers(response.headers);headers.set('Cache-Control','private, no-store');headers.set('Vary','Cookie, Authorization');headers.set('Referrer-Policy','no-referrer');for(const {name,value,options} of changes.values())headers.append('Set-Cookie',serializeCookieHeader(name,value,{...options,httpOnly:true,secure:origin.startsWith('https:'),sameSite:'lax',path:'/'}));for(const value of extraCookies)headers.append('Set-Cookie',value);return new Response(response.body,{status:response.status,headers});}};
 }
-export async function verifiedAccount(context,request,env={}){const bearer=request.headers.get('authorization');const token=bearer?.startsWith('Bearer ')?bearer.slice(7):undefined;const {data,error}=await context.client.auth.getUser(token);if(error||!data.user)return null;const user=data.user;if(inviteOnly(env)&&!hasBetaAccess(user))return null;if(ownerEmail(env)&&(String(user.email||'').toLowerCase()!==ownerEmail(env)||!user.email_confirmed_at||user.app_metadata?.provider!=='google'))return null;return {provider:user.app_metadata?.provider||'email',passwordAccount:!inviteOnly(env)&&(user.app_metadata?.providers||[user.app_metadata?.provider||'email']).includes('email'),id:user.id,owner:'supabase:'+user.id,email:user.email||'',name:typeof user.user_metadata?.name==='string'?user.user_metadata.name:typeof user.user_metadata?.full_name==='string'?user.user_metadata.full_name:'',business:typeof user.user_metadata?.business==='string'?user.user_metadata.business:''};}
+export async function verifiedAccount(context,request,env={}){const bearer=request.headers.get('authorization');const token=bearer?.startsWith('Bearer ')?bearer.slice(7):undefined;const {data,error}=await context.client.auth.getUser(token);if(error||!data.user)return null;const user=data.user;if(inviteOnly(env)&&!hasBetaAccess(user))return null;if(openAccess(env)&&!user.email_confirmed_at)return null;if(ownerEmail(env)&&(String(user.email||'').toLowerCase()!==ownerEmail(env)||!user.email_confirmed_at||user.app_metadata?.provider!=='google'))return null;return {provider:user.app_metadata?.provider||'email',passwordAccount:!passwordless(env)&&(user.app_metadata?.providers||[user.app_metadata?.provider||'email']).includes('email'),id:user.id,owner:'supabase:'+user.id,email:user.email||'',name:typeof user.user_metadata?.name==='string'?user.user_metadata.name:typeof user.user_metadata?.full_name==='string'?user.user_metadata.full_name:'',business:typeof user.user_metadata?.business==='string'?user.user_metadata.business:''};}
 function authOrigin(request,origin){if(request.headers.get('origin')!==origin||new URL(request.url).origin!==origin)throw new StoreError('Open this page on the Thrive website to continue.',403);}
 function emailValue(body){const email=String(body.email||'').trim();if(email.length>254||!/^\S+@\S+\.\S+$/.test(email))throw new StoreError('Enter a valid email address.');return email;}
 function passwordValue(body){if(typeof body.password!=='string'||body.password.length<12||body.password.length>128)throw new StoreError('Use a password with 12–128 characters.');return body.password;}
@@ -39,7 +39,7 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  if(request.method==='GET')return context.finish(json({...config,user:await verifiedAccount(context,request,env)}));
  if(request.method!=='POST')throw new StoreError('Method not allowed.',405);
  authOrigin(request,context.origin);const body=await readBody(request,12000),auth=context.client.auth,callback=context.origin+'/auth/callback';let data;
- if(googleOnly(env)&&body.action!=='signout'&&!(body.action==='oauth'&&body.provider==='google')&&!(emailCodes(env)&&CODE_ACTIONS.includes(body.action)))throw new StoreError(inviteOnly(env)?'Thrive is in private beta. Sign in with Google or an email code.':'Thrive is private. Sign in with the authorized Google account.',403);
+ if(googleOnly(env)&&body.action!=='signout'&&!(body.action==='oauth'&&body.provider==='google')&&!(emailCodes(env)&&CODE_ACTIONS.includes(body.action)))throw new StoreError(inviteOnly(env)?'Thrive is in private beta. Sign in with Google or an email code.':openAccess(env)?'Sign in with Google or an email code.':'Thrive is private. Sign in with the authorized Google account.',403);
  switch(body.action){
  case 'signup':{
  const email=emailValue(body),password=passwordValue(body),name=String(body.name||'').trim(),business=String(body.business||'').trim();if(!name||name.length>80||business.length>80)throw new StoreError('Enter your name (up to 80 characters). Business name is optional.');
@@ -66,7 +66,7 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  case 'email-code':{
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase();
- if(!await invited(email,env))throw new StoreError('This email isn’t on the beta list yet.',403);
+ if(inviteOnly(env)&&!await invited(email,env))throw new StoreError('This email isn’t on the beta list yet.',403);
  checked(await auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:callback}}),'We couldn’t send a code. Please try again in a minute.');
  return context.finish(json({ok:true,sent:true}));}
  case 'verify-code':{
@@ -74,7 +74,8 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  const email=emailValue(body).toLowerCase(),token=String(body.code||'').replace(/\s+/g,'');
  if(!/^\d{6,10}$/.test(token))throw new StoreError('Enter the code from your email.');
  data=checked(await auth.verifyOtp({email,token,type:'email'}),'That code is incorrect or has expired. Ask for a new one.');
- if(!data?.user||!await grant(data.user,env)){await auth.signOut({scope:'local'});throw new StoreError('This email isn’t on the beta list yet.',403);}
+ if(!data?.user){await auth.signOut({scope:'local'});throw new StoreError('That code didn’t work. Ask for a new one.');}
+ if(inviteOnly(env)&&!await grant(data.user,env)){await auth.signOut({scope:'local'});throw new StoreError('This email isn’t on the beta list yet.',403);}
  return context.finish(json({ok:true,redirect:'/'}));}
  case 'signout':{checked(await auth.signOut({scope:'local'}),'Unable to sign out. Please try again.');return context.finish(json({ok:true,redirect:'/auth/sign-in'}));}
  default:throw new StoreError('Unknown account action.');

@@ -75,6 +75,38 @@ test('email-code accounts are not offered password changes in invite mode',async
  assert.equal(account.owner,'supabase:u9');assert.equal(account.provider,'email');assert.equal(account.passwordAccount,false);
 });
 
+// Open sign-up (THRIVE_ACCESS=open): the same passwordless sign-in, for any address.
+const open={...env,THRIVE_ACCESS:'open'};
+
+test('open sign-up offers Google and email codes to everyone, still without passwords',async()=>{
+ const config=accountConfig(open);
+ assert.equal(config.openSignup,true);assert.equal(config.emailCode,true);assert.equal(config.inviteOnly,undefined);assert.equal(config.providers.google,true);
+ for(const action of ['signin','signup','forgot']){const m=client();const r=await handleAuth(post({action,email:'sam@example.test',password:'twelve-characters'}),open,{contextFactory:m.factory});assert.equal(r.status,403);assert.deepEqual(m.calls,[]);}
+});
+
+test('open sign-up sends a code to any address and signs in without an invite',async()=>{
+ let asked=false;const m=client();
+ let r=await handleAuth(post({action:'email-code',email:'New@Example.test'}),open,{contextFactory:m.factory,invited:async()=>{asked=true;return false;}});
+ assert.equal(r.status,200);assert.equal(asked,false);assert.deepEqual(m.calls[0],['otp',{email:'new@example.test',options:{shouldCreateUser:true,emailRedirectTo:'https://thrive.test/auth/callback'}}]);
+ let granted=false;
+ r=await handleAuth(post({action:'verify-code',email:'new@example.test',code:'123456'}),open,{contextFactory:m.factory,grant:async()=>{granted=true;return false;}});
+ assert.equal(r.status,200);assert.deepEqual(await r.json(),{ok:true,redirect:'/'});assert.equal(granted,false);
+});
+
+test('open sign-up admits any confirmed account and no unconfirmed one',async()=>{
+ const as=user=>verifiedAccount({client:{auth:{getUser:async()=>({data:{user},error:null})}}},new Request('https://thrive.test/api/workspace'),open);
+ assert.equal((await as(codeUser)).owner,'supabase:u9');
+ assert.equal((await as({...codeUser,id:'g1',app_metadata:{provider:'google'}})).owner,'supabase:g1');
+ assert.equal(await as({...codeUser,email_confirmed_at:null}),null);
+ assert.equal((await as(codeUser)).passwordAccount,false);
+});
+
+test('signed-out visitors get the landing page in invite-only and open deployments',()=>{
+ const route=readFileSync(new URL('../app/route.ts',import.meta.url),'utf8');
+ assert.match(route,/landing:passwordless\(env\)\?landing/);
+ assert.match(readFileSync(new URL('../wrangler.production.jsonc',import.meta.url),'utf8'),/"THRIVE_ACCESS": "open"/);
+});
+
 test('the sign-in page offers Google and an emailed code with no inline script',()=>{
  const html=readFileSync(new URL('../ui/auth.html',import.meta.url),'utf8'),js=readFileSync(new URL('../public/auth.js',import.meta.url),'utf8');
  assert.doesNotMatch(html,/<script(?![^>]*\bsrc=)[^>]*>/);
