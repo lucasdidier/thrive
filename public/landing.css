@@ -82,9 +82,8 @@ main{position:relative;isolation:isolate;overflow-x:clip}
 .btn .gh{width:17px;height:17px;fill:currentColor}
 .gh-link{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;color:var(--text-2)}
 .gh-link .gh{width:19px;height:19px;fill:currentColor}
-.text-btn{padding:6px 2px;border:0;background:none;color:var(--blue-hi);font:inherit;font-size:var(--t-s);font-weight:600;cursor:pointer}
-:is(.btn,.switch button,.text-btn,.asks button,.agents button):active{transform:scale(.97)}
-@media (hover:hover) and (pointer:fine){.btn:hover{background:var(--blue-press)}.btn:hover .i{transform:translateX(3px)}.btn.quiet:hover{background:var(--panel-2)}.btn.gh-btn:hover{background:#21262d}.gh-link:hover{color:var(--text)}.text-btn:hover{color:var(--text)}}
+:is(.btn,.switch button,.asks button,.agents button):active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:var(--blue-press)}.btn:hover .i{transform:translateX(3px)}.btn.quiet:hover{background:var(--panel-2)}.btn.gh-btn:hover{background:#21262d}.gh-link:hover{color:var(--text)}}
 
 /* ---- Header ---- */
 .bar{position:sticky;top:0;z-index:20;background:var(--bg)}
@@ -755,62 +754,57 @@ button.m-item:hover{background:var(--nav-hover)}
 .says code{padding:3px 10px;border-radius:8px;background:var(--panel-2);color:var(--text-2);font-size:13px}
 .ai-lede{max-width:60ch;color:var(--text-2);text-wrap:pretty}
 
-.console{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);overflow:hidden;border-radius:20px;background:var(--paper);box-shadow:0 0 0 1px var(--hair-2);color:var(--ink);font-size:15px;line-height:1.5}
-.chat{display:flex;flex-direction:column;min-width:0}
-.chat-head{display:flex;align-items:center;gap:10px;height:56px;padding:0 22px;border-bottom:1px solid var(--rule);font-size:15px} /* taste-skill-ignore: app header divider (data-ui) */
+/* The assistant: one chat window, like the assistants people already use. Suggestions sit in a row
+   above the message box and leave it once asked. */
+.console{display:flex;flex-direction:column;width:min(100%,820px);margin-inline:auto;overflow:hidden;border-radius:20px;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.55;box-shadow:0 0 0 1px var(--hair-2),0 30px 80px -40px rgba(0,0,0,.5)} /* taste-skill-ignore: the chat window's edge (data-ui) */
+.chat-head{display:flex;align-items:center;gap:10px;height:52px;padding:0 20px;border-bottom:1px solid var(--rule-2);font-size:14.5px} /* taste-skill-ignore: app header divider (data-ui) */
 .spark{width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg,#3d63ee,#7b61ff 55%,#2bb8e8)} /* taste-skill-ignore: the assistant's mark */
 .console.busy .spark{animation:spark 1.1s ease-in-out infinite}
 @keyframes spark{50%{transform:scale(.86) rotate(45deg)}}
-.conn{margin-left:auto;display:inline-flex;align-items:center;gap:8px;color:var(--ink-3);font-size:14px}
+.conn{margin-left:auto;display:inline-flex;align-items:center;gap:7px;color:var(--ink-3);font-size:13px}
 .conn::before{content:"";width:7px;height:7px;border-radius:50%;background:#16a34a}
-.thread{display:flex;flex-direction:column;gap:12px;height:460px;padding:24px 22px;overflow-y:auto;overscroll-behavior:contain;scroll-behavior:smooth}
-.msg{max-width:86%;padding:11px 15px;border-radius:16px;background:var(--paper-2)}
-.msg.you{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:5px}
-.msg.bot{align-self:flex-start;border-bottom-left-radius:5px}
-.msg table{width:100%;margin-top:8px;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
-.msg td{padding:8px 0;border-top:1px solid var(--rule)}
+.thread{display:flex;flex-direction:column;gap:14px;height:420px;padding:24px 24px 12px;overflow-y:auto;overscroll-behavior:contain;scroll-behavior:smooth;scrollbar-width:thin}
+.msg{max-width:88%}
+.msg.you{align-self:flex-end;padding:10px 15px;border-radius:18px 18px 6px 18px;background:var(--paper-2)}
+.msg.bot{align-self:flex-start;padding:0 2px}
+.msg table{width:100%;margin-top:10px;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.msg td{padding:8px 0;border-top:1px solid var(--rule-2)}
 .msg td+td{padding-left:16px;text-align:right;white-space:nowrap}
 .msg ul{display:grid;gap:4px;margin:8px 0 10px}
 .msg li{display:flex;gap:10px}
 .msg li b{min-width:44px;font-weight:600;font-variant-numeric:tabular-nums}
 .late{color:var(--late)}
-.call{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 12px;border-radius:10px;background:var(--paper-2);color:var(--ink-3);font-size:13.5px}
-.call code{color:var(--ink);font-size:13px}
-.call .out{margin-left:auto;text-align:right}
+.call{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;max-width:100%;min-height:30px;padding:0 11px 0 8px;border-radius:9px;background:var(--paper-2);color:var(--ink-3);font-size:13px}
+.call code{color:var(--ink-2);font-size:12.5px}
+.call .out{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.call .out::before{content:"·";margin-right:8px}
 .state{position:relative;flex:none;width:16px;height:16px;border-radius:50%;background:var(--ok-bg)}
 .state::after{content:"";position:absolute;left:5.5px;top:3px;width:4px;height:7.5px;border:solid var(--ok);border-width:0 2px 2px 0;transform:rotate(45deg)}
 .call.busy .state{background:conic-gradient(from 0deg,#3d63ee,#7b61ff,#2bb8e8,transparent 78%);-webkit-mask:radial-gradient(circle,transparent 5px,#000 5.5px);mask:radial-gradient(circle,transparent 5px,#000 5.5px);animation:spin .8s linear infinite} /* taste-skill-ignore: progress while a tool call runs */
 .call.busy .state::after,.call.busy .out{visibility:hidden}
 @keyframes spin{to{transform:rotate(1turn)}}
 .choice{display:flex;gap:8px;margin-top:10px}
-.choice span{padding:6px 12px;border-radius:99px;background:var(--paper);color:var(--ink-2);font-size:13.5px;font-weight:600}
+.choice span{padding:6px 12px;border-radius:99px;background:var(--paper-2);color:var(--ink-2);font-size:13.5px;font-weight:600}
 .choice span:first-child{background:var(--ink);color:var(--paper)}
-.typing{display:inline-flex;gap:4px;align-items:center;height:20px}
+.typing{display:inline-flex;gap:4px;align-items:center;height:24px}
 .typing i{width:6px;height:6px;border-radius:50%;background:var(--ink-3);animation:dot 1s ease-in-out infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes dot{50%{opacity:.3;transform:translateY(-2px)}}
 @media (prefers-reduced-motion:no-preference){.thread>.new{animation:msg 280ms var(--ease-out) both}}
 @keyframes msg{from{opacity:0;transform:translateY(8px)}}
-.composer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 22px 22px;padding:12px 12px 12px 16px;border-radius:14px;background:var(--paper-2);color:var(--ink-3);font-size:14px}
+.chat-foot{padding:4px 16px 16px}
+.asks{display:flex;gap:8px;margin:0 -16px 10px;padding:2px 16px;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 40px),transparent)} /* taste-skill-ignore: suggestions fade at the edges of the row */
+.asks::-webkit-scrollbar{display:none}
+.asks button{flex:none;height:34px;padding:0 14px;border:1px solid var(--rule);border-radius:99px;background:var(--paper);color:var(--ink-2);font:inherit;font-size:13.5px;white-space:nowrap;cursor:pointer;transition:border-color 160ms ease,color 160ms ease,background-color 160ms ease,opacity 200ms ease,transform 160ms var(--ease-out)} /* taste-skill-ignore: outline of a suggestion chip (data-ui) */
+.asks button.sent{opacity:0;transform:scale(.96)}
+.asks button[aria-disabled=true]{cursor:progress}
+@media (hover:hover) and (pointer:fine){.asks button:not([aria-disabled=true]):hover{border-color:var(--blue);color:var(--ink);background:var(--info-bg)}}
+.composer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 8px 8px 16px;border:1px solid var(--rule);border-radius:16px;background:var(--paper);color:var(--ink-3);font-size:14.5px} /* taste-skill-ignore: the message box (data-ui) */
 .composer.filled{color:var(--ink)}
 .composer-text{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.composer i{position:relative;flex:none;width:30px;height:30px;border-radius:50%;background:var(--ink)}
-.composer i::after{content:"";position:absolute;left:11px;top:12px;width:7px;height:7px;border:solid var(--paper);border-width:2px 2px 0 0;transform:rotate(-45deg)}
-.side{display:grid;align-content:start;gap:14px;padding:24px 24px 28px;background:var(--paper-2)}
-.side-label{font-weight:650;font-size:15px}
-.side-label+.addr,.asks+.side-label{margin-top:10px}
-.asks{display:grid;gap:8px}
-.asks button{position:relative;display:block;width:100%;padding:11px 40px 11px 13px;border:1px solid var(--rule);border-radius:12px;background:var(--paper);color:var(--ink);font:inherit;font-size:14.5px;line-height:1.4;text-align:left;cursor:pointer;transition:border-color 160ms ease,transform 160ms var(--ease-out),color 160ms ease} /* taste-skill-ignore: outline of a control inside the interface */
-.asks button::after{content:"";position:absolute;right:16px;top:50%;width:7px;height:7px;margin-top:-4px;border:solid var(--ink-3);border-width:2px 2px 0 0;transform:rotate(45deg);transition:transform 160ms var(--ease-out)}
-.asks button.sent{color:var(--ink-2)}
-.asks button.sent::after{width:5px;height:9px;margin-top:-6px;border-color:var(--ok);border-width:0 2px 2px 0}
-.asks button[aria-disabled=true]{cursor:progress;opacity:.55}
-@media (hover:hover) and (pointer:fine){.asks button:not([aria-disabled=true]):hover{border-color:var(--blue)}.asks button:not(.sent,[aria-disabled=true]):hover::after{transform:translateX(3px) rotate(45deg)}}
-.addr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 9px 7px 13px;border:1px solid var(--rule);border-radius:12px;background:var(--paper)} /* taste-skill-ignore: field outline inside the interface */
-.addr code{font-size:14px;overflow:hidden;text-overflow:ellipsis}
-.addr .text-btn{color:var(--blue)}
-.side-note{color:var(--ink-2);font-size:14.5px}
-.console-note{margin-top:14px;color:var(--text-3);font-size:var(--t-s)}
+.composer i{position:relative;flex:none;width:32px;height:32px;border-radius:50%;background:var(--ink);opacity:.9}
+.composer i::after{content:"";position:absolute;left:12px;top:13px;width:7px;height:7px;border:solid var(--paper);border-width:2px 2px 0 0;transform:rotate(-45deg)}
+.promises{width:min(100%,820px);margin-inline:auto}
 .promises{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-top:48px}
 .promises li{color:var(--text-2);max-width:34ch}
 .promises strong{display:block;margin-bottom:6px;color:var(--text);font-size:var(--t-b);font-weight:620}
@@ -1025,9 +1019,6 @@ button.m-item:hover{background:var(--nav-hover)}
  .wide-checks{grid-template-columns:repeat(3,auto)}
  .faq-head{position:static}
  .doc-cards{grid-template-columns:1fr 1fr}
- .console{grid-template-columns:1fr}
- .side{order:-1}
- .asks{grid-template-columns:1fr 1fr}
 }
 @media (max-width:820px){
  .s5,.s6,.s7{grid-column:1/-1}
@@ -1064,12 +1055,9 @@ button.m-item:hover{background:var(--nav-hover)}
  .ai{padding:72px 0}
  .ai-head{justify-items:start;text-align:left;margin-bottom:36px}
  .says li{justify-items:start}
- .asks{grid-template-columns:1fr}
- .asks button:nth-child(n+5){display:none}
- .side{padding:18px}
- .thread{height:420px;padding:18px 16px}
+ .thread{height:380px;padding:18px 16px 10px}
  .chat-head{padding:0 16px}
- .composer{margin:0 16px 16px}
+ .conn{font-size:0;gap:0}
  .msg{max-width:94%}
  .call .out{display:none}
  .promises{grid-template-columns:1fr;gap:24px}

@@ -236,32 +236,26 @@
    <p class="ai-lede">Thrive speaks MCP, so your assistant works in it like you do. Nothing goes out without your OK.</p>
   </div>
   <div class="console" data-ui>
-   <div class="chat">
-    <div class="chat-head"><span class="spark" aria-hidden="true"></span><strong>AI assistant</strong><span class="conn">Connected to Thrive</span></div>
-    <div class="thread" role="log" aria-label="Conversation with the AI assistant" aria-live="polite">
-     <p class="msg you">Which invoices are overdue? Draft a friendly reminder for each.</p>
-     <p class="call"><span class="state" aria-hidden="true"></span><code>thrive_list_records</code><span class="out">invoices · overdue</span></p>
-     <div class="msg bot">Two are overdue:
-      <table><tr><td>INV-004 · Juniper Studio</td><td>€1,800.00</td><td class="late">21 days</td></tr><tr><td>INV-005 · Orbit</td><td>€3,000.00</td><td class="late">12 days</td></tr></table>
-     </div>
-     <p class="call"><span class="state" aria-hidden="true"></span><code>thrive_execute_action</code><span class="out">emailDraft.create × 2 · not sent</span></p>
-     <p class="msg bot">Both reminders are saved as drafts in Emails. Nothing has been sent. Review them and send when you’re happy.</p>
+   <div class="chat-head"><span class="spark" aria-hidden="true"></span><strong>AI assistant</strong><span class="conn">Connected to Thrive</span></div>
+   <div class="thread" role="log" aria-label="Conversation with the AI assistant" aria-live="polite">
+    <p class="msg you">Which invoices are overdue? Draft a friendly reminder for each.</p>
+    <p class="call"><span class="state" aria-hidden="true"></span><code>thrive_list_records</code><span class="out">invoices · overdue</span></p>
+    <div class="msg bot">Two are overdue:
+     <table><tr><td>INV-004 · Juniper Studio</td><td>€1,800.00</td><td class="late">21 days</td></tr><tr><td>INV-005 · Orbit</td><td>€3,000.00</td><td class="late">12 days</td></tr></table>
     </div>
-    <div class="composer" aria-hidden="true"><span class="composer-text">Ask about your clients, projects or invoices</span><i></i></div>
+    <p class="call"><span class="state" aria-hidden="true"></span><code>thrive_execute_action</code><span class="out">emailDraft.create × 2 · not sent</span></p>
+    <p class="msg bot">Both reminders are saved as drafts in Emails. Nothing has been sent. Review them and send when you’re happy.</p>
    </div>
-   <div class="side">
-    <p class="side-label" id="asks-label">Try asking</p>
-    <div class="asks" role="group" aria-labelledby="asks-label">
-     <button type="button" data-ask="overdue" class="sent">Which invoices are overdue? Draft a friendly reminder for each.</button>
+   <div class="chat-foot">
+    <div class="asks" role="group" aria-label="Suggested prompts">
+     <button type="button" data-ask="overdue" class="sent" hidden>Which invoices are overdue? Draft a friendly reminder for each.</button>
      <button type="button" data-ask="free">When am I free on Friday afternoon?</button>
      <button type="button" data-ask="workflow">When a client accepts a proposal, draft their contract.</button>
      <button type="button" data-ask="followup">Draft a follow-up for today’s discovery call.</button>
      <button type="button" data-ask="import">Import these 40 clients from my CSV.</button>
      <button type="button" data-ask="paid">Tag every client who paid this month.</button>
     </div>
-    <p class="side-label">Connect your assistant</p>
-    <div class="addr"><code>https://runonthrive.com/mcp</code><button type="button" class="text-btn" data-copy="https://runonthrive.com/mcp">Copy</button></div>
-    <p class="side-note">Add this address to your assistant, then sign in.</p>
+    <div class="composer" aria-hidden="true"><span class="composer-text">Ask about your clients, projects or invoices</span><i></i></div>
    </div>
   </div>
   <ul class="promises">

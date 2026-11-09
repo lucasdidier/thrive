@@ -128,6 +128,8 @@ function tabs(list,{vertical=false,onShow=()=>{}}={}){
   const steps=replies[button.dataset.ask];
   asks.forEach(b=>b.setAttribute('aria-disabled','true'));consoleEl.classList.add('busy');
   composerText.textContent=button.textContent;composer.classList.add('filled');
+  // A suggestion, once asked, leaves the row; focus moves to the next one so keyboard users keep their place.
+  const next=asks.find(b=>!b.hidden&&b!==button);button.classList.add('sent');setTimeout(()=>{button.hidden=true;button.parentElement.hidden=asks.every(b=>b.hidden);},reduce.matches?0:220);if(document.activeElement===button)next?.focus();
   await wait(450);
   composerText.textContent=idle;composer.classList.remove('filled');
   add(button.textContent,'msg you');
@@ -136,22 +138,14 @@ function tabs(list,{vertical=false,onShow=()=>{}}={}){
    if(Array.isArray(step)){const row=add(call(step),'call busy');await wait(750);row.classList.remove('busy');}
    else{const typing=add('<span class="typing" aria-label="Typing"><i></i><i></i><i></i></span>','msg bot','div');await wait(700);typing.innerHTML=step;scroll();}
   }
-  button.classList.add('sent');
   asks.forEach(b=>b.removeAttribute('aria-disabled'));consoleEl.classList.remove('busy');busy=false;
  }
  asks.forEach(b=>b.addEventListener('click',()=>{
   if(b.getAttribute('aria-disabled')==='true')return;
-  // On narrow screens the prompts sit above the chat; bring the answer into view.
-  const r=thread.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)thread.scrollIntoView({block:'nearest',behavior:reduce.matches?'auto':'smooth'});
   send(b);
  }));
 }
 
-// ---- Copy the MCP address ----
-$$('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{
- try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied';}catch{b.textContent='Select and copy';}
- setTimeout(()=>{b.textContent='Copy';},1600);
-}));
 
 // ---- Entrances: heading, then text, then picture. Revealed by scroll position, so a jump
 // link past a section never leaves it hidden. With reduced motion nothing is hidden. ----
