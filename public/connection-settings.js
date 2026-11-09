@@ -28,6 +28,6 @@ export function connectionSettings(connection,{esc,icon,btn,stamp}){
  const missing=!a||complete?'':!a.gmail&&!a.calendar?'Email and calendar':!a.gmail?'Email':'Calendar';
  const status=a?(complete?'Connected':'Needs attention'):'Not connected';
  const meta=a?[provider,missing?`${missing} access missing`:a.lastSync?'Synced '+esc(stamp(a.lastSync)):''].filter(Boolean).join(' · '):c.configured?'':'Not available yet';
- const actions=connectActions(c,btn,{primaryReconnect:!!a&&!complete})+(a?btn('Disconnect','mail-disconnect-review','','subtle'):'');
+ const actions=(a&&complete?'':connectActions(c,btn,{primaryReconnect:!!a}))+(a?btn('Disconnect','mail-disconnect-review','','subtle'):'');
  return `<section class="connected-account-card" aria-label="Email and calendar account"><span class="connected-account-symbol">${a?logos[accountProvider(a)]:icon('mail')}</span><div class="connected-account-name"><h2>${a?esc(a.email):'Email & calendar'}</h2>${meta?`<p>${meta}</p>`:''}</div><span class="connection-state ${complete?'is-connected':a?'needs-attention':''}">${complete?icon('check'):''}${status}</span><div class="connected-account-actions">${actions}</div></section>`;
 }

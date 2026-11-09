@@ -93,7 +93,7 @@ export function createCommunicationsUI(ctx){
  else if(action==='mail-sync')run(async()=>{await load();if(loadError)throw Error(loadError);if(!data.connection.account?.gmail)return connections();toast('Refreshing client conversations…');const r=await api({action:'sync'});await load();toast(r.message);});
  else if(action==='mail-connections')run(connections);
  else if(action==='mail-connect')run(async()=>{const r=await api({action:'connect',mode:el.dataset.mode,provider:el.dataset.provider||'google',returnTo:location.hash.slice(1)||'overview'});location.assign(r.url);});
- else if(action==='mail-disconnect-review')open('Disconnect account?',`<div class="dialog-body"><p>Removes the connection and cached conversations from Thrive. Your mailbox and calendar are not changed.</p></div>`,{footer:btn('Cancel','mail-connections')+btn('Disconnect','mail-disconnect')});
+ else if(action==='mail-disconnect-review')open('Disconnect account?',`<div class="dialog-body"><p>Removes the connection and cached conversations from Thrive. Your mailbox and calendar are not changed.</p></div>`,{footer:btn('Cancel','close')+btn('Disconnect','mail-disconnect','','danger')});
  else if(action==='mail-disconnect')run(async()=>{const r=await api({action:'disconnect'});await connections();toast(r.revoked?'Account disconnected.':'Disconnected locally. Remove Thrive access from your provider account to revoke the grant.');});
  else if(action==='mail-archive')run(async()=>{const t=data.threads.find(t=>t.id===id);await api({action:'conversation',id,archived:!t.archived});await load();});
  else if(action==='mail-review')run(()=>review(id));

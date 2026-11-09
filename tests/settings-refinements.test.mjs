@@ -14,11 +14,13 @@ test('catalog separates archives and moves a restored service back into the acti
  assert.match(html,/No archived services/);assert.equal(state.services[1].archived,false);
  ui.handleClick('service-view',{dataset:{view:'active'}});assert.match(html,/Brand workshop/);assert.match(html,/Legacy consulting/);
 });
-test('connected account has one shared reconnect action and one disconnect action',()=>{
- const html=connectionSettings({configured:true,provider:'nylas',account:{email:'studio@example.com',provider:'microsoft',gmail:true,calendar:true}},helpers);
+test('a complete connection shows only Disconnect; an incomplete one adds a single Reconnect',()=>{
+ let html=connectionSettings({configured:true,provider:'nylas',account:{email:'studio@example.com',provider:'microsoft',gmail:true,calendar:true}},helpers);
+ assert.equal((html.match(/data-action="mail-connect"/g)||[]).length,0);
+ assert.match(html,/Connected<\/span>/);assert.match(html,/data-action="mail-disconnect-review"/);
+ html=connectionSettings({configured:true,provider:'nylas',account:{email:'studio@example.com',provider:'microsoft',gmail:true,calendar:false}},helpers);
  assert.equal((html.match(/data-action="mail-connect"/g)||[]).length,1);
- assert.match(html,/data-mode="all" data-provider="microsoft"/);assert.match(html,/Connected<\/span>/);
- assert.match(html,/data-action="mail-disconnect-review"/);
+ assert.match(html,/data-mode="all" data-provider="microsoft"/);assert.match(html,/data-action="mail-disconnect-review"/);
 });
 test('incomplete grants ask to reconnect the same account with both capabilities',()=>{
  const html=connectionSettings({configured:true,account:{email:'studio@example.com',gmail:true,calendar:false}},helpers);

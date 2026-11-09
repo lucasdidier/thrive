@@ -164,6 +164,9 @@ main.crm-main { background: var(--bg); }
 .btn.primary:active, .btn.accent:active, #create-trigger:active { background: var(--action-pressed); border-color: var(--action-pressed); }
 .btn.subtle { background: transparent; border-color: transparent; }
 .btn.subtle:hover { background: var(--hover); }
+/* Destructive confirmations (Disconnect, Discard): neutral button, red label, red tint on hover. */
+.btn.danger { color: var(--negative); }
+.btn.danger:hover:not(:disabled) { background: var(--negative-bg); border-color: color-mix(in srgb, var(--negative) 35%, var(--border-control)); color: var(--negative); }
 .btn:disabled, .btn:disabled:hover, .btn.primary:disabled, .btn.primary:disabled:hover, #create-trigger:disabled, #create-trigger:disabled:hover { background: var(--hover); border-color: var(--line); color: var(--faint); opacity: 1; cursor: not-allowed; }
 .topbar .btn, .settings-page .btn { min-height: var(--control-height); padding: 5px 10px; font-size: 12px; line-height: 18px; }
 dialog .dialog-footer .btn { min-height: var(--control-height-form); padding: 6px 11px; font-size: 12px; line-height: 18px; }
