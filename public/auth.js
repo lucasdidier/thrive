@@ -9,7 +9,7 @@ function heading(title,subtitle=''){$('heading').textContent=title;$('subtitle')
 function notice(text){$('notice').textContent=text;$('notice').hidden=!text;}
 function showError(message){$('error').textContent=message||'';}
 function controls(){document.querySelectorAll('#content button,#content input').forEach(el=>el.disabled=busy||!config?.enabled||(el.dataset.provider&&!config.providers[el.dataset.provider])||(el.id==='resend'&&!!resendTimer));}
-async function action(body){if(busy)return;busy=true;showError('');controls();try{const response=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error||'Please try again.');if(result.redirect){location.assign(result.redirect);return;}return result;}catch(error){showError(error.message);}finally{busy=false;controls();}}
+async function action(body){if(busy)return;busy=true;showError('');controls();try{const response=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(params.get('next')?{...body,next:params.get('next')}:body)});const result=await response.json();if(!response.ok)throw Error(result.error||'Please try again.');if(result.redirect){location.assign(result.redirect);return;}return result;}catch(error){showError(error.message);}finally{busy=false;controls();}}
 function googleButtons(){document.querySelectorAll('[data-provider]').forEach(button=>button.onclick=()=>action({action:'oauth',provider:button.dataset.provider}));}
 
 // Invite-only beta: Google, or a one-time code sent to an invited email.

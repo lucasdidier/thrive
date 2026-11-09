@@ -78,3 +78,10 @@ footer a{font-weight:550}
 @media (max-width:480px){.auth-header{padding:20px 16px}.auth-main{align-items:flex-start;padding:40px 16px 64px}h1{font-size:28px}}
 @media (pointer:coarse){.btn,input{height:44px}.password button{height:44px}.link{min-height:44px}}
 @media (prefers-reduced-motion:reduce){.btn,input{transition:none}.btn:active:not(:disabled){transform:none}}
+
+/* MCP consent (/oauth/consent, server/mcp-oauth.mjs): one centred column, no showcase. */
+.consent-layout{grid-template-columns:minmax(0,1fr)}
+.consent-layout .auth-card{width:420px}
+.consent-layout h1{font-size:28px;line-height:1.2;margin-bottom:24px;overflow-wrap:anywhere}
+.consent-points{margin:0 0 24px;padding:0 0 0 18px;color:var(--text);line-height:1.55;display:grid;gap:8px}
+.consent-actions{display:grid;gap:12px}

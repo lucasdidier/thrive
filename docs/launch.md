@@ -112,6 +112,17 @@ Have a lawyer read them before you take payments.
 5. Sign out, then use "Email me a code" with your address. The email shows a 6-digit code; entering it opens the same workspace.
 6. Try an uninvited Google account, then an uninvited email. Google lands you on the page with "isn't on the beta list yet"; the email form says the same and sends nothing.
 
+## 9. AI assistant sign-in (MCP)
+
+Lets Claude, ChatGPT, Cursor and Codex connect to `https://runonthrive.com/mcp` with a browser sign-in. Supabase issues the tokens; Thrive shows the consent page. Thrive notices within five minutes when this is turned on; there's nothing to deploy.
+
+1. In Supabase (production project), go to Authentication → URL Configuration and check that the Site URL is `https://runonthrive.com`.
+2. Go to Authentication → OAuth Server. Turn on the OAuth 2.1 server, allow dynamic client registration (assistants register themselves), and set the Authorization Path to `/oauth/consent`.
+3. Check that `https://vacyeyashxsekeitkrcg.supabase.co/.well-known/oauth-authorization-server/auth/v1` and, a few minutes later, `https://runonthrive.com/.well-known/oauth-protected-resource` both return JSON.
+4. In Claude (Settings → Connectors → Add custom connector), add `https://runonthrive.com/mcp`. Sign in to Thrive when asked, click **Allow access**, then ask Claude to read your workspace.
+
+To switch it off again without touching Supabase, set `"THRIVE_MCP_OAUTH": "off"` in the Worker vars. Staging works the same way with its own Supabase project and Site URL.
+
 ## Running the beta
 
 - **Invite someone:** insert their email into `thrive_beta_invites` (Table Editor → Insert row). Within the hour they get the "You're invited" email.

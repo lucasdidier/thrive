@@ -1,4 +1,5 @@
 import {rateLimited,tooMany,reportError} from './guard.mjs';
+import {mcpDiscovery,withMcpChallenge} from './mcp-oauth.mjs';
 // Outside Sites, identity headers are untrusted. Never fall back to that mode
 // when a public deployment is missing its Supabase configuration.
 export async function selfHostedFetch(handler, request, env, ctx) {
@@ -16,7 +17,10 @@ export async function selfHostedFetch(handler, request, env, ctx) {
   const path = new URL(request.url).pathname;
   const alert = (details) => { const p = reportError(env, {source: 'server', path, ...details}).catch(() => {}); ctx?.waitUntil?.(p); return p; };
   try {
-    const response = await handler.fetch(new Request(request, {headers}), env, ctx);
+    // MCP sign-in discovery lives under /.well-known, outside the app router (see mcp-oauth.mjs).
+    const discovery = await mcpDiscovery(request, env);
+    if (discovery) return discovery;
+    const response = await withMcpChallenge(await handler.fetch(new Request(request, {headers}), env, ctx), request, env);
     if (response.status >= 500) alert({status: response.status, message: await response.clone().text().then(t => t.slice(0, 300)).catch(() => '')});
     return response;
   } catch (error) {

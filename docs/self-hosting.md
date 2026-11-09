@@ -191,6 +191,6 @@ References: [Nylas hosted authentication](https://developer.nylas.com/docs/v3/au
 
 Back up before updates, review migrations, then run tests/build and deploy. Existing workspaces use compressed snapshots with revision checks; concurrent writes are detected rather than automatically merged. Do not copy an author's database or import the same snapshot into multiple new accounts.
 
-The `/mcp` endpoint accepts a **Supabase user access token** in `Authorization: Bearer <token>` for protected calls. Never use the service-role key there. Tokens expire and need client-side refresh. Clients that require full OAuth discovery/account linking need further integration; copying the endpoint alone does not implement it.
+The `/mcp` endpoint accepts a **Supabase user access token** in `Authorization: Bearer <token>` for protected calls. Never use the service-role key there. For assistants that sign in through OAuth (Claude, ChatGPT, Cursor, Codex), enable your project's OAuth 2.1 server in Supabase → Authentication → OAuth Server, allow dynamic client registration and set the Authorization Path to `/oauth/consent` (Site URL = your `THRIVE_APP_URL`). Thrive then publishes `/.well-known/oauth-protected-resource` and serves the consent page; see README › Thrive MCP.
 
 For agent-assisted installation, use [the setup prompt](agent-setup.md).

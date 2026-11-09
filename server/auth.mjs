@@ -11,6 +11,13 @@ export const ownerEmail=env=>passwordless(env)?'':String(env.THRIVE_OWNER_EMAIL|
 const googleOnly=env=>!!ownerEmail(env)||passwordless(env);
 const emailCodes=env=>accountsEnabled(env)&&passwordless(env);
 const CODE_ACTIONS=['email-code','verify-code'];
+// After signing in, return to an MCP consent request (server/mcp-oauth.mjs) and nowhere else. The target
+// rides in a short-lived cookie so it survives Google's and Supabase's redirects and the emailed link.
+const NEXT='thrive-next';
+export const safeNext=v=>/^\/oauth\/consent\?authorization_id=[A-Za-z0-9_-]{8,128}$/.test(String(v||''))?String(v):'';
+const nextCookie=(origin,value)=>`${NEXT}=${value?encodeURIComponent(value):''}; Path=/; Max-Age=${value?600:0}; HttpOnly; SameSite=Lax${origin.startsWith('https:')?'; Secure':''}`;
+const savedNext=request=>{const raw=(request.headers.get('cookie')||'').split(/;\s*/).find(c=>c.startsWith(NEXT+'='))?.slice(NEXT.length+1)||'';try{return safeNext(decodeURIComponent(raw));}catch{return '';}};
+const keepNext=(context,body)=>safeNext(body.next)?[nextCookie(context.origin,safeNext(body.next))]:[];
 export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(openAccess(env)?{openSignup:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),providers:{google:enabled&&(passwordless(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
 // Supabase can return to its configured Site URL when a callback URL is not
 // allowlisted. Complete that same PKCE exchange before checking the session.
@@ -61,14 +68,14 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  return context.finish(json({ok:true,message:body.action==='change-email'?'Check your email to confirm the new address.':'Password updated.'}));}
  case 'reset':{if(!await verifiedAccount(context,request,env))throw new StoreError('Open a valid password reset link to continue.',401);checked(await auth.updateUser({password:passwordValue(body)}),'Unable to update your password. Request a new reset link and try again.');return context.finish(json({ok:true,redirect:'/'}));}
  case 'confirm':{if(!['signup','recovery','invite'].includes(body.type)||typeof body.token_hash!=='string'||!/^[a-zA-Z0-9_-]{20,256}$/.test(body.token_hash))throw new StoreError('This email link is invalid.');checked(await auth.verifyOtp({token_hash:body.token_hash,type:body.type}),'This email link has expired or has already been used. Request a new link.');return context.finish(json({ok:true,redirect:body.type==='signup'?'/':'/auth/reset-password'}));}
- case 'oauth':{if(!['google','microsoft'].includes(body.provider)||!config.providers[body.provider])throw new StoreError('This sign-in provider is not enabled yet.',503);if(body.provider==='google'&&nativeGoogle(env)){const start=await startGoogleSignIn(env,context.origin);return context.finish(json({redirect:start.url}),[start.cookie]);}data=checked(await auth.signInWithOAuth({provider:body.provider==='microsoft'?'azure':'google',options:{redirectTo:callback,scopes:body.provider==='microsoft'?'email':undefined,skipBrowserRedirect:true}}),'Unable to start sign-in. Please try again.');if(!data.url||new URL(data.url).origin!==new URL(supabaseURL(env)).origin)throw new StoreError('Unable to start sign-in.',503);return context.finish(json({redirect:data.url}));}
+ case 'oauth':{if(!['google','microsoft'].includes(body.provider)||!config.providers[body.provider])throw new StoreError('This sign-in provider is not enabled yet.',503);if(body.provider==='google'&&nativeGoogle(env)){const start=await startGoogleSignIn(env,context.origin);return context.finish(json({redirect:start.url}),[start.cookie,...keepNext(context,body)]);}data=checked(await auth.signInWithOAuth({provider:body.provider==='microsoft'?'azure':'google',options:{redirectTo:callback,scopes:body.provider==='microsoft'?'email':undefined,skipBrowserRedirect:true}}),'Unable to start sign-in. Please try again.');if(!data.url||new URL(data.url).origin!==new URL(supabaseURL(env)).origin)throw new StoreError('Unable to start sign-in.',503);return context.finish(json({redirect:data.url}),keepNext(context,body));}
  // Passwordless: email a one-time code (the email also carries a same-browser link).
  case 'email-code':{
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase();
  if(inviteOnly(env)&&!await invited(email,env))throw new StoreError('This email isn’t on the beta list yet.',403);
  checked(await auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:callback}}),'We couldn’t send a code. Please try again in a minute.');
- return context.finish(json({ok:true,sent:true}));}
+ return context.finish(json({ok:true,sent:true}),keepNext(context,body));}
  case 'verify-code':{
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase(),token=String(body.code||'').replace(/\s+/g,'');
@@ -76,13 +83,14 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  data=checked(await auth.verifyOtp({email,token,type:'email'}),'That code is incorrect or has expired. Ask for a new one.');
  if(!data?.user){await auth.signOut({scope:'local'});throw new StoreError('That code didn’t work. Ask for a new one.');}
  if(inviteOnly(env)&&!await grant(data.user,env)){await auth.signOut({scope:'local'});throw new StoreError('This email isn’t on the beta list yet.',403);}
- return context.finish(json({ok:true,redirect:'/'}));}
+ const next=safeNext(body.next)||savedNext(request);
+ return context.finish(json({ok:true,redirect:next||'/'}),next?[nextCookie(context.origin,'')]:[]);}
  case 'signout':{checked(await auth.signOut({scope:'local'}),'Unable to sign out. Please try again.');return context.finish(json({ok:true,redirect:'/auth/sign-in'}));}
  default:throw new StoreError('Unknown account action.');
  }
  }catch(error){const response=errorResponse(error);return context?context.finish(response):response;}}
 export async function authCallback(request,env,{contextFactory=authContext,grant=grantBetaAccess}={}){let context;try{context=contextFactory(request,env);const url=new URL(request.url),code=url.searchParams.get('code');if(!code||code.length>2048||url.searchParams.has('error'))throw new StoreError('The sign-in link could not be verified.');checked(await context.client.auth.exchangeCodeForSession(code),'The sign-in link could not be verified.');return await signedIn(context,request,env,grant,url.searchParams.get('next')==='reset-password'?'/auth/reset-password':'/');}catch{const response=new Response(null,{status:303,headers:{Location:'/auth/sign-in?error=link','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});return context?context.finish(response):response;}}
 // After any sign-in: invite-only grants beta access (or parks the account), owner-only checks the account.
-async function signedIn(context,request,env,grant,next,cookies=[]){if(inviteOnly(env)){const {data}=await context.client.auth.getUser();if(!data?.user||!await grant(data.user,env)){await context.client.auth.signOut({scope:'local'});return context.finish(new Response(null,{status:303,headers:{Location:context.origin+'/?access=pending'}}),cookies);}}if(ownerEmail(env)&&!await verifiedAccount(context,request,env)){await context.client.auth.signOut({scope:'local'});throw new StoreError('This Google account is not authorized.',403);}return context.finish(new Response(null,{status:303,headers:{Location:context.origin+next}}),cookies);}
+async function signedIn(context,request,env,grant,next,cookies=[]){const saved=savedNext(request);if(saved){next=saved;cookies=[...cookies,nextCookie(context.origin,'')];}if(inviteOnly(env)){const {data}=await context.client.auth.getUser();if(!data?.user||!await grant(data.user,env)){await context.client.auth.signOut({scope:'local'});return context.finish(new Response(null,{status:303,headers:{Location:context.origin+'/?access=pending'}}),cookies);}}if(ownerEmail(env)&&!await verifiedAccount(context,request,env)){await context.client.auth.signOut({scope:'local'});throw new StoreError('This Google account is not authorized.',403);}return context.finish(new Response(null,{status:303,headers:{Location:context.origin+next}}),cookies);}
 // Google's return to Thrive's own domain (see google-signin.mjs). The one-time state cookie is always cleared.
 export async function googleCallback(request,env,{contextFactory=authContext,grant=grantBetaAccess,fetcher=fetch}={}){let context;try{context=contextFactory(request,env);if(!nativeGoogle(env))throw new StoreError('Google sign-in is not configured.',503);await finishGoogleSignIn(request,env,context.client.auth,context.origin,fetcher);return await signedIn(context,request,env,grant,'/',[clearGoogleCookie(context.origin)]);}catch{const response=new Response(null,{status:303,headers:{Location:'/auth/sign-in?error=link','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});return context?context.finish(response,[clearGoogleCookie(context.origin)]):response;}}
