@@ -985,6 +985,9 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 /* Home uses the same related-record rows as project and client details. */
 .dashboard [hidden] { display: none !important; }
 .dashboard-history, .dashboard-recent { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-surface); background: var(--card); }
+/* Home lays out by its own width, not the window's, so an open sidebar gets the narrow layout too.
+   728px is the 760px phone breakpoint minus phone gutters. */
+.dashboard { container: home / inline-size; }
 .home-widget-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }
 .home-widget-grid > [data-home-widget] { min-width: 0; margin: 0; }
 .home-widget-grid > [data-home-widget="totals"] { grid-column: 1 / -1; }
@@ -1019,7 +1022,7 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
 .home-widget-option input { flex: 0 0 16px; width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
 .home-widgets-menu footer { display: grid; gap: 8px; margin: 6px 2px 0; padding: 10px 6px 6px; border-top: 1px solid var(--line); }
 .home-widgets-menu footer .text-btn { text-align: left; justify-self: start; }
-@media (max-width: 760px) {
+@container home (max-width: 728px) {
  .home-widget-grid { grid-template-columns: minmax(0,1fr); gap: 16px; }
  .home-widget-grid .dashboard-history .dash-metrics { grid-template-columns: minmax(0,1fr); }
  .home-widget-grid .dashboard-history .dash-metric { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-right: 0; border-bottom: 1px solid var(--grid); }
@@ -1259,7 +1262,7 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  .home-widget-grid .dashboard-history .dash-metric:hover > span { color: var(--link); }
 }
 .home-widget-grid .dashboard-history .dash-metric:active { background: var(--surface-pressed); }
-@media (max-width:1100px) and (min-width:761px) {
+@container home (max-width: 960px) {
  .home-widget-grid .rel-row { grid-template-columns: 30px minmax(0,1fr) auto; gap: 4px 8px; }
  .home-widget-grid .rel-row:has(.rel-status:not(:empty)) { grid-template-areas: "icon main value" "icon main status"; }
  .home-widget-grid .rel-row:has(.rel-status:not(:empty)) > .rel-icon { grid-area: icon; }
@@ -1267,7 +1270,7 @@ main:has(> .project-page) { max-width: none; margin: 0; padding: 0; }
  .home-widget-grid .rel-row:has(.rel-status:not(:empty)) > .rel-value { grid-area: value; }
  .home-widget-grid .rel-row:has(.rel-status:not(:empty)) > .rel-status { grid-area: status; }
 }
-@media (max-width:760px) {
+@container home (max-width: 728px) {
  .home-widget-grid > [data-home-widget]:not([data-home-widget="totals"]) { padding: 16px; }
  .home-widget-grid .dashboard-history > .section-heading { flex-wrap: nowrap; }
  .home-widget-grid .dashboard-history .dash-metric { border: 1px solid transparent; }
