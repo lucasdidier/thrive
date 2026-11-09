@@ -3,6 +3,8 @@
 /* Provider connect buttons: the official mark beside the label, in one row that wraps.
    Shared by Settings › Email & calendar, Emails, Scheduling, client emails and Home. */
 .btn.provider-connect{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+/* Brand logos keep their own fills: no line-icon stroke from the global svg rule. */
+.provider-logo{stroke:none;stroke-width:0}
 .btn .provider-logo{width:16px;height:16px;flex:none}
 .connect-actions{display:flex;flex-wrap:wrap;gap:8px}
 .connect-prompt-body{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 16px}
