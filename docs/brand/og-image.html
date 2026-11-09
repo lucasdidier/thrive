@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Inter;src:url("../../public/fonts/InterVariable.woff2") format("woff2");font-weight:100 900}
+*{box-sizing:border-box;margin:0}
+html,body{width:1200px;height:630px;overflow:hidden}
+body{font-family:Inter,system-ui,sans-serif;background:#0b0d12;color:#f2f4f8;position:relative;-webkit-font-smoothing:antialiased}
+.dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;-webkit-mask-image:linear-gradient(110deg,#000 30%,transparent 75%)}
+.glow{position:absolute;width:900px;height:900px;right:-260px;top:-180px;background:radial-gradient(closest-side,rgba(61,99,238,.42),rgba(61,99,238,0));filter:blur(10px)}
+.copy{position:absolute;left:72px;top:64px;width:560px}
+.brand{display:flex;align-items:center;gap:14px;font-size:34px;font-weight:650;letter-spacing:-.02em}
+.brand img{width:46px;height:46px;border-radius:11px}
+h1{margin-top:58px;font-size:62px;line-height:1.04;font-weight:650;letter-spacing:-.035em}
+p{margin-top:22px;font-size:23px;line-height:1.4;color:#a7aebb;letter-spacing:-.005em}
+.tags{position:absolute;left:72px;bottom:58px;display:flex;gap:10px}
+.tags span{padding:8px 14px;border:1px solid rgba(255,255,255,.14);border-radius:999px;font-size:17px;color:#cfd4dd;background:rgba(255,255,255,.04)}
+.tags span:first-child{border-color:rgba(122,150,255,.5);color:#c4d0ff;background:rgba(61,99,238,.16)}
+.window{position:absolute;left:676px;top:96px;width:760px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:#fff;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 6px rgba(255,255,255,.03)}
+.bar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#f1f3f7;border-bottom:1px solid #e3e6eb}
+.bar i{width:11px;height:11px;border-radius:50%;background:#d7dbe2}
+.bar span{margin-left:14px;font-size:13px;color:#6b7280}
+.window img{display:block;width:100%}
+</style></head><body>
+<div class="glow"></div><div class="dots"></div>
+<div class="copy">
+ <div class="brand"><img src="../../public/apple-touch-icon.png" alt="">thrive</div>
+ <h1>All your client work, in one place</h1>
+ <p>Clients, proposals, invoices, time and email for freelancers and small studios.</p>
+</div>
+<div class="tags"><span>Works with your AI assistant</span><span>Open source</span></div>
+<div class="window"><div class="bar"><i></i><i></i><i></i><span>app.runonthrive.com</span></div><img src="../../public/landing/overview.webp" alt=""></div>
+</body></html>
