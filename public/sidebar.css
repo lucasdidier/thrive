@@ -142,3 +142,9 @@
  .settings-page .settings-nav-group h3{display:none}
  .settings-page .settings-nav-group a{height:40px}
 }
+/* Narrow Settings: the section list is one scrolling row above the content (see design-system.css). */
+@container settings (max-width: 719px){
+ .settings-page .settings-navigation{padding:16px;border-right:0;border-bottom:1px solid var(--line)}
+ .settings-page .settings-nav-group{display:flex;flex:none;gap:2px;margin:0}
+ .settings-page .settings-nav-group h3{display:none}
+}

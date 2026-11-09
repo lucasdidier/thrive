@@ -496,7 +496,10 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 }
 @keyframes thrive-menu-reveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes thrive-settings-reveal { from { opacity: 0; } to { opacity: 1; } }
-@media (min-width:751px) and (max-width:1000px) {
+/* Settings lays out by its own width, like Home: below 720px (a phone, or a narrow window with the
+   sidebar open) the section list moves above the content as one scrolling row. */
+.settings-main { container: settings / inline-size; }
+@container settings (max-width: 719px) {
   .settings-page { display: flex; flex-direction: column; }
   .settings-page .settings-navigation { height: auto; flex: none; padding: 16px; border-right: 0; border-bottom: 1px solid var(--line); }
   .settings-navigation > h2 { margin: 0 0 12px; }
