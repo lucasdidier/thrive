@@ -31,6 +31,9 @@
     "THRIVE_SUPPORT_EMAIL": "hello@runonthrive.com",
     "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@runonthrive.com>",
     "THRIVE_GOOGLE_LOGIN": "true",
+    // Google returns to runonthrive.com/auth/google/callback once this client's secret is stored on the
+    // Worker (docs/launch.md, step 3.7); until then sign-in uses Supabase's hosted redirect.
+    "GOOGLE_CLIENT_ID": "930813839213-au7rujg4dcaiid82rlbaaq0it8cc4550.apps.googleusercontent.com",
     "THRIVE_MICROSOFT_LOGIN": "false",
     "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
     "NYLAS_REGION": "eu",

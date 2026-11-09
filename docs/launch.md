@@ -41,9 +41,13 @@ This is identity only. Gmail and Calendar keep going through Nylas.
 4. Under Data Access, keep only `openid`, `email` and `profile`. These are non-sensitive, so you only need brand verification (a few days) and no security assessment.
 5. Under Clients → Create client → Web application:
    - Authorized JavaScript origin: `https://runonthrive.com`.
-   - Authorized redirect URI: `https://PROJECT-REF.supabase.co/auth/v1/callback`.
-6. Paste the client ID and secret into Supabase → Google provider.
-7. Click **Publish app**, then submit brand verification. Until it's approved, users see the app name without the logo, but sign-in works.
+   - Authorized redirect URIs: `https://runonthrive.com/auth/google/callback` (Thrive's own return) and `https://PROJECT-REF.supabase.co/auth/v1/callback` (the fallback, removable once the first works).
+6. Paste the client ID and secret into Supabase → Google provider. Supabase uses them to accept the ID token Thrive hands over.
+7. Put the same client ID in `GOOGLE_CLIENT_ID` (wrangler.production.jsonc vars) and store the secret on the Worker:
+   `cd ~/Documents/Code/Thrive/prototype && PATH=~/.asdf/installs/nodejs/24.9.0/bin:$PATH npx wrangler secret put GOOGLE_CLIENT_SECRET --config wrangler.production.jsonc`
+   With both set, Google returns to runonthrive.com instead of Supabase. Without the secret, sign-in falls back to Supabase's hosted redirect, so removing it is the rollback.
+8. Brand verification needs every authorized domain to be one you can verify in Search Console, so the list must end up as `runonthrive.com` only: remove the `supabase.co` and old Sites entries once step 7 works, and give staging's Google client its own Cloud project.
+9. Click **Publish app**, then submit brand verification. Until it's approved, Google's account chooser says "to continue to" the redirect's domain instead of "Thrive", but sign-in works.
 
 ## 4. Resend (notification emails)
 
