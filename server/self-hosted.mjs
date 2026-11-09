@@ -1,5 +1,6 @@
 import {rateLimited,tooMany,reportError} from './guard.mjs';
 import {mcpDiscovery,withMcpChallenge} from './mcp-oauth.mjs';
+import {siteRoute} from './hosts.mjs';
 // Outside Sites, identity headers are untrusted. Never fall back to that mode
 // when a public deployment is missing its Supabase configuration.
 export async function selfHostedFetch(handler, request, env, ctx) {
@@ -10,6 +11,10 @@ export async function selfHostedFetch(handler, request, env, ctx) {
     });
   }
   if (await rateLimited(request, env)) return tooMany();
+  // runonthrive.com shows the landing page and moves app paths to app.runonthrive.com (hosts.mjs).
+  const site = siteRoute(request, env);
+  if (site?.response) return site.response;
+  if (site?.request) request = site.request;
   const headers = new Headers(request.headers);
   for (const name of [...headers.keys()]) {
     if (name.startsWith('oai-authenticated-user-')) headers.delete(name);

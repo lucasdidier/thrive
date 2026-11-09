@@ -9,7 +9,8 @@
   "compatibility_date": "2026-05-15",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
-  "routes": [{ "pattern": "runonthrive.com", "custom_domain": true }],
+  // runonthrive.com is the marketing site, app.runonthrive.com the app (server/hosts.mjs).
+  "routes": [{ "pattern": "runonthrive.com", "custom_domain": true }, { "pattern": "app.runonthrive.com", "custom_domain": true }],
   // Hourly: summaries at 8:00 local time, invite emails, nightly backup at 03:00 UTC.
   "triggers": { "crons": ["0 * * * *"] },
   "observability": { "enabled": true },
@@ -22,7 +23,8 @@
   "vars": {
     "THRIVE_AUTH_MODE": "supabase",
     "THRIVE_DATA_BACKEND": "supabase",
-    "THRIVE_APP_URL": "https://runonthrive.com",
+    "THRIVE_APP_URL": "https://app.runonthrive.com",
+    "THRIVE_SITE_URL": "https://runonthrive.com",
     "SUPABASE_URL": "https://vacyeyashxsekeitkrcg.supabase.co",
     // Open sign-up: anyone can create an account with Google or an emailed code, free for now.
     // "invite" restricts sign-in to emails in thrive_beta_invites.
@@ -39,6 +41,6 @@
     "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
     "NYLAS_REGION": "eu",
     "NYLAS_ENVIRONMENT": "sandbox",
-    "NYLAS_REDIRECT_URI": "https://runonthrive.com/api/nylas/callback"
+    "NYLAS_REDIRECT_URI": "https://app.runonthrive.com/api/nylas/callback"
   }
 }

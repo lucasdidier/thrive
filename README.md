@@ -29,9 +29,11 @@ Two Cloudflare Workers, each with its own Supabase project:
 | | Staging | Production |
 | --- | --- | --- |
 | Worker and config | `thrive`, `wrangler.self-hosted.jsonc` | `thrive-production`, `wrangler.production.jsonc` |
-| Address | its `workers.dev` URL (`THRIVE_APP_URL`) | [runonthrive.com](https://runonthrive.com) |
+| Address | its `workers.dev` URL (`THRIVE_APP_URL`) | app: [app.runonthrive.com](https://app.runonthrive.com); site: [runonthrive.com](https://runonthrive.com) |
 | Who signs in | the owner only (`THRIVE_OWNER_EMAIL`) | anyone (`THRIVE_ACCESS=open`) |
 | Build and deploy | `npm run build:self-hosted && npm run deploy:self-hosted` | `npm run build:production && npm run deploy:production` |
+
+Production answers on two hostnames from the same Worker (`server/hosts.mjs`): `THRIVE_SITE_URL` (runonthrive.com) serves the landing page at `/`, the legal pages, `llms.txt` and static files, and permanently redirects every other path (sign-in, `/api`, `/mcp`, consent, client links, embeds) to the same path on `THRIVE_APP_URL` (app.runonthrive.com), so older links keep working. Signed-out visitors to the app go straight to sign-in. Without `THRIVE_SITE_URL` one origin serves both.
 
 `npm run check:production` (run by both production scripts) refuses to build while a `REPLACE_` value or legal-page placeholder remains. Both builds write `dist/server/wrangler.json`, so build and deploy one target at a time. Deploy from a clean checkout of a commit so uncommitted work never ships.
 
@@ -69,7 +71,7 @@ Thrive is an MCP server: an AI agent can read and change a workspace through the
 
 ### Connect
 
-- **Endpoint:** `https://runonthrive.com/mcp` (any deployment: `<origin>/mcp`). Stateless Streamable HTTP: JSON-RPC over `POST`, protocol version `2025-06-18`, server `thrive` 0.3.0. There is no local stdio process.
+- **Endpoint:** `https://app.runonthrive.com/mcp` (any deployment: `<app origin>/mcp`). Stateless Streamable HTTP: JSON-RPC over `POST`, protocol version `2025-06-18`, server `thrive` 0.3.0. There is no local stdio process.
 - **Public calls:** `initialize`, `ping` and `tools/list` need no account and return no private data.
 - **Sign-in for assistants (OAuth 2.1):** `/mcp` is an OAuth protected resource. `/.well-known/oauth-protected-resource` names the Supabase project's OAuth 2.1 server as the authorization server, and a `401` from `/mcp` carries `WWW-Authenticate: Bearer resource_metadata=…`. The client registers itself (dynamic client registration), the user signs in to Thrive in the browser and approves the assistant on Thrive's consent page (`/oauth/consent`), and the client receives a Supabase access token and refresh token for that user. This is how Claude and ChatGPT connectors, Cursor and Codex connect. A brand-new user can sign up on the way; the return to the consent page survives Google, email codes and emailed links.
 - **Authentication:** every call other than discovery needs `Authorization: Bearer <Supabase user access token>`, from OAuth or a normal session. The server verifies it with Supabase on each call and applies the deployment's access rules (owner-only, invite or open). Never give an agent the Supabase secret (service-role) key.

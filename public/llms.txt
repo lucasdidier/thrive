@@ -6,7 +6,7 @@ Thrive suits people who sell projects, packages or hourly work. It doesn't take 
 
 ## Connect an AI assistant
 
-- MCP server: https://runonthrive.com/mcp
+- MCP server: https://app.runonthrive.com/mcp
 - Works with assistants that support MCP, including Claude, ChatGPT, Cursor and Codex. The user signs in to Thrive in their browser.
 - Agents act with the user's access. They preview changes before saving, and email or calendar invites need the user's explicit OK.
 

@@ -16,7 +16,7 @@ Every command below is one line you can paste from any folder.
 
 ## 1. The domain
 
-Production runs on `runonthrive.com`, registered with Cloudflare Registrar on November 9, 2026. Its DNS is already in the right account, and Workers, Resend and Google all verify through it.
+Production runs on `runonthrive.com` (the marketing site) and `app.runonthrive.com` (the app, `THRIVE_APP_URL`), registered with Cloudflare Registrar on November 9, 2026. Its DNS is already in the right account, and Workers, Resend and Google all verify through it.
 
 "Thrive" is a crowded name (Thrive Global, Thrive Market, Thrive Themes, Thriveworks). Search the trademark registers for your market before you print anything.
 
@@ -27,7 +27,7 @@ Go to Cloudflare → runonthrive.com → Email → Email Routing and forward `he
 1. Create the project at supabase.com/dashboard. Name it `Thrive production`, choose an EU region (Frankfurt), and keep the database password in your password manager. Use the Pro plan: it includes daily backups with 7 days' retention, and the project never pauses.
 2. In the SQL Editor, run each file in `supabase/migrations/` in name order: `202610180001_thrive.sql`, `202610190001_nylas.sql`, then `202611050001_beta.sql`.
 3. Go to Authentication → Sign In / Providers. Turn **Google on** (you'll paste its keys in step 3 below) and keep **Email on** for "Email me a code". In the Email provider, set **Email OTP length** to 6. Thrive never offers passwords in the beta; the server only accepts Google or a code for an invited email.
-4. Go to Authentication → URL Configuration. Set Site URL to `https://runonthrive.com` and add the redirect URL `https://runonthrive.com/auth/callback`.
+4. Go to Authentication → URL Configuration. Set Site URL to `https://app.runonthrive.com` and add the redirect URL `https://app.runonthrive.com/auth/callback`.
 5. Put the project reference (from Settings → General) into `SUPABASE_URL` in `wrangler.production.jsonc`.
 6. Invite yourself in the SQL Editor: `insert into thrive_beta_invites(email) values ('owner@example.com');`
 
@@ -40,12 +40,12 @@ This is identity only. Gmail and Calendar keep going through Nylas.
 3. Under Audience, choose External.
 4. Under Data Access, keep only `openid`, `email` and `profile`. These are non-sensitive, so you only need brand verification (a few days) and no security assessment.
 5. Under Clients → Create client → Web application:
-   - Authorized JavaScript origin: `https://runonthrive.com`.
-   - Authorized redirect URIs: `https://runonthrive.com/auth/google/callback` (Thrive's own return) and `https://PROJECT-REF.supabase.co/auth/v1/callback` (the fallback, removable once the first works).
+   - Authorized JavaScript origin: `https://app.runonthrive.com`.
+   - Authorized redirect URIs: `https://app.runonthrive.com/auth/google/callback` (Thrive's own return) and `https://PROJECT-REF.supabase.co/auth/v1/callback` (the fallback, removable once the first works).
 6. Paste the client ID and secret into Supabase → Google provider. Supabase uses them to accept the ID token Thrive hands over.
 7. Put the same client ID in `GOOGLE_CLIENT_ID` (wrangler.production.jsonc vars) and store the secret on the Worker:
    `cd ~/Documents/Code/Thrive/prototype && PATH=~/.asdf/installs/nodejs/24.9.0/bin:$PATH npx wrangler secret put GOOGLE_CLIENT_SECRET --config wrangler.production.jsonc`
-   With both set, Google returns to runonthrive.com instead of Supabase. Without the secret, sign-in falls back to Supabase's hosted redirect, so removing it is the rollback.
+   With both set, Google returns to app.runonthrive.com instead of Supabase. Without the secret, sign-in falls back to Supabase's hosted redirect, so removing it is the rollback.
 8. Brand verification needs every authorized domain to be one you can verify in Search Console, so the list must end up as `runonthrive.com` only: remove the `supabase.co` and old Sites entries once step 7 works, and give staging's Google client its own Cloud project.
 9. Click **Publish app**, then submit brand verification. Until it's approved, Google's account chooser says "to continue to" the redirect's domain instead of "Thrive", but sign-in works.
 
@@ -90,7 +90,7 @@ cd ~/Documents/Code/Thrive/prototype && npx wrangler secret put NYLAS_TOKEN_ENCR
 ```
 
 - **Supabase keys:** get them from the production project under Settings → API Keys.
-- **Nylas:** reuse the sandbox app (5 connections in total across staging and production), and add `https://runonthrive.com/api/nylas/callback` to its Hosted authentication callback URLs.
+- **Nylas:** reuse the sandbox app (5 connections in total across staging and production), and add `https://app.runonthrive.com/api/nylas/callback` to its Hosted authentication callback URLs.
 - **Encryption key:** for `NYLAS_TOKEN_ENCRYPTION_KEY`, generate a new value with `openssl rand -base64 32`.
 
 ## 7. Legal pages
@@ -114,12 +114,12 @@ Have a lawyer read them before you take payments.
 
 ## 9. AI assistant sign-in (MCP)
 
-Lets Claude, ChatGPT, Cursor and Codex connect to `https://runonthrive.com/mcp` with a browser sign-in. Supabase issues the tokens; Thrive shows the consent page. Thrive notices within five minutes when this is turned on; there's nothing to deploy.
+Lets Claude, ChatGPT, Cursor and Codex connect to `https://app.runonthrive.com/mcp` with a browser sign-in. Supabase issues the tokens; Thrive shows the consent page. Thrive notices within five minutes when this is turned on; there's nothing to deploy.
 
-1. In Supabase (production project), go to Authentication → URL Configuration and check that the Site URL is `https://runonthrive.com`.
+1. In Supabase (production project), go to Authentication → URL Configuration and check that the Site URL is `https://app.runonthrive.com`.
 2. Go to Authentication → OAuth Server. Turn on the OAuth 2.1 server, allow dynamic client registration (assistants register themselves), and set the Authorization Path to `/oauth/consent`.
-3. Check that `https://vacyeyashxsekeitkrcg.supabase.co/.well-known/oauth-authorization-server/auth/v1` and, a few minutes later, `https://runonthrive.com/.well-known/oauth-protected-resource` both return JSON.
-4. In Claude (Settings → Connectors → Add custom connector), add `https://runonthrive.com/mcp`. Sign in to Thrive when asked, click **Allow access**, then ask Claude to read your workspace.
+3. Check that `https://vacyeyashxsekeitkrcg.supabase.co/.well-known/oauth-authorization-server/auth/v1` and, a few minutes later, `https://app.runonthrive.com/.well-known/oauth-protected-resource` both return JSON.
+4. In Claude (Settings → Connectors → Add custom connector), add `https://app.runonthrive.com/mcp`. Sign in to Thrive when asked, click **Allow access**, then ask Claude to read your workspace.
 
 To switch it off again without touching Supabase, set `"THRIVE_MCP_OAUTH": "off"` in the Worker vars. Staging works the same way with its own Supabase project and Site URL.
 

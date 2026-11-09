@@ -101,9 +101,9 @@ test('open sign-up admits any confirmed account and no unconfirmed one',async()=
  assert.equal((await as(codeUser)).passwordAccount,false);
 });
 
-test('signed-out visitors get the landing page in invite-only and open deployments',()=>{
+test('signed-out visitors get the landing page in invite-only and open deployments, unless it lives on a separate site',()=>{
  const route=readFileSync(new URL('../app/route.ts',import.meta.url),'utf8');
- assert.match(route,/landing:passwordless\(env\)\?landing/);
+ assert.match(route,/landing:passwordless\(env\)&&!siteOrigin\(env\)\?landing/);
  assert.match(readFileSync(new URL('../wrangler.production.jsonc',import.meta.url),'utf8'),/"THRIVE_ACCESS": "open"/);
 });
 

@@ -102,7 +102,7 @@ const views={
    <div class="m-lrow">${I('signature')}<span class="m-two"><b>Packaging terms</b><span>Ember Coffee</span></span>${chip('','Draft')}</div>
   </div>
   <div class="m-docwrap">
-   <div class="m-docbar"><span class="m-viewas">Client view</span><span class="m-url">${I('external')}runonthrive.com/share/website-agreement</span><button type="button" class="m-ghostbtn" data-act="copy">${I('copy')}<span>Copy link</span></button></div>
+   <div class="m-docbar"><span class="m-viewas">Client view</span><span class="m-url">${I('external')}app.runonthrive.com/share/website-agreement</span><button type="button" class="m-ghostbtn" data-act="copy">${I('copy')}<span>Copy link</span></button></div>
    <div class="m-paper m-contract">
     <span class="m-logo">M</span><b class="m-biz">Morgan Studio</b><p class="m-kick">Contract</p><p class="m-doctitle">Website development agreement</p><p class="m-for"><span>Between <b>Morgan Studio</b> and <b>Orbit</b></span><span>Version 1</span></p>
     <ol class="m-terms"><li><b>Scope.</b> Design and build of the Orbit marketing website, as described in the accepted proposal.</li><li><b>Payment.</b> A 30% deposit on signature, then the milestones in the payment schedule.</li><li><b>Changes.</b> Work outside the scope is quoted separately before it starts.</li><li><b>Ownership.</b> The site and its files belong to Orbit once paid in full.</li></ol>

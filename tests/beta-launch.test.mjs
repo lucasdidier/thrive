@@ -146,7 +146,7 @@ test('every section in the app sidebar is on the landing page, in the hero app o
  const {workspaceSections}=await import('../public/sidebar-sections.js');
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
  const hero=landing.slice(landing.indexOf('<section class="hero"'),landing.indexOf('<section id="features"'));
- const shown=new Set([...hero.matchAll(/data-url="runonthrive\.com\/#([a-z-]+)"/g)].map(m=>m[1]));
+ const shown=new Set([...hero.matchAll(/data-url="app\.runonthrive\.com\/#([a-z-]+)"/g)].map(m=>m[1]));
  const cards=new Set([...landing.matchAll(/class="feat [^"]*" data-section="([a-z-]+)"/g)].map(m=>m[1]));
  for(const [id,label] of workspaceSections)assert.ok(shown.has(id)||cards.has(id),`${label} is in neither the hero app nor a feature card`);
  // Every hero tab opens a view that public/landing-app.js draws (it imports browser paths, so read it as text).
