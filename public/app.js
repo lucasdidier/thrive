@@ -88,16 +88,24 @@ function open(title,html,{drawer=!/[?]$|^Approve milestone$|^Search workspace$/.
 function error(message){const e=(dialog.open?dialog:document.querySelector('#settings-content')||dialog).querySelector('.form-error');if(e)e.textContent=message;else toast(message)}
 function heading(title,description,action,eyebrow=''){return `<div class="page-heading"><div>${eyebrow?`<div class="eyebrow">${eyebrow}</div>`:''}<h1>${title}</h1>${description?`<p>${description}</p>`:''}</div>${action||''}</div>`}
 function projectCrumb(){const p=state.projects.find(p=>p.id===decodeURIComponent(page.split('/')[1]||''));return p?`<nav class="topbar-crumbs" aria-label="Breadcrumb"><a href="#projects">Projects</a>${icon('chevron')}<span aria-current="page">${esc(p.name)}</span></nav>`:'';}
+let sidebarRendered='';
+const sidebarMarkup=()=>sidebarHTML(state,{esc,icon,account,connection:checklistConnection,page,groups:sidebarGroups,hidden:id=>state.settings.sidebarSections?.[id]===false,customizing:sidebarCustomizing,unread:sidebarUnread(),shortcut:/Mac|iPhone|iPad/.test(navigator.platform)?'⌘ K':'Ctrl K'});
 function shell(){
- const openPopover=document.querySelector('#sidebar [popover]:popover-open')?.id;
- const focused=document.activeElement?.closest('#sidebar')?{action:document.activeElement.dataset.action,step:document.activeElement.dataset.step}:null;
- const navScroll=document.querySelector('#sidebar .app-nav__sections')?.scrollLeft||0;
- const nav=pageSections;
- document.querySelector('#sidebar').innerHTML=sidebarHTML(state,{esc,icon,account,connection:checklistConnection,page,groups:sidebarGroups,hidden:id=>state.settings.sidebarSections?.[id]===false,customizing:sidebarCustomizing,unread:sidebarUnread(),shortcut:/Mac|iPhone|iPad/.test(navigator.platform)?'⌘ K':'Ctrl K'});
+ // Every save re-renders the app. Rebuild the sidebar only when its markup changed: a rebuild replays
+ // the customize animation, drops hover and has to restore focus and open menus.
+ const markup=sidebarMarkup();
+ if(markup!==sidebarRendered){
+  sidebarRendered=markup;
+  const openPopover=document.querySelector('#sidebar [popover]:popover-open')?.id;
+  const focused=document.activeElement?.closest('#sidebar')?{action:document.activeElement.dataset.action,step:document.activeElement.dataset.step,id:document.activeElement.dataset.id}:null;
+  const navScroll=document.querySelector('#sidebar .app-nav__sections')?.scrollLeft||0;
+  document.querySelector('#sidebar').innerHTML=markup;
+  if(openPopover)document.getElementById(openPopover)?.showPopover();
+  if(focused?.action){const buttons=[...document.querySelectorAll('#sidebar [data-action]')];(buttons.find(b=>b.dataset.action===focused.action&&b.dataset.step===focused.step&&b.dataset.id===focused.id)||document.querySelector('[popovertarget=getting-started-menu]'))?.focus();}
+  const navStrip=document.querySelector('#sidebar .app-nav__sections');if(navStrip&&matchMedia('(max-width:650px)').matches){navStrip.scrollLeft=navScroll;const selected=navStrip.querySelector('[aria-current=page]');if(selected){const a=selected.getBoundingClientRect(),b=navStrip.getBoundingClientRect();if(a.left<b.left)navStrip.scrollLeft+=a.left-b.left;else if(a.right>b.right)navStrip.scrollLeft+=a.right-b.right;}}
+ }
  sidebarUI.sync();
- if(openPopover)document.getElementById(openPopover)?.showPopover();
- if(focused?.action){const buttons=[...document.querySelectorAll('#sidebar [data-action]')];(buttons.find(b=>b.dataset.action===focused.action&&b.dataset.step===focused.step)||document.querySelector('[popovertarget=getting-started-menu]'))?.focus();}
- const navStrip=document.querySelector('#sidebar .app-nav__sections');if(navStrip&&matchMedia('(max-width:650px)').matches){navStrip.scrollLeft=navScroll;const selected=navStrip.querySelector('[aria-current=page]');if(selected){const a=selected.getBoundingClientRect(),b=navStrip.getBoundingClientRect();if(a.left<b.left)navStrip.scrollLeft+=a.left-b.left;else if(a.right>b.right)navStrip.scrollLeft+=a.right-b.right;}}
+ const nav=pageSections;
  const primary={proposals:['New proposal','new-proposal'],contracts:['New contract','new-contract'],messages:['Compose email','mail-new'],clients:['New client','new-client'],projects:['New project','new-project'],forms:['New form','new-form'],workflows:['New workflow','wf-new'],scheduling:['New event type','meeting-type-new']};
  document.querySelector('#topbar').innerHTML=`<div class="topbar-title">${featureIcon((page.startsWith('settings')||page.startsWith('account/'))?'settings':page==='overview'?'home':page==='proposals'?'documents':page==='contracts'?'signature':page,'sm')}${page.startsWith('projects/')?projectCrumb():''}<h1>${(page.startsWith('settings')||page.startsWith('account/'))?(page.startsWith('account/')?'Account settings':'Workspace settings'):page==='chat'?(chatUI.active()?esc(chatUI.active().title):'New chat'):page.startsWith('projects/')?'Projects':nav.find(n=>n[0]===page)?.[1]||'Home'}</h1>${page==='chat'?'<span class="chat-preview-label">Preview</span>':''}</div><div class="top-actions">${page==='overview'?dashboard.controls():''}${page==='chat'?btn(icon('plus')+'New chat','chat-new')+(chatUI.active()?btn('Delete','chat-delete','','subtle'):''):''}${page==='time'?btn('Hourly rates','time-rates','','subtle')+btn(icon('plus')+'Log time','tracker-add')+btn(icon('play')+'Start timer','tracker-start',timeUI.timerRunning()?'disabled title="A timer is already running"':'','primary'):btn(icon('play')+'Timer','tracker-start','','subtle')}${page==='clients'?btn('Import clients','ci-start','','subtle'):''}${page==='projects'?btn(icon('time')+'Log time','log-time','','subtle'):''}${primary[page]?btn(icon('plus')+primary[page][0],primary[page][1],'','primary'):page==='invoices'?btn(icon('download')+'Export CSV','export','','subtle')+btn(icon('plus')+'New invoice','new-invoice','','primary'):''}</div>`;
 }
@@ -163,10 +171,16 @@ document.addEventListener('click',e=>{
  if(workspaceManager.click(a,el))return;
  if(a==='sidebar-go'){location.hash=el.dataset.href;return;}
  if(a==='sidebar-customize'||a==='sidebar-customize-done'){sidebarCustomizing=a==='sidebar-customize';if(sidebarCustomizing&&document.documentElement.dataset.sidebarCollapsed==='true')sidebarUI.toggle();shell();document.querySelector(sidebarCustomizing?'#sidebar [data-action=sidebar-visibility]':'#sidebar [data-action=sidebar-customize]')?.focus();return;}
- if(a==='sidebar-visibility'){const id=el.dataset.id,sections={...(state.settings.sidebarSections||{})};sections[id]=sections[id]===false;state.settings.sidebarSections=sections;shell();document.querySelector(`#sidebar [data-action=sidebar-visibility][data-id="${id}"]`)?.focus();save().catch(err=>toast(err.message));return;}
+ if(a==='sidebar-visibility'){const id=el.dataset.id,sections={...(state.settings.sidebarSections||{})};sections[id]=sections[id]===false;state.settings.sidebarSections=sections;
+  // Update the row in place: re-rendering the sidebar replays the customize animation on every group.
+  const hide=sections[id]===false;el.classList.toggle('is-hidden',hide);el.setAttribute('aria-pressed',String(!hide));el.title=`${hide?'Show':'Hide'} ${el.querySelector('.app-nav__label').textContent}`;el.querySelector('.app-nav__eye').innerHTML=icon(hide?'eyeOff':'eye');sidebarRendered=sidebarMarkup();
+  save().catch(err=>toast(err.message));return;}
  if(a==='sidebar-theme'){const theme=el.dataset.theme;document.documentElement.dataset.theme=theme;localStorage.setItem('thrive-theme',theme);document.querySelectorAll('[data-action=sidebar-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===theme)));return;}
  if(a==='gs-open'){const step=gettingStartedSteps.find(x=>x.id===el.dataset.step);document.querySelector('#getting-started-menu')?.hidePopover();if(step?.page)go(step.page);else if(step){const b=document.createElement('button');b.dataset.action=step.action;document.body.append(b);b.click();b.remove();}return;}
- if(['gs-hide','gs-show','gs-reset','gs-complete'].includes(a)){rememberGettingStarted(state,checklistConnection);if(a==='gs-reset')resetGettingStarted(state,el.dataset.step,checklistConnection);else if(a==='gs-complete')completeGettingStarted(state,el.dataset.step);else state.settings.gettingStarted.hidden=a==='gs-hide';void saveThen(()=>{shell();if(a!=='gs-hide')document.querySelector('#getting-started-menu')?.showPopover();});return;}
+ if(['gs-hide','gs-show','gs-reset','gs-complete'].includes(a)){rememberGettingStarted(state,checklistConnection);if(a==='gs-reset')resetGettingStarted(state,el.dataset.step,checklistConnection);else if(a==='gs-complete')completeGettingStarted(state,el.dataset.step);else state.settings.gettingStarted.hidden=a==='gs-hide';
+  // Hiding removes the checklist's trigger, so close the panel first: shell() reopens any open sidebar popover.
+  if(a==='gs-hide')document.querySelector('#getting-started-menu')?.hidePopover();
+  void saveThen(()=>{shell();if(a==='gs-hide')document.querySelector('#sidebar .app-nav__account')?.focus();else document.querySelector('#getting-started-menu')?.showPopover();});return;}
  if(a==='gs-skip'||a==='gs-undo'){skipGettingStarted(state,el.dataset.step,a==='gs-undo');void saveThen(()=>{toast(a==='gs-undo'?'Step restored.':'Step skipped. You can come back to it anytime.');});return;}
  if(a==='more-actions'){toggleMoreActions(el);return;}
  if(notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
