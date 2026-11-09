@@ -6,13 +6,14 @@ import {sidebarGroups,workspaceSections,pageSections} from '../public/sidebar-se
 
 function fixture(saved='false'){
  const original={document:globalThis.document,localStorage:globalThis.localStorage,requestAnimationFrame:globalThis.requestAnimationFrame};
- const listeners={},root={dataset:{}},writes=[],attrs={},button={setAttribute(k,v){attrs[k]=v;}};
- globalThis.document={documentElement:root,querySelector:()=>button,querySelectorAll:()=>[],getElementById:()=>null,addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
+ const listeners={},root={dataset:{}},writes=[],attrs={},hidden=[],button={setAttribute(k,v){attrs[k]=v;}};
+ globalThis.document={documentElement:root,querySelector:()=>button,querySelectorAll:()=>[],getElementById:id=>({hidePopover(){hidden.push(id);}}),addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
  globalThis.localStorage={getItem:()=>saved,setItem:(...a)=>writes.push(a)};
  globalThis.requestAnimationFrame=fn=>fn();
  const ui=initSidebarUI('audit');
  const click=kind=>{let prevented=false;for(const fn of listeners.click)fn({target:{closest:s=>s==='[data-sidebar-toggle]'&&kind==='toggle'?button:null},preventDefault(){prevented=true;}});return prevented;};
- return {ui,root,writes,attrs,click,restore:()=>Object.assign(globalThis,original)};
+ const menuClick=(menu,action)=>{for(const fn of listeners.click)fn({target:{closest:s=>s.startsWith(`#${menu} `)?{dataset:{action}}:null},preventDefault(){}});};
+ return {ui,root,writes,attrs,hidden,click,menuClick,restore:()=>Object.assign(globalThis,original)};
 }
 test('the toggle collapses and expands, saves the choice and labels itself',()=>{
  const f=fixture();
@@ -26,6 +27,14 @@ test('the toggle collapses and expands, saves the choice and labels itself',()=>
 test('a saved collapsed sidebar opens collapsed; other clicks never toggle it',()=>{
  const f=fixture('true');
  try{assert.equal(f.root.dataset.sidebarCollapsed,'true');assert.equal(f.click('link'),false);assert.equal(f.root.dataset.sidebarCollapsed,'true');assert.equal(f.writes.length,0);}finally{f.restore();}
+});
+test('picking a theme keeps the account menu open; other menu items close it',()=>{
+ const f=fixture();
+ try{
+  f.menuClick('account-menu','sidebar-theme');assert.deepEqual(f.hidden,[]);
+  f.menuClick('account-menu','profile');assert.deepEqual(f.hidden,['account-menu']);
+  f.menuClick('workspace-menu','workspace-settings');assert.deepEqual(f.hidden,['account-menu','workspace-menu']);
+ }finally{f.restore();}
 });
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

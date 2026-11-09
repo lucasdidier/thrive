@@ -28,7 +28,8 @@ export function initSidebarUI(storageKey){
  }
  document.addEventListener('click',e=>{
   if(e.target.closest('[data-sidebar-toggle]')){e.preventDefault();apply(!collapsed());return;}
-  for(const id of ['workspace-menu','account-menu'])if(e.target.closest(`#${id} [data-action],#${id} a`))document.getElementById(id)?.hidePopover();
+  // Menu items close their menu, except the appearance toggle: it stays open so both themes can be compared.
+  for(const id of ['workspace-menu','account-menu']){const item=e.target.closest(`#${id} [data-action],#${id} a`);if(item&&item.dataset?.action!=='sidebar-theme')document.getElementById(id)?.hidePopover();}
  },true);
  document.addEventListener('toggle',e=>{if(!popovers.includes(e.target.id))return;document.querySelector(`[popovertarget="${e.target.id}"]:not([popovertargetaction])`)?.setAttribute('aria-expanded',String(e.newState==='open'));if(e.newState==='open')position(e.target);},true);
  document.addEventListener('keydown',e=>{
