@@ -151,7 +151,7 @@ main{position:relative;isolation:isolate;overflow-x:clip}
 .m-av{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--c);color:#fff;font-size:11px;font-weight:650}
 .m-chip{display:inline-flex;align-items:center;gap:5px;flex:none;height:22px;padding:0 8px;border-radius:4px;background:var(--paper-2);color:var(--ink-2);font-size:11.5px;font-weight:550;white-space:nowrap}
 .m-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.m-chip.ok{background:var(--ok-bg);color:var(--ok)}.m-chip.warn{background:var(--paper)7e8;color:var(--due)}.m-chip.bad{background:var(--paper)0ed;color:var(--late)}.m-chip.info{background:var(--info-bg);color:var(--link)}
+.m-chip.ok{background:var(--ok-bg);color:var(--ok)}.m-chip.warn{background:var(--due-bg);color:var(--due)}.m-chip.bad{background:var(--late-bg);color:var(--late)}.m-chip.info{background:var(--info-bg);color:var(--link)}
 .m-pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:6px;background:var(--paper-2);font-size:12px;font-weight:550;white-space:nowrap}
 .m-pill .m-av{width:16px;height:16px;border-radius:4px;font-size:9px}
 .m-card{border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
@@ -1086,3 +1086,128 @@ button.m-item:hover{background:var(--nav-hover)}
  .foot-legal{flex-wrap:wrap}
  .foot-legal>span{flex-basis:100%}
 }
+
+/* ---- Logo: the rocket's air streaks stir once on arrival, as in the app's sidebar (sidebar.css). ---- */
+.mark-logo{flex:none;border-radius:8px}
+@media (prefers-reduced-motion:no-preference){
+ .bar .mark-logo .streak{animation:logo-streak 1100ms ease-in-out 200ms both}
+ .bar .mark-logo .streak:nth-child(2){animation-delay:290ms}
+ .bar .mark-logo .streak:nth-child(3){animation-delay:380ms}
+}
+@keyframes logo-streak{0%,100%{transform:none;opacity:1}30%{transform:translate(-1.8px,1.8px);opacity:.45}62%{transform:translate(.8px,-.8px);opacity:1}82%{transform:translate(-.5px,.5px);opacity:.8}}
+
+/* ---- What clients see: each card leads with the app's feature icon. ---- */
+.doc-cards button{grid-template-columns:auto minmax(0,1fr);column-gap:16px;row-gap:2px;align-items:center}
+.doc-cards button>.card-top,.doc-cards button>.card-text{grid-column:2}
+.card-ico{grid-column:1;grid-row:1/3;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--hair-2);color:var(--text-2);transition:background-color 180ms ease,color 180ms ease}
+.card-ico .i{width:20px;height:20px}
+.doc-cards button[aria-selected=true] .card-ico{background:var(--blue);color:#fff}
+
+/* ---- Coming soon: the mobile app. A phone drawn in CSS around three small screens, using the
+   product tokens so it follows light and dark like the windows above. ---- */
+.mobile{position:relative;padding:clamp(112px,13vw,184px) 0 0}
+.mobile .dotfield{left:auto;right:-14%;top:60px;width:820px;height:760px}
+.mobile-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center}
+.mobile-text{display:grid;gap:20px;align-content:start}
+.mobile-text h2{font-size:var(--t-l)}
+.mobile-text>p:not(.soon){color:var(--text-2);max-width:40ch}
+.soon{display:inline-flex;align-items:center;gap:9px;justify-self:start;height:32px;padding:0 14px;border-radius:999px;background:var(--panel-2);color:var(--text);font-size:14px;font-weight:600}
+.soon i{width:7px;height:7px;border-radius:50%;background:var(--blue-hi);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 28%,transparent)}
+.platforms{display:flex;flex-wrap:wrap;gap:10px}
+.platforms li{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border-radius:12px;background:var(--panel-2);font-size:var(--t-s);font-weight:600}
+.platforms .i{color:var(--text-2)}
+.mobile-stage{position:relative;display:grid;justify-items:center;padding:12px 0}
+.mobile-stage::before{content:"";position:absolute;z-index:-1;left:50%;top:50%;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--blue) 34%,transparent),transparent 72%);pointer-events:none}
+.phone{position:relative;width:300px;height:620px;padding:11px;border-radius:54px;background:#0b0d12;box-shadow:inset 0 0 0 1.5px #2c313b,inset 0 0 0 4px #0b0d12,inset 0 0 0 5px #1b1f27,0 50px 100px -40px rgba(0,0,0,.7);flex:none}
+:root[data-theme=light] .phone{box-shadow:inset 0 0 0 1.5px #2c313b,inset 0 0 0 4px #0b0d12,inset 0 0 0 5px #1b1f27,0 50px 90px -42px rgba(16,24,40,.5)}
+.phone::before,.phone::after{content:"";position:absolute;width:3px;border-radius:2px;background:#20242d}
+.phone::before{left:-3px;top:150px;height:56px;box-shadow:0 74px 0 #20242d}
+.phone::after{right:-3px;top:184px;height:86px}
+.phone-screen{position:relative;display:flex;flex-direction:column;height:100%;overflow:hidden;border-radius:44px;background:var(--paper);color:var(--ink);font-size:13px;line-height:1.35}
+.p-status{position:relative;display:flex;align-items:center;justify-content:space-between;flex:none;height:46px;padding:2px 26px 0 32px;font-size:14px;font-weight:650;font-variant-numeric:tabular-nums}
+.p-island{position:absolute;left:50%;top:11px;width:92px;height:27px;margin-left:-46px;border-radius:20px;background:#000}
+.p-sys{display:flex;align-items:center;gap:5px}
+.p-sys svg{height:11px;width:auto;fill:currentColor}
+.p-app{position:relative;flex:1;min-height:0}
+.p-view{position:absolute;inset:0;overflow:hidden;padding:8px 18px 12px}
+.phone-screen.is-live .p-view:not([hidden]){animation:p-show 320ms var(--ease-out) both}
+@keyframes p-show{from{opacity:0;transform:translateY(6px)}}
+.p-date{color:var(--ink-3);font-size:12px;font-weight:600}
+.p-h{margin:2px 0 14px;font-size:22px;font-weight:650;letter-spacing:-.025em;line-height:1.2}
+.p-two{display:grid;min-width:0}
+.p-two b{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-two span{color:var(--ink-2);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-timer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 12px;padding:14px 14px 14px 16px;border-radius:20px;background:var(--info-bg)}
+.p-label{display:flex;align-items:center;gap:8px;min-width:0}
+.p-live{flex:none;width:8px;height:8px;border-radius:50%;background:var(--dot-live);box-shadow:0 0 0 0 color-mix(in srgb,var(--dot-live) 50%,transparent)}
+.phone-screen.in-view .p-live{animation:p-live 1.8s ease-out infinite}
+.p-timer.is-stopped .p-live{background:var(--ink-3);animation:none}
+@keyframes p-live{70%,100%{box-shadow:0 0 0 7px transparent}}
+.p-clock{grid-column:1;font-size:32px;font-weight:650;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.p-timer.is-stopped .p-clock{color:var(--ink-2)}
+.p-round{grid-column:2;grid-row:1/3;display:grid;place-items:center;width:50px;height:50px;border:0;border-radius:50%;background:#3d63ee;color:#fff;cursor:pointer;transition:transform 160ms var(--ease-out),background-color 160ms ease}
+.p-round .m-i{width:20px;height:20px}
+.p-round:active{transform:scale(.94)}
+.p-timer.is-stopped .p-round{background:var(--ink);color:var(--paper)}
+.p-sec{margin:18px 2px 8px;color:var(--ink-3);font-size:12px;font-weight:650}
+.p-sechead{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px}
+.p-sechead .p-sec{margin:0 2px}
+.p-list{display:grid;border-radius:18px;background:var(--paper-2);overflow:hidden}
+.p-row{display:flex;align-items:center;gap:11px;width:100%;min-height:54px;padding:9px 12px;border:0;background:none;color:inherit;font:inherit;text-align:left}
+.p-row+.p-row{border-top:1px solid var(--rule)}
+.p-row .m-chip,.p-dur,.p-dot{margin-left:auto}
+.p-tile{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;background:var(--paper-3);color:var(--ink-2)}
+.p-at{flex:none;width:38px;font-weight:650;font-size:12.5px;font-variant-numeric:tabular-nums}
+.p-dur{flex:none;font-size:13px;font-variant-numeric:tabular-nums}
+.p-bars{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:end;height:112px;padding:0 6px}
+.p-bars span{display:grid;justify-items:stretch;align-content:end;gap:7px;height:100%;color:var(--ink-3);font-size:11px;font-weight:600;text-align:center}
+.p-bars i{display:block;height:calc(var(--h) * 82px);border-radius:8px;background:var(--paper-3);transition:height 500ms var(--ease-out)}
+.p-bars .is-today{color:var(--ink)}
+.p-bars .is-today i{background:#3d63ee}
+.p-add{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 12px 0 9px;border:0;border-radius:15px;background:var(--info-bg);color:var(--link);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.p-add .m-i{width:14px;height:14px}
+.p-add:disabled{cursor:default;color:var(--ok);background:var(--ok-bg)}
+.p-feed .p-row{cursor:pointer;transition:background-color 160ms ease}
+.p-feed .p-row:not(.is-unread){cursor:default}
+.p-dot{flex:none;width:8px;height:8px;border-radius:50%;background:#3d63ee;transition:opacity 300ms ease,transform 300ms var(--ease-out)}
+.p-row:not(.is-unread) .p-dot{opacity:0;transform:scale(.3)}
+.p-link{display:block;margin:12px auto 0;padding:6px 10px;border:0;border-radius:8px;background:none;color:var(--link);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.p-new{animation:p-new 420ms var(--ease-out) both}
+@keyframes p-new{from{opacity:0;transform:translateY(-6px)}}
+.p-toast{position:absolute;z-index:3;left:14px;right:14px;bottom:10px;display:flex;align-items:center;gap:8px;padding:11px 13px;border-radius:14px;background:var(--toast);color:var(--toast-ink);font-size:12.5px;font-weight:550;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:p-toast 2.6s var(--ease-out) both}
+.p-toast .m-i{color:#4ade80}
+@keyframes p-toast{0%{opacity:0;transform:translateY(10px)}12%,82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(6px)}}
+.p-tabs{display:grid;grid-template-columns:repeat(3,1fr);flex:none;padding:6px 12px 26px;border-top:1px solid var(--rule);background:var(--paper)}
+.p-tabs button{position:relative;display:grid;justify-items:center;gap:3px;padding:6px 0 4px;border:0;border-radius:12px;background:none;color:var(--ink-3);font:inherit;font-size:10.5px;font-weight:600;cursor:pointer;transition:color 160ms ease}
+.p-tabs .i{width:22px;height:22px}
+.p-tabs button[aria-selected=true]{color:var(--link)}
+.p-badge{position:absolute;top:2px;left:calc(50% + 5px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:#e5484d;color:#fff;font-size:10.5px;font-style:normal;font-weight:650;line-height:17px;text-align:center}
+.p-home{position:absolute;left:50%;bottom:8px;width:112px;height:4px;margin-left:-56px;border-radius:3px;background:var(--ink);opacity:.8}
+.phone-screen.in-view .hot{animation:m-hot 2.2s ease-out infinite}
+.p-push{position:absolute;top:84px;left:calc(50% + 134px);display:flex;align-items:center;gap:11px;width:236px;padding:11px 14px 11px 11px;border-radius:20px;background:color-mix(in srgb,var(--panel-2) 86%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:var(--window-shadow);font-size:13px}
+.p-push img{flex:none;border-radius:9px}
+.p-push .p-two b{color:var(--text-strong)}
+.p-push .p-two span{color:var(--text-2);font-size:12.5px;white-space:normal}
+.p-push small{align-self:start;margin-left:auto;color:var(--text-3);font-size:11.5px}
+.js .p-push{opacity:0;transform:translateY(-12px) scale(.97);transition:opacity 600ms var(--ease-out) 700ms,transform 600ms var(--ease-out) 700ms}
+.js .mobile.in-view .p-push{opacity:1;transform:none}
+@media (hover:hover) and (pointer:fine){
+ .p-feed .p-row.is-unread:hover,.p-tabs button:hover{background:var(--hover)}
+ .p-round:hover{background:#3154d5}
+ .p-add:not(:disabled):hover{background:var(--nav-on)}
+}
+@media (max-width:1060px){
+ .mobile-grid{grid-template-columns:1fr;gap:40px}
+}
+@media (max-width:760px){
+ .p-push{display:none}
+ .mobile-stage::before{width:400px;height:400px;margin:-200px 0 0 -200px}
+}
+/* The smallest phones: scale the device down rather than let it overflow the page margins. */
+@media (max-width:359px){.phone{scale:.86;margin:-43px 0}}
+@media (prefers-reduced-motion:reduce){
+ .phone-screen *,.phone-screen *::before,.phone-screen *::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important}
+ .phone-screen.in-view .hot{animation:none!important;box-shadow:0 0 0 3px rgba(61,99,238,.35)}
+ .js .p-push{transition:none}
+}
+

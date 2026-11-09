@@ -1,4 +1,5 @@
 import {mountMiniApp,mountClientPages} from '/landing-app.js';
+import {mountPhoneApp} from '/landing-phone.js';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
 const finePointer=matchMedia('(hover: hover) and (pointer: fine)');
@@ -17,15 +18,21 @@ function tabs(list,{vertical=false,onShow=()=>{}}={}){
  });
  return {show:i=>show(all[i])};
 }
-// What clients see: the same kind of live page, one per card. The cards follow each page's status.
+// What clients see: the same kind of live page, one per card.
 {
  const root=$('#client-mini'),url=$('#client-url'),cards=$$('.doc-cards [role=tab]');
  const docTabs=tabs($('.doc-cards'),{vertical:true,onShow:(tab,i)=>{url.textContent=document.getElementById(tab.getAttribute('aria-controls')).dataset.url;}});
  const pages=mountClientPages(root,{
   onNavigate:doc=>docTabs.show(cards.findIndex(c=>c.id===`o-${doc}`)),
-  onStatus:(doc,text,tone)=>{const chip=$(`[data-card-status="${doc}"]`);if(chip){chip.textContent=text;chip.className=`chip ${tone==='ok'?'':tone==='bad'?'bad':'due'}`;}},
  });
  new IntersectionObserver(([e])=>pages.setInView(e.isIntersecting),{threshold:.2}).observe(root);
+}
+
+// ---- Coming soon: the mobile app. Its screens advance on their own until the visitor taps, and the
+// timer only runs while the phone is on screen. ----
+{
+ const root=$('#phone'),section=$('#mobile'),phone=mountPhoneApp(root);
+ new IntersectionObserver(([e])=>{phone.setInView(e.isIntersecting);section.classList.toggle('in-view',e.isIntersecting);},{threshold:.3}).observe(root);
 }
 
 // ---- Hero: a lighter, clickable Thrive. Each tab opens one view of it, and the app's own sidebar
@@ -152,7 +159,7 @@ if(!reduce.matches){
  const pending=new Set();
  const due=()=>{for(const el of pending)if(el.getBoundingClientRect().top<innerHeight*.92){el.classList.add('in');pending.delete(el);}};
  const rise=els=>els.forEach((el,i)=>{if(el.getBoundingClientRect().top<innerHeight)return;el.classList.add('rise');el.style.setProperty('--d',`${Math.min(i,4)*80}ms`);pending.add(el);});
- [['#features-title'],['.bento .feat:nth-child(-n+2)'],['.bento .feat:nth-child(n+3):nth-child(-n+4)'],['.bento .feat:nth-child(n+5):nth-child(-n+6)'],['.bento .feat:nth-child(n+7):nth-child(-n+8)'],['.bento .feat:nth-child(n+9)'],['.ai-head > *','.console','.promises li'],['.out-index > *','.out-stage'],['#pricing .center-head > *','.plans','.wide-checks'],['.faq-head > *','.faq-list'],['.claim-inner > *']].forEach(g=>rise(g.flatMap(s=>$$(s))));
+ [['#features-title'],['.bento .feat:nth-child(-n+2)'],['.bento .feat:nth-child(n+3):nth-child(-n+4)'],['.bento .feat:nth-child(n+5):nth-child(-n+6)'],['.bento .feat:nth-child(n+7):nth-child(-n+8)'],['.bento .feat:nth-child(n+9)'],['.ai-head > *','.console','.promises li'],['.out-index > *','.out-stage'],['.mobile-text > *','.mobile-stage'],['#pricing .center-head > *','.plans','.wide-checks'],['.faq-head > *','.faq-list'],['.claim-inner > *']].forEach(g=>rise(g.flatMap(s=>$$(s))));
  addEventListener('scroll',()=>requestAnimationFrame(due),{passive:true});
 }
 
