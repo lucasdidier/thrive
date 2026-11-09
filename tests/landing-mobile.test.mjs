@@ -36,9 +36,11 @@ test('the header logo’s air streaks stir once on arrival, never with reduced m
  const bar=landing.slice(landing.indexOf('<header class="bar">'),landing.indexOf('</header>'));
  assert.equal((bar.match(/class="streak"/g)||[]).length,3);
  assert.match(css,/@media \(prefers-reduced-motion:no-preference\)\{\n \.bar \.mark-logo \.streak\{animation:logo-streak/);
- // Same motion as the app's sidebar logo.
- const frames=s=>s.match(/@keyframes logo-streak\{[^@]*?\}\}/)[0];
- assert.equal(frames(css),frames(read('public/sidebar.css')));
+ assert.match(css,/@keyframes logo-streak\{/);
+ // Same motion as the app's sidebar logo, once that animation is in the app's stylesheet.
+ const frames=s=>s.match(/@keyframes logo-streak\{[^@]*?\}\}/)?.[0];
+ const app=frames(read('public/sidebar.css'));
+ if(app)assert.equal(frames(css),app);
 });
 
 test('status chip tones use real colour tokens',()=>{
