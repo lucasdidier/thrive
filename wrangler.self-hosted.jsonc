@@ -21,6 +21,8 @@
     "SUPABASE_URL": "https://zhhysylxzgyjpwfkymjj.supabase.co",
     // Only this confirmed Google account can sign in.
     "THRIVE_OWNER_EMAIL": "owner@example.com",
+    // Thrive's own emails (summaries and notices) send from runonthrive.com once RESEND_API_KEY is set here.
+    "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@runonthrive.com>",
     "THRIVE_GOOGLE_LOGIN": "true",
     "THRIVE_MICROSOFT_LOGIN": "false",
     "THRIVE_COMMUNICATIONS_PROVIDER": "nylas",
