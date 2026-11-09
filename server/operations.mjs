@@ -64,7 +64,7 @@ export function performAction(s,type,input,requestId){const spec=actionCatalog()
  case'time.invoice':result=createTimeInvoiceDraft(s,input);break;
  case'form.from_template':result=saveForm(s,formFromTemplate(input.templateId,s.settings));break;
  case'document.from_template':result=createDocument(s,data);break;
- case'document.defaults':result=s.settings.documentDesign=validateDocumentDesign(data);s.settings.invoiceDesign={...s.settings.invoiceDesign,...Object.fromEntries(['color','logo','issuerDetails','footer'].map(k=>[k,result[k]]))};refreshDraftBranding(s);break;
+ case'document.defaults':result=s.settings.documentDesign=validateDocumentDesign(data);s.settings.invoiceDesign={...s.settings.invoiceDesign,...Object.fromEntries(['color','logo','issuerDetails','footer','titleFont'].map(k=>[k,result[k]]))};refreshDraftBranding(s);break;
  case'catalog.seed':result={ids:populateCatalog(s,input.vertical)};break;
  case'emailDraft.save':result=saveEmailDraft(s,data,id);break;
  case'emailDraft.delete':if(!s.emailDrafts?.some(d=>d.id===id))throw Error('Email draft not found.');s.emailDrafts=s.emailDrafts.filter(d=>d.id!==id);result={id,deleted:true};break;

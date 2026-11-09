@@ -86,3 +86,5 @@ dialog.drawer.invoice-workbench-dialog{width:min(1320px,100vw);max-width:100vw;c
  .invoice-sheet:not(.document-sheet) .sheet-lines thead{display:table-header-group}
  .invoice-sheet:not(.document-sheet) .sheet-bottom h3{break-after:avoid}
 }
+/* The agency's title font (title-fonts.js) overrides every layout's title family. */
+article.invoice-sheet.has-title-font .sheet-heading h1{font-family:var(--title-font)}
