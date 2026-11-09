@@ -37,3 +37,14 @@ test('removing a client logo keeps it removed rather than restoring its demo fal
  assert.match(clientLogo(client),/^data:image/);
  assert.equal(clientLogo({...client,logo:''}),'');
 });
+test('connect buttons carry provider marks; Microsoft is offered only through Nylas',async()=>{
+ const {connectActions,connectPrompt}=await import('../public/connection-settings.js');
+ const none=connectActions({configured:true,provider:'nylas',account:null},helpers.btn);
+ assert.match(none,/Connect with Google/);assert.match(none,/Connect with Microsoft/);
+ assert.equal((none.match(/class="provider-logo"/g)||[]).length,2);
+ assert.doesNotMatch(connectActions({configured:true,provider:'google',account:null},helpers.btn),/microsoft/);
+ const linked=connectPrompt({configured:true,provider:'nylas',account:{email:'a@contoso.example',provider:'microsoft',gmail:false,calendar:true}},{...helpers,title:'Connect your email',iconName:'mail'});
+ assert.match(linked,/Reconnect Microsoft/);assert.doesNotMatch(linked,/data-provider="google"/);
+ const card=connectionSettings({configured:true,provider:'nylas',account:{email:'a@contoso.example',provider:'microsoft',gmail:true,calendar:true}},helpers);
+ assert.match(card,/connected-account-symbol"><svg class="provider-logo"/);assert.doesNotMatch(card,/Connect with/);
+});

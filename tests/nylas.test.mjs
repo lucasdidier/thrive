@@ -59,3 +59,34 @@ test('Nylas returns to settings after connecting and rejects arbitrary return de
 test('client email history paginates without a date cutoff and excludes unrelated messages',async()=>{const {clientNylasEmails}=await import('../server/nylas.mjs');const {db,c}=await setup();try{const m={id:'old-message',from:[{email:c.email}],to:[{email:'owner@example.com'}],date:1500000000,subject:'Old correspondence',body:'<p>Hello</p><script>unsafe()</script>'};const result=await clientNylasEmails(db,'alice',env,c.id,{cursor:'opaque cursor'},async url=>{const q=new URL(url).searchParams;assert.equal(q.get('any_email'),c.email);assert.equal(q.get('page_token'),'opaque cursor');assert.equal(q.has('received_after'),false);return response({data:[m,{...m,id:'private',from:[{email:'other@example.com'}]}],next_cursor:'next'});});assert.equal(result.messages.length,1);assert.equal(result.nextCursor,'next');assert.ok(!result.messages[0].body.includes('unsafe'));await assert.rejects(()=>clientNylasEmails(db,'bob',env,c.id,{},async()=>{throw Error('Must not call provider');}),/Client not found/);await assert.rejects(()=>clientNylasEmails(db,'alice',env,c.id,{messageId:'private'},async()=>response({data:{...m,from:[{email:'other@example.com'}]}})),/not found/);const body=await clientNylasEmails(db,'alice',env,c.id,{messageId:m.id},async()=>response({data:m}));assert.equal(body.message.id,m.id);}finally{db.close();}});
 
 test('dashboard calendar reads owner grant, forwards pagination and normalizes all-day events',async()=>{const {listNylasEvents}=await import('../server/nylas.mjs');const {db}=await setup();const start='2026-10-19T00:00:00Z',end='2026-10-26T00:00:00Z';const r=await listNylasEvents(db,'alice',env,start,end,'page-2',async url=>{const u=new URL(url);assert.ok(u.pathname.includes('grant-alice'));assert.equal(u.searchParams.get('page_token'),'page-2');assert.equal(u.searchParams.get('calendar_id'),'primary');assert.equal(u.searchParams.get('expand_recurring'),'true');return response({data:[{id:'day',title:'Holiday',when:{date:'2026-10-20'}},{id:'meeting',title:'Review',when:{start_time:1792486800,end_time:1792490400}},{id:'cancelled',status:'cancelled'}],next_cursor:'page-3'});});assert.equal(r.events.length,2);assert.equal(r.events[0].allDay,true);assert.equal(r.nextCursor,'page-3');assert.ok(r.events[1].start.endsWith('Z'));await assert.rejects(()=>listNylasEvents(db,'bob',env,start,end,null),/Connect/);await assert.rejects(()=>listNylasEvents(db,'alice',env,start,'2027-10-26',null),/range/);db.close();});
+
+test('Microsoft connects through the same Nylas flow, and one workspace holds one provider at a time',async()=>{
+ const {db}=await setup(false);
+ try{
+  const msScopes=['Mail.ReadWrite','Mail.Send','Calendars.ReadWrite','offline_access','User.Read'];
+  const u=new URL((await startNylasOAuth(db,'alice',env,'all',undefined,'scheduling','microsoft')).url);
+  assert.equal(u.origin,'https://api.eu.nylas.com');assert.equal(u.searchParams.get('provider'),'microsoft');
+  const grant=(provider,email='owner@contoso.example')=>async url=>response(url.endsWith('/token')?{grant_id:'grant-ms'}:{data:{id:'grant-ms',email,provider,scope:msScopes,grant_status:'valid'}});
+  // A grant from a different provider than the one requested is refused.
+  await assert.rejects(()=>finishNylasOAuth(db,'alice',env,new URLSearchParams({state:u.searchParams.get('state'),code:'fixture-code'}),grant('google')),/valid account/);
+  const v=new URL((await startNylasOAuth(db,'alice',env,'all',undefined,'scheduling','microsoft')).url);
+  assert.equal((await finishNylasOAuth(db,'alice',env,new URLSearchParams({state:v.searchParams.get('state'),code:'fixture-code'}),grant('microsoft'))).returnTo,'scheduling');
+  const status=await nylasStatus(db,'alice',env);
+  assert.deepEqual({provider:status.account.provider,gmail:status.account.gmail,calendar:status.account.calendar},{provider:'microsoft',gmail:true,calendar:true});
+  // Switching to Google requires disconnecting first; reconnecting Microsoft is allowed.
+  await assert.rejects(()=>startNylasOAuth(db,'alice',env,'all',undefined,'messages','google'),/Disconnect the current account/);
+  assert.equal(new URL((await startNylasOAuth(db,'alice',env,'all',undefined,'messages','microsoft')).url).searchParams.get('login_hint'),'owner@contoso.example');
+ }finally{db.close();}
+});
+test('Microsoft scopes are read by name with or without the Graph prefix',()=>{
+ assert.deepEqual(capabilities('microsoft',['https://graph.microsoft.com/Mail.Read','https://graph.microsoft.com/Mail.Send','https://graph.microsoft.com/Calendars.ReadWrite']),{gmail:true,calendar:true});
+ assert.deepEqual(capabilities('microsoft',['Mail.Read','Calendars.Read']),{gmail:false,calendar:false});
+});
+test('Nylas returns to Home or the client page it started from',async()=>{
+ const {db}=await setup(false);
+ try{for(const [requested,expected] of [['overview','overview'],['clients','clients'],['clients/client_12-a','clients/client_12-a'],['clients/../settings','messages'],['clients/a/b','messages']]){
+  const u=new URL((await startNylasOAuth(db,'alice',env,'all',undefined,requested)).url);
+  const fake=async url=>response(url.endsWith('/token')?{grant_id:'grant-alice'}:{data:{id:'grant-alice',email:'owner@example.com',provider:'google',scope:scopes,grant_status:'valid'}});
+  assert.equal((await finishNylasOAuth(db,'alice',env,new URLSearchParams({state:u.searchParams.get('state'),code:'fixture-code'}),fake)).returnTo,expected);
+ }}finally{db.close();}
+});
