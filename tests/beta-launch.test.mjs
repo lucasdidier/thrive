@@ -126,9 +126,11 @@ test('a failing scheduled job alerts and does not stop the others',async()=>{
 });
 test('landing, legal pages and production config ship together',()=>{
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
- for(const s of ['7 days free, then $10 a month.','id="request-form"','name="website"','https://github.com/lucasdidier/thrive','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
- // Until open sign-up and the 7-day trial exist, every "Start free trial" asks for access instead.
- assert.ok(landing.includes('id="request"')&&!landing.includes('/auth/sign-up'),'trial buttons lead to the request form');
+ for(const s of ['7 days free, then $10 a month.','https://github.com/lucasdidier/thrive','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
+ // Sign-up is open: every "Start free trial" goes straight to it, and nothing asks for an invite.
+ const trials=[...landing.matchAll(/<a [^>]*href="([^"]+)"[^>]*>Start free trial/g)].map(m=>m[1]);
+ assert.ok(trials.length>=4&&trials.every(h=>h==='/auth/sign-up'),'trial buttons lead to sign-up');
+ assert.ok(!landing.includes('request-form')&&!landing.includes('/api/beta'),'no request-access form');
  for(const img of [...landing.matchAll(/src="\/landing\/([a-z-]+\.webp)"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+img,import.meta.url)),img);
  assert.equal((landing.match(/role="tab"/g)||[]).length,(landing.match(/role="tabpanel"/g)||[]).length);
  for(const media of [...landing.matchAll(/(?:src|poster)="\/landing\/([a-z-]+\.(?:mp4|webp))"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+media,import.meta.url)),media);

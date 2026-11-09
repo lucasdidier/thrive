@@ -962,17 +962,7 @@ button.m-item:hover{background:var(--nav-hover)}
 .claim h2{font-size:var(--t-xl);max-width:11em}
 .claim-lede{max-width:52ch;color:var(--text-2)}
 .claim-lede strong{color:var(--text)}
-/* One field group with the button inside, after mailcheap.ai's sign-up field. */
-.claim-form{position:relative;display:grid;grid-template-columns:1fr 1.2fr auto;align-items:center;width:min(700px,100%);margin-top:12px;padding:5px;border-radius:14px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair-2);text-align:left;transition:box-shadow 160ms ease} /* taste-skill-ignore: hairline around the field group */
-.claim-form:focus-within{box-shadow:inset 0 0 0 1px var(--blue-hi),0 0 0 4px rgba(142,166,255,.14)}
-.claim-form label+label{border-left:1px solid var(--hair-2)}
-.claim-form input{width:100%;height:44px;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--text);font:inherit;font-size:15px}
-.claim-form input::placeholder{color:var(--text-3);opacity:1}
-.claim-form input:focus-visible{outline:none}
-.claim-form button:disabled{opacity:.6;cursor:progress}
-.error{grid-column:1/-1;padding:8px 12px 4px;color:var(--chip-bad);font-size:var(--t-s);font-weight:600}
-.error:empty{display:none}
-.trap{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.claim .hero-btns{margin-top:4px}
 .pending a{color:var(--blue-hi)}
 
 /* ---- Footer ---- */
@@ -1066,9 +1056,7 @@ button.m-item:hover{background:var(--nav-hover)}
  .plans{grid-template-columns:1fr}
  .plan-card{padding:26px 22px 28px}
  .wide-checks{grid-template-columns:1fr 1fr;justify-content:start}
- .claim-form{grid-template-columns:1fr}
- .claim-form label+label{border-left:0;border-top:1px solid var(--hair-2)}
- .claim-form .btn{margin-top:4px}
+ .claim .hero-btns,.claim .hero-btns .btn{width:100%}
  .foot-grid{grid-template-columns:1fr}
  .foot-links{grid-template-columns:1fr 1fr}
  .foot-legal{flex-wrap:wrap}

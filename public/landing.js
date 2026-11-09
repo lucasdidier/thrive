@@ -167,25 +167,3 @@ if(!reduce.matches){
  });
  mark();
 }
-
-// ---- Request access: until open sign-up and the trial exist, "Start free trial" lands here. ----
-{
- if(location.hash==='#request')$('#c-name')?.focus({preventScroll:true});
- const form=$('#request-form'),done=$('.done');
- form.addEventListener('submit',async event=>{
-  event.preventDefault();
-  const error=form.querySelector('.error'),button=form.querySelector('button');
-  const data=Object.fromEntries(new FormData(form));
-  error.textContent='';
-  if(!data.name.trim()){error.textContent='Enter your name.';$('#c-name').focus();return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())){error.textContent='Enter a valid email address.';$('#c-email').focus();return;}
-  button.disabled=true;button.textContent='Sending…';
-  try{
-   const r=await fetch('/api/beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-   const body=await r.json().catch(()=>({}));
-   if(!r.ok)throw Error(body.error||'That didn’t go through. Please try again.');
-   form.hidden=true;done.hidden=false;done.focus();
-  }catch(e){error.textContent=e.message;}
-  finally{button.disabled=false;button.textContent='Request access';}
- });
-}
