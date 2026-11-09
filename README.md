@@ -1,28 +1,43 @@
 # Thrive
 
-A compact freelancer workspace for clients, projects, forms, documents, invoices, time, scheduling, client email, and one-trigger/one-action workflows. The existing HTML/JS interface is served by a Sites Vinext Worker; authenticated data is stored in D1.
+A workspace for independent service businesses: clients, projects, proposals and contracts, invoices, time, forms, scheduling, client email, client portals and one-trigger/one-action workflows. AI agents can use all of it through the built-in MCP server. Thrive runs on Cloudflare Workers with Supabase (Postgres, Auth and private storage); a disposable local preview uses D1. It is open source under the [MIT license](LICENSE) and hosted at [runonthrive.com](https://runonthrive.com).
 
 ## Develop
 
-Requires Node 22.13+ (Node 24 recommended). Run `npm run install:ci`, then `npm run db:generate` only after editing `db/schema.ts`. Build through the Sites `build-site.mjs` helper. Apply the generated schema to the local database:
+Requires Node 22.13+ (Node 24 recommended).
 
-```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_outstanding_otto_octavius.sql
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_warm_sway.sql
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0002_chunky_bullseye.sql
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0003_gorgeous_microchip.sql
-npm run dev -- --port 4173 --hostname 127.0.0.1
-```
-
-Local preview uses the starter's loopback-only mock sign-in. Hosted identity comes from trusted Sites identity headers; the mock sign-in is excluded from the production build. `npm test` runs domain, custom field, SQLite-backed concurrency, and MCP protocol tests. `node server.mjs` remains a compatibility entry point for preview.
+- Install: `npm run install:ci`.
+- Test everything: `npm test`; one file: `node --test tests/<name>.test.mjs`. Tests cover the domain rules, accounts, MCP, workflows, sync and concurrency.
+- UI preview with fictional data, no accounts, providers or writes: `npm run preview:design` (set `PORT` to choose the port).
+- Local app with a disposable D1 database and the loopback-only mock sign-in: `npm run build`, then `npm run db:local` (applies every `drizzle/*.sql` in order), then `npm run dev -- --port 4173 --hostname 127.0.0.1`. The mock sign-in is never part of a hosted build.
+- Local app against a real Supabase project: credentials in an ignored `.dev.vars`, then `npm run dev:self-hosted` (see [`docs/self-hosting.md`](docs/self-hosting.md)).
+- After editing `db/schema.ts`: `npm run db:generate`. Never edit an existing migration.
 
 Source layout:
 
-- `public/`: browser UI and shared pure business logic; assets are no longer maintained in `dist/`.
-- `ui/index.html`: app shell served by `app/route.ts`.
-- `app/api/workspace/route.ts`: authenticated browser migration and synchronization.
-- `app/mcp/route.ts`, `server/`: MCP, action dispatch, validation, and shared persistence.
-- `db/`, `drizzle/`: schema and immutable generated migrations.
+- `public/`: browser UI and shared pure business logic (`*-domain.js`). `public/design-system.css` owns colours, roles and shared components; [`DESIGN.md`](DESIGN.md) holds the design rules.
+- `ui/`: the app shell (`index.html`), account, landing, client and legal pages.
+- `app/`: routes. `app/route.ts` serves the workspace (or the landing page when signed out), `app/api/*` the browser APIs, `app/mcp/route.ts` MCP, `app/auth/*` sign-in, `app/share/*` and `app/embed/*` client links.
+- `server/`: MCP (`mcp.mjs`), action dispatch and validation (`operations.mjs`), persistence (`store.mjs`, `supabase-store.mjs`), accounts (`auth.mjs`, `google-signin.mjs`, `beta.mjs`), email and calendar (`nylas.mjs`, `google.mjs`), scheduled jobs (`summaries.mjs`, `backup.mjs`) and request guards (`guard.mjs`).
+- `supabase/migrations/`: hosted schema, RLS and storage. `db/`, `drizzle/`: the local D1 schema and its generated migrations.
+- `tests/`: `node:test` suites.
+
+## Hosting
+
+Two Cloudflare Workers, each with its own Supabase project:
+
+| | Staging | Production |
+| --- | --- | --- |
+| Worker and config | `thrive`, `wrangler.self-hosted.jsonc` | `thrive-production`, `wrangler.production.jsonc` |
+| Address | its `workers.dev` URL (`THRIVE_APP_URL`) | [runonthrive.com](https://runonthrive.com) |
+| Who signs in | the owner only (`THRIVE_OWNER_EMAIL`) | anyone (`THRIVE_ACCESS=open`) |
+| Build and deploy | `npm run build:self-hosted && npm run deploy:self-hosted` | `npm run build:production && npm run deploy:production` |
+
+`npm run check:production` (run by both production scripts) refuses to build while a `REPLACE_` value or legal-page placeholder remains. Both builds write `dist/server/wrangler.json`, so build and deploy one target at a time. Deploy from a clean checkout of a commit so uncommitted work never ships.
+
+Non-secret settings live in the Wrangler config `vars`. Secrets are stored on each Worker with `npx wrangler secret put NAME --config <config>`: `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `NYLAS_API_KEY`, `NYLAS_CLIENT_ID`, `NYLAS_TOKEN_ENCRYPTION_KEY`, `RESEND_API_KEY` and, optionally, `GOOGLE_CLIENT_SECRET`. An hourly Cron Trigger sends summary emails and invites, and production writes a nightly backup to the `thrive-backups` R2 bucket.
+
+Production setup, step by step: [`docs/launch.md`](docs/launch.md). Running your own copy: [`docs/self-hosting.md`](docs/self-hosting.md), or hand [`docs/agent-setup.md`](docs/agent-setup.md) to a coding agent. The original ChatGPT Sites build (`npm run build`, `.openai/hosting.json`) is legacy and must not be deployed as a public app.
 
 ## Bulk selection
 
@@ -42,7 +57,7 @@ Workflows support `client.field_changed` and `project.field_changed`, optionally
 
 ## Shared workspace
 
-On first sign-in, the browser's existing workspace is imported into an owner-scoped D1 row, with a local pre-migration backup. Thereafter D1 is authoritative. Other browsers and connected agents use the same authenticated user workspace. Idle browsers poll for updates every five seconds; editing a dialog pauses automatic refresh.
+Each workspace is one owner-scoped row in the server store (`thrive_workspaces` in Supabase; D1 in the local preview), and the server copy is authoritative. New accounts start with an empty workspace created on the server; a browser's demo records are never imported. Other browsers and connected agents use the same authenticated user workspace. Idle browsers poll for updates every five seconds; editing a dialog pauses automatic refresh.
 
 Writes use revision checks and idempotency receipts. A stale writer cannot overwrite newer state. Unsaved edits are retained locally with download/reload controls, including recovery after refresh. Server-side workflow execution occurs once per committed change, and actual trigger events are recorded with the same transaction. Workflow action failures are isolated and visible in run history.
 
@@ -50,30 +65,61 @@ This first backend uses compressed workspace snapshots, not a normalized multi-u
 
 ## Thrive MCP
 
-The hosted stateless Streamable HTTP endpoint is `/mcp`; `.openai/hosting.json` declares the capability. Sites provisions and authenticates the private connector. Install/connect the provisioned plugin through Codex **Plugins → Personal → Created by you**. No local stdio process or hand-written bearer token is needed. Open the hosted Thrive workspace once to migrate records before making agent writes.
+Thrive is an MCP server: an AI agent can read and change a workspace through the same validation, revision checks, workflows and safeguards as the app.
 
-Tools:
+### Connect
+
+- **Endpoint:** `https://runonthrive.com/mcp` (any deployment: `<origin>/mcp`). Stateless Streamable HTTP: JSON-RPC over `POST`, protocol version `2025-06-18`, server `thrive` 0.3.0. There is no local stdio process.
+- **Public calls:** `initialize`, `ping` and `tools/list` need no account and return no private data.
+- **Authentication:** every other call needs `Authorization: Bearer <Supabase user access token>`. The server verifies the token with Supabase on each call and applies the deployment's access rules (owner-only, invite or open). Access tokens expire after about an hour, so the client has to refresh them. Never give an agent the Supabase secret (service-role) key.
+- **Not yet available: MCP OAuth sign-in.** `/mcp` publishes no OAuth discovery (`/.well-known/oauth-protected-resource`) and answers unauthenticated data calls with a plain `401`. MCP clients that sign users in through OAuth (Claude and ChatGPT connectors, Cursor, Codex) therefore can't connect to a hosted Thrive yet, even though the in-app **Use with AI** prompt and `public/llms.txt` describe a browser sign-in. Until it ships, use an MCP client that can send a bearer header.
+- **Workspace:** calls use the account's first workspace. Choose another with the `x-thrive-workspace: <workspace id>` header or `?workspace=<workspace id>` on the endpoint URL. If `thrive_get_workspace` reports `initialized: false`, open Thrive in the browser once.
+- **In the app:** **Use with AI** in the sidebar shows the endpoint, a copyable setup prompt and the client-import prompts.
+
+### Tools
+
+Read-only tools carry `readOnlyHint`; tools that change Thrive carry `destructiveHint`; tools that reach the connected mailbox or calendar carry `openWorldHint`.
 
 | Tool | Purpose |
 | --- | --- |
-| `thrive_get_workspace` | Initialization, revision, counts |
-| `thrive_get_catalog` | All triggers, executable actions, input schemas, field definitions |
-| `thrive_list_records` / `thrive_get_record` | Scoped record reads, pagination and text search |
-| `thrive_preview_action` | Validate/simulate an action and workflow effects without saving |
-| `thrive_execute_action` | Commit an action with `expected_revision` and `request_id` |
-| `thrive_test_workflow` | Simulate a workflow on a sample record without emitting live events |
-| `thrive_read_events` | Cursor-based polling of actual committed business events |
-| `thrive_list_workflow_runs` | Successes, failures, and loop prevention |
-| `thrive_get_connections` / `thrive_list_conversations` | Google status, cached client threads, delivery receipts |
-| `thrive_refresh_gmail` / `thrive_update_conversation` | Refresh mail; link projects or archive locally |
-| `thrive_calendar_availability` | Live primary-calendar busy intervals |
-| `thrive_preview_delivery` | Exact draft/meeting content and fingerprint for review |
-| `thrive_send_email` / `thrive_check_email_delivery` | Explicit Gmail send and delivery reconciliation |
-| `thrive_create_calendar_event` | Explicit Google event creation and client invitation |
+| `thrive_get_workspace` | Revision, record counts and initialization status |
+| `thrive_get_catalog` | Every trigger and action with its input schema, plus custom field definitions, document and form templates, layouts, pricing units and starter verticals |
+| `thrive_list_records` / `thrive_get_record` | List or search records (up to 100 per page); read one complete record with the current revision |
+| `thrive_preview_action` | Validate an action against a copy of the workspace, including triggered workflow effects; saves nothing |
+| `thrive_execute_action` | Commit a catalog action with `expected_revision` and a unique `request_id`; never sends email or collects payment |
+| `thrive_test_workflow` | Simulate one trigger and one action on a sample record; creates no live event |
+| `thrive_read_events` | Poll committed business events after a cursor; events can't be forged |
+| `thrive_list_workflow_runs` | Latest workflow runs, including failures and loop prevention |
+| `thrive_get_client_import_template` | CSV example and every writable client field, including custom fields |
+| `thrive_preview_client_import` | Preview CSV text (up to 500 rows / 2 MB): suggestions, errors and duplicates; saves nothing |
+| `thrive_import_clients` | Import the reviewed CSV with `expected_revision` and `request_id` |
+| `thrive_get_connections` | Email and calendar connection status; never returns tokens |
+| `thrive_list_conversations` | Cached client email threads and delivery receipts |
+| `thrive_refresh_gmail` | Import up to 25 client threads from the last 90 days from the connected account (Google or Microsoft, despite the name) |
+| `thrive_update_conversation` | Link a thread to a client project, or archive it in Thrive only |
+| `thrive_calendar_availability` | Busy intervals from the connected calendar, up to 32 days |
+| `thrive_preview_delivery` | The exact saved email or meeting and its hash, before anything is sent |
+| `thrive_send_email` / `thrive_check_email_delivery` | Send a reviewed draft (pass the preview hash); reconcile an unconfirmed send without resending |
+| `thrive_create_calendar_event` | Create the calendar event and email the invitation (pass the preview hash) |
 
-Typical agent sequence: read workspace + catalog, read target records, preview an action, execute at the observed revision with a unique request ID. Retry an uncertain write using the same exact arguments/request ID; after a revision conflict, read and review again with a new request ID. Select/multi-select values use stable option IDs. Money in invoice/project data is integer cents; workflow `config.amount` is a workspace currency decimal string. Custom currency fields use workspace currency decimal numbers.
+### Catalog
 
-Example custom field action input:
+`thrive_get_catalog` is the source of truth. It covers 16 record types (`client`, `project`, `proposal`, `contract`, `document`, `form`, `submission`, `invoice`, `invoiceDraft`, `payment`, `service`, `time`, `note`, `meeting`, `meetingType`, `emailDraft`), 77 triggers and 82 actions. `thrive_list_records` also reads `workflow`, `customField` and `shareLink`. Action families:
+
+- **Records:** create, update, archive and restore clients, projects, documents (proposals and contracts), forms, meeting types, services and time; tags, notes and services on clients; project status and due dates.
+- **Documents and billing:** `document.from_template`, `document.save`, `document.publish`, `document.revise`, `document.respond` (simulated client response), `invoiceDraft.save` / `.issue` / `.delete`, `invoice.deposit`, `invoice.payment`, `project.invoice_payment`, `invoice.instructions`, `invoice.defaults`, `document.defaults`, `service.save`, `catalog.seed`.
+- **Time:** `time.save`, `time.rates`, `time.invoice`, `time.archive`, `time.restore`.
+- **Forms:** `form.from_template`, `form.save`, `form.submit`.
+- **Scheduling and email:** `meeting.book`, `meeting.complete`, `meeting.cancel`, `meeting.notes`, `meeting.followup`, `meeting.availability`, `meeting.emailDraft`, `emailDraft.create` / `.save` / `.delete`.
+- **Workspace setup:** `customField.save` / `.archive` / `.set`, `client.set_field`, `project.set_field`, `portal.save`, `share.create`, `share.revoke`, `client.import`, `workflow.save`, `workflow.enable`, `workflow.delete`.
+
+Every workflow action is also a catalog action. Feature sections below describe the inputs of the main ones.
+
+### Conventions
+
+Typical sequence: read the workspace and catalog, read the target records, preview the action, then execute it at the observed revision with a unique request ID. Retry an uncertain write with exactly the same arguments and request ID; after a revision conflict, read and review again and use a new request ID. Select and multi-select values use stable option IDs. Money in invoice and project data is integer cents; workflow `config.amount` is a workspace-currency decimal string; custom currency fields use workspace-currency decimal numbers.
+
+Example:
 
 ```json
 {
@@ -87,9 +133,12 @@ Example custom field action input:
 }
 ```
 
-All workflow catalog actions are available via MCP, plus typed field administration, draft editing/issuing, service editing, document responses/revisions, form submission, manual payments, meeting completion, and workflow management. Triggers describe observed state changes: callers cannot fabricate a paid invoice/signature by emitting arbitrary events. MCP discovery contains no private data; all data-bearing calls require authenticated identity. Separate users cannot access each other's workspaces. A Sites service-access bypass token alone does not grant data access.
+### Safety and limits
 
-Remaining prototype boundaries: no payment collection or Stripe connection, no third-party e-signature or signer verification service, no background email refresh or date triggers. Gmail and Google Calendar require operator OAuth setup plus user consent. Calendar availability is checked live; event creation is explicit, and subsequent edits/cancellations must be managed in Google Calendar. Owner preview and MCP document responses remain explicitly simulated. Client-link responses are recorded against the shared version. AI chat still uses the existing prototype intent parser; adding MCP does not turn chat into a hosted LLM service.
+- Triggers describe observed state changes: an agent can't fabricate a paid invoice or a signature by emitting events.
+- Email sends and calendar invitations are separate tools that need the preview hash and the user's explicit authorization for that recipient and content. Retries never send or invite twice.
+- Accounts are isolated: separate users can't reach each other's workspaces.
+- Not included: payment collection or Stripe, third-party e-signature or signer verification, background email refresh and date-based triggers. `document.respond` and owner previews remain simulations. The in-app AI chat uses Thrive's local intent parser, not a hosted LLM.
 
 ## Client portals
 
@@ -103,7 +152,7 @@ A form assignment accepts one response for this client, even when the form has n
 
 Agents can use `portal.save` through Thrive MCP with `clientId` and `data` (`enabled`, `title`, `intro`, `sections`, and arrays of record IDs for `documents`, `forms`, `invoices`, `projects`, `meetings`). Partial updates preserve selections and pinned versions. Use `share.create` with `entity: "portal"` and the client ID, and `share.revoke` to manage links. The catalog describes these actions. Configuration is stored on the client record.
 
-The current private Sites audience still applies to client URLs. This does not activate external customer access, independent signup, messaging, booking, or payment collection.
+Portal links work for anyone who has them, like other client links. Portals don't add client accounts, messaging, booking or payment collection.
 
 ## Client links
 
@@ -111,20 +160,20 @@ Published documents, issued invoices, and active forms have a **Share** action. 
 
 `/share/:token` serves a standalone page without workspace navigation. `/api/shared/:token` returns an explicit allowlist of client-visible fields and accepts only that item's permitted response. Client names, consent, action, version and server timestamp are retained for document responses. Typed signatures record consent; there is no independent identity verification or third-party e-signature service. Owner previews and MCP `document.respond` remain simulations. Client responses run the existing workflows transactionally. Form retries and document retries use idempotency receipts, and concurrent responses cannot produce duplicate invoices.
 
-The D1 `share_links` index stores SHA-256 hashes of 256-bit random tokens; only the owner's authenticated workspace keeps copyable tokens. Revocation is checked against current workspace state on every request. Links are bearer capabilities: anyone given the link can access its item until revoked or expired. Standalone share pages disable indexing, referrer transmission and framing. The separate form-only embed route permits framing. Form submissions have per-link limits. Client pages say who the private link is for and show the workspace logo. **Save PDF** uses the browser's print renderer and the saved design; an unpaid invoice adds **Pay invoice**, which jumps to its payment instructions. Statuses are colored by meaning (waiting on the client, overdue or declined, done).
+The share index (`thrive_share_links` in Supabase, `share_links` in the local D1 preview) stores SHA-256 hashes of 256-bit random tokens; only the owner's authenticated workspace keeps copyable tokens. Revocation is checked against current workspace state on every request. Links are bearer capabilities: anyone given the link can access its item until revoked or expired. Standalone share pages disable indexing, referrer transmission and framing. The separate form-only embed route permits framing. Form submissions have per-link limits. Client pages say who the private link is for and show the workspace logo. **Save PDF** uses the browser's print renderer and the saved design; an unpaid invoice adds **Pay invoice**, which jumps to its payment instructions. Statuses are colored by meaning (waiting on the client, overdue or declined, done).
 
-The Sites audience must permit anonymous requests for these routes. The root workspace still redirects to sign-in; workspace API and MCP record calls require trusted identity and remain scoped to that owner. No platform bypass credential is used in client links.
+These routes are public. The workspace itself, its APIs and MCP record calls require a signed-in account and stay scoped to it. Client links carry no account credentials.
 
 Agents can create/reuse links with `share.create` (`entity`, `recordId`, optional `expiresInDays`), revoke with `share.revoke` (`id`), and read their owner's links using entity `shareLink`. Returned `path` values are relative to the Thrive site origin.
 
 
-## Client communications and Google connections
+## Client communications
 
-Messages provides Needs reply, All conversations, Sent, Drafts, and Archived views, search, client/project filters, threaded replies, and explicit project assignment. Client records and project details link into contextual compose and conversation views. The global New menu includes Email draft. Drafts have project-update, document-delivery, and follow-up templates. Existing client links can be inserted; their hosting audience restrictions still apply. Email bodies are rendered as escaped plain text without remote images or attachments.
+Messages provides Needs reply, All conversations, Sent, Drafts, and Archived views, search, client/project filters, threaded replies, and explicit project assignment. Client records and project details link into contextual compose and conversation views. The global New menu includes Email draft. Drafts have project-update, document-delivery, and follow-up templates. Existing client links can be inserted. Email bodies are rendered as escaped plain text without remote images or attachments.
 
 Drafts live in the shared workspace and support `emailDraft.create`, `emailDraft.save`, and `emailDraft.delete` through MCP. Created/updated draft events and the Draft email workflow action use the existing event engine. Automation only prepares drafts. External Gmail sends and Google invitations use separate tools and review screens; an agent must obtain explicit authorization for the recipient and contents before using those tools.
 
-Google tokens and OAuth state are stored separately from workspace snapshots. Tokens use AES-GCM with a server-only encryption key and owner-bound additional data. OAuth uses single-use, ten-minute, owner-bound state and PKCE. Gmail and Calendar are separate consent steps for the same Google account. Sites remains the workspace identity provider; Google is only an integration. Disconnect removes tokens and cached conversations, attempts grant revocation, and preserves drafts and delivery receipts.
+Both hosted deployments connect mailboxes and calendars through Nylas (see [Nylas email and scheduling](#nylas-email-and-scheduling)), which supports Google and Microsoft. The direct Google adapter described here (`server/google.mjs`) is used only when Nylas isn't configured. Its tokens and OAuth state are stored separately from workspace snapshots. Tokens use AES-GCM with a server-only encryption key and owner-bound additional data. OAuth uses single-use, ten-minute, owner-bound state and PKCE. Gmail and Calendar are separate consent steps for the same Google account. The Thrive account (Supabase) is the identity; the mailbox connection is only an integration. Disconnect removes tokens and cached conversations, attempts grant revocation, and preserves drafts and delivery receipts.
 
 Email refresh imports up to 25 threads from the last 90 days, searching the first 100 distinct client email addresses. Each thread retains the latest 10 messages. Refresh is manual; it is not a complete mailbox mirror. A project is assigned explicitly. Archive only changes Thrive, not Gmail. Gmail messages and attachments remain accessible in Gmail. The initial connection uses the primary Google calendar only.
 
@@ -132,12 +181,12 @@ Sending uses a draft fingerprint and a durable per-draft operation claim. A draf
 
 The booking preview filters Google busy intervals. Browser saves and MCP booking actions recheck new/changed bookings on the server, including buffers, and fail if connected Google availability cannot be checked. This is an availability check, not an atomic reservation across Google and Thrive: another calendar can still change after the check. Adding a meeting to Google requires a separate review and invitation action. Its deterministic Google event ID prevents duplicate events on retries. Internal meeting notes and briefs are never copied into the invitation. Thrive does not yet update/delete an exported event when a local meeting changes, and this is stated at export/cancellation.
 
-### Operator setup
+### Operator setup (direct Google adapter, without Nylas)
 
 1. Create a Google Cloud project and enable Gmail API and Google Calendar API. Configure the OAuth consent screen and a Web application OAuth client. During testing, add the intended Google accounts as test users.
-2. Register this exact authorized redirect URI: `https://thrive-workspace.creambirch3.chatgpt.site/api/google/callback`. For local testing, use a separate client or add `http://127.0.0.1:4173/api/google/callback` and set the corresponding environment value.
-3. Configure server environment variables in Sites: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, and `GOOGLE_TOKEN_ENCRYPTION_KEY`. The encryption key is 32 random bytes encoded as Base64; keep it stable or existing tokens become unreadable. Never commit these values or expose them through public environment prefixes.
-4. Deploy the environment revision, open Messages → Connections, and connect Gmail and/or Calendar. Refresh Messages to import existing client threads.
+2. Register this exact authorized redirect URI: `<origin>/api/google/callback`. For local testing, use a separate client or add `http://127.0.0.1:4173/api/google/callback` and set the corresponding environment value.
+3. Configure the Worker: `GOOGLE_CLIENT_ID` and `GOOGLE_REDIRECT_URI` as vars, `GOOGLE_CLIENT_SECRET` and `GOOGLE_TOKEN_ENCRYPTION_KEY` as secrets. The encryption key is 32 random bytes encoded as Base64; keep it stable or existing tokens become unreadable. Never commit these values or expose them through public environment prefixes.
+4. Deploy, open Settings → Email & calendar, and connect Gmail and/or Calendar. Refresh Messages to import existing client threads.
 
 Gmail requests `gmail.readonly` and `gmail.send`, plus identity scopes. Calendar requests `calendar.events` and `calendar.freebusy`. Public distribution of an app that stores/transmits restricted Gmail data requires Google's applicable verification/security assessment. External OAuth apps in testing can also receive short-lived refresh tokens. See [Gmail scope classifications](https://developers.google.com/workspace/gmail/api/auth/scopes) and [Google OAuth web-server guidance](https://developers.google.com/identity/protocols/oauth2/web-server).
 
@@ -151,7 +200,7 @@ No Google credentials were present during implementation. Automated tests use a 
 | [Cal.diy](https://github.com/calcom/cal.diy) | Current community self-hosted scheduling project; MIT-licensed repository, separate Node/PostgreSQL stack | Revisit for a dedicated scheduler. Its current README positions the community edition for personal/non-production use. |
 | [Nango](https://github.com/NangoHQ/nango) | OAuth/token/sync infrastructure, useful with more providers | Defer extra service. Current repository license is Elastic License 2.0, source-available rather than permissive open source. |
 | [EmailEngine](https://emailengine.app/) | Self-hosted email gateway with Gmail/IMAP/Graph support | Defer: separate service and EmailEngine licensing; does not solve scheduling. |
-| [Nylas](https://developer.nylas.com/docs/provider-guides/google/) | Commercial unified email/calendar APIs with Google onboarding options | Consider when multiple providers justify a vendor dependency. |
+| [Nylas](https://developer.nylas.com/docs/provider-guides/google/) | Commercial unified email/calendar APIs with Google onboarding options | Adopted in November 2026 for Google and Microsoft; see [Nylas email and scheduling](#nylas-email-and-scheduling). |
 
 UX patterns adapted: Dubsado's contact-focused inbox and contextual recipients ([Dubsado Inbox](https://help.dubsado.com/en/articles/15811791-dubsado-inbox)); Plutio's shared conversation history linked to clients/projects and reusable drafts ([Plutio Gmail](https://www.plutio.com/help/gmail-integration), [Inbox and communication](https://www.plutio.com/help/inbox-and-communication)). Thrive retains its existing visual system. This pass used product documentation and prior research notes; no new authenticated competitor-session inspection was possible while the Mac was locked.
 
@@ -162,7 +211,7 @@ Forms support 1–50 editable questions: short/long text, number, email, phone, 
 
 Existing inquiry fields become editable questions without replacing existing forms. In **More options → Use answer for**, an email question can match/create a client; a project-name question additionally creates a planned project. Without these mappings, a form simply saves responses. An unanswered budget leaves a project unpriced. Response snapshots preserve the original labels, choices, values, and form title when questions change later.
 
-Uploaded files use the `BUCKET` R2 binding and the `form_uploads` D1 table. Files are limited to 5 MB each, 1/3/5 per question, 20 MB per submission, and 500 MB per workspace. A share link accepts at most 100 uploads per hour. Accepted extensions cover PDF, text, CSV, Office documents, ZIP, and common raster images. Downloads require workspace ownership and always use attachment disposition. Uploaded files for shared responses are tied to the link, question, form revision and request ID; unsubmitted uploads expire for submission after 24 hours. Abandoned uploads still consume storage; automatic storage cleanup is not implemented. File content is not malware-scanned. Site audience settings continue to apply to all routes.
+Uploaded files go to the private Supabase bucket `thrive-files`, indexed in `thrive_form_uploads` (the local preview uses the `BUCKET` R2 binding and the `form_uploads` D1 table). Files are limited to 5 MB each, 1/3/5 per question, 20 MB per submission, and 500 MB per workspace. A share link accepts at most 100 uploads per hour. Accepted extensions cover PDF, text, CSV, Office documents, ZIP, and common raster images. Downloads require workspace ownership and always use attachment disposition. Uploaded files for shared responses are tied to the link, question, form revision and request ID; unsubmitted uploads expire for submission after 24 hours. Abandoned uploads still consume storage; automatic storage cleanup is not implemented. File content is not malware-scanned.
 
 The same question definitions are available via `thrive_execute_action` with `form.save` (`input: {id, data: {...form, questions}}`). `form.submit` accepts `input: {id, data: {answers: {questionId: value}}}`. Choice answers use option IDs; multiple choices use an ID array; numeric/rating answers are numbers and checkbox answers are booleans. File answers reference previously uploaded `{id, name, size}` metadata; arbitrary file IDs are rejected. Both actions use the usual revision and idempotency requirements.
 
@@ -171,7 +220,7 @@ The same question definitions are available via `thrive_execute_action` with `fo
 
 **Documents → New document** offers eight editable content starters: simple/project proposals, package/services proposals, proposal + contract, service contract, time & materials, and ongoing services. Each starts with the appropriate response requirement. Acceptance, signature, or no response remain editable. **Layout & branding** reuses the ten invoice layouts with a logo, accent color, title font, business details, and footer. The title font is one of 15 open-licensed fonts bundled in `public/fonts/titles` (`public/title-fonts.js`), so client pages load nothing from third parties. Branding can be saved for future documents; published versions keep their own snapshot.
 
-Turn the pricing table on or off. With pricing enabled, choose **Include all services**, **Choose one package**, **Choose multiple**, or optional per-item rules. Quantities can be fixed or limited to a client-editable range. Clients choose services before accepting/signing; the server validates selections and totals, and completion records the selected items and agreed prices. Information-only documents may display a fixed table but cannot ask clients to choose services. Hidden pricing is omitted from client-link data, and cannot trigger automatic project billing.
+Turn the pricing table on or off. With pricing enabled, choose **Include all services**, **Choose one package**, **Choose multiple**, or optional per-item rules. Quantities can be fixed or limited to a client-editable range. Clients choose services before accepting/signing; the server validates selections and totals, and completion records the selected items and agreed prices. Information-only documents may display a fixed table but cannot ask clients to choose services. Hidden pricing is omitted from client-link data, and cannot trigger automatic project billing. With project billing on, the billing schedule decides deposits: its first row (On acceptance or signature) is invoiced automatically when the client accepts or signs, and later rows are issued from the project.
 
 **Documents → Services**, **Invoices → Services**, and the workspace menu open the independent service/package catalog. Pricing supports a fixed fee or a time-based rate per hour, day, week, or month. Line items copy catalog prices and units; later catalog edits do not alter existing documents or invoices. New services can also be saved to the catalog directly from the document editor. Workspace setup and **Add starter services** offer example catalogs for design, web/development, consulting, marketing, photography, and general services. These are editable example prices, not industry rate recommendations. Adding starters preserves existing catalog records and prices.
 
@@ -179,7 +228,7 @@ Time & materials tables show estimates, not a final fixed fee. Acceptance record
 
 The MCP catalog advertises all starters, layouts, pricing units, and verticals. New actions are `document.from_template` (`data: {templateId, clientId, projectId?, title?}`), `document.defaults` (`data: {template, color, logo, issuerDetails, footer}`), and `catalog.seed` (`vertical`). Existing `service.save`, `document.save`, and `invoiceDraft.save` support `billingModel: "fixed" | "time"` and `unit: "item" | "hour" | "day" | "week" | "month"`. Rates are integer cents; quantities allow two decimals. Documents additionally accept `showPricing`, `selectionMode` (`fixed`, `single`, `multiple`, `advanced`), `offers`, and `design`. Simulated `document.respond` accepts `signature.selections: [{id, quantity}]`.
 
-Validation: 145 automated tests plus local HTTP/MCP checks cover client selection, estimate quantities, hidden-price projection, immutable published versions, replay handling, catalog starters, and invoice rate preservation. Browser checks cover template selection, catalog insertion/creation, layout changes, live preview, publication, client package selection/acceptance, and the invoice-draft handoff.
+Validation: automated tests plus local HTTP/MCP checks cover client selection, estimate quantities, hidden-price projection, immutable published versions, replay handling, catalog starters, and invoice rate preservation. Browser checks cover template selection, catalog insertion/creation, layout changes, live preview, publication, client package selection/acceptance, and the invoice-draft handoff.
 
 ## Tracked time → invoice drafts
 
@@ -214,30 +263,39 @@ The loader creates a Shadow DOM dialog with a sandboxed iframe at `/embed/form/:
 
 Responses, attachments, stale-form checks, rate limits, idempotency, client matching, and workflows use the existing submission pipeline. The `thrive:submitted` event on the host document contains only the shared form URL, never the answers; internal frame messages verify source window, origin, and an instance channel. Editing a form updates subsequent loads; an already-open stale version must reload before submitting. Revoking the link, expiry, and archiving block new submissions. Overlay preview saves real responses.
 
-The Website contact template includes topic, name, email, and message. It matches or creates a client by email and saves the response without creating a project. No embed is installed on any external website by creating a form or copying its code. The hosted preview remains private: anonymous embeds require public hosting at launch, while the workspace APIs continue to require owner authentication.
+The Website contact template includes topic, name, email, and message. It matches or creates a client by email and saves the response without creating a project. No embed is installed on any external website by creating a form or copying its code. Embeds work on any website pointing at a public deployment such as runonthrive.com; the workspace APIs still require a signed-in account.
 
 ## Accounts and Supabase
 
-Accounts have two explicit runtime modes. Without `THRIVE_AUTH_MODE=supabase`, the existing Sites-authenticated preview and its D1/R2 data remain in place. `/auth/sign-up` and `/auth/sign-in` show the new account screens but do not accept signup until configured. Setting the mode activates email/password signup, confirmation, login, password recovery, logout, and optional Google/Microsoft OAuth. These flows have automated tests; actual provider redirects and email delivery still require a connected project and provider credentials.
+Accounts have two runtime modes. Without `THRIVE_AUTH_MODE=supabase` (the local preview), D1/R2 data and the loopback mock sign-in are used, and `/auth/sign-up` and `/auth/sign-in` don't accept accounts. With it, Supabase handles identity, and the access mode decides who can sign in:
+
+- **Owner only** (`THRIVE_OWNER_EMAIL`, used by staging): Google sign-in for that one confirmed address.
+- **Invite only** (`THRIVE_ACCESS=invite`): Google or an emailed 6-digit code, for addresses in `thrive_beta_invites`.
+- **Open** (`THRIVE_ACCESS=open`, used by production): anyone can create an account with Google or an emailed code.
+- **Otherwise:** email/password sign-up with confirmation and recovery, plus Google/Microsoft when `THRIVE_GOOGLE_LOGIN` / `THRIVE_MICROSOFT_LOGIN` are on.
+
+Invite-only and open deployments are passwordless (password actions return 403) and show the landing page to signed-out visitors.
+
+**Google sign-in.** By default it goes through Supabase's hosted redirect, so Google's account chooser shows the Supabase project's address. With `GOOGLE_CLIENT_ID` (var) and `GOOGLE_CLIENT_SECRET` (secret) set, Thrive runs the Google code flow itself: a state cookie scoped to `/auth/google`, PKCE and a hashed nonce, returning to `<origin>/auth/google/callback`. It then signs in to Supabase with the ID token. Google then shows the deployment's domain, or the app name once Google verifies the brand ([`docs/launch.md`](docs/launch.md), section 3). Deleting the secret falls back to the Supabase redirect.
 
 ### Provisioning and activation
 
 1. Create a Supabase project and apply `supabase/migrations/202610180001_thrive.sql`. It creates owner-scoped tables, transaction RPCs, RLS policies, and the private `thrive-files` bucket. Workspace snapshots retain the existing domain schema and optimistic revision control; this first migration does not normalize every CRM entity into a separate table.
 2. Configure the following through the hosting runtime's secret/environment controls (never in source or browser bundles): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` (legacy `SUPABASE_ANON_KEY` also accepted), `SUPABASE_SECRET_KEY` (legacy `SUPABASE_SERVICE_ROLE_KEY` also accepted), and `THRIVE_APP_URL` (canonical HTTPS origin, no path). Then set `THRIVE_AUTH_MODE=supabase` and `THRIVE_DATA_BACKEND=supabase`. Missing credentials fail closed; a database failure never falls back to D1. Do not activate these flags until the migration, configuration and owner migration are reviewed.
-3. In Supabase Auth, enable email/password and email confirmation; set the minimum password length to 12. Set Site URL to `THRIVE_APP_URL` and allow exactly `<origin>/auth/callback` and `<origin>/auth/callback?next=reset-password`. Configure custom SMTP for real users: the default Supabase mail service is restricted and is not a public signup mail service. Test confirmation and password recovery delivery before launch.
+3. In Supabase Auth, enable email/password and email confirmation; set the minimum password length to 12. Set Site URL to `THRIVE_APP_URL` and allow exactly `<origin>/auth/callback` and `<origin>/auth/callback?next=reset-password`. (`<origin>/auth/google/callback` is registered with Google, not Supabase.) Configure custom SMTP for real users: the default Supabase mail service is restricted and is not a public signup mail service. Test confirmation and password recovery delivery before launch.
 4. For email links that work across browsers, use `<origin>/auth/confirm?token_hash={{ .TokenHash }}&type=signup` in the confirmation email and the same URL with `type=recovery` in the recovery email. The page asks the user to continue before consuming the token. Default PKCE redirect emails also work in the browser where the request began; a different browser must use the token-hash templates. Do not include these URLs in analytics or logs.
-5. Configure Google and Azure/Microsoft in Supabase Auth. Google requires an OAuth web client; Microsoft requires an Entra app registration with the desired account audience (include personal Microsoft accounts if intended). Register the project's Supabase Auth callback URL with each provider. Request only identity/email scopes for login; for Microsoft configure the recommended verified-email claim. Enable `THRIVE_GOOGLE_LOGIN=true` and `THRIVE_MICROSOFT_LOGIN=true` only after configuring and testing each provider. Gmail/Calendar permissions remain a separate connection with explicit consent.
-6. Verify two real accounts, confirmation/recovery, sign-out/reload, account switching across tabs, each social provider, and a file upload/download in staging. Only then change the Sites audience or choose production hosting: the current owner-private Sites gate still applies to all routes and prevents a general public signup launch by itself.
+5. Configure Google and Azure/Microsoft in Supabase Auth. Google requires an OAuth web client; Microsoft requires an Entra app registration with the desired account audience (include personal Microsoft accounts if intended). Register the project's Supabase Auth callback URL with each provider. Request only identity/email scopes for login; for Microsoft configure the recommended verified-email claim. Enable `THRIVE_GOOGLE_LOGIN=true` and `THRIVE_MICROSOFT_LOGIN=true` only after configuring and testing each provider. For Thrive's own Google redirect, also add `<origin>/auth/google/callback` to the Google client and set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Gmail/Calendar permissions remain a separate connection with explicit consent.
+6. Verify two real accounts, confirmation/recovery or email codes, sign-out/reload, account switching across tabs, each social provider, and a file upload/download in staging before deploying production (see [Hosting](#hosting)).
 
 Sessions are managed on the server using Supabase SSR with PKCE and HttpOnly, Secure, SameSite=Lax cookies. Protected operations call `getUser()`; platform identity headers are not accepted as a substitute in Supabase mode. Browser cache and unsynced-edit recovery are scoped to the verified account. New accounts are initialized on the server with empty collections; a browser's demo records are never imported automatically. A stale tab cannot save into an account signed into in a different tab. Public client links continue to use their individual share token and never expose the workspace account session.
 
 The privileged Supabase key stays server-side. RLS denies direct client writes and access to credential, receipt, event, and upload tables. Users can only directly read their own workspace row; all business writes pass through Thrive's domain validation and service-only RPCs. `thrive_commit` locks the workspace row and atomically persists the revision, receipt, share index and workflow events. Files stay in a private bucket and use the existing question, owner, share and quota checks. The underlying snapshot size limits are unchanged.
 
-### Existing preview data and agent access
+### Existing preview data
 
 Do not activate Supabase by replacing the current database or copying all preview records into every new account. Preserve D1/R2 as the original backup. Before switching, export the authenticated owner's workspace, confirm the destination Supabase user UUID, and migrate that owner's snapshot into an empty `supabase:<uuid>` workspace with `thrive_bootstrap`. Account matching must be explicitly confirmed; email strings alone are not proof of ownership. Existing share indexes must move with the snapshot. Copy upload bytes and owner-bound upload metadata into the private Supabase bucket before activating any forms with file responses. Reconnect Gmail/Calendar because encrypted provider tokens are bound to the original owner ID. There is intentionally no automatic destructive cutover or cross-account import; the connected project and destination identity are needed to finish migration safely.
 
-MCP discovery stays public. In Supabase mode, protected `/mcp` calls need `Authorization: Bearer <Supabase user access token>` and verify the token with Supabase. Never give agents the service key. The previous Sites account header no longer identifies a Supabase account. Full MCP OAuth discovery/account-linking for hosted agent clients is a follow-up; interactive workspace accounts and a verified user bearer token are implemented now.
+Agent access is described in [Thrive MCP](#thrive-mcp). Platform identity headers from the old Sites deployment never identify a Supabase account.
 
 Validation: `npm test` includes account-flow, cookie, CSRF, account-switching, private storage and adapter coverage tests. `tests/accounts-postgres.sql` additionally checks the real PostgreSQL migration's RLS, denied RPC/direct writes, atomic rollback, stale revisions and idempotency. Run that file only against an isolated database with Supabase's `anon`, `authenticated`, `service_role`, `auth.uid()` and `storage.buckets` available. Tests roll back their own records.
 
@@ -300,15 +358,17 @@ fixtures do not establish that an external agent is connected to a live account.
 
 ## Sidebar, account settings, and getting started
 
-The top menu contains workspace settings. The bottom profile menu opens personal profile/photo and appearance settings at `#account/profile` and `#account/appearance`; editing a name no longer renames the business. Workspace settings have their own navigation. The current backend supports one workspace per account.
+The top menu contains workspace settings. The bottom profile menu opens personal profile/photo and appearance settings at `#account/profile` and `#account/appearance`; editing a name no longer renames the business. Workspace settings have their own navigation. An account can hold several workspaces; the logo opens the workspace switcher.
 
 Quick actions and workspace search share the Cmd/Ctrl+K palette, with icons, creation actions, navigation, and contextual record results. `/` focuses a list search when available, otherwise opens workspace search.
 
-Getting started is a six-step sidebar popover: import/add clients, connect both email and calendar, add a service, create a workflow, create an invoice (including a saved draft), and create a proposal or contract. Existing records count automatically. Completed and skipped steps persist with the workspace; skipped steps can be reopened or undone. The colored button stroke stops when all steps are complete and respects reduced motion. The old `#onboarding` route opens Home with the checklist; the full onboarding page and forced setup redirect have been removed. Business details, country, and currency remain editable in Workspace settings, subject to the existing currency lock.
+Getting started is a six-step sidebar popover: import/add clients, connect both email and calendar, add a service, create a workflow, create an invoice (including a saved draft), and create a proposal or contract. Existing records count automatically. Completed and skipped steps persist with the workspace; skipped steps can be reopened or undone. The colored button stroke stops when all steps are complete and respects reduced motion. New accounts first go through a seven-step onboarding (questions on the left, a live preview on the right): name and photo, business type, country and currency, suggested services with prices, a first client, email and calendar, suggested workflows, then where to start. Its setup steps tick or skip the matching Getting started items, and a reload resumes on the same step. Business details, country, and currency remain editable in Workspace settings, subject to the existing currency lock.
 
-## Closed beta (production)
+## Access and launch (production)
 
-Production runs with `THRIVE_ACCESS=invite` (`wrangler.production.jsonc`): Google sign-in only, for emails in `thrive_beta_invites`. Signed-out visitors see the landing page (`ui/landing.html`) with a rate-limited access request form (`/api/beta`, stored in `thrive_beta_requests`). On first sign-in, an invited account gets `app_metadata.thrive_beta`; deleting the invite row clears it. `/privacy` and `/terms` are static pages. Public writes are rate limited per IP (`server/guard.mjs`); 5xx responses, browser errors and failed scheduled jobs email `THRIVE_ADMIN_EMAIL` at most once per error type per hour. The hourly cron also emails new invites and writes a nightly backup to the `BACKUPS` R2 bucket (`server/backup.mjs`). Setup steps: `docs/launch.md`.
+Production (`wrangler.production.jsonc`) runs with `THRIVE_ACCESS=open`: anyone can create an account with Google or an emailed code, free for now. Signed-out visitors see the landing page (`ui/landing.html`). Invite-only mode (`THRIVE_ACCESS=invite`) remains available: it accepts only emails in `thrive_beta_invites`, marks accepted accounts with `app_metadata.thrive_beta` (deleting the invite row clears it), takes access requests at `/api/beta` (`thrive_beta_requests`) and emails new invites from the hourly job.
+
+`/privacy` and `/terms` are static pages. Public writes are rate limited per IP (`server/guard.mjs`). 5xx responses, browser errors and failed scheduled jobs email `THRIVE_ADMIN_EMAIL` at most once per error type per hour. The hourly cron also writes a nightly backup to the `BACKUPS` R2 bucket (`server/backup.mjs`). Setup steps: [`docs/launch.md`](docs/launch.md).
 
 ## Settings and notifications
 
@@ -321,17 +381,17 @@ Settings groups and page rules are in `DESIGN.md` (Settings structure). Workspac
 Owner emails (Account settings → Notifications, `settings.notifications`):
 
 - **Instant emails** for form responses and for proposals or contracts accepted, signed or declined.
-- **A daily or weekly summary** at 8:00 in the workspace time zone (`scheduling.timeZone`). It covers meetings, overdue invoices, documents awaiting a response, projects due soon, unbilled time, emails to reply to and new form responses. It runs from an hourly Cron Trigger in `wrangler.self-hosted.jsonc`.
+- **A daily or weekly summary** at 8:00 in the workspace time zone (`scheduling.timeZone`). It covers meetings, overdue invoices, documents awaiting a response, projects due soon, unbilled time, emails to reply to and new form responses. It is an HTML email in Thrive's layout (`public/email-layout.js`, with a plain-text part): one section per topic with a count and a link, the record, its client and the amount, date or time, and Late/Today tags. It runs from the hourly Cron Trigger in both Worker configs.
 
 Delivery uses Thrive's own sender when `RESEND_API_KEY` and `THRIVE_NOTIFICATIONS_FROM` are set. Otherwise it falls back to the connected email account. Each email has a delivery id, so retries never send twice.
 
 ## Nylas email and scheduling
 
-Set `THRIVE_COMMUNICATIONS_PROVIDER=nylas` to use Nylas v3 for the existing in-app Messages and Scheduling experience. Supabase sign-in remains separate. Users connect their own Google or Microsoft account through hosted OAuth with PKCE; connection state is single-use, expiring, and bound to the signed-in Thrive account. Grant IDs stay on the server. No shared grant ID is accepted from a browser.
+Both hosted deployments set `THRIVE_COMMUNICATIONS_PROVIDER=nylas`, which uses Nylas v3 for Messages and Scheduling. Supabase sign-in remains separate. Users connect their own Google or Microsoft account through hosted OAuth with PKCE; connection state is single-use, expiring, and bound to the signed-in Thrive account. Grant IDs stay on the server. No shared grant ID is accepted from a browser. A workspace connects one account, Google or Microsoft; switching provider means disconnecting first. **Connect with Google** and **Connect with Microsoft** (with the providers' logos) appear in Settings → Email & calendar and wherever a connection is missing: Emails, Scheduling, a client's Emails tab and the Home calendar.
 
-Server-only settings: `NYLAS_CLIENT_ID`, `NYLAS_API_KEY`, `NYLAS_TOKEN_ENCRYPTION_KEY` (32 random bytes, base64), `NYLAS_REDIRECT_URI` (`https://thrive-workspace.creambirch3.chatgpt.site/api/nylas/callback`), `NYLAS_REGION` (`eu` or `us`), and `NYLAS_ENVIRONMENT` (`sandbox` or `production`). Keep secrets in Sites environment settings. Add the exact callback URL in Nylas Hosted authentication. Configure Google/Microsoft connectors with email read/send and calendar read/write/free-busy permissions. Sandbox restrictions still apply and sandbox messages/invitations can reach real recipients.
+Settings: `NYLAS_CLIENT_ID`, `NYLAS_API_KEY` and `NYLAS_TOKEN_ENCRYPTION_KEY` (32 random bytes, base64) as Worker secrets; `NYLAS_REDIRECT_URI` (`<origin>/api/nylas/callback`), `NYLAS_REGION` (`eu` or `us`) and `NYLAS_ENVIRONMENT` (`sandbox` or `production`) as vars. Both deployments currently share one EU sandbox app, which allows 5 connected accounts in total. Add the exact callback URL in Nylas Hosted authentication. Configure Google/Microsoft connectors with email read/send and calendar read/write/free-busy permissions. Sandbox restrictions still apply and sandbox messages/invitations can reach real recipients.
 
-Apply `supabase/migrations/202610190001_nylas.sql` for Supabase or the corresponding D1 migration before enabling Nylas. The new connection/state tables use RLS and server-role-only access. Disconnect revokes the Nylas grant and removes cached Nylas conversations; existing mailbox messages, calendar events, drafts, and delivery receipts remain.
+Apply `supabase/migrations/202610190001_nylas.sql` for Supabase or `drizzle/0004_nylas.sql` for the local preview before enabling Nylas. The new connection/state tables use RLS and server-role-only access. Disconnect revokes the Nylas grant and removes cached Nylas conversations; existing mailbox messages, calendar events, drafts, and delivery receipts remain.
 
 Messages refresh explicitly and import up to 25 recent conversations across the first 100 active client email addresses. A maximum of 50 messages is fetched per conversation, with the latest 10 of those retained; pagination limits are shown as truncation. Attachments remain in the provider mailbox. Sending requires reviewing a saved draft. Atomic receipts prevent duplicate sends; uncertain outcomes can be reconciled through Nylas metadata without sending again.
 
@@ -347,4 +407,4 @@ In the form editor, **Appearance & website branding** saves the font, background
 
 **Share → Website embed** offers either a popup trigger (including attributes for an existing button) or an inline iframe. Inline embeds are full-width with an editable height in the snippet. The popup checks message origin, window, and channel; completion events carry no answers. Submissions use the existing server-side validation, honeypot, rate limit, optimistic concurrency, and idempotency handling.
 
-Hosting access still applies: an owner-private Sites deployment cannot receive anonymous website visitors. Public website installation needs a publicly reachable deployment while retaining Supabase authorization for workspace routes. This feature does not change the Sites audience or modify an external website automatically.
+Embedding needs a publicly reachable deployment; workspace routes keep requiring a signed-in account. Thrive never modifies an external website automatically.
