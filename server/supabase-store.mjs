@@ -58,6 +58,8 @@ register('DELETE FROM nylas_oauth_states WHERE expires_at<?',(d,[at])=>checked(d
 register('INSERT INTO nylas_oauth_states(hash,owner_id,payload,expires_at) VALUES(?,?,?,?)',(d,a)=>checked(d.table('nylas_oauth_states').insert(object('hash,owner_id,payload,expires_at',a)).select()));
 register('DELETE FROM nylas_oauth_states WHERE hash=? AND owner_id=? AND expires_at>? RETURNING *',(d,[hash,owner,at])=>checked(d.table('nylas_oauth_states').delete().eq('hash',hash).eq('owner_id',owner).gt('expires_at',at).select()));
 register('INSERT INTO nylas_connections(owner_id,grant_id,email,provider,scopes,updated_at) VALUES(?,?,?,?,?,?) ON CONFLICT(owner_id) DO UPDATE SET grant_id=excluded.grant_id,email=excluded.email,provider=excluded.provider,scopes=excluded.scopes,updated_at=excluded.updated_at',(d,a)=>checked(d.table('nylas_connections').upsert(object('owner_id,grant_id,email,provider,scopes,updated_at',a),{onConflict:'owner_id'}).select()));
+// One mailbox has one Nylas grant, so it can belong to only one Thrive account.
+register('SELECT owner_id FROM nylas_connections WHERE grant_id=?',(d,[grant])=>checked(d.table('nylas_connections').select('owner_id').eq('grant_id',grant)));
 register('UPDATE nylas_connections SET last_sync=? WHERE owner_id=?',(d,[at,owner])=>checked(update(d,'nylas_connections',{last_sync:at},{owner_id:owner})));
 for(const table of ['nylas_connections','nylas_oauth_states'])register(`DELETE FROM ${table} WHERE owner_id=?`,(d,[owner])=>checked(remove(d,table,{owner_id:owner})));
 register("DELETE FROM mail_threads WHERE owner_id=? AND id LIKE 'nylas:%'",(d,[owner])=>checked(d.table('mail_threads').delete().eq('owner_id',owner).like('id','nylas:%').select()));

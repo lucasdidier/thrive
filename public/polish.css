@@ -324,3 +324,7 @@ dialog.share-dialog[open]{display:flex;flex-direction:column}
  .dialog-footer .btn{white-space:normal;text-align:center}
  .crm-empty{padding:32px 18px}
 }
+/* Home widgets: an empty state fills its card and sits in the middle, icon, text and actions alike. */
+.home-widget-grid>:is(.attention-section,.dashboard-projects){display:flex;flex-direction:column}
+.home-widget-grid>:is(.attention-section,.dashboard-projects)>.quiet-empty{flex:1}
+.quiet-empty-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px}

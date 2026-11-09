@@ -90,3 +90,14 @@ test('Nylas returns to Home or the client page it started from',async()=>{
   assert.equal((await finishNylasOAuth(db,'alice',env,new URLSearchParams({state:u.searchParams.get('state'),code:'fixture-code'}),fake)).returnTo,expected);
  }}finally{db.close();}
 });
+
+test('a mailbox already connected to another Thrive account is refused with a clear message, not a database error',async()=>{
+ const {db}=await setup(true);
+ try{
+  const u=new URL((await startNylasOAuth(db,'bob',env,'all',undefined,'onboarding')).url);
+  const fake=async url=>response(url.endsWith('/token')?{grant_id:'grant-alice'}:{data:{id:'grant-alice',email:'owner@example.com',provider:'google',scope:scopes,grant_status:'valid'}});
+  await assert.rejects(()=>finishNylasOAuth(db,'bob',env,new URLSearchParams({state:u.searchParams.get('state'),code:'fixture-code'}),fake),e=>e.status===409&&/already connected to another Thrive account/.test(e.message));
+  assert.equal((await db.prepare('SELECT owner_id FROM nylas_connections WHERE grant_id=?').bind('grant-alice').first()).owner_id,'alice');
+  assert.equal(await db.prepare('SELECT * FROM nylas_connections WHERE owner_id=?').bind('bob').first(),null);
+ }finally{db.close();}
+});

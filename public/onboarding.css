@@ -40,21 +40,41 @@
 .ob-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
 .ob-svc{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border-default);border-radius:var(--radius-surface);transition:border-color var(--duration-feedback,120ms) ease,background-color var(--duration-feedback,120ms) ease}
 .ob-svc.is-on{border-color:var(--action-primary);background:var(--surface-selected)}
-.ob-check{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer}
-.ob-check input,.ob-toggle input{flex:none;width:16px;height:16px;accent-color:var(--action-primary);cursor:pointer}
-.ob-check span,.ob-toggle span{display:grid;min-width:0}
-.ob-check b,.ob-toggle b{font-weight:600}
-.ob-check small,.ob-toggle small{color:var(--ink-tertiary);font-size:12px}
+.ob-svc-on{flex:none;width:16px;height:16px;margin:0;accent-color:var(--action-primary);cursor:pointer}
+/* Service rows: the name reads as text and edits in place; the pricing unit is a quiet dropdown under it. */
+.ob-svc-main{flex:1;display:grid;justify-items:start;min-width:0}
+.ob-svc-name{width:100%;min-width:0;height:28px;margin-left:-7px;padding:0 6px;border:1px solid transparent;border-radius:6px;background:none;color:var(--ink-primary);font:inherit;font-weight:600;outline:none;transition:border-color var(--duration-feedback,120ms) ease,background-color var(--duration-feedback,120ms) ease}
+.ob-svc-name::placeholder{color:var(--ink-tertiary);font-weight:500}
+.ob-svc-name:focus{border-color:var(--focus);background:var(--surface-canvas)}
+/* The field's own border shows focus, so no second ring inside it. */
+.ob .ob-svc-name:focus-visible,.ob .ob-price input:focus-visible{outline:none}
+.ob-svc{gap:10px;padding-right:6px}
+.ob-svc-main .thrive-select{width:auto;margin-left:-7px}
+.ob-svc-main .thrive-select .thrive-select-trigger{width:auto;min-height:0;height:24px;gap:4px;padding:0 4px 0 6px;border-color:transparent;background:none;box-shadow:none;color:var(--ink-tertiary);font-size:12px}
+.ob-svc-main .thrive-select-chevron svg{width:12px;height:12px}
+.ob-icon{flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:var(--radius-control);background:none;color:var(--ink-tertiary);cursor:pointer}
+.ob-icon svg{width:16px;height:16px}
+.ob-icon:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.ob-add{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:42px;margin-top:8px;border:1px dashed var(--border-control);border-radius:var(--radius-surface);background:none;color:var(--ink-secondary);font:inherit;font-weight:550;cursor:pointer}
+.ob-add svg{width:16px;height:16px}
+.ob-add:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+/* Workflow rows: feature icon, what it does, edit in the drawer, on/off. */
+.ob-flowrow{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border:1px solid var(--border-default);border-radius:var(--radius-surface);transition:border-color var(--duration-feedback,120ms) ease}
+.ob-flowrow.is-on{border-color:color-mix(in srgb,var(--action-primary) 45%,var(--border-default))}
+.ob-flowtext{flex:1;display:grid;min-width:0;cursor:pointer}
+.ob-flowtext b{font-weight:600}
+.ob-flowtext small{color:var(--ink-tertiary);font-size:12px;line-height:17px}
+.ob-switch{flex:none;appearance:none;position:relative;width:34px;height:20px;margin:0;border-radius:10px;background:var(--border-control);cursor:pointer;transition:background-color var(--duration-feedback,120ms) ease}
+.ob-switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform 160ms var(--ease-out,ease)}
+.ob-switch:checked{background:var(--action-primary)}
+.ob-switch:checked::after{transform:translateX(14px)}
+.ob-switch:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media (hover:hover) and (pointer:fine){.ob-svc:hover .ob-svc-name:not(:focus){border-color:var(--border-default);background:var(--surface-canvas)}.ob-svc-main .thrive-select-trigger:hover{color:var(--ink-primary);background:var(--surface-hover)}.ob-icon:hover{background:var(--surface-hover);color:var(--ink-primary)}.ob-add:hover{border-color:var(--action-primary);color:var(--link)}}
 .ob-price{display:flex;align-items:center;flex:none;width:132px;height:34px;border:1px solid var(--border-control);border-radius:var(--radius-control);background:var(--surface-canvas);overflow:hidden}
 .ob-price:focus-within{border-color:var(--focus)}
 .ob-cur{padding:0 4px 0 10px;color:var(--ink-tertiary);font-size:12px;font-weight:600}
 .ob-price input{width:100%;min-width:0;height:100%;padding:0 10px 0 4px;border:0;background:none;color:inherit;font:inherit;font-variant-numeric:tabular-nums;text-align:right;outline:none}
 .ob-svc:not(.is-on) .ob-price{opacity:.55}
-.ob-toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--border-default);border-radius:var(--radius-surface);cursor:pointer}
-.ob-toggle input{appearance:none;position:relative;width:34px;height:20px;border-radius:10px;background:var(--border-control);transition:background-color var(--duration-feedback,120ms) ease}
-.ob-toggle input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform 160ms var(--ease-out,ease)}
-.ob-toggle input:checked{background:var(--action-primary)}
-.ob-toggle input:checked::after{transform:translateX(14px)}
 .ob-alt{display:inline-flex;align-items:center;gap:8px;justify-self:start;padding:6px 0;border:0;background:none;color:var(--link);font:inherit;font-weight:550;cursor:pointer}
 .ob-alt svg{width:16px;height:16px}
 .ob-note{margin:0;color:var(--ink-secondary);line-height:1.5}
@@ -123,8 +143,9 @@
 @media (prefers-reduced-motion:no-preference){.ob-stage{animation:ob-in 320ms var(--ease-out,ease) both}}
 @keyframes ob-in{from{opacity:0;transform:translateY(8px)}}
 @media (max-width:1000px){.ob{grid-template-columns:1fr}.ob-preview{display:none}}
-@media (max-width:560px){.ob-head{padding:18px 16px}.ob-steps i{width:16px}.ob-main{align-items:flex-start;padding:16px 16px 48px}.ob-card h1{font-size:26px}.ob-row{grid-template-columns:1fr}.ob-svc{flex-wrap:wrap}.ob-price{width:100%}.ob-back-label{display:none}.ob-actions [data-ob=back]{padding:0 12px}}
+@media (max-width:560px){.ob-head{padding:18px 16px}.ob-steps i{width:16px}.ob-main{align-items:flex-start;padding:16px 16px 48px}.ob-card h1{font-size:26px}.ob-row{grid-template-columns:1fr}.ob-svc{flex-wrap:wrap;row-gap:6px}.ob-svc-main{flex-basis:calc(100% - 40px)}.ob-price{flex:1;width:auto;margin-left:26px}.ob-back-label{display:none}.ob-actions [data-ob=back]{padding:0 12px}}
 @media (pointer:coarse){.ob-field :is(input,select),.ob-actions .btn{min-height:44px}}
 .ob-av svg{width:55%;height:55%}
 .ob-field .thrive-select{width:100%}
 .ob-field .thrive-select-trigger{width:100%;min-height:40px;font-size:14px}
+.ob-spacer{pointer-events:none}
