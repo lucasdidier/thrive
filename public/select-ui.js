@@ -25,7 +25,7 @@ function setAttribute(el,key,value){if(el.getAttribute(key)!==String(value))el.s
 function sync(c){
  const {select,button,value}=c,option=select.selectedOptions[0];
  if(!select.isConnected||!c.wrap.isConnected){if(active?.control===c)close(false);controls.delete(select);return;}
- const text=option?.label||select.dataset.placeholder||'Choose an option';if(value.textContent!==text)value.textContent=text;
+ const text=option?.label||select.dataset.placeholder||'Choose an option';if(value.textContent!==text)value.textContent=text;const font=option?.style.fontFamily||'';if(value.style.fontFamily!==font)value.style.fontFamily=font;
  const visualKey=JSON.stringify(getOptionVisual(select,option));if(c.visualKey!==visualKey){c.visualKey=visualKey;c.visual?.remove();c.visual=visualFor(select,option);if(c.visual)button.prepend(c.visual);}
  button.disabled=select.matches(':disabled');setAttribute(button,'aria-required',select.required);setAttribute(button,'aria-label',c.label);
  button.classList.toggle('is-placeholder',!select.value&&(select.required||/^(choose|select)\b/i.test(text)));
@@ -79,7 +79,7 @@ function rows(query=''){
  for(const option of a.control.select.options){if(option.hidden||option.parentElement.hidden||!option.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))continue;
   const parent=option.parentElement;if(parent.tagName==='OPTGROUP'&&parent!==group){const title=document.createElement('div');title.className='thrive-select-group';title.textContent=parent.label;a.list.append(title);group=parent;}
   const node=document.createElement('div');node.className='thrive-select-option';node.id=`${a.list.id}-${option.index}`;node.setAttribute('role','option');node.setAttribute('aria-selected',option.selected);node.setAttribute('aria-disabled',!!disabled(option));
-  const text=document.createElement('span');text.className='thrive-select-option-label';text.textContent=option.label;const visual=visualFor(a.control.select,option);if(visual)node.append(visual);const mark=document.createElement('span');mark.className='thrive-select-check';if(option.selected)mark.innerHTML=check;node.append(text,mark);a.list.append(node);
+  const text=document.createElement('span');text.className='thrive-select-option-label';text.textContent=option.label;if(option.style.fontFamily)text.style.fontFamily=option.style.fontFamily;const visual=visualFor(a.control.select,option);if(visual)node.append(visual);const mark=document.createElement('span');mark.className='thrive-select-check';if(option.selected)mark.innerHTML=check;node.append(text,mark);a.list.append(node);
   if(!disabled(option)){const index=a.rows.length;a.rows.push({node,option});node.addEventListener('pointermove',()=>highlight(index,false));node.addEventListener('click',()=>choose(index));}
  }
  if(!a.list.children.length){const empty=document.createElement('div');empty.className='thrive-select-empty';empty.setAttribute('role','status');empty.textContent='No options found';a.list.append(empty);}

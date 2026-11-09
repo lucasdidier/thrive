@@ -143,8 +143,11 @@ function Picker({
     value: o.value || "__empty",
     label: o.textContent || "",
     icon: o.dataset.icon || "",
+    // An option's inline font (the title font picker) previews in the row and the field.
+    font: o.style.fontFamily || "",
   }));
-  const selectedIcon = items.find((i) => i.value === (value || "__empty"))?.icon;
+  const selected = items.find((i) => i.value === (value || "__empty"));
+  const selectedIcon = selected?.icon;
   return (
     <>
     <Combobox
@@ -153,12 +156,12 @@ function Picker({
       disabled={source.matches(":disabled")}
       onValueChange={(v) => emit(source, v === "__empty" ? "" : v)}
     >
-      <ComboboxInput ref={inputRef} icon={selectedIcon ? optionGlyph(selectedIcon) : undefined} aria-label={labelFor(source)} aria-required={source.required} aria-invalid={error ? true : undefined} aria-describedby={describedBy || undefined} />
+      <ComboboxInput ref={inputRef} icon={selectedIcon ? optionGlyph(selectedIcon) : undefined} aria-label={labelFor(source)} aria-required={source.required} aria-invalid={error ? true : undefined} aria-describedby={describedBy || undefined} style={selected?.font ? { fontFamily: selected.font } : undefined} />
       <ComboboxContent container={container}>
         <ComboboxList>
           {(item: any) => (
             <ComboboxItem key={item.value} value={item.value} icon={item.icon ? optionGlyph(item.icon) : undefined}>
-              {item.label}
+              {item.font ? <span style={{ fontFamily: item.font }}>{item.label}</span> : item.label}
             </ComboboxItem>
           )}
         </ComboboxList>

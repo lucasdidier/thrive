@@ -250,13 +250,3 @@ dialog.drawer[data-pointer-motion][open]::backdrop{opacity:1;transition-duration
 .feed-body>.feed-group:first-child{margin-top:0}
 @media(max-width:650px){.notifications-page .feed-toolbar{padding-right:16px}.feed-body{padding:16px}}
 /* Title font picker (Branding): each option is its own name set in that font. */
-.title-font-picker{min-width:0;margin:6px 0 0;padding:0;border:0}
-.title-font-picker legend{margin:0 0 8px;padding:0;color:var(--muted)}
-.title-font-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.title-font-option{position:relative;display:flex;align-items:center;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--border-default);border-radius:var(--radius-control);background:var(--surface-base);cursor:pointer}
-.title-font-option:hover{background:var(--surface-hover)}
-.title-font-option input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
-.title-font-option span{min-width:0;font-size:15px;font-weight:600;line-height:1.25;color:var(--ink-primary);overflow-wrap:anywhere}
-.title-font-option:has(input:checked){border-color:var(--action-primary);background:var(--surface-selected);box-shadow:inset 0 0 0 1px var(--action-primary)}
-.title-font-option:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
-@media(max-width:650px){.title-font-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

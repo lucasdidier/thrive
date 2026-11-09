@@ -20,12 +20,15 @@ const showcase=process.env.THRIVE_SHOWCASE==='1';
 const {showcaseWorkspace,showcaseEvents,showcaseThreads}=showcase?await import('./showcase-data.mjs'):{};
 const {clientProjection}=showcase?await import('../server/sharing.mjs'):{};
 if(showcase)showcaseWorkspace(state);
+// THRIVE_FRESH=1: an empty new account's workspace, which opens in onboarding.
+if(process.env.THRIVE_FRESH==='1'){const {emptyWorkspace}=await import('../server/account-workspace.mjs');state=emptyWorkspace({});}
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
 const server=createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');
  const json=(data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
  if(url.pathname.startsWith('/api/')){
   if(url.pathname==='/api/auth')return json({enabled:false,mode:'design-preview',user:null,providers:{}});
+  if(url.pathname==='/api/workspaces'&&req.method==='PATCH'){let body='';for await(const chunk of req)body+=chunk;const p=JSON.parse(body||'{}');state.settings={...state.settings,name:String(p.name||state.settings.name),profilePhoto:String(p.profilePhoto??state.settings.profilePhoto??'')};return json({profile:{name:state.settings.name,profilePhoto:state.settings.profilePhoto}});}
   if(url.pathname==='/api/workspaces')return json({workspaceId:'default',profile:state.settings,workspaces:[]});
   if(url.pathname==='/api/workspace'){
    if(req.method==='GET')return json(url.searchParams.has('revision')?{revision}:{initialized:true,state,revision});

@@ -20,7 +20,7 @@ export function dashboardRange(preset='all',now=new Date(),custom={}){
  return null;
 }
 export function dashboardGreeting(name,now=new Date()){
- const hour=now.getHours(),greeting=hour<12?'Good morning':hour<18?'Good afternoon':'Good evening',first=String(name||'').trim().split(/\s+/)[0];
+ const hour=now.getHours(),greeting=hour<12?'Good morning':hour<18?'Good afternoon':'Good evening',first=/^your name$/i.test(String(name||'').trim())?'':String(name||'').trim().split(/\s+/)[0];
  return first?`${greeting}, ${first}`:greeting;
 }
 export function calendarDay(offset=0,now=new Date()){
