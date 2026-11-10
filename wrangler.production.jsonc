@@ -32,6 +32,8 @@
     // Receives access requests and error alerts.
     "THRIVE_ADMIN_EMAIL": "owner@example.com",
     "THRIVE_SUPPORT_EMAIL": "hello@runonthrive.com",
+    // Gets a "New sign-up" email the first time each new account opens its workspace (server/signup-alert.mjs).
+    "THRIVE_SIGNUP_ALERTS": "hello@runonthrive.com",
     "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@runonthrive.com>",
     // Thrive Cloud billing (docs/launch.md › 10): a 7-day trial without a card, then a Paddle subscription.
     // "off" until Paddle is set up, then "paddle". The client-side token (test_… sandbox, live_… live) and

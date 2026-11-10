@@ -192,6 +192,7 @@ Sandbox checkouts work on any domain and take test cards, so staging is where to
 - **Invite someone:** insert their email into `thrive_beta_invites` (Table Editor → Insert row). Within the hour they get the "You're invited" email.
 - **See requests:** open the `thrive_beta_requests` table. To accept one: `insert into thrive_beta_invites(email) select email from thrive_beta_requests where email = 'name@example.com';`
 - **Revoke access:** delete their invite row. The trigger removes their access at once.
+- **New sign-ups:** `hello@runonthrive.com` (`THRIVE_SIGNUP_ALERTS`) gets a "New sign-up" email with the person's email, sign-in method and business the first time each new account opens its workspace. Staging sends none.
 - **Errors:** you get at most one email per error type per hour. The full logs are in Cloudflare → Workers → thrive-production → Logs.
 - **Limits:**
   - Access requests: 3 per minute per IP address.
