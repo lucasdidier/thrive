@@ -150,7 +150,7 @@ Thrive Cloud: every new account gets a 7-day trial without a card, then subscrib
 - **Trial emails** (from `THRIVE_NOTIFICATIONS_FROM`, hourly job): trial started, 3 days left, last day, trial ended. They need `RESEND_API_KEY`.
 - **When the trial ends:** the app shows a lock screen with **Subscribe**, **Download your data** and **Sign out**. Every signed-in API call answers 402, including MCP. Client links, forms and booking pages keep working. Summary emails stop.
 - **Subscribing:** Paddle's checkout opens on top of Thrive. Access opens as soon as Thrive confirms the payment with Paddle; the webhook keeps it current after that. **Account settings › Plan & billing › Manage billing** opens Paddle's portal, where people change their card, see invoices or cancel.
-- **Free access:** the admin (`THRIVE_ADMIN_EMAIL`) is never locked. For anyone else, set `comped` to `true` on their row. To extend a trial, change `trial_ends_at`.
+- **Free access:** the admin (`THRIVE_ADMIN_EMAIL`) is never locked. For beta testers and anyone else who should never pay, add their email to `thrive_free_access` (`supabase/migrations/202611110001_free_access.sql`), before or after they sign up: `insert into thrive_free_access(email, note) values ('name@example.com', 'beta');`. Deleting the row takes free access away again. To extend one trial instead, change `trial_ends_at`.
 
 ### Set up on staging first (Paddle sandbox)
 
