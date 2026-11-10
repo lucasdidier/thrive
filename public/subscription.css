@@ -18,6 +18,9 @@
 .plan-status{margin:12px 0 0;color:var(--muted)}
 /* Monthly or yearly, then Subscribe. */
 .plan-choose{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+/* The switch confirmation: its explanation can run long, so the two buttons stay together on one line. */
+.settings-security-row:has(>[data-plan-switch]){align-items:center;gap:24px}
+.settings-security-row>[data-plan-switch]{flex:none;flex-wrap:nowrap}
 .paywall-card .plan-choose{flex-direction:column;align-items:stretch;width:100%;margin-top:12px}
 .paywall-card .plan-choose .settings-segmented{align-self:center}
 .paywall-card .plan-choose [data-action=plan-subscribe]{width:100%;min-height:40px;justify-content:center}

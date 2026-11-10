@@ -10,7 +10,8 @@ import {signOut} from './account.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const zone=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch{return '';}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const day=iso=>formatDay(iso,zone()||'UTC').replace(/^\w+, /,'');
+// "November 10, 2026": plan dates can be a year away, so they carry the year.
+const day=iso=>{const t=Date.parse(iso);if(!Number.isFinite(t))return '';try{return new Intl.DateTimeFormat('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:zone()||'UTC'}).format(t);}catch{return new Intl.DateTimeFormat('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'}).format(t);}};
 const btn=(text,action,extra='',cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`;
 
 export async function loadPlan(){
@@ -111,8 +112,13 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   if(switching?.plan!==other.id)return row(`Pay ${name}`,esc([other.label,other.saving?`save ${other.saving}%`:''].filter(Boolean).join(' · ')),btn(`Switch to ${name}`,'plan-switch',`data-plan="${other.id}"`));
   const s=switching.preview;if(!s)return row(`Switch to ${name} billing`,'Checking the price with Paddle…');
   const amount=formatAmount(s.amount,s.currency),renews=s.renewsAt?` It renews ${day(s.renewsAt)}.`:'',off=switching.busy?'disabled':'';
-  const now=s.action==='credit'?(amount?`The unused part of your current plan becomes a ${amount} credit toward your next payments. `:''):(amount?`You pay ${amount} today, with the unused part of your current plan deducted. `:'');
-  return row(`Switch to ${name} billing`,esc(`${now}Then ${other.label}.${renews}`),`<div class="plan-choose">${btn('Cancel','plan-switch-cancel',off,'subtle')}${btn(switching.busy?'Switching…':`Switch to ${name}`,'plan-switch-confirm',off,'primary')}</div>`);
+  // s.credit: the account's Paddle credit (from an earlier switch) that pays part or all of today's charge.
+  const credit=formatAmount(s.credit,s.currency),due=formatAmount(s.due??s.amount,s.currency),covered=Number(s.credit)>0;
+  const now=s.action==='credit'?(amount?`The unused part of your current plan becomes a ${amount} credit toward your next payments. `:'')
+   :covered&&Number(s.due)<=0?`Your ${credit} credit covers the ${amount} due today, so you pay nothing now. `
+   :covered?`You pay ${due} today: ${amount}, less your ${credit} credit. `
+   :(amount?`You pay ${amount} today, with the unused part of your current plan deducted. `:'');
+  return row(`Switch to ${name} billing`,esc(`${now}Then ${other.label}.${renews}`),`<div class="plan-choose" data-plan-switch>${btn('Cancel','plan-switch-cancel',off,'subtle')}${btn(switching.busy?'Switching…':`Switch to ${name}`,'plan-switch-confirm',off,'primary')}</div>`);
  }
 
  function settingsHTML(){

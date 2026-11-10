@@ -103,7 +103,15 @@ async function switchPlan(env,user,body,{admin,fetcher,now},{preview=false}={}){
  const sub=await paddleRequest(env,`/subscriptions/${encodeURIComponent(row.paddle_subscription_id)}${preview?'/preview':''}`,{method:'PATCH',body:{proration_billing_mode:'prorated_immediately',items:[{price_id:target.priceId,quantity:1}]},fetcher,refused:'Paddle couldn’t change your plan right now. Your plan is unchanged; try again later or use Manage billing.'});
  if(preview){
   const result=sub.update_summary?.result,totals=sub.immediate_transaction?.details?.totals;
-  return {plan:body.plan,action:result?.action==='credit'?'credit':'charge',amount:String(result?.amount??totals?.grand_total??''),currency:String(result?.currency_code||sub.currency_code||''),renewsAt:sub.next_billed_at||sub.current_billing_period?.ends_at||null};
+  const action=result?.action==='credit'?'credit':'charge',amount=String(result?.amount??totals?.grand_total??''),currency=String(result?.currency_code||sub.currency_code||'');
+  // Paddle bills a charge against the customer's credit first (e.g. left over from switching to monthly),
+  // and the preview's result doesn't count it, so subtract what's available.
+  let credit='0';
+  if(action==='charge'&&row.paddle_customer_id&&/^\d+$/.test(amount)){
+   try{const balances=await paddleRequest(env,`/customers/${encodeURIComponent(row.paddle_customer_id)}/credit-balances`,{fetcher});const available=(Array.isArray(balances)?balances:[]).find(b=>b.currency_code===currency)?.balance?.available;if(/^\d+$/.test(String(available??'')))credit=String(Math.min(Number(available),Number(amount)));}
+   catch{}
+  }
+  return {plan:body.plan,action,amount,credit,due:action==='charge'&&/^\d+$/.test(amount)?String(Number(amount)-Number(credit)):amount,currency,renewsAt:sub.next_billed_at||sub.current_billing_period?.ends_at||null};
  }
  await apply(admin,{...subscriptionSnapshot(sub,{owner:user.owner,eventAt:sub.updated_at||now.toISOString()}),email:user.email||''});
  forgetPlan(user.owner);
