@@ -58,9 +58,12 @@ import {createJourneyUI} from './journey-ui.js';
 import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,createProject,acceptProposal,generateDeposit,suggestSetup,addActivity,migrate} from './domain.js';
 import {L,language,setLanguage,supported as supportedLanguage} from './i18n.js';
 import {statusLabel} from './status-tone.js';
+import {startAnalytics} from './analytics.js';
 history.scrollRestoration='manual';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
+// Signed-in accounts only: the demo and design preview have no account and send nothing.
+if(account.enabled)startAnalytics();
 // Thrive Cloud plan (server/subscription.mjs). A locked plan still loads the workspace (read-only on the
 // server) so the lock screen sits over the person's own dashboard, blurred; it opens after the first render.
 account.plan=await loadPlan();

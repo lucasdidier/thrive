@@ -38,6 +38,8 @@
     // Thrive Cloud billing (docs/launch.md › 10): a 7-day trial without a card, then a Paddle subscription.
     // "off" until Paddle is set up, then "paddle". The client-side token (test_… sandbox, live_… live) and
     // the price id are public. The Paddle API key and webhook signing key are Worker secrets.
+    // Basic product analytics (server/analytics.mjs): page and button names in thrive_usage.
+    "THRIVE_ANALYTICS": "on",
     "THRIVE_BILLING": "paddle",
     "PADDLE_CLIENT_TOKEN": "live_1c255d0743c442de3269d7ce3f9",
     "PADDLE_PRICE_ID": "pri_01m7386yc3jfzqrateakq0pmq8",
