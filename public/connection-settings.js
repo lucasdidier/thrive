@@ -35,3 +35,13 @@ export function connectionSettings(connection,{esc,icon,btn,stamp}){
  const actions=(a&&complete?'':connectActions(c,btn,{primaryReconnect:!!a}))+(a?btn(L('Disconnect'),'mail-disconnect-review','','subtle'):'');
  return `<section class="connected-account-card" aria-label="${esc(L('Email and calendar account'))}"><span class="connected-account-symbol">${a?logos[accountProvider(a)]:icon('mail')}</span><div class="connected-account-name"><h2>${a?esc(a.email):L('Email & calendar')}</h2>${meta?`<p>${meta}</p>`:''}</div><span class="connection-state ${complete?'is-connected':a?'needs-attention':''}">${complete?icon('check'):''}${status}</span><div class="connected-account-actions">${actions}</div></section>`;
 }
+
+// A trial account opening Emails or Scheduling: what the feature does, that it comes with a paid plan (and with
+// beta free access), and the way to the plans. It replaces the page instead of an empty, half-usable list.
+export function paidFeaturePage(kind,{icon,btn}){
+ const page={
+  email:{glyph:'mail',title:L('Email comes with a paid plan'),lede:L('Connect Gmail or Outlook and your client emails sit next to their projects.'),points:[L('See every conversation with a client in one place'),L('Reply from Thrive, with your templates and drafts'),L('Know which clients are waiting on you')]},
+  scheduling:{glyph:'calendar',title:L('Scheduling comes with a paid plan'),lede:L('Connect Google or Outlook Calendar and clients book time from your real availability.'),points:[L('Publish booking pages for each kind of meeting'),L('Clients only see times you’re actually free'),L('Meetings land in your calendar and in Thrive')]},
+ }[kind];
+ return `<section class="paid-feature" aria-labelledby="paid-feature-title"><span class="paid-feature-icon">${icon(page.glyph)}</span><h2 id="paid-feature-title">${page.title}</h2><p class="paid-feature-lede">${page.lede}</p><ul class="paid-feature-points">${page.points.map(p=>`<li>${icon('check')}<span>${p}</span></li>`).join('')}</ul>${btn(L('See plans'),'plan-open','','primary')}<p class="paid-feature-note">${L('Beta testers with free access have email, calendar and scheduling included.')}</p></section>`;
+}
