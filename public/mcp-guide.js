@@ -1,11 +1,8 @@
-// Settings → AI & MCP ("Use with AI"): pick an agent, watch it connect to Thrive, copy the setup prompt or URL,
-// and copy example requests. Rendered by client-import-ui.js; the demo replays when another agent is picked.
-const reduce=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const wait=ms=>new Promise(r=>setTimeout(r,reduce()?0:ms));
-const plural=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
-
+// Settings → AI & MCP ("Use with AI"): one button copies a setup prompt that points the agent at /agent-setup
+// (server/agent-setup.mjs), which tells it how to connect itself, plus the URL for chat apps and example requests.
+// The same button sits on Home until dismissed (onboardPill).
 export const AGENTS=[
- {id:'claude',name:'Claude',logo:'claude-color.svg',connector:true},
+ {id:'claude',name:'Claude',logo:'claude-color.svg'},
  {id:'codex',name:'Codex',logo:'codex-color.svg'},
  {id:'cursor',name:'Cursor',logo:'cursor.svg'},
  {id:'copilot',name:'GitHub Copilot',logo:'githubcopilot.svg'},
@@ -25,49 +22,30 @@ export const EXAMPLES=[
  ['overview','Weekly summary','Summarize my week: new clients, signatures, payments.','Summarize my Thrive week: new clients, documents accepted or signed, invoices paid and anything overdue.'],
 ];
 
-export function setupPrompt(endpoint){
- return `Connect this agent to my Thrive workspace through MCP.\n\nServer name: thrive\nTransport: Streamable HTTP (remote MCP)\nServer URL: ${endpoint}\n\nUse this agent’s supported MCP configuration to add the server, preserving my existing servers and settings. If you cannot change the configuration directly, give me the exact steps for this agent. Use the server’s browser sign-in and pause for me to sign in to Thrive and allow access. Do not ask me to paste passwords or session cookies.\n\nAfter connecting, discover the available tools and verify access with a read-only workspace request. Report whether the connection works. Do not create or change records, send messages, or publish anything during setup.`;
+// Home shows the button until it's hidden; remembered per browser.
+const PILL_KEY='thrive-agent-onboard-hidden';
+export function pillDismissed(){try{return localStorage.getItem(PILL_KEY)==='1';}catch{return false;}}
+export function dismissPill(){try{localStorage.setItem(PILL_KEY,'1');}catch{}document.querySelectorAll('.dashboard > .mcp-onboard').forEach(el=>el.remove());}
+
+// What the button copies: one line the agent follows.
+export function setupPrompt(origin){
+ return `Read ${origin}/agent-setup and follow it to connect yourself to my Thrive workspace.`;
 }
 
-export function guideHTML({endpoint,esc,icon,btn,featureIcon,callout}){
- const prompt=setupPrompt(endpoint);
+export function onboardPill(origin,{esc,icon,dismiss=false}={}){
+ const logos=AGENTS.map(a=>`<img class="mcp-agent-logo" src="/agents/${a.logo}" alt="" width="18" height="18">`).join('');
+ return `<div class="mcp-onboard"><button type="button" class="mcp-onboard-pill" data-action="mcp-copy-prompt" data-prompt="${esc(setupPrompt(origin))}" title="Copies a setup prompt for your AI agent" aria-label="Onboard your agent to Thrive: copies a setup prompt for your AI agent"><span>Onboard your agent to Thrive</span><span class="mcp-onboard-logos" aria-hidden="true">${logos}</span></button>${dismiss?`<button type="button" class="mcp-onboard-dismiss" data-action="mcp-pill-dismiss" aria-label="Hide" title="Hide">${icon('close')}</button>`:''}</div>`;
+}
+
+export function guideHTML({origin,esc,icon,btn,featureIcon,callout}){
+ const endpoint=`${origin}/mcp`;
  return `<div class="dialog-body mcp-guide">
-<section class="mcp-section"><header><h2>Connect an agent</h2></header>
-<div class="mcp-agents" role="tablist" aria-label="AI agents">${AGENTS.map((a,i)=>`<button type="button" class="mcp-agent-tab" role="tab" aria-selected="${i===0}" data-action="mcp-agent" data-agent="${a.id}"><img class="mcp-agent-logo" src="/agents/${a.logo}" alt="" width="18" height="18">${esc(a.name)}</button>`).join('')}</div>
-<div class="mcp-demo" data-endpoint="${esc(endpoint)}"><header class="mcp-demo-head"><img class="mcp-agent-logo" src="/agents/${AGENTS[0].logo}" alt="" width="16" height="16"><strong>${esc(AGENTS[0].name)}</strong><span class="mcp-demo-status" hidden>Connected to Thrive</span></header><ol class="mcp-demo-log" aria-live="polite"></ol></div>
-<div class="mcp-connect">${btn(icon('copy')+'Copy setup prompt','mcp-copy-prompt',`data-prompt="${esc(prompt)}"`,'primary')}<div class="mcp-manual-control"><code>${esc(endpoint)}</code>${btn(icon('copy')+'Copy URL','mcp-copy-endpoint','aria-label="Copy Thrive MCP server URL"','subtle')}</div></div>
+<section class="mcp-section"><header><h2>Connect an agent</h2><p>Paste the prompt into Claude Code, Codex, Cursor, Copilot or any agent that can add MCP servers. It sets itself up and asks you to sign in to Thrive.</p></header>
+${onboardPill(origin,{esc,icon})}
+<p class="mcp-or">In Claude or ChatGPT, add a custom connector with this URL:</p>
+<div class="mcp-manual-control"><code>${esc(endpoint)}</code>${btn(icon('copy')+'Copy URL','mcp-copy-endpoint','aria-label="Copy Thrive MCP server URL"','subtle')}</div>
 </section>
 <section class="mcp-section"><header><h2>Try asking</h2></header><div class="mcp-examples">${EXAMPLES.map(([ico,label,short,full])=>`<div class="mcp-example">${featureIcon(ico,'sm')}<div><strong>${esc(label)}</strong><p>“${esc(short)}”</p></div>${btn(icon('copy'),'mcp-copy-prompt',`data-prompt="${esc(full)}" aria-label="Copy prompt: ${esc(label)}" title="Copy prompt"`,'subtle icon-only')}</div>`).join('')}</div></section>
 ${callout({title:'Agents act with your access',body:'<p>Ask for a preview before anything is created, changed or sent.</p>'})}
 </div>`;
-}
-
-function steps(agent,endpoint,counts){
- const url=`<code>${endpoint.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</code>`;
- return [
-  agent.connector?{type:'you',html:`Settings → Connectors → Add custom connector<br>${url}`}:{type:'you',html:`<span class="mcp-demo-label">Setup prompt</span>Connect this agent to my Thrive workspace through MCP. ${url}`},
-  {type:'tool',html:`<strong>${agent.connector?'Connector added':'MCP server added'}</strong><span>thrive · Streamable HTTP</span>`},
-  {type:'tool',html:'<strong>Signed in to Thrive</strong><span>access allowed</span>'},
-  {type:'tool',html:`<code>thrive_get_workspace</code><span>${plural(counts.clients,'client')} · ${plural(counts.projects,'open project')}</span>`},
-  {type:'agent',html:'Connected to your Thrive workspace. I’ll show you a preview before changing anything, and ask before sending. What should we start with?'},
- ];
-}
-
-let run=0;
-// Plays (or replays) the connection for one agent. Reduced motion shows the finished conversation at once.
-export async function playDemo(root,agentId,counts,icon){
- const demo=root?.querySelector('.mcp-demo');if(!demo)return;
- const agent=AGENTS.find(a=>a.id===agentId)||AGENTS[0],token=++run;
- root.querySelectorAll('.mcp-agent-tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.agent===agent.id)));
- const head=demo.querySelector('.mcp-demo-head'),log=demo.querySelector('.mcp-demo-log'),status=demo.querySelector('.mcp-demo-status');
- head.querySelector('img').src='/agents/'+agent.logo;head.querySelector('strong').textContent=agent.name;
- status.hidden=true;log.replaceChildren();
- for(const [i,step] of steps(agent,demo.dataset.endpoint||'',counts).entries()){
-  await wait(i?650:200);if(token!==run||!demo.isConnected)return;
-  const li=document.createElement('li');li.className='mcp-step mcp-step--'+step.type;
-  if(step.type==='agent'){li.innerHTML='<span class="mcp-typing" aria-hidden="true"><i></i><i></i><i></i></span>';log.append(li);await wait(700);if(token!==run||!demo.isConnected)return;}
-  li.innerHTML=(step.type==='tool'?icon('check'):'')+`<div>${step.html}</div>`;
-  if(!li.isConnected)log.append(li);
- }
- status.hidden=false;
 }

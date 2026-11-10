@@ -1,5 +1,6 @@
 import {featureIcon} from './feature-icon.js';
 import {connectActions} from './connection-settings.js';
+import {onboardPill,pillDismissed} from './mcp-guide.js';
 import {createMenu} from './create-menu.js';
 import {createRelatedList} from './related-list.js';
 import {homeWidgets,homeWidgetPreferences} from './home-widgets.js';
@@ -69,7 +70,7 @@ export function createDashboard({storageKey,recentActivity,getState:S,getPage,re
  const metric=(label,value,page)=>`<a class="dash-metric" href="#${page}"><span>${label}</span><strong>${value}</strong></a>`;
  const widget=(id,classes,body)=>`<section data-home-widget="${id}" class="${classes}" ${preferences[id]?'':'hidden'}>${body}</section>`;
  const heading=(title,description='',action='')=>`<header class="section-heading"><div><h2>${title}</h2>${description?`<p>${description}</p>`:''}</div>${action}</header>`;
- return `<div class="dashboard"><header class="page-heading dashboard-heading"><div><h1>${esc(dashboardGreeting(s.settings.name))}</h1><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p></div>${createMenu(icon)}</header>
+ return `<div class="dashboard">${pillDismissed()?'':onboardPill(globalThis.location?.origin||'',{esc,icon,dismiss:true})}<header class="page-heading dashboard-heading"><div><h1>${esc(dashboardGreeting(s.settings.name))}</h1><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p></div>${createMenu(icon)}</header>
  <div class="home-widget-grid">${widget('totals','dashboard-history',heading('Business totals','',rangeControl())+customDates()+`<div class="dash-metrics">${metric('Billable time',timeDuration(t.billableMinutes),'time')}${metric('Paid invoices',moneyGroups(s,t.paid,i=>i.amount),'invoices')}${metric('Completed projects',t.completed,'projects')}${metric('Signed contracts',t.signed,'contracts')}${metric('Accepted proposals',t.accepted,'proposals')}</div>`)}
  ${calendarCard().replace('<section ',`<section data-home-widget="calendar" ${preferences.calendar?'':'hidden'} `)}
  ${widget('projects','dashboard-projects',heading(`Open projects <span class="home-widget-count">${p.projects.length}</span>`,'',viewAll('projects','projects'))+(projects.length?list(projects):`<div class="quiet-empty">${featureIcon('projects','lg')}<h3>No open projects</h3><div class="quiet-empty-actions">${btn('Create project','new-project')}</div></div>`))}
