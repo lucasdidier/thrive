@@ -1,0 +1,87 @@
+// Restores a nightly backup (server/backup.mjs, db/YYYY-MM-DD.json.gz) into an EMPTY Supabase project
+// that already has every file in supabase/migrations applied. Used by scripts/restore-backup.mjs.
+// Accounts keep their ids, so every owner_id ("supabase:<id>…") in the tables still points at its account.
+import {decodeState} from './store.mjs';
+
+export const RESTORE_ORDER=['workspaces','receipts','events','share_links','form_uploads','google_connections','mail_threads','provider_operations','nylas_connections','beta_invites','beta_requests','subscriptions'];
+// One-time OAuth states are expired by the time anyone restores, so they are left out.
+export const SKIPPED=['google_oauth_states','nylas_oauth_states'];
+const BATCH=200;
+const hexBytes=v=>typeof v==='string'&&v.startsWith('\\x')&&v.length%2===0?Uint8Array.from(v.slice(2).match(/../g)||[],s=>parseInt(s,16)):null;
+const accountId=owner=>String(owner||'').match(/^supabase:([0-9a-f-]{36})/i)?.[1]?.toLowerCase();
+
+export async function readBackup(buffer){
+ const b=buffer instanceof Uint8Array?buffer:new Uint8Array(buffer);
+ // R2 stores the snapshot gzipped; some downloads arrive already unpacked.
+ const text=b[0]===0x1f&&b[1]===0x8b?await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).text():new TextDecoder().decode(b);
+ let data;try{data=JSON.parse(text);}catch{throw Error('This file is not a Thrive backup: it is not valid JSON.');}
+ if(data?.version!==1||!data.tables||typeof data.tables!=='object'||!Array.isArray(data.accounts))throw Error('This file is not a version 1 Thrive backup.');
+ return data;
+}
+
+// Everything that can be checked without a database: row counts, accounts, and that each workspace decodes.
+export async function checkBackup(data){
+ const problems=[],counts={},ids=new Set(data.accounts.map(a=>String(a.id).toLowerCase()));let workspaces=0;
+ for(const [t,rows] of Object.entries(data.tables)){if(Array.isArray(rows))counts[t]=rows.length;else{counts[t]=0;problems.push(`${t}: not a list of rows`);}}
+ for(const a of data.accounts)if(!a.id||!a.email)problems.push(`An account has no ${a.id?'email':'id'}.`);
+ for(const row of data.tables.workspaces||[]){
+  const raw=hexBytes(row.state);
+  if(!raw)problems.push(`Workspace ${row.owner_id}: its data is not stored as bytes.`);
+  else{try{const state=await decodeState(raw);if(!state||typeof state!=='object')throw Error();workspaces++;}catch{problems.push(`Workspace ${row.owner_id}: its data does not decode.`);}}
+  const id=accountId(row.owner_id);if(id&&!ids.has(id))problems.push(`Workspace ${row.owner_id}: its account is not in the backup.`);
+ }
+ return {createdAt:data.createdAt,source:data.supabase,accounts:data.accounts.length,counts,workspaces,notInBackup:RESTORE_ORDER.filter(t=>!(t in data.tables)),problems};
+}
+
+async function listUsers(admin){
+ const out=new Map();
+ for(let page=1;page<=500;page++){const {data,error}=await admin.auth.admin.listUsers({page,perPage:200});if(error)throw Error(`Accounts in the target project could not be listed: ${error.message}`);const list=data?.users||[];for(const u of list)out.set(String(u.id).toLowerCase(),u);if(list.length<200)break;}
+ return out;
+}
+async function count(admin,table){
+ const {count:n,error}=await admin.from('thrive_'+table).select('*',{count:'exact',head:true});
+ if(error)throw Error(`thrive_${table} can't be read in the target project. Run every file in supabase/migrations first. (${error.message})`);
+ return n||0;
+}
+
+// Tables that already hold rows. A restore only goes into an empty project.
+export async function nonEmptyTables(admin){const busy=[];for(const t of RESTORE_ORDER){const n=await count(admin,t);if(n)busy.push(`thrive_${t} (${n} rows)`);}return busy;}
+
+export async function restoreBackup(data,{admin,readFile,log=()=>{}}){
+ const report={accounts:{created:0,existing:0},tables:{},files:{uploaded:0,missing:0}};
+ const existing=await listUsers(admin);
+ for(const a of data.accounts){
+  const id=String(a.id).toLowerCase(),same=existing.get(id);
+  if(same){if(String(same.email||'').toLowerCase()!==String(a.email||'').toLowerCase())throw Error(`The target already has account ${id} with a different email. Restore into an empty project.`);report.accounts.existing++;continue;}
+  const {data:made,error}=await admin.auth.admin.createUser({id,email:a.email,email_confirm:true,app_metadata:a.thrive_beta?{thrive_beta:true}:{}});
+  if(error)throw Error(`Account ${a.email} could not be created: ${error.message}`);
+  if(String(made?.user?.id||'').toLowerCase()!==id)throw Error(`Supabase gave ${a.email} a new id instead of ${id}, so its workspace would be orphaned. Stopped.`);
+  report.accounts.created++;
+ }
+ log(`Accounts: ${report.accounts.created} created, ${report.accounts.existing} already there.`);
+ for(const t of RESTORE_ORDER){
+  let rows=data.tables[t];if(!Array.isArray(rows)){report.tables[t]=null;continue;}
+  // Event ids are generated by the database: insert in their original order and let it number them again.
+  if(t==='events')rows=[...rows].sort((x,y)=>Number(x.id)-Number(y.id)).map(({id,...rest})=>rest);
+  for(let i=0;i<rows.length;i+=BATCH){const {error}=await admin.from('thrive_'+t).insert(rows.slice(i,i+BATCH));if(error)throw Error(`thrive_${t}, rows ${i+1} to ${Math.min(i+BATCH,rows.length)}: ${error.message}`);}
+  report.tables[t]=rows.length;log(`thrive_${t}: ${rows.length} rows.`);
+ }
+ if(readFile){
+  const bucket=admin.storage.from('thrive-files');
+  for(const u of (data.tables.form_uploads||[]).filter(u=>u.status==='ready')){
+   const body=await readFile(u.object_key);if(!body){report.files.missing++;continue;}
+   const {error}=await bucket.upload(u.object_key,body,{contentType:'application/octet-stream',upsert:false});
+   if(error)throw Error(`File ${u.object_key} could not be uploaded: ${error.message}`);report.files.uploaded++;
+  }
+  log(`Files: ${report.files.uploaded} uploaded, ${report.files.missing} not found in the files folder.`);
+ }
+ return report;
+}
+
+// After a restore: every table and account the backup holds is in the target.
+export async function verifyRestore(data,admin){
+ const differences=[];
+ for(const t of RESTORE_ORDER){if(!Array.isArray(data.tables[t]))continue;const n=await count(admin,t);if(n!==data.tables[t].length)differences.push(`thrive_${t}: ${n} rows, the backup has ${data.tables[t].length}.`);}
+ const users=await listUsers(admin);for(const a of data.accounts)if(!users.has(String(a.id).toLowerCase()))differences.push(`Account ${a.email} is missing.`);
+ return differences;
+}

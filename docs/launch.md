@@ -77,6 +77,24 @@ What runs every night at 03:00 UTC:
 
 Supabase Pro takes its own daily backups as well. To check a snapshot, download it with `cd ~/Documents/Code/Thrive/prototype && npx wrangler r2 object get thrive-backups/db/2026-11-06.json.gz --remote --file ~/Downloads/thrive-backup.json.gz`.
 
+The snapshot also holds trials and subscriptions (`thrive_subscriptions`), from the November 10 backup on. One-time sign-in states are left out on restore.
+
+### Test a restore (once before launch, then every few months)
+
+A backup you've never restored is a guess. This takes about 15 minutes and never touches production.
+
+1. **Download last night's snapshot.** Change the date to yesterday's:
+   `cd ~/Documents/Code/Thrive/prototype && npx wrangler r2 object get thrive-backups/db/2026-11-10.json.gz --remote --file ~/Downloads/thrive-backup.json.gz`
+2. **Check the file.** It reads every row and decodes every workspace, and writes nothing:
+   `cd ~/Documents/Code/Thrive/prototype && npm run restore:backup -- ~/Downloads/thrive-backup.json.gz`
+3. **Create a scratch project.** At supabase.com/dashboard, create `Thrive restore test` (the Free plan is fine). In its SQL Editor, run each file in `supabase/migrations/` in name order.
+4. **Restore into it.** Paste the scratch project's secret key (Settings › API Keys) and its URL:
+   `cd ~/Documents/Code/Thrive/prototype && THRIVE_RESTORE_SECRET_KEY=sb_secret_… npm run restore:backup -- ~/Downloads/thrive-backup.json.gz --target https://SCRATCH-REF.supabase.co --execute`
+   It ends with "Restore verified" once every account and table matches the backup.
+5. **Delete the scratch project** (Settings › General › Delete project). It holds real customer data.
+
+The script refuses a project that already has rows, and the project the backup came from. For real disaster recovery, restore into a new production project the same way. Add `--into-source` only when restoring into the original project after emptying it. To bring back form uploads too, download the `files/` folder from the bucket and add `--files ~/Downloads/thrive-files`. Connected email and calendar accounts only work again with the same encryption key and provider apps; otherwise people reconnect them.
+
 ## 6. Production secrets
 
 Run each of these and paste the value when asked:

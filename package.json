@@ -20,7 +20,8 @@
     "check:production": "node scripts/check-production.mjs",
     "build:production": "node scripts/check-production.mjs && THRIVE_TARGET=production npm run build:self-hosted",
     "deploy:production": "node scripts/check-production.mjs && wrangler deploy --config dist/server/wrangler.json",
-    "db:local": "node scripts/migrate-local.mjs"
+    "db:local": "node scripts/migrate-local.mjs",
+    "restore:backup": "node scripts/restore-backup.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
