@@ -201,6 +201,14 @@ test('a locked account can still download every workspace it owns',async()=>{
  const body=await r.json();assert.deepEqual(body.workspaces.map(w=>w.id),['default','studio']);assert.equal(body.workspaces[0].state.clients[0].name,'Juniper Studio');
 });
 
+test('the data export works with billing off, where there is no plan page',async()=>{
+ const user=account(),db={kind:'supabase',loadWorkspace:async owner=>owner===user.owner?{revision:1,state:{clients:[{name:'Juniper Studio'}]}}:null};
+ const r=await handleBilling(new Request('https://app.thrive.test/api/billing?export'),{...env,THRIVE_BILLING:'off'},{db,user},{now});
+ assert.match(r.headers.get('content-disposition'),/thrive-export-/);
+ assert.equal((await r.json()).workspaces[0].state.clients[0].name,'Juniper Studio');
+ assert.deepEqual(await (await handleBilling(new Request('https://app.thrive.test/api/billing'),{...env,THRIVE_BILLING:'off'},{db,user})).json(),{enabled:false});
+});
+
 const hook=(event,headers={})=>{const raw=JSON.stringify(event);return new Request('https://app.thrive.test/api/billing/webhook',{method:'POST',headers:{'content-type':'application/json','paddle-signature':sign(raw),...headers},body:raw});};
 test('Paddle webhooks update the account the checkout named, or the one that owns the subscription',async()=>{
  const admin=fakeAdmin(),user=account(),at=now.getTime();

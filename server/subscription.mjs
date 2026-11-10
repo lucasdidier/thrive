@@ -139,11 +139,12 @@ async function exportData(db,user,now){
 // /api/billing, through withRuntime({allowLocked:true}): GET the plan (?tz= records the time zone for
 // trial emails), GET ?export downloads the data, POST {action:'confirm'|'portal'}.
 export async function handleBilling(request,env,{db,user},{admin,fetcher=fetch,now=new Date()}={}){
+ const url=new URL(request.url);
+ // The export works with billing off too: every account can download its data (privacy policy).
+ if(request.method==='GET'&&url.searchParams.has('export'))return exportData(db,user,now);
  if(!billingEnabled(env))return json({enabled:false});
  admin??=adminClient(env);const options={admin,fetcher,now};
- const url=new URL(request.url);
  if(request.method==='GET'){
-  if(url.searchParams.has('export'))return exportData(db,user,now);
   // The page asking for its plan always reads it fresh: a webhook may have changed it in another isolate.
   const {row}=await accountPlan(env,user,{...options,fresh:true}),tz=url.searchParams.get('tz'),patch={};
   if(validZone(tz)&&tz!==row.time_zone)patch.time_zone=tz;

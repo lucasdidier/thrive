@@ -14,7 +14,7 @@
   // Hourly: summaries at 8:00 local time, invite emails, nightly backup at 03:00 UTC.
   "triggers": { "crons": ["0 * * * *"] },
   "observability": { "enabled": true },
-  // Abuse limits per client IP: access requests 3/min; sign-in, client responses and form posts 30/min.
+  // Abuse limits per client IP: access requests and emailed sign-in codes 3/min each; sign-in, client responses and form posts 30/min.
   "ratelimits": [
     { "name": "RATE_LIMIT_SIGNUP", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } },
     { "name": "RATE_LIMIT_PUBLIC", "namespace_id": "1002", "simple": { "limit": 30, "period": 60 } }

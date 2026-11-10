@@ -16,6 +16,13 @@ export async function rateLimited(request,env){
  const ip=request.headers.get('cf-connecting-ip')||'unknown';
  try{return !(await limiter.limit({key:`${rule[2]}:${ip}`})).success;}catch{return false;}
 }
+// Emailed sign-in codes share /api/auth with ordinary sign-in, but each one sends an email to any address,
+// so they also count against the strict signup limit (3 a minute per IP) to stop email bombing.
+export async function codeLimited(request,env){
+ const limiter=env.RATE_LIMIT_SIGNUP;if(!limiter?.limit)return false;
+ const ip=request.headers.get('cf-connecting-ip')||'unknown';
+ try{return !(await limiter.limit({key:`code:${ip}`})).success;}catch{return false;}
+}
 export const tooMany=()=>Response.json({error:'Too many attempts. Please wait a minute and try again.'},{status:429,headers:{'Cache-Control':'no-store','Retry-After':'60'}});
 
 const clip=(v,n)=>String(v??'').slice(0,n);

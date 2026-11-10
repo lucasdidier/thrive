@@ -4,6 +4,7 @@ import {json,readBody,errorResponse} from './http.mjs';
 import {supabaseURL} from './supabase-store.mjs';
 import {inviteOnly,openAccess,passwordless,hasBetaAccess,grantBetaAccess,isInvited} from './beta.mjs';
 import {nativeGoogle,startGoogleSignIn,finishGoogleSignIn,clearGoogleCookie} from './google-signin.mjs';
+import {codeLimited} from './guard.mjs';
 export const accountsEnabled=env=>env.THRIVE_AUTH_MODE==='supabase';
 export const ownerEmail=env=>passwordless(env)?'':String(env.THRIVE_OWNER_EMAIL||'').trim().toLowerCase();
 // Owner-only, invite-only and open deployments accept no passwords. Owner-only is Google only;
@@ -18,7 +19,8 @@ export const safeNext=v=>/^\/oauth\/consent\?authorization_id=[A-Za-z0-9_-]{8,12
 const nextCookie=(origin,value)=>`${NEXT}=${value?encodeURIComponent(value):''}; Path=/; Max-Age=${value?600:0}; HttpOnly; SameSite=Lax${origin.startsWith('https:')?'; Secure':''}`;
 const savedNext=request=>{const raw=(request.headers.get('cookie')||'').split(/;\s*/).find(c=>c.startsWith(NEXT+'='))?.slice(NEXT.length+1)||'';try{return safeNext(decodeURIComponent(raw));}catch{return '';}};
 const keepNext=(context,body)=>safeNext(body.next)?[nextCookie(context.origin,safeNext(body.next))]:[];
-export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(openAccess(env)?{openSignup:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),providers:{google:enabled&&(passwordless(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
+const supportEmail=env=>{const v=String(env.THRIVE_SUPPORT_EMAIL||'').trim();return /^[^\s@<>"]{1,64}@[^\s@<>"]{1,190}\.[a-z]{2,}$/i.test(v)?v:'';};
+export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(enabled&&supportEmail(env)?{supportEmail:supportEmail(env)}:{}),...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(openAccess(env)?{openSignup:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),providers:{google:enabled&&(passwordless(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
 // Supabase can return to its configured Site URL when a callback URL is not
 // allowlisted. Complete that same PKCE exchange before checking the session.
 export async function accountHome(request,env,html,{contextFactory=authContext,landing}={}){
@@ -74,6 +76,7 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase();
  if(inviteOnly(env)&&!await invited(email,env))throw new StoreError('This email isn’t on the beta list yet.',403);
+ if(await codeLimited(request,env))throw new StoreError('Too many codes requested. Please wait a minute and try again.',429);
  checked(await auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:callback}}),'We couldn’t send a code. Please try again in a minute.');
  return context.finish(json({ok:true,sent:true}),keepNext(context,body));}
  case 'verify-code':{

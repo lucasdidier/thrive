@@ -3,8 +3,13 @@ export function createAccountSecurity({esc,icon}) {
  let config=null;
  const host=()=>document.querySelector('#account-security');
  const field=(label,name,type,attrs='')=>`<label class="field">${label}<input data-draft-ignore name="${name}" type="${type}" required ${attrs}></label>`;
+ // Download is always offered; deletion is a request to the support address, as the privacy policy describes.
+ function paintData(){const el=document.querySelector('#account-data');if(!el)return;const support=config?.supportEmail,row=(title,meta,action)=>`<div class="settings-security-row"><div><strong>${title}</strong><p>${meta}</p></div>${action}</div>`;
+  el.innerHTML=row('Download your data','Every workspace, as a JSON file.',`<a class="btn" href="/api/billing?export" download>${icon('download')}Download</a>`)
+   +(support?row('Delete your account',`Email ${esc(support)} and we delete your account and workspaces within 30 days. Download your data first.`,`<a class="btn" href="mailto:${esc(support)}?subject=${encodeURIComponent('Delete my Thrive account')}&amp;body=${encodeURIComponent('Please delete my Thrive account: '+(config.user?.email||''))}">Request deletion</a>`):'');}
  function paint(){const el=host();if(!el)return;
-  if(!config?.enabled){el.closest('.settings-card')?.setAttribute('hidden','');return;}
+  if(!config?.enabled){el.closest('.settings-card')?.setAttribute('hidden','');document.querySelector('#account-data')?.closest('.settings-card')?.setAttribute('hidden','');return;}
+  paintData();
   const editable=config.user?.passwordAccount&&!config.ownerOnly,provider=config.user?.provider||'your sign-in provider';
   if(!editable){const links={google:['Google','https://myaccount.google.com/'],azure:['Microsoft','https://account.microsoft.com/'],microsoft:['Microsoft','https://account.microsoft.com/']},p=links[provider];el.innerHTML=`<div class="settings-security-row"><div><strong>Email</strong><p>${esc(config.user?.email||'')}</p></div></div><div class="settings-security-row"><div><strong>Password & sign-in</strong><p>${provider==='email'?'No password needed. You sign in with a code sent to this email.':'Managed by '+esc(p?.[0]||provider)}</p></div>${p?`<a class="btn" href="${p[1]}" target="_blank" rel="noopener noreferrer">Manage ${p[0]} account ${icon('external')}</a>`:''}</div>${config.ownerOnly?'':''}`;return;}
   el.innerHTML=`<div class="settings-security-row"><div><strong>Email</strong><p>${esc(config.user.email)}</p></div><button class="btn" type="button" data-action="account-edit-email">Change email</button></div><div class="settings-security-row"><div><strong>Password</strong></div><button class="btn" type="button" data-action="account-edit-password">Change password</button></div><div data-account-security-editor></div>`;

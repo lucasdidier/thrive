@@ -113,3 +113,12 @@ test('the sign-in page offers Google and an emailed code with no inline script',
  assert.match(html,/src="\/appearance\.js"/);assert.match(html,/src="\/auth\.js"/);
  for(const text of ['Continue with Google','Email me a code','one-time-code','Resend code','Use another email'])assert.ok(js.includes(text),text);
 });
+
+test('emailed codes count against the strict signup limit, separately from ordinary sign-in',async()=>{
+ const hits=new Map(),limiter={limit:async({key})=>{const n=(hits.get(key)||0)+1;hits.set(key,n);return {success:n<=3};}};
+ const open={...env,THRIVE_ACCESS:'open',RATE_LIMIT_SIGNUP:limiter};
+ const ask=()=>{const m=client();return handleAuth(new Request('https://thrive.test/api/auth',{method:'POST',headers:{'content-type':'application/json',origin:'https://thrive.test','cf-connecting-ip':'203.0.113.9'},body:JSON.stringify({action:'email-code',email:'sam@example.test'})}),open,{contextFactory:m.factory,invited:async()=>true});};
+ for(let i=0;i<3;i++)assert.equal((await ask()).status,200);
+ const r=await ask();assert.equal(r.status,429);assert.match((await r.json()).error,/Too many codes/);
+ assert.deepEqual([...hits.keys()],['code:203.0.113.9']);
+});

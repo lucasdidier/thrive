@@ -177,4 +177,5 @@ Sandbox checkouts work on any domain and take test cards, so staging is where to
 - **Errors:** you get at most one email per error type per hour. The full logs are in Cloudflare → Workers → thrive-production → Logs.
 - **Limits:**
   - Access requests: 3 per minute per IP address.
+  - Emailed sign-in codes: 3 per minute per IP address.
   - Sign-in, client responses, form posts and error reports: 30 per minute per IP address.
