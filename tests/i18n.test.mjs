@@ -23,3 +23,19 @@ test('every locale only translates real keys, keeps their placeholders, and has 
   }
  }
 });
+
+test('emails are written in the workspace language and the server goes back to English after each one',async()=>{
+ const {inLanguage,emailCatalog}=await import('../server/email-language.mjs');
+ const {trialEmail}=await import('../public/subscription-domain.js');
+ const {formNotificationMessage}=await import('../server/form-notifications.mjs');
+ const fr=JSON.parse(readFileSync(new URL('../public/locales/fr.json',import.meta.url),'utf8'));
+ const prices={month:{amount:'1000',currency:'USD',interval:'month',frequency:1},year:{amount:'10000',currency:'USD',interval:'year',frequency:1}};
+ const mail=inLanguage('fr',fr,()=>trialEmail('3d',{origin:'https://app.thrive.test',trialEndsAt:'2026-11-13T12:00:00Z',timeZone:'Europe/Paris',prices}));
+ assert.equal(mail.subject,'Plus que 3 jours d’essai de Thrive');assert.match(mail.body,/vendredi 13 novembre/);assert.match(mail.body,/par mois ou .* par an/);assert.match(mail.html,/lang|Thrive/);
+ assert.equal(L('Subscribe'),'Subscribe','English is back after the build');
+ assert.match(inLanguage('de',null,()=>formNotificationMessage({formTitle:'Intake'},'https://x.test')).subject,/^New form response/,'no catalog: English');
+ const env={THRIVE_APP_URL:'https://app.thrive.test'},seen=[];
+ const data=await emailCatalog(env,'nl',{fetcher:async url=>{seen.push(String(url));return Response.json({'Open Thrive':'Thrive openen'});},now:1});
+ assert.equal(data['Open Thrive'],'Thrive openen');assert.equal(seen[0],'https://app.thrive.test/locales/nl.json');
+ assert.equal(await emailCatalog(env,'en'),null);
+});

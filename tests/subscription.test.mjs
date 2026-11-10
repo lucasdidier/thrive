@@ -276,7 +276,8 @@ test('the yearly plan: its saving against twelve months, the plans checkout offe
  const yearly={unit_price:{amount:'10000',currency_code:'USD'},billing_cycle:{interval:'year',frequency:1}},api=paddleApi({'/prices/pri_monthly':price,'/prices/pri_yearly':yearly});
  const both={...env,PADDLE_YEARLY_PRICE_ID:'pri_yearly'},admin=fakeAdmin(),user=account();
  let body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),both,{db:null,user},{admin,now,fetcher:api})).json();
- assert.deepEqual(body.plans,[{id:'month',priceId:'pri_monthly',label:'$10 / month',saving:0},{id:'year',priceId:'pri_yearly',label:'$100 / year',saving:17}]);
+ assert.deepEqual(body.plans.map(({amount,...p})=>p),[{id:'month',priceId:'pri_monthly',label:'$10 / month',saving:0},{id:'year',priceId:'pri_yearly',label:'$100 / year',saving:17}]);
+ assert.deepEqual(body.plans[1].amount,{amount:'10000',currency:'USD',interval:'year',frequency:1},'the browser gets the raw price to show in its own language');
  assert.equal(body.price,'$10 / month');
  admin.rows[0]={...admin.rows[0],status:'active',paddle_subscription_id:'sub_01abc',price_id:'pri_yearly',period_ends_at:iso(365*DAY)};
  body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),both,{db:null,user},{admin,now,fetcher:api})).json();

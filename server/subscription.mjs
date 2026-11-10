@@ -10,6 +10,7 @@ import {appOrigin} from './auth.mjs';
 import {sendOwnerNotification,disconnectNylas} from './nylas.mjs';
 import {workspaceOwner} from './workspace-directory.mjs';
 import {planAccess,trialEmailDue,trialEmail,priceLabel,yearlySaving,lockedSince,formatAmount,TRIAL_DAYS} from '../public/subscription-domain.js';
+import {inWorkspaceLanguage} from './email-language.mjs';
 import {paddleRequest,verifyPaddleSignature,subscriptionSnapshot,paddlePlans,paddleSandbox} from './paddle.mjs';
 
 const DAY=86400000;
@@ -69,8 +70,8 @@ async function planResponse(env,user,{admin,fetcher,now},extra={}){
  const token=String(env.PADDLE_CLIENT_TOKEN||'');
  // price: what this account pays (its subscription's plan), else the monthly price. plans: what checkout offers.
  const current=year&&row.price_id===year.priceId?year:month;
- const plans=[month&&{id:'month',priceId:month.priceId,label:priceLabel(month.price),saving:0},year&&{id:'year',priceId:year.priceId,label:priceLabel(year.price),saving:yearlySaving(month?.price,year.price)}].filter(Boolean);
- return json({enabled:true,owner:user.owner,email:user.email||'',access,price:priceLabel(current?.price),interval:row.paddle_subscription_id&&current?(current===year?'year':'month'):null,plans,billing:!!row.paddle_customer_id,support:String(env.THRIVE_SUPPORT_EMAIL||''),paddle:token&&month?{token,priceId:month.priceId,sandbox:token.startsWith('test_')}:null,...extra});
+ const plans=[month&&{id:'month',priceId:month.priceId,label:priceLabel(month.price),amount:month.price||null,saving:0},year&&{id:'year',priceId:year.priceId,label:priceLabel(year.price),amount:year.price||null,saving:yearlySaving(month?.price,year.price)}].filter(Boolean);
+ return json({enabled:true,owner:user.owner,email:user.email||'',access,price:priceLabel(current?.price),priceAmount:current?.price||null,interval:row.paddle_subscription_id&&current?(current===year?'year':'month'):null,plans,billing:!!row.paddle_customer_id,support:String(env.THRIVE_SUPPORT_EMAIL||''),paddle:token&&month?{token,priceId:month.priceId,sandbox:token.startsWith('test_')}:null,...extra});
 }
 
 // After Paddle's checkout.completed: check the transaction belongs to this account, then record the
@@ -252,7 +253,9 @@ export async function sendTrialEmails(env,{admin,send=sendOwnerNotification,now=
  if(!due.length)return {sent:0};
  const origin=appOrigin(env),{month,year}=await paddlePlans(env,{fetcher}),prices={month:month?.price,year:year?.price},db=new SupabaseDatabase(admin);let sent=0;
  for(const [row,stage] of due){
-  const message=trialEmail(stage,{origin,trialEndsAt:row.trial_ends_at,timeZone:row.time_zone,prices});
+  // In the language of the account's first workspace.
+  const state=(await loadWorkspace(db,row.owner_id).catch(()=>null))?.state;
+  const message=await inWorkspaceLanguage(env,state,()=>trialEmail(stage,{origin,trialEndsAt:row.trial_ends_at,timeZone:row.time_zone,prices}),{fetcher});
   const result=await send(db,row.owner_id,env,`trial:${stage}:${row.trial_ends_at}`,row.email,message).catch(()=>null);
   if(result?.status==='sent'){await admin.from('thrive_subscriptions').update({trial_email:stage,updated_at:now.toISOString()}).eq('owner_id',row.owner_id);sent++;}
  }

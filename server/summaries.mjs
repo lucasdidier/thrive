@@ -1,3 +1,4 @@
+import {inWorkspaceLanguage} from './email-language.mjs';
 import {dataBackend} from './runtime.mjs';
 import {loadWorkspace} from './store.mjs';
 import {workspaceOwner} from './workspace-directory.mjs';
@@ -29,7 +30,7 @@ export async function runSummaries(env,{now=new Date(),send=sendOwnerNotificatio
   for(const id of dir?.state?.workspaceIds||['default']){
    const workspace=workspaceOwner(owner,id),row=await loadWorkspace(db,workspace);if(!row)continue;
    const due=summaryDue(row.state,now);if(!due)continue;
-   const message=buildSummary(row.state,{now,frequency:due.frequency,origin:appOrigin(env)});if(!message)continue;
+   const message=await inWorkspaceLanguage(env,row.state,()=>buildSummary(row.state,{now,frequency:due.frequency,origin:appOrigin(env)}));if(!message)continue;
    try{const r=await send(db,workspace,env,`summary:${due.frequency}:${due.date}`,user.email,message);if(r.status==='sent')sent++;}catch{console.warn('Summary email could not be delivered.');}
   }
  }

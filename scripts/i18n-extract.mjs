@@ -9,8 +9,11 @@ const plural=new RegExp(String.raw`(?<![\w.$])Ln\([^,()]+(?:\([^()]*\))?,\s*(?:$
 const unescape=s=>s.replace(/\\(.)/g,(m,c)=>({n:'\n',t:'\t'})[c]??c);
 export function extractKeys(){
  const keys=new Map();
- for(const file of readdirSync(dir).filter(f=>f.endsWith('.js')&&f!=='i18n.js')){
-  const src=readFileSync(new URL(file,dir),'utf8');
+ // Browser modules, plus the server code that writes emails (it uses the same catalogs).
+ const serverDir=new URL('../server/',import.meta.url);
+ const sources=[...readdirSync(dir).filter(f=>f.endsWith('.js')&&f!=='i18n.js').map(f=>[f,new URL(f,dir)]),...readdirSync(serverDir).filter(f=>f.endsWith('.mjs')).map(f=>['server/'+f,new URL(f,serverDir)])];
+ for(const [file,url] of sources){
+  const src=readFileSync(url,'utf8');
   for(const m of src.matchAll(one)){const k=unescape(m[1]??m[2]??m[3]);if(!keys.has(k))keys.set(k,{file,plural:false});}
   for(const m of src.matchAll(plural)){const k=unescape(m[4]??m[5]??m[6]);keys.set(k,{file,plural:true,one:unescape(m[1]??m[2]??m[3])});}
  }

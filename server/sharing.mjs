@@ -107,7 +107,7 @@ export async function respondToShare(db,token,body,item=null,{env,notify=notifyF
 }
 export async function handleShared(request,db,token,env){try{
  const item=new URL(request.url).searchParams.get('item');
- if(request.method==='GET'){const {state,link,portalContext}=await resolveSharedResource(db,token,item);const result=clientProjection(state,link);if(link.entity==='form'){result.formRevision=await hashRequest(result.data);if(portalContext&&portalFormResponse(state,portalContext.clientId,portalContext.assignmentId)){result.actions=[];result.completed=true;}}if(portalContext)result.portal={title:state.clients.find(c=>c.id===portalContext.clientId).portal.title};return json(result);}
+ if(request.method==='GET'){const {state,link,portalContext}=await resolveSharedResource(db,token,item);const result=clientProjection(state,link);if(link.entity==='form'){result.formRevision=await hashRequest(result.data);if(portalContext&&portalFormResponse(state,portalContext.clientId,portalContext.assignmentId)){result.actions=[];result.completed=true;}}if(portalContext)result.portal={title:state.clients.find(c=>c.id===portalContext.clientId).portal.title};result.language=state.settings?.language||'en';return json(result);}
  if(request.method==='POST'){checkOrigin(request);const scope=await resolveSharedResource(db,token,item),limit=scope.link.entity==='form'?600000:20000;if(Number(request.headers.get('content-length'))>limit)throw new StoreError('Response is too large.',413);return json(await respondToShare(db,token,await readBody(request,limit),item,{env}));}
  return json({error:'Method not allowed.'},405);
  }catch(e){return errorResponse(e);}}

@@ -14,6 +14,15 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 // "November 10, 2026": plan dates can be a year away, so they carry the year.
 const day=iso=>{const t=Date.parse(iso);if(!Number.isFinite(t))return '';try{return new Intl.DateTimeFormat(language(),{month:'long',day:'numeric',year:'numeric',timeZone:zone()||'UTC'}).format(t);}catch{return new Intl.DateTimeFormat(language(),{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'}).format(t);}};
 const weekday=iso=>{const t=Date.parse(iso);if(!Number.isFinite(t))return '';try{return new Intl.DateTimeFormat(language(),{weekday:'long',month:'long',day:'numeric',timeZone:zone()||'UTC'}).format(t);}catch{return '';}};
+// "10 $ / Monat": the server sends the raw price ({amount, currency, interval, frequency}); English keeps the
+// server's label so it reads exactly as before.
+function localPrice(raw,fallback=''){
+ if(!raw||language()==='en'||!/^\d+$/.test(String(raw.amount??''))||!raw.currency)return fallback;
+ let amount;try{const f=new Intl.NumberFormat(language(),{style:'currency',currency:raw.currency}),digits=f.resolvedOptions().maximumFractionDigits,value=Number(raw.amount)/10**digits;amount=new Intl.NumberFormat(language(),{style:'currency',currency:raw.currency,minimumFractionDigits:Number.isInteger(value)?0:digits}).format(value);}catch{return fallback;}
+ const every=Math.max(1,Number(raw.frequency)||1),yearly=raw.interval==='year';
+ if(every>1)return yearly?L('{amount} every {n} years',{amount,n:every}):L('{amount} every {n} months',{amount,n:every});
+ return yearly?L('{amount} / year',{amount}):L('{amount} / month',{amount});
+}
 const btn=(text,action,extra='',cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`;
 
 export async function loadPlan(){
@@ -46,9 +55,10 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
  const plan=()=>getPlan();
  const status=text=>document.querySelectorAll('[data-plan-status]').forEach(el=>{el.textContent=text;el.hidden=!text;});
  // Monthly or yearly: the checkout offers whichever is picked (monthly first, as on the website).
- const options=()=>plan()?.plans||[];
+ const options=()=>(plan()?.plans||[]).map(o=>({...o,label:localPrice(o.amount,o.label)}));
+ const currentPrice=()=>localPrice(plan()?.priceAmount,plan()?.price||'');
  const chosen=()=>options().find(o=>o.id===choice)||options()[0]||null;
- const subscribeLabel=()=>{const label=chosen()?.label||plan()?.price;return label?L('Subscribe for {price}',{price:label}):L('Subscribe');};
+ const subscribeLabel=()=>{const label=chosen()?.label||currentPrice();return label?L('Subscribe for {price}',{price:label}):L('Subscribe');};
  const choose=()=>{
   const list=options(),button=btn(icon('card')+`<span data-plan-subscribe-label>${esc(subscribeLabel())}</span>`,'plan-subscribe','','primary');
   if(list.length<2)return `<div class="plan-choose">${button}</div>`;
@@ -109,7 +119,7 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   catch(error){switching=null;renderPlan();throw error;}
  }
  function switchRow(p,row){
-  const other=p.access.state==='active'&&p.interval?(p.plans||[]).find(o=>o.id!==p.interval):null;if(!other)return '';
+  const other=p.access.state==='active'&&p.interval?options().find(o=>o.id!==p.interval):null;if(!other)return '';
   const yearly=other.id==='year',pay=yearly?L('Pay yearly'):L('Pay monthly'),go=yearly?L('Switch to yearly'):L('Switch to monthly'),title=yearly?L('Switch to yearly billing'):L('Switch to monthly billing');
   if(switching?.plan!==other.id)return row(esc(pay),esc([other.label,other.saving?L('save {percent}%',{percent:other.saving}):''].filter(Boolean).join(' · ')),btn(esc(go),'plan-switch',`data-plan="${other.id}"`));
   const s=switching.preview;if(!s)return row(esc(title),esc(L('Checking the price with Paddle…')));
@@ -129,9 +139,9 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   const subscribe=choose(),portal=btn(icon('external')+esc(L('Manage billing')),'plan-portal');
   const plan_={
    trial:()=>row(esc(L('Free trial')),esc(`${L('Ends {date}',{date:day(a.trialEndsAt)})} · ${a.lastDay?L('last day'):Ln(a.daysLeft,'{n} day left','{n} days left')}`),subscribe),
-   active:()=>row('Thrive Cloud',[p.price,a.renewsAt?L('Renews {date}',{date:day(a.renewsAt)}):''].filter(Boolean).map(esc).join(' · '),portal)+switchRow(p,row),
+   active:()=>row('Thrive Cloud',[currentPrice(),a.renewsAt?L('Renews {date}',{date:day(a.renewsAt)}):''].filter(Boolean).map(esc).join(' · '),portal)+switchRow(p,row),
    canceling:()=>row('Thrive Cloud',esc(L('Canceled · Active until {date}',{date:day(a.endsAt)})),portal),
-   past_due:()=>callout({title:L('Your last payment failed'),tone:'negative',role:'alert',body:`<p>${esc(L('Update your payment method to keep using Thrive.'))}</p>`})+row('Thrive Cloud',esc(p.price||''),btn(icon('card')+esc(L('Update payment method')),'plan-payment','','primary')),
+   past_due:()=>callout({title:L('Your last payment failed'),tone:'negative',role:'alert',body:`<p>${esc(L('Update your payment method to keep using Thrive.'))}</p>`})+row('Thrive Cloud',esc(currentPrice()),btn(icon('card')+esc(L('Update payment method')),'plan-payment','','primary')),
    comped:()=>row('Thrive Cloud',esc(L('Free access'))),
    expired:()=>row(lockedTitle(a),'',subscribe),
    ended:()=>row(lockedTitle(a),'',subscribe),
