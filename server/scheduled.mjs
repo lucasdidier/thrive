@@ -1,6 +1,7 @@
 import {runSummaries} from './summaries.mjs';
 import {sendBetaInvites} from './beta.mjs';
 import {runBackup} from './backup.mjs';
+import {sendTrialEmails} from './subscription.mjs';
 import {adminClient} from './supabase-store.mjs';
 import {appOrigin} from './auth.mjs';
 import {reportError} from './guard.mjs';
@@ -11,6 +12,7 @@ export async function runScheduled(env,{jobs}={}){
   summaries:()=>runSummaries(env),
   invites:()=>sendBetaInvites(env,{admin:admin(),origin:appOrigin(env)}),
   backup:()=>runBackup(env,{admin:admin()}),
+  trials:()=>sendTrialEmails(env),
  };
  const results={};
  for(const [name,job] of Object.entries(jobs)){

@@ -18,6 +18,7 @@ Cloudflare Workers is the recommended target because the existing routes import 
 2. In its SQL editor, apply these files **once, in order**, to the new project:
    - `supabase/migrations/202610180001_thrive.sql`
    - `supabase/migrations/202610190001_nylas.sql`
+   - `supabase/migrations/202611100001_subscriptions.sql` (optional: Thrive Cloud's trial and Paddle billing, used only when `THRIVE_BILLING=paddle`; self-hosted installs leave it off)
 3. Verify the `thrive_*` tables exist and RLS is enabled. The first migration also creates the **private** `thrive-files` Storage bucket. Do not make it public or add broad client-write policies. Business writes run through the server and service-only RPCs.
 4. From project settings, obtain the project URL, publishable key, and server secret key. Legacy `anon` and `service_role` keys are also accepted through `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` respectively.
 5. Keep the secret/service-role key exclusively on the server. Never put it in `public/`, frontend code, an MCP client, or a `VITE_*`/`NEXT_PUBLIC_*` variable.

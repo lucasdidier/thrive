@@ -22,12 +22,13 @@ function section(s){
  return `<tr><td style="padding-top:28px;">${table(`<tr><td style="padding:0 0 8px;${type(14,20,600)}">${esc(s.title)}${s.count?`<span style="padding-left:6px;${type(14,20,400,C.muted)}">${esc(s.count)}</span>`:''}</td><td align="right" style="padding:0 0 8px;">${link}</td></tr>${(s.rows||[]).map(row).join('')}${more}`)}</td></tr>`;
 }
 
-export function emailLayout({origin='',title,meta='',preheader='',sections=[],action=null,footer=''}={}){
- const home=url(origin),logo=home?`${home}/apple-touch-icon.png`:'',settings=home?`${home}/#settings/notifications`:'';
+// body: plain paragraphs under the title. manage: the footer link, Notification settings by default.
+export function emailLayout({origin='',title,meta='',preheader='',body=[],sections=[],action=null,footer='',manage=null}={}){
+ const home=url(origin),logo=home?`${home}/apple-touch-icon.png`:'',settings=home?`${home}/${manage?.path||'#settings/notifications'}`:'',settingsLabel=esc(manage?.label||'Notification settings');
  const brand=`<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>${logo?`<td style="padding-right:8px;vertical-align:middle;"><img src="${logo}" width="26" height="26" alt="" style="display:block;border:0;border-radius:7px;"></td>`:''}<td style="vertical-align:middle;letter-spacing:-0.02em;${type(19,26,650)}">thrive</td></tr></table>`;
  const button=action&&url(action.href)?`<tr><td style="padding-top:32px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-radius:6px;background:${C.action};"><a href="${url(action.href)}" style="display:inline-block;padding:9px 16px;border-radius:6px;text-decoration:none;${type(13,18,600,'#ffffff')}">${esc(action.label)}</a></td></tr></table></td></tr>`:'';
- const card=`<h1 style="margin:0;letter-spacing:-0.02em;${type(22,28,600)}">${esc(title)}</h1>${meta?`<p style="margin:4px 0 0;${type(13,18,400,C.muted)}">${esc(meta)}</p>`:''}${table(sections.map(section).join('')+button)}`;
- const foot=`${esc(footer)}${settings?`${footer?' · ':''}<a href="${settings}" style="color:${C.muted};text-decoration:underline;">Notification settings</a>`:''}`;
+ const card=`<h1 style="margin:0;letter-spacing:-0.02em;${type(22,28,600)}">${esc(title)}</h1>${meta?`<p style="margin:4px 0 0;${type(13,18,400,C.muted)}">${esc(meta)}</p>`:''}${body.map(p=>`<p style="margin:16px 0 0;${type(14,22)}">${esc(p)}</p>`).join('')}${table(sections.map(section).join('')+button)}`;
+ const foot=`${esc(footer)}${settings?`${footer?' · ':''}<a href="${settings}" style="color:${C.muted};text-decoration:underline;">${settingsLabel}</a>`:''}`;
  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><title>${esc(title)}</title><style>@media (max-width:600px){.thrive-card{padding:24px 20px!important}.thrive-outer{padding:20px 12px!important}}</style></head>`
   +`<body style="margin:0;padding:0;background:${C.canvas};-webkit-text-size-adjust:100%;">`
   +(preheader?`<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0;font-size:1px;line-height:1px;color:${C.canvas};">${esc(preheader)}${'&nbsp;&zwnj;'.repeat(40)}</div>`:'')

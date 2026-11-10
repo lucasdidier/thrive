@@ -6,6 +6,14 @@ export function profileAvatar(settings,esc){
  const photo=settings.profilePhoto;
  return `<span class="avatar account-avatar">${photo&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(photo)?`<img src="${esc(photo)}" alt="">`:esc(settings.name.trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2)||'U')}</span>`;
 }
+// Thrive Cloud (subscription-ui.js): days left in the trial, or a failed payment, linking to Plan & billing.
+function planNotice(plan,icon,esc){
+ const a=plan?.access;
+ const link=(glyph,label,action,cls='',title=label)=>`<a class="app-nav__plan${cls}" href="#account/plan" title="${esc(title)}">${icon(glyph)}<span class="app-nav__label">${esc(label)}</span><span class="app-nav__plan-action app-nav__label">${action}</span></a>`;
+ if(a?.state==='trial')return link('clock',a.lastDay?'Last day of trial':`${a.daysLeft} day${a.daysLeft===1?'':'s'} left`,'Subscribe','',a.lastDay?'Last day of your free trial':`${a.daysLeft} day${a.daysLeft===1?'':'s'} left in your free trial`);
+ if(a?.state==='past_due')return link('card','Payment failed','Update',' is-negative');
+ return '';
+}
 const navIcon={overview:'home',proposals:'documents',contracts:'signature'};
 const item=(icon,esc,{href,action,label,glyph,current,extra='',attrs=''})=>`${href?`<a href="${href}"`:`<button type="button" data-action="${action}"`} class="app-nav__item${current?' is-active':''}" title="${esc(label)}" ${current?'aria-current="page"':''} ${attrs}>${icon(glyph)}<span class="app-nav__label">${esc(label)}</span>${extra}${href?'</a>':'</button>'}`;
 
@@ -37,6 +45,7 @@ export function sidebarHTML(s,{esc,icon,account={},connection,page,groups,hidden
    ${item(icon,esc,{action:'mcp-guide',label:'Use with AI',glyph:'sparkles'})}
    ${item(icon,esc,{action:'workspace-settings',label:'Settings',glyph:'gear',current:page.startsWith('settings')})}
   </div>
+  ${planNotice(account.plan,icon,esc)}
   ${s.settings.gettingStarted?.hidden?'':`<div class="app-nav__setup"><button type="button" class="getting-started-trigger app-nav__setup-btn ${done===6?'is-complete':''}" popovertarget="getting-started-menu" aria-expanded="false" aria-label="Getting started, ${done} of 6 steps complete" title="Getting started · ${done}/6"><span class="getting-started-orbit" aria-hidden="true"></span><span class="app-nav__label getting-started-label">Getting started</span><span class="getting-started-count">${done}/6</span></button></div>`}
   <div class="app-nav__account-row">
    <button type="button" class="app-nav__account" popovertarget="account-menu" aria-expanded="false" aria-label="Account menu for ${esc(s.settings.name)}" title="${esc(s.settings.name)} · ${esc(business)}">${profileAvatar(s.settings,esc)}<span class="app-nav__identity app-nav__label"><strong>${esc(s.settings.name)}</strong><small>${esc(business)}</small></span></button>
@@ -55,6 +64,7 @@ export function sidebarHTML(s,{esc,icon,account={},connection,page,groups,hidden
   <div class="menu-divider"></div>
   <button data-action="profile">${icon('user')}My profile</button>
   <button data-action="sidebar-go" data-href="#settings/notifications">${icon('notifications')}Notification settings</button>
+  ${account.plan?`<button data-action="sidebar-go" data-href="#account/plan">${icon('card')}Plan & billing</button>`:''}
   ${s.settings.gettingStarted?.hidden?`<button data-action="gs-show">${icon('check')}Getting started</button>`:''}
   <div class="app-nav__theme" role="group" aria-label="Appearance"><span>Appearance</span><div>${[['light','Light','sun'],['dark','Dark','moon']].map(([t,label,glyph])=>`<button data-action="sidebar-theme" data-theme="${t}" aria-pressed="${theme===t}" aria-label="${label} theme" title="${label}">${icon(glyph)}</button>`).join('')}</div></div>
   ${account.enabled?`<div class="menu-divider"></div><button data-action="signout">${icon('logout')}Sign out</button>`:''}

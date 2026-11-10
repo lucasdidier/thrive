@@ -33,6 +33,12 @@
     "THRIVE_ADMIN_EMAIL": "owner@example.com",
     "THRIVE_SUPPORT_EMAIL": "hello@runonthrive.com",
     "THRIVE_NOTIFICATIONS_FROM": "Thrive <notifications@runonthrive.com>",
+    // Thrive Cloud billing (docs/launch.md › 10): a 7-day trial without a card, then a Paddle subscription.
+    // "off" until Paddle is set up, then "paddle". The client-side token (test_… sandbox, live_… live) and
+    // the price id are public. The Paddle API key and webhook signing key are Worker secrets.
+    "THRIVE_BILLING": "off",
+    "PADDLE_CLIENT_TOKEN": "",
+    "PADDLE_PRICE_ID": "",
     "THRIVE_GOOGLE_LOGIN": "true",
     // Google returns to runonthrive.com/auth/google/callback once this client's secret is stored on the
     // Worker (docs/launch.md, step 3.7); until then sign-in uses Supabase's hosted redirect.

@@ -56,6 +56,15 @@ const server=createServer(async(req,res)=>{
    }catch(e){return json({error:e.message},404);}
   }
   if(url.pathname==='/api/communications'&&req.method==='GET')return json({connection:{provider:'none',account:null,configured:false},threads:[]});
+  // THRIVE_PLAN=trial|last-day|past_due|active|canceling|comped|expired|ended previews Thrive Cloud billing.
+  if(url.pathname==='/api/billing'){
+   const plan=process.env.THRIVE_PLAN;if(!plan)return json({enabled:false});
+   const day=n=>new Date(Date.now()+n*86400000).toISOString();
+   const access={trial:{state:'trial',locked:false,trialEndsAt:day(4.5),daysLeft:5,lastDay:false},'last-day':{state:'trial',locked:false,trialEndsAt:day(.4),daysLeft:1,lastDay:true},past_due:{state:'past_due',locked:false,renewsAt:day(27)},active:{state:'active',locked:false,renewsAt:day(27)},canceling:{state:'canceling',locked:false,endsAt:day(12)},comped:{state:'comped',locked:false},expired:{state:'expired',locked:true,trialEndsAt:day(-2)},ended:{state:'ended',locked:true}}[plan];
+   if(req.method==='POST')return json({error:'The design preview has no billing provider.'},503);
+   if(url.searchParams.has('export'))return json({error:'The design preview has no account data to export.'},503);
+   return json({enabled:true,owner:'preview',email:'alex@morgan.example',access,price:'$10 / month',billing:['active','canceling','past_due'].includes(plan),support:'hello@runonthrive.com',paddle:null});
+  }
   return json({error:'This isolated design preview has no external connections.'},503);
  }
  try{

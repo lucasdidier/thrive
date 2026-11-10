@@ -3,13 +3,16 @@ import {authContext,accountsEnabled,verifiedAccount} from './auth.mjs';
 import {SupabaseDatabase,adminClient,supabaseBucket} from './supabase-store.mjs';
 import {setRequestIdentity,ownerOf,errorResponse} from './http.mjs';
 import {StoreError} from './store.mjs';
+import {requireAccess} from './subscription.mjs';
 export function dataBackend(env){if(env.THRIVE_DATA_BACKEND==='supabase'){const client=adminClient(env);return {db:new SupabaseDatabase(client),bucket:supabaseBucket(client)};}if(env.THRIVE_DATA_BACKEND&&env.THRIVE_DATA_BACKEND!=='sites')throw new StoreError('Unknown database configuration.',503);return {db:env.DB,bucket:env.BUCKET};}
-/** @param {Request} request @param {any} env @param {(context: {request: Request, db: any, bucket: any, user: any}) => Promise<Response>} handler */
-export async function withRuntime(request,env,handler,{publicAccess=false,contextFactory=authContext}={}){let context;try{
+// allowLocked: the route stays open when the trial or subscription has ended (billing itself).
+/** @param {Request} request @param {any} env @param {(context: {request: Request, db: any, bucket: any, user: any}) => Promise<Response>} handler @param {{publicAccess?: boolean, contextFactory?: any, allowLocked?: boolean, access?: any}} [options] */
+export async function withRuntime(request,env,handler,{publicAccess=false,contextFactory=authContext,allowLocked=false,access=requireAccess}={}){let context;try{
  const backend=dataBackend(env);if(publicAccess)return await handler({request,...backend,user:null});
  let user;
  if(accountsEnabled(env)){
  context=contextFactory(request,env);user=await verifiedAccount(context,request,env);if(!user)throw new StoreError('Sign in to access this workspace.',401);
+ if(!allowLocked)await access(env,user);
  const expected=request.headers.get('x-thrive-account');if(expected&&expected!==user.owner)throw new StoreError('Your account changed in another tab. Reload to continue.',409);
  if(!['GET','HEAD'].includes(request.method)&&!request.headers.get('authorization')?.startsWith('Bearer ')){
  if(expected!==user.owner||request.headers.get('origin')!==context.origin)throw new StoreError('Reload your workspace before making changes.',403);

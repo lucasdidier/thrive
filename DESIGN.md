@@ -113,7 +113,7 @@ For DX and AX, the copy lives in the markup, so an agent can grep `class="hint"`
 
 Settings follow the shape of agency tools (Harvest, Productive, HoneyBook, Dubsado):
 
-- **Account:** Profile, Appearance, Notifications. Notifications are personal.
+- **Account:** Profile, Appearance, Notifications, and Plan & billing (Thrive Cloud only, when billing is on). Notifications are personal.
 - **Workspace:** General, Branding, Client portal, Custom fields, Sidebar, Activity log.
 - **Projects & documents:** Projects, Proposals, Contracts.
 - **Billing:** Rates & currencies, Services & packages, Invoices.

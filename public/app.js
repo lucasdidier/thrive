@@ -20,7 +20,8 @@ import {createDashboard} from './dashboard-ui.js';
 import {pageSections,sidebarGroups} from './sidebar-sections.js';
 let sidebarCustomizing=false,sidebarUnread=()=>0;
 import {initDatePicker} from './date-picker.js';
-import {createSettingsPage,settingsSection} from './settings-page.js';
+import {createSettingsPage,settingsSection,settingsSections} from './settings-page.js';
+import {createSubscriptionUI,loadPlan} from './subscription-ui.js';
 import {initFluid} from './fluid/bridge.js?v=workflow-pickers-1';
 import {createSettingsUI} from './settings-ui.js';
 import {createTagsUI} from './tags-ui.js';
@@ -58,6 +59,11 @@ import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,crea
 history.scrollRestoration='manual';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
+// Thrive Cloud plan (server/subscription.mjs). A locked plan shows the lock screen and the workspace never loads.
+account.plan=await loadPlan();
+const subscriptionUI=createSubscriptionUI({getPlan:()=>account.plan,setPlan:plan=>{account.plan=plan;},toast:message=>toast(message)});
+if(account.plan?.access.locked){subscriptionUI.showPaywall();await new Promise(()=>{});}
+settingsSections.find(s=>s.id==='plan').hidden=!account.plan;
 const storageKey='thrive-workspace-v1'+(account.enabled?':'+account.user.owner:'')+(account.workspaceId!=='default'?':workspace:'+account.workspaceId:'');
 const sidebarUI=initSidebarUI(storageKey);
 let state;try{state=upgradeWorkspace(migrate(JSON.parse(localStorage.getItem(storageKey))))}catch{state=upgradeWorkspace(seed())}
@@ -159,7 +165,7 @@ const journey=createJourneyUI({blocked:workspaceSync.isBlocked,projectEmails:mes
 const settingsUI=createSettingsUI({blocked:workspaceSync.isBlocked,getState:()=>state,open,dialog,esc,btn,icon,save,render,toast,tags:tagsUI,email:account.user?.email,go,projectDetail:id=>journey.projectDetail(id),clientDetail:id=>crm.clientDetail(id)});
 const workspaceManager=createWorkspaceManager({account,getState:()=>state,open,esc,btn,toast,isPending:workspaceSync.isPending,onCreated:()=>{draftGuard.clear();dialog.close();},canLeave:()=>!dialog.open||draftGuard.canLeave()});
 async function saveProfile(profile){const result=await workspaceRequest('PATCH',profile);account.profile=result.profile;Object.assign(state.settings,result.profile);}
-settingsPage=createSettingsPage({saveProfile,getState:()=>state,esc,icon,btn,save,render,toast,isBlocked:workspaceSync.isBlocked,email:account.user?.email,accountEnabled:account.enabled,closeDialog:()=>dialog.close(),open,dialogClass:c=>dialog.classList.add(c),load:async id=>{if(id==='services')catalogUI.handleClick('services',{dataset:{}});else if(id==='payments')billingUI.handleClick('payment-settings',{dataset:{}});else if(id==='invoices')billingUI.handleClick('invoice-templates',{dataset:{}});else if(id==='connections')await messagesUI.connections();else if(id==='mcp')clientImport.handleClick('mcp-guide',{dataset:{}});}});
+settingsPage=createSettingsPage({plan:subscriptionUI,saveProfile,getState:()=>state,esc,icon,btn,save,render,toast,isBlocked:workspaceSync.isBlocked,email:account.user?.email,accountEnabled:account.enabled,closeDialog:()=>dialog.close(),open,dialogClass:c=>dialog.classList.add(c),load:async id=>{if(id==='services')catalogUI.handleClick('services',{dataset:{}});else if(id==='payments')billingUI.handleClick('payment-settings',{dataset:{}});else if(id==='invoices')billingUI.handleClick('invoice-templates',{dataset:{}});else if(id==='connections')await messagesUI.connections();else if(id==='mcp')clientImport.handleClick('mcp-guide',{dataset:{}});}});
 onboarding=createOnboardingUI({getState:()=>state,save,saveProfile,btn,esc,icon,importClients:()=>clientImport.handleClick('ci-start',{dataset:{}}),start:kind=>{const target={invoice:'invoices',proposal:'proposals',contract:'contracts'}[kind]||'overview',action={invoice:'new-invoice',proposal:'new-proposal',contract:'new-contract'}[kind];const then=()=>{if(!action)return;const b=document.createElement('button');b.dataset.action=action;b.hidden=true;document.body.append(b);b.click();b.remove();};if(page===target){render();then();}else{addEventListener('hashchange',()=>setTimeout(then),{once:true});location.hash=target;}}});
 const fluidUI=initFluid({getState:()=>state,save,toast,open,dialog});
 workspaceSync.bind(()=>state,next=>{state=upgradeWorkspace(next);workflowSnapshot=snapshotWorkspace(state);},close=>{if(close){dialog.close();crm.resetAll();}render();recordPanel.refresh();});
@@ -187,7 +193,7 @@ document.addEventListener('click',e=>{
   void saveThen(()=>{shell();if(a==='gs-hide')document.querySelector('#sidebar .app-nav__account')?.focus();else document.querySelector('#getting-started-menu')?.showPopover();});return;}
  if(a==='gs-skip'||a==='gs-undo'){skipGettingStarted(state,el.dataset.step,a==='gs-undo');void saveThen(()=>{toast(a==='gs-undo'?'Step restored.':'Step skipped. You can come back to it anytime.');});return;}
  if(a==='more-actions'){toggleMoreActions(el);return;}
- if(notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
+ if(subscriptionUI.click(a,el)||notificationsUI.click(a,el)||settingsPage.click(a,el)||settingsUI.click(a,el)||clientImport.handleClick(a,el)||recordPanel.handleClick(a,el)||listView.handleClick(a,el)||bulk.handleClick(a,el)||portalUI.handleClick(a,el)||timeUI.handleClick(a,el)||formsUI.handleClick(a,el)||messagesUI.handleClick(a,el)||shareUI.handleClick(a,el)||customFields.handleClick(a,el)||catalogUI.handleClick(a,el)||workflowUI.handleClick(a,el)||scheduleUI.handleClick(a,el)||chatUI.handleClick(a,el)||billingUI.handleClick(a,el)||crm.handleClick(a,el)||workspaceUI.handleClick(a,el)||journey.handleClick(a,el))return;
  if(a==='signout'){if(workspaceSync.isPending())throw Error('Finish syncing your changes before signing out.');signOut().catch(err=>toast(err.message));return;}
  if(account.enabled&&['reset-preview','reset-data'].includes(a))throw Error('Sample data reset is only available in the demo.');
  if(a==='close'){draftGuard.leave(()=>dialog.close());}

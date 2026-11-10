@@ -5,10 +5,11 @@ import {summaryDue,buildSummary} from '../public/summary-domain.js';
 import {sendOwnerNotification} from './nylas.mjs';
 import {appOrigin} from './auth.mjs';
 import {inviteOnly,openAccess,betaUsers,confirmedUsers} from './beta.mjs';
+import {lockedOwners} from './subscription.mjs';
 
 // Hourly cron: each workspace gets its summary at 8:00 in its own time zone.
 // Read-only on workspaces; delivery ids make reruns within the hour harmless.
-export async function runSummaries(env,{now=new Date(),send=sendOwnerNotification,backend=dataBackend}={}){
+export async function runSummaries(env,{now=new Date(),send=sendOwnerNotification,backend=dataBackend,locked=lockedOwners}={}){
  if(env.THRIVE_DATA_BACKEND!=='supabase'||(!env.THRIVE_OWNER_EMAIL&&!inviteOnly(env)&&!openAccess(env)))return {sent:0};
  const {db}=backend(env);
  let users;
@@ -19,8 +20,11 @@ export async function runSummaries(env,{now=new Date(),send=sendOwnerNotificatio
   if(error)throw Error('Account lookup failed.');
   users=(data?.users||[]).filter(u=>u.email?.toLowerCase()===env.THRIVE_OWNER_EMAIL.toLowerCase()&&u.email_confirmed_at).slice(0,1);
  }
+ // Accounts whose trial or subscription has ended get no summary: its links open a locked workspace.
+ const skip=await locked(env,{admin:db.client,now});
  let sent=0;
  for(const user of users){
+  if(skip.has('supabase:'+user.id))continue;
   const owner='supabase:'+user.id,dir=await loadWorkspace(db,`${owner}:workspace-directory`);
   for(const id of dir?.state?.workspaceIds||['default']){
    const workspace=workspaceOwner(owner,id),row=await loadWorkspace(db,workspace);if(!row)continue;
