@@ -126,7 +126,7 @@ test('a failing scheduled job alerts and does not stop the others',async()=>{
 });
 test('landing, legal pages and production config ship together',()=>{
  const landing=readFileSync(new URL('../ui/landing.html',import.meta.url),'utf8');
- for(const s of ['7 days free, then $10 a month.','https://github.com/lucasdidier/thrive','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
+ for(const s of ['7 days free, then $10 a month or $100 a year.','https://github.com/lucasdidier/thrive','/privacy','/terms','/auth/sign-in'])assert.ok(landing.includes(s),s);
  // Sign-up is open: every "Start free trial" goes straight to it, and nothing asks for an invite.
  const trials=[...landing.matchAll(/<a [^>]*href="([^"]+)"[^>]*>Start free trial/g)].map(m=>m[1]);
  assert.ok(trials.length>=4&&trials.every(h=>h==='/auth/sign-up'),'trial buttons lead to sign-up');

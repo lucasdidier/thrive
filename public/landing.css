@@ -931,6 +931,8 @@ button.m-item:hover{background:var(--nav-hover)}
 .plan-price{display:flex;align-items:baseline;gap:6px;margin-top:8px}
 .plan-price strong{font-size:clamp(46px,4.6vw,64px);font-weight:620;letter-spacing:-.04em;line-height:1}
 .plan-price span{color:var(--text-2)}
+.plan-price-alt{margin:8px 0 0;color:var(--text-2);font-size:var(--t-s)}
+.plan-price-alt strong{color:var(--text);font-weight:620}
 .plan-note{margin:12px 0 28px;color:var(--text-2);font-size:var(--t-s);max-width:36ch}
 .plan-card .btn{margin-top:auto}
 .plan-fine{margin-top:10px;color:var(--text-3);font-size:14px;text-align:center}
