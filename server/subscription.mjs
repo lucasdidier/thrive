@@ -7,10 +7,10 @@ import {json,readBody,errorResponse} from './http.mjs';
 import {adminClient,SupabaseDatabase} from './supabase-store.mjs';
 import {adminEmail} from './beta.mjs';
 import {appOrigin} from './auth.mjs';
-import {sendOwnerNotification} from './nylas.mjs';
+import {sendOwnerNotification,disconnectNylas} from './nylas.mjs';
 import {workspaceOwner} from './workspace-directory.mjs';
-import {planAccess,trialEmailDue,trialEmail,priceLabel,TRIAL_DAYS} from '../public/subscription-domain.js';
-import {paddleRequest,verifyPaddleSignature,subscriptionSnapshot,paddlePrice} from './paddle.mjs';
+import {planAccess,trialEmailDue,trialEmail,priceLabel,yearlySaving,lockedSince,TRIAL_DAYS} from '../public/subscription-domain.js';
+import {paddleRequest,verifyPaddleSignature,subscriptionSnapshot,paddlePlans} from './paddle.mjs';
 
 const DAY=86400000;
 const COLUMNS='owner_id,email,time_zone,trial_ends_at,trial_email,comped,paddle_customer_id,paddle_subscription_id,status,period_ends_at,cancel_at,price_id,event_at';
@@ -45,6 +45,13 @@ export async function accountPlan(env,user,{admin,now=new Date(),fresh=false}={}
  return {row,access};
 }
 
+// Email & calendar (Nylas) cost Thrive money per connected account, so on Thrive Cloud they come with a paid
+// plan: a trial can't connect one. Self-hosted installs (billing off) and free access are never limited.
+export async function needsPaidPlan(env,user,options={}){
+ if(!billingEnabled(env)||!user?.owner)return false;
+ return (await accountPlan(env,user,options)).access.state==='trial';
+}
+
 export function lockedMessage(env,access){
  let origin='';try{origin=appOrigin(env);}catch{}
  return `${access.state==='ended'?'Your Thrive subscription has ended':'Your Thrive free trial has ended'}. Subscribe${origin?' at '+origin:''} to keep using Thrive.`;
@@ -58,9 +65,12 @@ export async function requireAccess(env,user,options){
 
 const validZone=tz=>{if(typeof tz!=='string'||!tz||tz.length>64)return false;try{new Intl.DateTimeFormat('en-US',{timeZone:tz});return true;}catch{return false;}};
 async function planResponse(env,user,{admin,fetcher,now},extra={}){
- const {row,access}=await accountPlan(env,user,{admin,now}),price=await paddlePrice(env,{fetcher});
- const token=String(env.PADDLE_CLIENT_TOKEN||''),priceId=String(env.PADDLE_PRICE_ID||'');
- return json({enabled:true,owner:user.owner,email:user.email||'',access,price:priceLabel(price),billing:!!row.paddle_customer_id,support:String(env.THRIVE_SUPPORT_EMAIL||''),paddle:token&&priceId?{token,priceId,sandbox:token.startsWith('test_')}:null,...extra});
+ const {row,access}=await accountPlan(env,user,{admin,now}),{month,year}=await paddlePlans(env,{fetcher});
+ const token=String(env.PADDLE_CLIENT_TOKEN||'');
+ // price: what this account pays (its subscription's plan), else the monthly price. plans: what checkout offers.
+ const current=year&&row.price_id===year.priceId?year:month;
+ const plans=[month&&{id:'month',priceId:month.priceId,label:priceLabel(month.price),saving:0},year&&{id:'year',priceId:year.priceId,label:priceLabel(year.price),saving:yearlySaving(month?.price,year.price)}].filter(Boolean);
+ return json({enabled:true,owner:user.owner,email:user.email||'',access,price:priceLabel(current?.price),interval:row.paddle_subscription_id&&current?(current===year?'year':'month'):null,plans,billing:!!row.paddle_customer_id,support:String(env.THRIVE_SUPPORT_EMAIL||''),paddle:token&&month?{token,priceId:month.priceId,sandbox:token.startsWith('test_')}:null,...extra});
 }
 
 // After Paddle's checkout.completed: check the transaction belongs to this account, then record the
@@ -78,6 +88,26 @@ async function confirmCheckout(env,user,body,{admin,fetcher}){
  await apply(admin,{...subscriptionSnapshot(sub,{owner:user.owner,eventAt:sub.updated_at}),email:user.email||''});
  forgetPlan(user.owner);
  return {pending:false};
+}
+
+// Monthly ↔ yearly. Paddle prorates now: the unused part of the current period counts against the new
+// price (charged today, or kept as credit when it covers more), and the subscription renews on the new cycle.
+async function switchPlan(env,user,body,{admin,fetcher,now},{preview=false}={}){
+ const {row,access}=await accountPlan(env,user,{admin,now,fresh:true}),{month,year}=await paddlePlans(env,{fetcher});
+ const target=body.plan==='year'?year:body.plan==='month'?month:null;
+ if(!target)throw new StoreError('Choose monthly or yearly.');
+ if(access.state==='canceling')throw new StoreError('Your subscription is set to end. Resume it in Manage billing, then switch.',409);
+ if(access.state==='past_due')throw new StoreError('Update your payment method first, then switch.',409);
+ if(access.state!=='active'||!row.paddle_subscription_id)throw new StoreError('Subscribe first, then choose how you pay.',409);
+ if(row.price_id===target.priceId)throw new StoreError('You’re already on this plan.',409);
+ const sub=await paddleRequest(env,`/subscriptions/${encodeURIComponent(row.paddle_subscription_id)}${preview?'/preview':''}`,{method:'PATCH',body:{proration_billing_mode:'prorated_immediately',items:[{price_id:target.priceId,quantity:1}]},fetcher,refused:'Paddle couldn’t change your plan right now. Your plan is unchanged; try again later or use Manage billing.'});
+ if(preview){
+  const result=sub.update_summary?.result,totals=sub.immediate_transaction?.details?.totals;
+  return {plan:body.plan,action:result?.action==='credit'?'credit':'charge',amount:String(result?.amount??totals?.grand_total??''),currency:String(result?.currency_code||sub.currency_code||''),renewsAt:sub.next_billed_at||sub.current_billing_period?.ends_at||null};
+ }
+ await apply(admin,{...subscriptionSnapshot(sub,{owner:user.owner,eventAt:sub.updated_at||now.toISOString()}),email:user.email||''});
+ forgetPlan(user.owner);
+ return {switched:body.plan};
 }
 
 // Paddle's customer portal: payment method, invoices, cancellation. Links expire, so each click asks anew.
@@ -117,6 +147,8 @@ export async function handleBilling(request,env,{db,user},{admin,fetcher=fetch,n
  const body=await readBody(request,4000);
  if(body.action==='confirm'){const result=await confirmCheckout(env,user,body,options);return planResponse(env,user,options,result);}
  if(body.action==='portal')return portal(env,user,options);
+ if(body.action==='switch-preview')return json(await switchPlan(env,user,body,options,{preview:true}));
+ if(body.action==='switch'){const result=await switchPlan(env,user,body,options);return planResponse(env,user,options,result);}
  throw new StoreError('Unknown billing action.');
 }
 
@@ -146,6 +178,29 @@ export async function handlePaddleWebhook(request,env,{admin,now=Date.now()}={})
  return json({ok:true,applied});
 }catch(error){return errorResponse(error);}}
 
+// Nylas bills every connected email & calendar account each month, so an account locked for 30 days loses
+// its connections (hourly job). Its workspaces stay; subscribing again lets it reconnect.
+export const LOCKED_DISCONNECT_DAYS=30;
+export async function disconnectLockedAccounts(env,{admin,now=new Date(),disconnect=disconnectNylas}={}){
+ if(!billingEnabled(env)||!env.NYLAS_CLIENT_ID)return {disconnected:0};
+ admin??=adminClient(env);
+ const {data,error}=await admin.from('thrive_nylas_connections').select('owner_id').limit(5000);
+ if(error)throw Error('Connection lookup failed.');
+ const byAccount=new Map();
+ for(const {owner_id:owner} of data||[]){const account=String(owner).split(':workspace:')[0];if(OWNER.test(account))byAccount.set(account,[...(byAccount.get(account)||[]),owner]);}
+ const accounts=[...byAccount.keys()],db=new SupabaseDatabase(admin);let disconnected=0;
+ for(let i=0;i<accounts.length;i+=100){
+  const {data:rows,error:lookup}=await admin.from('thrive_subscriptions').select(COLUMNS).in('owner_id',accounts.slice(i,i+100));
+  if(lookup)throw Error('Subscription lookup failed.');
+  for(const row of rows||[]){
+   const since=isAdmin(env,row.email)?null:lockedSince(row,{now});
+   if(since==null||now.getTime()-since<LOCKED_DISCONNECT_DAYS*DAY)continue;
+   for(const owner of byAccount.get(row.owner_id)){try{await disconnect(db,owner,env);disconnected++;}catch(e){console.warn('nylas.locked.disconnect',owner,e?.message);}}
+  }
+ }
+ return {disconnected};
+}
+
 // Owners whose plan is locked, for jobs that skip them (summaries).
 export async function lockedOwners(env,{admin,now=new Date()}={}){
  const locked=new Set();if(!billingEnabled(env))return locked;
@@ -168,9 +223,9 @@ export async function sendTrialEmails(env,{admin,send=sendOwnerNotification,now=
  if(error)throw Error('Trial lookup failed.');
  const due=(data||[]).map(row=>[row,trialEmailDue(row,{now})]).filter(([row,stage])=>stage&&row.email&&!isAdmin(env,row.email));
  if(!due.length)return {sent:0};
- const origin=appOrigin(env),price=await paddlePrice(env,{fetcher}),db=new SupabaseDatabase(admin);let sent=0;
+ const origin=appOrigin(env),{month,year}=await paddlePlans(env,{fetcher}),prices={month:month?.price,year:year?.price},db=new SupabaseDatabase(admin);let sent=0;
  for(const [row,stage] of due){
-  const message=trialEmail(stage,{origin,trialEndsAt:row.trial_ends_at,timeZone:row.time_zone,price});
+  const message=trialEmail(stage,{origin,trialEndsAt:row.trial_ends_at,timeZone:row.time_zone,prices});
   const result=await send(db,row.owner_id,env,`trial:${stage}:${row.trial_ends_at}`,row.email,message).catch(()=>null);
   if(result?.status==='sent'){await admin.from('thrive_subscriptions').update({trial_email:stage,updated_at:now.toISOString()}).eq('owner_id',row.owner_id);sent++;}
  }

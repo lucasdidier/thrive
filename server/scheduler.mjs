@@ -47,9 +47,9 @@ export async function publishBookingPage(db,owner,env,id,{remove=false,existingO
  if(!r.data?.id||r.data.slug!==slug||r.data.requires_session_auth===true)throw new StoreError('Nylas did not confirm publication. Refresh booking pages before retrying.',502);
  return {published:true,url:`https://book.nylas.com/${env.NYLAS_REGION||'eu'}/${encodeURIComponent(env.NYLAS_CLIENT_ID)}/${slug}`};
 }
-export async function handleScheduler(request,db,env,fetcher=fetch){try{
+export async function handleScheduler(request,db,env,fetcher=fetch,{needsPlan=async()=>false}={}){try{
  const owner=ownerOf(request);checkOrigin(request);
- if(request.method==='GET')return json(await schedulerStatus(db,owner,env,fetcher));
+ if(request.method==='GET'){const status=await schedulerStatus(db,owner,env,fetcher);if(status.connection?.configured&&!status.connection.account&&await needsPlan())status.connection.requiresPlan=true;return json(status);}
  if(request.method!=='POST')throw new StoreError('Method not allowed.',405);
  const body=await readBody(request,5000);
  if(!['publish','unpublish','sync'].includes(body.action)||typeof body.id!=='string')throw new StoreError('Choose an event type and action.');

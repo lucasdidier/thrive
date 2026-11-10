@@ -39,6 +39,7 @@
     "THRIVE_BILLING": "off",
     "PADDLE_CLIENT_TOKEN": "",
     "PADDLE_PRICE_ID": "",
+    "PADDLE_YEARLY_PRICE_ID": "",
     "THRIVE_GOOGLE_LOGIN": "true",
     // Google returns to runonthrive.com/auth/google/callback once this client's secret is stored on the
     // Worker (docs/launch.md, step 3.7); until then sign-in uses Supabase's hosted redirect.

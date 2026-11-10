@@ -127,6 +127,8 @@ To switch it off again without touching Supabase, set `"THRIVE_MCP_OAUTH": "off"
 
 Thrive Cloud: every new account gets a 7-day trial without a card, then subscribes through Paddle. Thrive keeps the trial itself (`thrive_subscriptions`); Paddle only sees people who subscribe. It stays off until `THRIVE_BILLING` is `"paddle"`, and self-hosted installs never see it.
 
+- **Plans:** $10 a month (`PADDLE_PRICE_ID`) or $100 a year (`PADDLE_YEARLY_PRICE_ID`, optional). Plan & billing and the lock screen offer both, with the yearly saving worked out from the two prices. Subscribers switch in Plan & billing: Paddle shows what's charged today (or the credit left over) before the switch, and prorates the unused time.
+- **During the trial:** a banner over the workspace shows the days left and the end date. Email and calendar sync, and the booking pages that need them, wait for a paid plan, because each connected account costs about $2 a month with Nylas. A trial sees **See plans** instead of **Connect**. An account connected before the trial started keeps working. Once an account has been locked for 30 days, the hourly job disconnects its email & calendar accounts (and drops the synced email copies) so Nylas stops billing for them.
 - **Trial emails** (from `THRIVE_NOTIFICATIONS_FROM`, hourly job): trial started, 3 days left, last day, trial ended. They need `RESEND_API_KEY`.
 - **When the trial ends:** the app shows a lock screen with **Subscribe**, **Download your data** and **Sign out**. Every signed-in API call answers 402, including MCP. Client links, forms and booking pages keep working. Summary emails stop.
 - **Subscribing:** Paddle's checkout opens on top of Thrive. Access opens as soon as Thrive confirms the payment with Paddle; the webhook keeps it current after that. **Account settings › Plan & billing › Manage billing** opens Paddle's portal, where people change their card, see invoices or cancel.
@@ -137,16 +139,16 @@ Thrive Cloud: every new account gets a 7-day trial without a card, then subscrib
 Sandbox checkouts work on any domain and take test cards, so staging is where to try the whole flow. Staging has no admin email, so your own account gets the trial.
 
 1. In the staging Supabase SQL Editor, run `supabase/migrations/202611100001_subscriptions.sql`.
-2. In the Paddle sandbox (`sandbox-vendors.paddle.com`), go to Catalog → Products → New product. Name it "Thrive Cloud" with the tax category "Standard digital goods". Add a price of $10, billed monthly, with no trial (Thrive runs the trial). Copy the price ID (`pri_…`).
+2. In the Paddle sandbox (`sandbox-vendors.paddle.com`), go to Catalog → Products → New product. Name it "Thrive Cloud" with the tax category "Standard digital goods". Add a price of $10, billed monthly, with no trial (Thrive runs the trial), and a second one of $100, billed annually. Set the maximum quantity of each to 1. Copy both price IDs (`pri_…`).
 3. Settings (`/settings/authentication`) → Developer tools → Authentication:
    - Create a **client-side token** (`test_…`).
-   - Create an **API key** (`pdl_sdbx_apikey_…`) with read access to transactions, subscriptions and prices, and write access to customer portal sessions.
+   - Create an **API key** (`pdl_sdbx_apikey_…`) with read access to transactions, subscriptions and prices, and write access to subscriptions (switching monthly ↔ yearly) and customer portal sessions.
 4. Events → Notifications → New destination:
    - URL: `https://thrive.lucas-didier-3b9.workers.dev/api/billing/webhook`.
    - Events: every `subscription.*` event.
    - Copy its secret key (`pdl_ntfset_…`).
 5. Checkout → Checkout settings: set the **Default payment link** to `https://thrive.lucas-didier-3b9.workers.dev/checkout`.
-6. In `wrangler.self-hosted.jsonc`, set `"THRIVE_BILLING": "paddle"`, `PADDLE_CLIENT_TOKEN` (the `test_…` token) and `PADDLE_PRICE_ID`. Both are public values.
+6. In `wrangler.self-hosted.jsonc`, set `"THRIVE_BILLING": "paddle"`, `PADDLE_CLIENT_TOKEN` (the `test_…` token), `PADDLE_PRICE_ID` (monthly) and `PADDLE_YEARLY_PRICE_ID`. All are public values.
 7. Store the two secrets, pasting each when asked:
    `cd ~/Documents/Code/Thrive/prototype && PATH=~/.asdf/installs/nodejs/24.9.0/bin:$PATH npx wrangler secret put PADDLE_API_KEY --config wrangler.self-hosted.jsonc`
    `cd ~/Documents/Code/Thrive/prototype && PATH=~/.asdf/installs/nodejs/24.9.0/bin:$PATH npx wrangler secret put PADDLE_WEBHOOK_SECRET --config wrangler.self-hosted.jsonc`
@@ -165,7 +167,7 @@ Sandbox checkouts work on any domain and take test cards, so staging is where to
 3. Run the migration in the production Supabase project.
 4. **People who joined during the free beta:** the terms promise them 30 days' notice before any charge. Before you switch billing on, give every existing account 30 days in the production SQL Editor. Their "trial started" email then names the date.
    `insert into thrive_subscriptions(owner_id, email, trial_ends_at) select 'supabase:' || id, lower(email), now() + interval '30 days' from auth.users where email is not null on conflict (owner_id) do update set trial_ends_at = greatest(thrive_subscriptions.trial_ends_at, excluded.trial_ends_at);`
-5. Set the three values in `wrangler.production.jsonc`. Store the secrets with `--config wrangler.production.jsonc`, then deploy. `npm run check:production` refuses a billing config without a token or price ID.
+5. Set the four values in `wrangler.production.jsonc`. Store the secrets with `--config wrangler.production.jsonc`, then deploy. `npm run check:production` refuses a billing config without a token or price ID.
 
 ## Running the beta
 

@@ -1,19 +1,26 @@
-/* Thrive Cloud plan (subscription-ui.js): the sidebar trial notice, Plan & billing, and the lock screen. */
+/* Thrive Cloud plan (subscription-ui.js): the trial banner, Plan & billing, and the lock screen. */
 
-/* Sidebar: days left in the trial, or a failed payment. Same geometry as .app-nav__item. */
-.app-nav__plan{display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 6px 0 11px;border-radius:8px;box-sizing:border-box;color:var(--muted);font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;overflow:hidden}
-.app-nav__plan>svg{flex:none;width:16px;height:16px}
-.app-nav__plan .app-nav__label:first-of-type{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.app-nav__plan-action{flex:none;padding:2px 8px;border-radius:var(--radius-badge);color:var(--link);font-weight:600}
-.app-nav__plan:hover{background:var(--hover);color:var(--text)}
-.app-nav__plan:hover .app-nav__plan-action{background:color-mix(in srgb,var(--link) 10%,transparent)}
-.app-nav__plan.is-negative,.app-nav__plan.is-negative .app-nav__plan-action{color:var(--negative)}
-.app-nav__plan:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
-@media (max-width:650px){.app-nav__plan{display:none}}
+/* Banner over the workspace while the trial runs, or when a payment failed (subscription-ui.js). */
+.plan-banner{display:flex;align-items:center;justify-content:center;gap:8px;min-height:32px;padding:5px 16px;box-sizing:border-box;background:var(--info-bg);color:var(--text);font-size:12.5px;line-height:18px;text-align:center}
+.plan-banner>svg{flex:none;width:14px;height:14px;color:var(--info)}
+.plan-banner strong{font-weight:600}
+.plan-banner a,.plan-banner button{flex:none;padding:0;border:0;background:none;color:var(--link);font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
+.plan-banner a:hover,.plan-banner button:hover{text-decoration:underline}
+.plan-banner a:focus-visible,.plan-banner button:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+.plan-banner.is-warning{background:var(--warning-bg)}
+.plan-banner.is-warning>svg{color:var(--warning)}
+.plan-banner.is-negative{background:var(--negative-bg)}
+.plan-banner.is-negative>svg{color:var(--negative)}
+@media (max-width:650px){.plan-banner{justify-content:flex-start;text-align:left}}
 
 /* Plan & billing: the loaded cards sit in #plan-settings without changing the page's card spacing. */
 .plan-settings{display:contents}
 .plan-status{margin:12px 0 0;color:var(--muted)}
+/* Monthly or yearly, then Subscribe. */
+.plan-choose{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+.paywall-card .plan-choose{flex-direction:column;align-items:stretch;width:100%;margin-top:12px}
+.paywall-card .plan-choose .settings-segmented{align-self:center}
+.paywall-card .plan-choose [data-action=plan-subscribe]{width:100%;min-height:40px;justify-content:center}
 
 /* Lock screen: covers the app until the account subscribes. */
 .paywall{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:24px 16px;overflow:auto;background:var(--surface-canvas,var(--bg))}
@@ -21,7 +28,6 @@
 .paywall-brand{display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;color:var(--text);font-size:19px;font-weight:650;letter-spacing:-.02em;text-decoration:none}
 .paywall-card h1{margin:4px 0 0;font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.02em}
 .paywall-card>p{margin:0;color:var(--muted);font-size:14px;line-height:21px}
-.paywall-card>[data-action=plan-subscribe]{width:100%;min-height:40px;margin-top:12px;justify-content:center}
 .paywall-card .plan-status{margin:0}
 .paywall-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:4px}
 .paywall-card .paywall-help{margin-top:8px;font-size:12px;line-height:18px}

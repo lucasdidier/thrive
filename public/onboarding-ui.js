@@ -1,6 +1,7 @@
 // Post-sign-up onboarding: questions on the left, a live preview of the workspace on the right,
-// like the sign-in page. Seven short steps; the four setup steps are the Getting started checklist
-// (each Continue or Skip ticks it), and the last one picks where to start.
+// like the sign-in page. Six short steps; the three setup steps are the Getting started checklist
+// (each Continue or Skip ticks it), and the last one picks where to start. Email and calendar wait for the
+// Getting started checklist: on Thrive Cloud they come with a paid plan.
 // Business rules live in onboarding-domain.js; this module only asks and shows.
 import {countries,countryFlag,suggestedCurrency,needsOnboarding,saveOnboardingProfile,chooseVertical,onboardingServiceRows,saveOnboardingServices,recommendedWorkflows,starterWorkflow,enableStarterWorkflow,completeOnboarding} from './onboarding-domain.js';
 import {verticals} from './catalog-starters.js';
@@ -10,11 +11,10 @@ import {featureIcon} from './feature-icon.js';
 import {saveClient} from './domain.js';
 import {readImageUpload} from './image-upload.js';
 import {completeGettingStarted,skipGettingStarted} from './getting-started.js';
-import {connectActions} from './connection-settings.js';
 
-export const onboardingSteps=['you','business','services','clients','connect','workflows','start'];
-const SETUP=['services','clients','connect','workflows','start'];
-const checklist={services:'services',clients:'clients',connect:'connections',workflows:'workflows'};
+export const onboardingSteps=['you','business','services','clients','workflows','start'];
+const SETUP=['services','clients','workflows','start'];
+const checklist={services:'services',clients:'clients',workflows:'workflows'};
 const units={item:'Fixed price',hour:'Per hour',day:'Per day',week:'Per week',month:'Per month'};
 const placeholderName=name=>!String(name||'').trim()||/^your name$/i.test(String(name).trim());
 const initials=name=>String(name||'').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
@@ -25,11 +25,12 @@ export function resumeStep(s){
  const o=s.settings.onboarding||{};
  if(o.step==='profile'||!o.step)return o.setupStep==='business'?'business':'you';
  if(o.step==='vertical')return 'business';
+ if(o.setupStep==='connect')return 'workflows'; // the email & calendar step was removed
  return SETUP.includes(o.setupStep)?o.setupStep:'services';
 }
 
 export function createOnboardingUI({getState,save,saveProfile,btn,esc,icon,importClients,start}){
- let root=null,step='you',busy=false,connection=null,connectionLoaded=false;
+ let root=null,step='you',busy=false;
  const draft={};
  const S=getState;
 
@@ -72,11 +73,6 @@ export function createOnboardingUI({getState,save,saveProfile,btn,esc,icon,impor
    <div class="ob-row">${field('Contact person <em>Optional</em>',`<input name="clientContact" maxlength="100" value="${esc(draft.client.contact)}" placeholder="Sophie Chen">`)}
    ${field('Email',`<input name="clientEmail" type="email" maxlength="254" value="${esc(draft.client.email)}" placeholder="sophie@juniper.studio">`)}</div>
    <button type="button" class="ob-alt" data-ob="import">${icon('download')}Import clients from a CSV file instead</button>`};},
-  connect:()=>{const c=connection,a=c?.account;return {title:'Connect email & calendar',lede:'See client emails next to their projects, send from Thrive and offer booking times from your real calendar. Nothing is sent without your review.',body:
-   !connectionLoaded?`<p class="ob-note">Checking your connection…</p>`
-   :a?`<p class="ob-done">${icon('check')}Connected as <b>${esc(a.email||'your account')}</b></p>`
-   :c?.configured?`<div class="ob-connect">${connectActions(c,btn)}</div><p class="ob-note">You’ll come back here after you allow access.</p>`
-   :`<p class="ob-note">Email & calendar connections aren’t available yet. You can connect later in Settings.</p>`};},
   workflows:()=>({title:'Automate the busywork',lede:'Workflows take care of routine steps in the background. Emails are only drafted, never sent. The ones that fit your business are on.',body:`
    <ul class="ob-list">${flowRows().map(f=>`<li class="ob-flowrow${f.on?' is-on':''}">${featureIcon(f.icon,'sm')}<label class="ob-flowtext" for="ob-flow-${f.key}"><b>${esc(f.name)}</b><small>${esc(f.description)}</small></label><button type="button" class="ob-icon" data-ob="flow-edit" data-key="${f.key}" aria-label="Edit ${esc(f.name)}">${icon('edit')}</button><input type="checkbox" role="switch" class="ob-switch" id="ob-flow-${f.key}" name="flow" value="${f.key}" ${f.on?'checked':''}></li>`).join('')}</ul>`}),
   start:()=>({title:`You’re all set${draft.name?', '+esc(draft.name.split(/\s+/)[0]):''}`,lede:'Where would you like to start?',body:`
@@ -107,7 +103,6 @@ export function createOnboardingUI({getState,save,saveProfile,btn,esc,icon,impor
    case 'business':case 'start':{const sample=svcs[0]||{name:'Project work',rate:250000};return `<div class="ob-paper"><div class="ob-phead">${avatar('sm')}<b>${esc(biz)}</b>${draft.country?`<small>${countryFlag(draft.country)}</small>`:''}</div><p class="ob-kind">Invoice · INV-001</p><p class="ob-to">Billed to <b>${esc(S().clients.at(-1)?.name||'Your first client')}</b></p><div class="ob-line"><span>${esc(sample.name||'Project work')}</span><b>${money(sample.rate)}</b></div><div class="ob-line ob-total"><span>Total due</span><b>${money(sample.rate)}</b></div>${draft.vertical?`<p class="ob-tag">${esc(verticals[draft.vertical])}</p>`:''}</div>`;}
    case 'services':return chrome(`<div class="ob-plist"><h4>Services & packages</h4>${(svcs.length?svcs:[{name:'Choose a service',unit:'item',rate:0}]).map(x=>`<div class="ob-prow">${icon('tag')}<span>${esc(x.name||'New service')}<small>${units[x.unit]||''}</small></span><b>${money(x.rate)}</b></div>`).join('')}</div>`);
    case 'clients':{const rows=[...S().clients.slice(-2).map(c=>[c.name,c.email]),...(draft.client.name?[[draft.client.name,draft.client.email]]:[])].slice(-3);return chrome(`<div class="ob-plist"><h4>Clients</h4>${(rows.length?rows:[['Your first client','client@example.com']]).map(([n,e])=>`<div class="ob-prow"><span class="ob-av sm">${esc(initials(n))}</span><span>${esc(n)}<small>${esc(e||'')}</small></span><em>Active</em></div>`).join('')}<div class="ob-prow ghost"><span class="ob-av sm"></span><span><i></i></span></div></div>`);}
-   case 'connect':return chrome(`<div class="ob-plist"><h4>Today</h4><div class="ob-event">${icon('calendar')}<span>Discovery call<small>10:30 · from your calendar</small></span></div><div class="ob-event">${icon('calendar')}<span>Design review<small>14:00 · from your calendar</small></span></div><h4>Emails</h4><div class="ob-prow">${icon('mail')}<span>Re: Brand identity<small>Linked to Juniper Studio</small></span></div></div>`);
    case 'workflows':return chrome(`<div class="ob-plist"><h4>Workflows</h4>${flowRows().filter(f=>f.on).slice(0,4).map(f=>`<div class="ob-flow"><span>${icon(f.icon)}${esc(f.description.split(/[,:]/)[0])}</span><i></i><span>${icon('check')}${esc(f.name)}</span></div>`).join('')||'<p class="ob-empty">Turn on a workflow to see it here.</p>'}</div>`);
   }
   return '';
@@ -132,12 +127,6 @@ export function createOnboardingUI({getState,save,saveProfile,btn,esc,icon,impor
   step=next;
   const s=S(),o=s.settings.onboarding,saves=o?.step==='setup'?SETUP.includes(next):o?.step==='profile'&&next==='business';if(saves&&o.setupStep!==next){s.settings.onboarding={...o,setupStep:next};await save();}
   paint();
-  if(next==='connect'&&!connectionLoaded)loadConnection();
- }
- async function loadConnection(){
-  try{const r=await fetch('/api/communications',{cache:'no-store',signal:AbortSignal.timeout(15000)});connection=r.ok?(await r.json()).connection:null;}catch{connection=null;}
-  connectionLoaded=true;if(connection?.account?.gmail&&connection.account.calendar)completeGettingStarted(S(),'connections');
-  if(step==='connect')paint(false);
  }
  const next=()=>onboardingSteps[onboardingSteps.indexOf(step)+1];
  const read=()=>Object.fromEntries(new FormData(root.querySelector('form')));
@@ -164,8 +153,6 @@ export function createOnboardingUI({getState,save,saveProfile,btn,esc,icon,impor
     if(!skipping&&(name||email)){saveClient(s,{type:contact?'company':'individual',name,contact,email});draft.client={name:'',contact:'',email:''};completeGettingStarted(s,'clients');}
     else if(s.clients.length)completeGettingStarted(s,'clients');else skipGettingStarted(s,'clients');
     await save();
-   }else if(step==='connect'){
-    if(connection?.account?.gmail&&connection.account.calendar)completeGettingStarted(s,'connections');else skipGettingStarted(s,'connections');await save();
    }else if(step==='workflows'){
     let on=0;
     if(!skipping)for(const f of flows()){if(draft.flows?.has(f.key)){enableStarterWorkflow(s,f.key);on++;}else{const w=starterWorkflow(s,f.key);if(w)w.enabled=false;}}
@@ -231,7 +218,7 @@ export function createOnboardingUI({getState,save,saveProfile,btn,esc,icon,impor
    else return;
    repaintPreview();
   });
-  paint();if(step==='connect')loadConnection();
+  paint();
  }
 
  return {

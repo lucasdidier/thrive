@@ -19,7 +19,7 @@ const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
 const fresh=()=>emptyWorkspace({name:'Sam',email:'sam@example.test'});
 
 test('onboarding asks about you, the business, the four checklist steps, then where to start',()=>{
- assert.deepEqual(onboardingSteps,['you','business','services','clients','connect','workflows','start']);
+ assert.deepEqual(onboardingSteps,['you','business','services','clients','workflows','start']);
 });
 
 test('onboarding resumes where the person left it',()=>{
@@ -31,7 +31,8 @@ test('onboarding resumes where the person left it',()=>{
  assert.equal(resumeStep(s),'business');
  chooseVertical(s,'design');
  assert.equal(resumeStep(s),'services');
- for(const step of ['clients','connect','workflows','start']){s.settings.onboarding.setupStep=step;assert.equal(resumeStep(s),step);}
+ for(const step of ['clients','workflows','start']){s.settings.onboarding.setupStep=step;assert.equal(resumeStep(s),step);}
+ s.settings.onboarding.setupStep='connect';assert.equal(resumeStep(s),'workflows','someone paused on the removed email & calendar step resumes at workflows');
  s.settings.onboarding.setupStep='bogus';
  assert.equal(resumeStep(s),'services');
 });

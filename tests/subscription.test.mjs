@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {planAccess,trialEmailDue,trialEmail,priceLabel,formatDay} from '../public/subscription-domain.js';
+import {planAccess,trialEmailDue,trialEmail,priceLabel,formatDay,yearlySaving,planCost,lockedSince} from '../public/subscription-domain.js';
 import {verifyPaddleSignature,subscriptionSnapshot,paddleSandbox} from '../server/paddle.mjs';
-import {accountPlan,requireAccess,handleBilling,handlePaddleWebhook,sendTrialEmails,lockedOwners,forgetPlan,billingEnabled} from '../server/subscription.mjs';
+import {accountPlan,requireAccess,handleBilling,handlePaddleWebhook,sendTrialEmails,lockedOwners,forgetPlan,billingEnabled,needsPaidPlan,disconnectLockedAccounts} from '../server/subscription.mjs';
+import {handleCommunications,connectionStatus} from '../server/communications.mjs';
 import {withRuntime} from '../server/runtime.mjs';
 import {runSummaries} from '../server/summaries.mjs';
 import {StoreError} from '../server/store.mjs';
@@ -256,4 +257,87 @@ test('billing ships off: no config, docs and the migration agree',()=>{
  assert.match(sql,/revoke all on function public\.thrive_apply_subscription\(jsonb\) from public, anon, authenticated/);
  assert.match(read('docs/launch.md'),/api\/billing\/webhook/);
  const ui=read('public/subscription-ui.js');assert.doesNotMatch(ui,/PADDLE_API_KEY|pdl_/);
+});
+
+test('the yearly plan: its saving against twelve months, the plans checkout offers, and a yearly subscriber\'s price',async()=>{
+ assert.equal(yearlySaving({amount:'1000',currency:'USD',interval:'month',frequency:1},{amount:'10000',currency:'USD',interval:'year',frequency:1}),17);
+ assert.equal(yearlySaving({amount:'1000',currency:'USD',interval:'month',frequency:1},{amount:'9600',currency:'USD',interval:'year',frequency:1}),20);
+ assert.equal(yearlySaving({amount:'1000',currency:'USD',interval:'month'},{amount:'10000',currency:'EUR',interval:'year'}),0);
+ assert.equal(planCost({month:{amount:'1000',currency:'USD',interval:'month',frequency:1},year:{amount:'10000',currency:'USD',interval:'year',frequency:1}}),'$10 a month or $100 a year');
+ const yearly={unit_price:{amount:'10000',currency_code:'USD'},billing_cycle:{interval:'year',frequency:1}},api=paddleApi({'/prices/pri_monthly':price,'/prices/pri_yearly':yearly});
+ const both={...env,PADDLE_YEARLY_PRICE_ID:'pri_yearly'},admin=fakeAdmin(),user=account();
+ let body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),both,{db:null,user},{admin,now,fetcher:api})).json();
+ assert.deepEqual(body.plans,[{id:'month',priceId:'pri_monthly',label:'$10 / month',saving:0},{id:'year',priceId:'pri_yearly',label:'$100 / year',saving:17}]);
+ assert.equal(body.price,'$10 / month');
+ admin.rows[0]={...admin.rows[0],status:'active',paddle_subscription_id:'sub_01abc',price_id:'pri_yearly',period_ends_at:iso(365*DAY)};
+ body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),both,{db:null,user},{admin,now,fetcher:api})).json();
+ assert.equal(body.price,'$100 / year');
+ body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),env,{db:null,user:account()},{admin:fakeAdmin(),now,fetcher:api})).json();
+ assert.deepEqual(body.plans.map(p=>p.id),['month'],'without a yearly price id, only monthly is offered');
+ assert.match(trialEmail('3d',{origin:'https://app.thrive.test',trialEndsAt:iso(3*DAY),timeZone:'UTC',prices:{month:{amount:'1000',currency:'USD',interval:'month',frequency:1},year:{amount:'10000',currency:'USD',interval:'year',frequency:1}}}).body,/\$10 a month or \$100 a year/);
+});
+
+test('email & calendar: a trial is asked to subscribe instead of connecting; paid plans, free access and self-hosting connect',async()=>{
+ const nylasEnv={...env,NYLAS_CLIENT_ID:'nylas-client',NYLAS_API_KEY:'nyk_test',NYLAS_REDIRECT_URI:'https://app.thrive.test/api/nylas/callback',NYLAS_TOKEN_ENCRYPTION_KEY:'k'.repeat(44)};
+ const db=account=>({prepare:()=>({bind:()=>({first:async()=>account,run:async()=>({})})})});
+ const admin=fakeAdmin(),trial=account(),paid=account();
+ admin.rows.push({owner_id:paid.owner,email:paid.email,trial_ends_at:iso(-DAY),comped:false,status:'active',paddle_subscription_id:'sub_01paid',period_ends_at:iso(30*DAY)});
+ await accountPlan(env,trial,{admin,now});
+ assert.equal(await needsPaidPlan(env,trial,{admin,now}),true);
+ assert.equal(await needsPaidPlan(env,paid,{admin,now}),false);
+ assert.equal(await needsPaidPlan({...env,THRIVE_BILLING:''},trial,{admin,now}),false,'self-hosted installs are never limited');
+ assert.equal(await needsPaidPlan(env,account('admin@thrive.test'),{admin,now}),false,'free access connects');
+ const yes=async()=>true,no=async()=>false;
+ assert.equal((await connectionStatus(db(null),trial.owner,nylasEnv,yes)).requiresPlan,true);
+ assert.equal((await connectionStatus(db(null),paid.owner,nylasEnv,no)).requiresPlan,undefined);
+ const linked={email:'me@example.test',provider:'google',scopes:'[]',last_sync:null};
+ assert.equal((await connectionStatus(db(linked),trial.owner,nylasEnv,yes)).requiresPlan,undefined,'an account already connected keeps working');
+ const connect=new Request('https://app.thrive.test/api/communications',{method:'POST',headers:{'content-type':'application/json',origin:'https://app.thrive.test','oai-authenticated-user-id':trial.owner,'oai-authenticated-user-email':trial.email},body:JSON.stringify({action:'connect',mode:'all',provider:'google'})});
+ const r=await handleCommunications(connect,db(null),nylasEnv,fetch,{needsPlan:yes});
+ assert.equal(r.status,403);assert.match((await r.json()).error,/paid plan/);
+});
+
+test('locked accounts lose their email & calendar connections after 30 days; open and recently locked ones keep them',async()=>{
+ const owner=n=>`supabase:00000000-0000-4000-9000-${String(n).padStart(12,'0')}`;
+ assert.equal(lockedSince({trial_ends_at:iso(DAY),status:null},{now}),null);
+ assert.equal(lockedSince({trial_ends_at:iso(-40*DAY),status:null},{now}),now.getTime()-40*DAY);
+ assert.equal(lockedSince({trial_ends_at:iso(-90*DAY),status:'canceled',event_at:iso(-10*DAY)},{now}),now.getTime()-10*DAY,'a subscription that ended counts from when it ended');
+ assert.equal(lockedSince({trial_ends_at:iso(-90*DAY),status:'active',period_ends_at:iso(-20*DAY)},{now}),now.getTime()-13*DAY,'a lapsed renewal counts from the end of its grace week');
+ const subs=[
+  {owner_id:owner(1),email:'a@x.test',trial_ends_at:iso(-40*DAY),status:null,comped:false},
+  {owner_id:owner(2),email:'b@x.test',trial_ends_at:iso(-5*DAY),status:null,comped:false},
+  {owner_id:owner(3),email:'c@x.test',trial_ends_at:iso(-90*DAY),status:'active',period_ends_at:iso(20*DAY),comped:false},
+  {owner_id:owner(4),email:'admin@thrive.test',trial_ends_at:iso(-90*DAY),status:null,comped:false},
+  {owner_id:owner(5),email:'e@x.test',trial_ends_at:iso(-90*DAY),status:null,comped:true},
+ ];
+ const connections=[owner(1),owner(1)+':workspace:studio',owner(2),owner(3),owner(4),owner(5),'local:dev'].map(owner_id=>({owner_id}));
+ const admin={from:table=>{let ids=null;const q={select:()=>q,limit:()=>q,in:(k,v)=>(ids=v,q),then:resolve=>resolve({data:table==='thrive_nylas_connections'?connections:subs.filter(r=>ids.includes(r.owner_id)),error:null})};return q;}};
+ const removed=[];
+ const result=await disconnectLockedAccounts({...env,NYLAS_CLIENT_ID:'nylas-client'},{admin,now,disconnect:async(db,o)=>{removed.push(o);}});
+ assert.deepEqual(removed,[owner(1),owner(1)+':workspace:studio']);assert.equal(result.disconnected,2);
+ assert.deepEqual((await disconnectLockedAccounts({...env,THRIVE_BILLING:''},{admin,now,disconnect:async()=>assert.fail()})),{disconnected:0},'self-hosted installs keep their connections');
+});
+
+test('subscribers switch between monthly and yearly: Paddle prices it first, then the plan changes',async()=>{
+ const both={...env,PADDLE_YEARLY_PRICE_ID:'pri_yearly'},yearly={unit_price:{amount:'10000',currency_code:'USD'},billing_cycle:{interval:'year',frequency:1}};
+ const admin=fakeAdmin(),user=account(),seen=[];
+ admin.rows.push({owner_id:user.owner,email:user.email,trial_ends_at:iso(-DAY),comped:false,status:'active',paddle_subscription_id:'sub_01abc',paddle_customer_id:'ctm_01abc',price_id:'pri_monthly',period_ends_at:iso(20*DAY),cancel_at:null});
+ const switched=subscription(user.owner,{items:[{price:{id:'pri_yearly'}}],current_billing_period:{starts_at:iso(0),ends_at:iso(365*DAY)},updated_at:iso(1000)});
+ const preview={...switched,next_billed_at:iso(365*DAY),update_summary:{result:{action:'charge',amount:'9333',currency_code:'USD'}}};
+ const api=async(url,init={})=>{const path=new URL(url).pathname;seen.push([init.method||'GET',path,init.body?JSON.parse(init.body):null]);const body=path==='/prices/pri_monthly'?price:path==='/prices/pri_yearly'?yearly:path==='/subscriptions/sub_01abc/preview'?preview:path==='/subscriptions/sub_01abc'?switched:undefined;return body?Response.json({data:body}):Response.json({error:{code:'not_found'}},{status:404});};
+ let body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),both,{db:null,user},{admin,now,fetcher:api})).json();
+ assert.equal(body.interval,'month');
+ body=await (await handleBilling(post({action:'switch-preview',plan:'year'}),both,{db:null,user},{admin,now,fetcher:api})).json();
+ assert.deepEqual(body,{plan:'year',action:'charge',amount:'9333',currency:'USD',renewsAt:iso(365*DAY)});
+ assert.equal(admin.rows[0].price_id,'pri_monthly','a preview changes nothing');
+ assert.deepEqual(seen.at(-1),['PATCH','/subscriptions/sub_01abc/preview',{proration_billing_mode:'prorated_immediately',items:[{price_id:'pri_yearly',quantity:1}]}]);
+ body=await (await handleBilling(post({action:'switch',plan:'year'}),both,{db:null,user},{admin,now,fetcher:api})).json();
+ assert.equal(body.switched,'year');assert.equal(body.interval,'year');assert.equal(body.price,'$100 / year');assert.equal(admin.rows[0].price_id,'pri_yearly');
+ const again=await handleBilling(post({action:'switch',plan:'year'}),both,{db:null,user},{admin,now,fetcher:api}).catch(e=>e);
+ assert.equal(again.status,409);
+ admin.rows[0]={...admin.rows[0],cancel_at:iso(20*DAY)};forgetPlan(user.owner);
+ const canceling=await handleBilling(post({action:'switch',plan:'month'}),both,{db:null,user},{admin,now,fetcher:api}).catch(e=>e);
+ assert.equal(canceling.status,409);assert.match(canceling.message,/Resume it/);
+ const trial=await handleBilling(post({action:'switch-preview',plan:'year'}),both,{db:null,user:account()},{admin:fakeAdmin(),now,fetcher:api}).catch(e=>e);
+ assert.equal(trial.status,409);
 });

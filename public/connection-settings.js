@@ -7,11 +7,14 @@ const logos={
 const names={google:'Google',microsoft:'Microsoft'};
 const accountProvider=a=>a?.provider==='microsoft'?'microsoft':'google';
 export const providerLogo=p=>logos[p]||'';
+const PAID_TITLE='Email & calendar sync come with a paid plan';
 
 // Connect actions for whatever state the connection is in: both providers when nothing is
 // connected (Microsoft only through Nylas), otherwise a reconnect for the account already linked.
+// On a Thrive Cloud trial (requiresPlan) connecting waits for a paid plan, so it leads to Plan & billing.
 export function connectActions(connection,btn,{primaryReconnect=false}={}){
  const c=connection||{},a=c.account,off=c.configured?'':'disabled';
+ if(c.requiresPlan&&!a)return btn('See plans','plan-open','','primary');
  const connect=(p,label,cls='provider-connect')=>btn(logos[p]+label,'mail-connect',`data-mode="all" data-provider="${p}" ${off}`,cls);
  if(a)return connect(accountProvider(a),'Reconnect',primaryReconnect?'provider-connect primary':'provider-connect');
  return (c.provider==='nylas'?['google','microsoft']:['google']).map(p=>connect(p,'Connect with '+names[p])).join('');
@@ -20,14 +23,14 @@ export function connectActions(connection,btn,{primaryReconnect=false}={}){
 // Shared not-connected prompt for Emails, Scheduling and client email history.
 export function connectPrompt(connection,{title,iconName,icon,btn,className=''}){
  const a=connection?.account;
- return `<div class="messages-connection connect-prompt ${className}" role="status">${icon(iconName)}<span class="connect-prompt-body"><strong>${a?'Reconnect '+names[accountProvider(a)]:title}</strong><span class="connect-actions">${connectActions(connection,btn)}</span></span></div>`;
+ return `<div class="messages-connection connect-prompt ${className}" role="status">${icon(iconName)}<span class="connect-prompt-body"><strong>${a?'Reconnect '+names[accountProvider(a)]:connection?.requiresPlan?PAID_TITLE:title}</strong><span class="connect-actions">${connectActions(connection,btn)}</span></span></div>`;
 }
 
 export function connectionSettings(connection,{esc,icon,btn,stamp}){
  const c=connection,a=c.account,provider=names[accountProvider(a)],complete=!!(a?.gmail&&a?.calendar);
  const missing=!a||complete?'':!a.gmail&&!a.calendar?'Email and calendar':!a.gmail?'Email':'Calendar';
  const status=a?(complete?'Connected':'Needs attention'):'Not connected';
- const meta=a?[provider,missing?`${missing} access missing`:a.lastSync?'Synced '+esc(stamp(a.lastSync)):''].filter(Boolean).join(' · '):c.configured?'':'Not available yet';
+ const meta=a?[provider,missing?`${missing} access missing`:a.lastSync?'Synced '+esc(stamp(a.lastSync)):''].filter(Boolean).join(' · '):c.requiresPlan?'Included with a paid plan':c.configured?'':'Not available yet';
  const actions=(a&&complete?'':connectActions(c,btn,{primaryReconnect:!!a}))+(a?btn('Disconnect','mail-disconnect-review','','subtle'):'');
  return `<section class="connected-account-card" aria-label="Email and calendar account"><span class="connected-account-symbol">${a?logos[accountProvider(a)]:icon('mail')}</span><div class="connected-account-name"><h2>${a?esc(a.email):'Email & calendar'}</h2>${meta?`<p>${meta}</p>`:''}</div><span class="connection-state ${complete?'is-connected':a?'needs-attention':''}">${complete?icon('check'):''}${status}</span><div class="connected-account-actions">${actions}</div></section>`;
 }

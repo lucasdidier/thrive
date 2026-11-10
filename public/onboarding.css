@@ -80,8 +80,6 @@
 .ob-note{margin:0;color:var(--ink-secondary);line-height:1.5}
 .ob-done{display:flex;align-items:center;gap:8px;margin:0;padding:12px 14px;border-radius:var(--radius-surface);background:var(--positive-bg);color:var(--positive)}
 .ob-done b{color:var(--ink-primary)}
-.ob-connect{display:flex;flex-wrap:wrap;gap:10px}
-.ob-connect .btn{min-height:40px;padding:0 16px;font-size:13px}
 .ob-starts{display:grid;gap:10px}
 .ob-start{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:1px solid var(--border-default);border-radius:var(--radius-surface);background:var(--surface-canvas);color:inherit;font:inherit;text-align:left;cursor:pointer;transition:border-color var(--duration-feedback,120ms) ease,background-color var(--duration-feedback,120ms) ease}
 .ob-start>span:nth-child(2){flex:1;display:grid}
@@ -127,10 +125,10 @@
 .ob-tag{display:inline-block;margin:18px 0 0;padding:3px 8px;border-radius:4px;background:#eef3ff;color:#3154d5;font-size:12px;font-weight:550}
 .ob-plist{display:grid;gap:4px;padding:18px 18px 22px}
 .ob-plist h4{margin:6px 4px 8px;color:var(--ink-tertiary);font-size:12px;font-weight:600}
-.ob-prow,.ob-event{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:var(--surface-subtle)}
-.ob-prow>svg,.ob-event>svg{width:16px;height:16px;flex:none;color:var(--ink-tertiary)}
-.ob-prow>span:not(.ob-av),.ob-event>span{flex:1;display:grid;min-width:0;font-weight:550}
-.ob-prow small,.ob-event small{color:var(--ink-tertiary);font-size:11.5px;font-weight:450}
+.ob-prow{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:var(--surface-subtle)}
+.ob-prow>svg{width:16px;height:16px;flex:none;color:var(--ink-tertiary)}
+.ob-prow>span:not(.ob-av){flex:1;display:grid;min-width:0;font-weight:550}
+.ob-prow small{color:var(--ink-tertiary);font-size:11.5px;font-weight:450}
 .ob-prow b{font-variant-numeric:tabular-nums}
 .ob-prow em{padding:2px 7px;border-radius:4px;background:var(--positive-bg);color:var(--positive);font-size:11px;font-style:normal;font-weight:550}
 .ob-prow.ghost{opacity:.5}

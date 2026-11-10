@@ -24,6 +24,21 @@ export function planAccess(row,{now=new Date(),comped=false}={}){
  return {state:row?.status?'ended':'expired',locked:true,trialEndsAt:row?.trial_ends_at||null};
 }
 
+// When the account locked (ms), or null while it is open: the trial's end, a lapsed renewal's grace
+// period, or the moment a subscription ended.
+export function lockedSince(row,{now=new Date(),comped=false}={}){
+ if(!planAccess(row,{now,comped}).locked)return null;
+ const live=LIVE_STATUSES.includes(row?.status),end=time(row?.period_ends_at);
+ const times=[time(row?.trial_ends_at),live&&end!=null?end+RENEWAL_GRACE:null,...(!live&&row?.status?[end,time(row.cancel_at),time(row.event_at)]:[])].filter(t=>t!=null&&t<=now.getTime());
+ return times.length?Math.max(...times):now.getTime();
+}
+
+// "$83.33" from Paddle's smallest-unit amount ("8333") and currency.
+export function formatAmount(amount,currency){
+ if(!currency||!/^-?\d+$/.test(String(amount??'')))return '';
+ try{const f=new Intl.NumberFormat('en-US',{style:'currency',currency});return f.format(Number(amount)/10**f.resolvedOptions().maximumFractionDigits);}catch{return '';}
+}
+
 export const trialLabel=access=>access.lastDay?'Last day of your trial':`${access.daysLeft} day${access.daysLeft===1?'':'s'} left in your trial`;
 
 // "$10 / month", "$96 / year", "$30 every 3 months". amount is in the currency's smallest unit (Paddle).
@@ -36,6 +51,16 @@ export function priceLabel(price,{style='slash'}={}){
  if(every>1)return `${amount} every ${every} ${interval}s`;
  return style==='words'?`${amount} a ${interval}`:`${amount} / ${interval}`;
 }
+
+// The yearly plan's saving against twelve monthly payments, in whole percent: 17 for $100 a year against
+// $10 a month. 0 when the two prices can't be compared.
+export function yearlySaving(month,year){
+ if(!month||!year||month.currency!==year.currency||month.interval!=='month'||year.interval!=='year'||Number(month.frequency||1)!==1||Number(year.frequency||1)!==1)return 0;
+ const m=Number(month.amount),y=Number(year.amount);
+ return m>0&&y>0?Math.max(0,Math.round((1-y/(12*m))*100)):0;
+}
+// "$10 a month or $100 a year": every plan that has a price.
+export const planCost=(prices,style='words')=>[prices?.month,prices?.year].map(p=>priceLabel(p,{style})).filter(Boolean).join(' or ');
 
 export function formatDay(iso,timeZone='UTC'){
  const t=time(iso);if(t==null)return '';
@@ -55,10 +80,10 @@ export function trialEmailDue(row,{now=new Date()}={}){
 }
 
 // {subject, body (plain text), html} for one trial email.
-export function trialEmail(stage,{origin,trialEndsAt,timeZone,price}){
- const day=formatDay(trialEndsAt,timeZone),cost=priceLabel(price,{style:'words'}),plan=`${origin}/#account/plan`;
+export function trialEmail(stage,{origin,trialEndsAt,timeZone,price,prices=price?{month:price}:null}){
+ const day=formatDay(trialEndsAt,timeZone),cost=planCost(prices),plan=`${origin}/#account/plan`;
  const copy={
-  welcome:{subject:'Your Thrive trial has started',title:'Your free trial has started',meta:`It runs until ${day}.`,body:['Everything in Thrive is included: clients, proposals, contracts, invoices, time, scheduling and AI. No card needed.',`When the trial ends, subscribe${cost?` for ${cost}`:''} to keep going. Your workspace stays as you left it.`],action:{label:'Open Thrive',href:origin}},
+  welcome:{subject:'Your Thrive trial has started',title:'Your free trial has started',meta:`It runs until ${day}.`,body:['Your trial includes clients, proposals, contracts, invoices, time, forms, workflows and AI. No card needed. Email and calendar sync, and booking pages, come with the paid plan.',`When the trial ends, subscribe${cost?` for ${cost}`:''} to keep going. Your workspace stays as you left it.`],action:{label:'Open Thrive',href:origin}},
   '3d':{subject:'3 days left in your Thrive trial',title:'3 days left in your trial',meta:`Your trial ends on ${day}.`,body:[`Subscribe${cost?` for ${cost}`:''} to keep your workspace, client links and workflows running without a break. Cancel anytime.`],action:{label:'Subscribe',href:plan}},
   '1d':{subject:'Your Thrive trial ends tomorrow',title:'Your trial ends tomorrow',meta:`It ends on ${day}.`,body:['After that, your workspace is locked until you subscribe. Nothing is deleted.',...(cost?[`Thrive is ${cost}. Cancel anytime.`]:[])],action:{label:'Subscribe',href:plan}},
   ended:{subject:'Your Thrive trial has ended',title:'Your trial has ended',meta:'Your workspace is saved.',body:['Subscribe to pick up where you left off. Your clients, projects, documents and invoices are all still there, and links you shared with clients keep working.'],action:{label:'Subscribe',href:plan}},
