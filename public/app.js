@@ -56,6 +56,7 @@ import {upgradeWorkspace,deliveryStatus} from './workspace-domain.js';
 import {createWorkspaceUI} from './workspace-ui.js';
 import {createJourneyUI} from './journey-ui.js';
 import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,createProject,acceptProposal,generateDeposit,suggestSetup,addActivity,migrate} from './domain.js';
+import {language,setLanguage,supported as supportedLanguage} from './i18n.js';
 history.scrollRestoration='manual';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
@@ -71,6 +72,8 @@ initBilling(state);initScheduling(state,Intl.DateTimeFormat().resolvedOptions().
 initWorkflows(state);
 const workspaceSync=createWorkspaceSync(account);
 try{state=upgradeWorkspace(await workspaceSync.connect(state));}catch(err){document.querySelector('#main').innerHTML=`<div class="crm-empty"><h2>Workspace unavailable</h2><p>Your browser data has been preserved. Reload to reconnect.</p><a class="btn" href="${account.enabled?'/auth/sign-in':'/signin-with-chatgpt?return_to=%2F'}">Sign in</a></div>`;throw err;}
+// The workspace's language follows the account to new browsers: boot.js used this browser's, so switch once.
+if(supportedLanguage(state.settings.language)&&state.settings.language!==language()){await setLanguage(state.settings.language);if(language()===state.settings.language&&localStorage.getItem('thrive-language')===state.settings.language){location.reload();await new Promise(()=>{});}}
 try{Object.assign(account,await workspaceRequest());Object.assign(state.settings,account.profile);}catch{account.workspaces=[];}
 installTooltips();initPlaceholders();initSelects({getOptionVisual:(select,option)=>selectIdentity(state,select.name,option?.value)});
 let workflowSnapshot=snapshotWorkspace(state);

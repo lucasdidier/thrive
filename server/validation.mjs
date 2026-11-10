@@ -1,4 +1,5 @@
 import {validateNotificationSettings} from '../public/notification-settings.js';
+import {LANGUAGE_CODES} from '../public/i18n.js';
 import {validateDocumentDefaults,validateDocumentTemplates} from '../public/document-defaults.js';
 import {validateTimers} from '../public/timer-domain.js';
 import {validateGettingStarted} from '../public/getting-started.js';
@@ -25,6 +26,7 @@ export function validateWorkspace(s,old){
  validateCurrency(s,old);validateOnboarding(s);if(s.settings.projectStatuses)saveProjectStatuses(s,s.settings.projectStatuses);
  if(s.settings.portalDefaults){const p=s.settings.portalDefaults;if(typeof p.title!=='string'||!p.title.trim()||p.title.length>100||typeof p.intro!=='string'||p.intro.length>1000||!p.sections||['documents','forms','invoices','projects','meetings'].some(k=>typeof p.sections[k]!=='boolean'))throw Error('Invalid workspace portal defaults.');}
  if(s.settings.emailFollowUps!==undefined){const choices=s.settings.emailFollowUps;if(!choices||typeof choices!=='object'||Array.isArray(choices)||Object.keys(choices).length>2000)throw Error('Invalid email reply preferences.');for(const [id,choice]of Object.entries(choices)){if(!id||id.length>512||!choice||typeof choice.messageId!=='string'||!choice.messageId||choice.messageId.length>512||!['reply','done'].includes(choice.status))throw Error('Invalid email reply preference.');}}
+ if(s.settings.language!==undefined&&!LANGUAGE_CODES.includes(s.settings.language))throw Error('Choose a supported language.');
  if(s.settings.formEmailNotifications!==undefined&&typeof s.settings.formEmailNotifications!=='boolean')throw Error('Invalid form notification setting.');
  if(s.settings.notifications!==undefined)validateNotificationSettings(s.settings.notifications);
  if(s.settings.documentTemplates!==undefined)validateDocumentTemplates(s.settings.documentTemplates);
