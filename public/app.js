@@ -57,6 +57,7 @@ import {createWorkspaceUI} from './workspace-ui.js';
 import {createJourneyUI} from './journey-ui.js';
 import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,createProject,acceptProposal,generateDeposit,suggestSetup,addActivity,migrate} from './domain.js';
 import {L,language,setLanguage,supported as supportedLanguage} from './i18n.js';
+import {statusLabel} from './status-tone.js';
 history.scrollRestoration='manual';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
@@ -92,7 +93,7 @@ async function saveThen(after){try{await save();if(workspaceSync.isBlocked())ret
 function toast(text){const el=document.querySelector('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3500)}
 function btn(text,action,extra='',cls=''){return `<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`}
 const sentence=v=>{v=String(v??'');return v?v[0].toUpperCase()+v.slice(1):v;};
-const badge=(status,label,style='')=>`<span class="badge ${String(status).replaceAll(' ','-')}"${style?` style="${style}"`:''}><i></i>${esc(label??sentence(status))}</span>`;
+const badge=(status,label,style='')=>`<span class="badge ${String(status).replaceAll(' ','-')}"${style?` style="${style}"`:''}><i></i>${esc(label??(language()==='en'?sentence(status):statusLabel(status)))}</span>`;
 const avatar=c=>`<span class="avatar ${c?.color||'sage'}">${clientLogo(c)?`<img src="${esc(clientLogo(c))}" alt="">`:esc(displayInitials(c))}</span>`;
 const date=s=>s?new Intl.DateTimeFormat(language(),{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):L('No date');
 function go(p){if(page===p){filter='all';query='';render()}else location.hash=p}

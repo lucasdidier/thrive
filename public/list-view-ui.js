@@ -34,7 +34,7 @@ export function createListViewUI({render,esc,icon,bulk,dialog,getState,save,bloc
  const field=key=>fields().find(f=>f.key===key);
  const opLabel=op=>({contains:L('contains'),equals:L('is'),gt:L('greater than'),lt:L('less than'),empty:L('is empty'),not_empty:L('is not empty')})[op]||op.replaceAll('_',' ');
  const granularityLabel=g=>({day:L('day'),week:L('week'),month:L('month')})[g]||g;
- const valueLabel=(v,key)=>typeof v==='object'?(v.op==='between'?[v.from||L('Any date'),v.to||L('Any date')].join(' → '):opLabel(v.op)+(v.value?' · '+v.value:'')):(current.filters?.find(f=>f.key===key)?.options||field(key)?.options)?.find(([value])=>String(value)===String(v))?.[1]||String(v);
+ const valueLabel=(v,key)=>typeof v==='object'?(v.op==='between'?[v.from||L('Any date'),v.to||L('Any date')].join(' → '):opLabel(v.op)+(v.value?' · '+v.value:'')):(current.filters?.find(f=>f.key===key)?.options||field(key)?.options)?.find(([value])=>String(value)===String(v))?.[1]||(key==='status'?statusText(v):String(v));
  function use(next){kanban.reset();if(current?.scope!==next.scope)menu='';current={...next};current.config=next.config||(preferences[next.scope]={...viewDefaults(next.columns),...next.defaults,...preferences[next.scope]});current.config.groupBy??='';current.config.groupGranularity??='month';current.config.groupDirection??='asc';current.config.filters??={};if(!fields().some(f=>f.key===cfg().groupBy))cfg().groupBy='';kanban.normalize();current.list=next.list||queryList(next.rows,cfg(),searches[next.scope]||'');return current.list;}
  function query(scope,rows,config){return queryList(rows,config,searches[scope]||'');}
  function close(){menu='';}
