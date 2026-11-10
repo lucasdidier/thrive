@@ -138,10 +138,10 @@ Sandbox checkouts work on any domain and take test cards, so staging is where to
 
 1. In the staging Supabase SQL Editor, run `supabase/migrations/202611100001_subscriptions.sql`.
 2. In the Paddle sandbox (`sandbox-vendors.paddle.com`), go to Catalog → Products → New product. Name it "Thrive Cloud" with the tax category "Standard digital goods". Add a price of $10, billed monthly, with no trial (Thrive runs the trial). Copy the price ID (`pri_…`).
-3. Developer tools → Authentication:
+3. Settings (`/settings/authentication`) → Developer tools → Authentication:
    - Create a **client-side token** (`test_…`).
    - Create an **API key** (`pdl_sdbx_apikey_…`) with read access to transactions, subscriptions and prices, and write access to customer portal sessions.
-4. Developer tools → Notifications → New destination:
+4. Events → Notifications → New destination:
    - URL: `https://thrive.lucas-didier-3b9.workers.dev/api/billing/webhook`.
    - Events: every `subscription.*` event.
    - Copy its secret key (`pdl_ntfset_…`).

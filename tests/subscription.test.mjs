@@ -237,7 +237,10 @@ test('summaries skip accounts whose trial or subscription has ended',async()=>{
 
 test('billing ships off: no config, docs and the migration agree',()=>{
  const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');
- for(const f of ['wrangler.self-hosted.jsonc','wrangler.production.jsonc'])assert.doesNotMatch(read(f),/"THRIVE_BILLING":\s*"paddle"/,`${f} turns billing on only after Paddle is set up`);
+ // Staging may run the Paddle sandbox (docs/launch.md › 10); production stays off until the live account is set up.
+ const staging=read('wrangler.self-hosted.jsonc');
+ if(/"THRIVE_BILLING":\s*"paddle"/.test(staging)){assert.match(staging,/"PADDLE_CLIENT_TOKEN":\s*"test_[a-z0-9]+"/,'staging uses a sandbox token');assert.match(staging,/"PADDLE_PRICE_ID":\s*"pri_[a-z0-9]+"/);}
+ assert.doesNotMatch(read('wrangler.production.jsonc'),/"THRIVE_BILLING":\s*"paddle"/,'production turns billing on only after the live Paddle account is set up');
  const sql=read('supabase/migrations/202611100001_subscriptions.sql');
  assert.match(sql,/enable row level security/);assert.match(sql,/revoke all on public\.thrive_subscriptions from public, anon, authenticated/);
  assert.match(sql,/revoke all on function public\.thrive_apply_subscription\(jsonb\) from public, anon, authenticated/);
