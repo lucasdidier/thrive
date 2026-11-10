@@ -3252,5 +3252,6 @@
  "“{label}” needs 2–50 choices.": "“{label}” memerlukan 2–50 pilihan.",
  "“{name}” saved as a new template.": "“{name}” disimpan sebagai template baru.",
  "“{option}” is in use. Clear its values before removing it.": "“{option}” sedang digunakan. Kosongkan nilainya sebelum menghapusnya.",
- "＋ Create a new client": "＋ Buat klien baru"
+ "＋ Create a new client": "＋ Buat klien baru",
+ "Language & theme": "Bahasa & tema"
 }

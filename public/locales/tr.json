@@ -3284,5 +3284,6 @@
  "“{label}” needs 2–50 choices.": "“{label}” için 2–50 seçenek gerekir.",
  "“{name}” saved as a new template.": "“{name}” yeni şablon olarak kaydedildi.",
  "“{option}” is in use. Clear its values before removing it.": "“{option}” kullanımda. Kaldırmadan önce değerlerini temizleyin.",
- "＋ Create a new client": "＋ Yeni müşteri oluştur"
+ "＋ Create a new client": "＋ Yeni müşteri oluştur",
+ "Language & theme": "Dil ve tema"
 }

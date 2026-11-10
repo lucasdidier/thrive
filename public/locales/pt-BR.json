@@ -3327,5 +3327,6 @@
  "“{label}” needs 2–50 choices.": "“{label}” precisa de 2 a 50 opções.",
  "“{name}” saved as a new template.": "“{name}” salvo como novo modelo.",
  "“{option}” is in use. Clear its values before removing it.": "“{option}” está em uso. Limpe seus valores antes de removê-la.",
- "＋ Create a new client": "＋ Criar um novo cliente"
+ "＋ Create a new client": "＋ Criar um novo cliente",
+ "Language & theme": "Idioma e tema"
 }
