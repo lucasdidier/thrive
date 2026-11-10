@@ -1,7 +1,12 @@
 /* Thrive Cloud plan (subscription-ui.js): the trial banner, Plan & billing, and the lock screen. */
 
-/* Banner over the workspace while the trial runs, or when a payment failed (subscription-ui.js). */
-.plan-banner{display:flex;align-items:center;justify-content:center;gap:8px;min-height:32px;padding:5px 16px;box-sizing:border-box;background:var(--info-bg);color:var(--text);font-size:12.5px;line-height:18px;text-align:center}
+/* Full-width banner at the top of the page while the trial runs, or when a payment failed (subscription-ui.js).
+   It sits in the page flow, so the workspace moves down; the fixed sidebar starts below it. */
+:root{--plan-banner-h:32px}
+body:has(> #plan-banner) .app-nav{top:var(--plan-banner-h)}
+body:has(> .design-preview-notice):has(> #plan-banner) .app-nav{top:calc(30px + var(--plan-banner-h))}
+@media (max-width:650px){body:has(> #plan-banner) .app-nav,body:has(> .design-preview-notice):has(> #plan-banner) .app-nav{top:0}}
+.plan-banner{position:relative;z-index:31;display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--plan-banner-h);padding:5px 16px;box-sizing:border-box;background:var(--info-bg);color:var(--text);font-size:12.5px;line-height:18px;text-align:center}
 .plan-banner>svg{flex:none;width:14px;height:14px;color:var(--info)}
 .plan-banner strong{font-weight:600}
 .plan-banner a,.plan-banner button{flex:none;padding:0;border:0;background:none;color:var(--link);font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
@@ -23,6 +28,11 @@
 .settings-security-row>[data-plan-switch]{flex:none;flex-wrap:nowrap}
 .paywall-card .plan-choose{flex-direction:column;align-items:stretch;width:100%;margin-top:12px}
 .paywall-card .plan-choose .settings-segmented{align-self:center}
+/* The Monthly | Yearly switch and Subscribe share one height and centre line. */
+.plan-choose .settings-segmented{align-self:center;display:inline-flex;align-items:stretch;height:var(--control-height);box-sizing:border-box}
+.plan-choose .settings-segmented label{display:flex}
+.plan-choose .settings-segmented span{display:flex;align-items:center;padding:0 12px}
+.plan-choose>.btn{height:var(--control-height);min-height:var(--control-height)}
 .paywall-card .plan-choose [data-action=plan-subscribe]{width:100%;min-height:40px;justify-content:center}
 
 /* Lock screen: over the person's own dashboard, blurred, until the account subscribes. */

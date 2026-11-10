@@ -150,10 +150,10 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   host.innerHTML=plan()?settingsHTML():`<p class="form-error">${esc(L('Plan details could not be loaded.'))}</p>`;
  }
 
- // A thin banner over the workspace while the trial runs (days left and the end date), and when a
- // payment failed. It replaces the sidebar notice, so it also shows on phones.
+ // A thin full-width banner at the top of the page while the trial runs (days left and the end date), and
+ // when a payment failed; the sidebar moves down under it. It replaces the sidebar notice, so phones see it too.
  function banner(){
-  const a=plan()?.access,host=document.querySelector('.workspace');if(!host)return;
+  const a=plan()?.access,host=document.body;if(!host)return;
   let html='',tone='info';
   if(a?.state==='trial'){
    const ends=weekday(a.trialEndsAt);
@@ -169,7 +169,7 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   }
   let el=document.querySelector('#plan-banner');
   if(!html){el?.remove();return;}
-  if(!el){el=document.createElement('div');el.id='plan-banner';el.setAttribute('role','status');host.prepend(el);}
+  if(!el){el=document.createElement('div');el.id='plan-banner';el.setAttribute('role','status');const notice=host.querySelector(':scope > .design-preview-notice');notice?notice.after(el):host.prepend(el);}
   el.className=`plan-banner is-${tone}`;el.innerHTML=html;
  }
 
