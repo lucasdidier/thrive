@@ -1,3 +1,4 @@
+import {L} from './i18n.js';
 import {saveService,serviceItems,serviceRate} from './services-domain.js';
 import {pricingBasis} from './pricing.js';
 
@@ -21,7 +22,7 @@ export function resolveNewServices(state,lines,{invoice=false,draft=false}={}){
   if(draft&&(!name||!Number.isSafeInteger(item.rate)||item.rate<=0||!(Number(item.quantity)>0)))return line;
   let service=(staged.services||[]).find(s=>!s.archived&&key(s.name)===key(name));
   if(!service){
-   if(!Number.isSafeInteger(item.rate)||item.rate<=0)throw Error(`Set a rate greater than zero for “${name}” to save it as a service.`);
+   if(!Number.isSafeInteger(item.rate)||item.rate<=0)throw Error(L('Set a rate greater than zero for “{name}” to save it as a service.',{name}));
    const details=invoice?item.details:item.description;
    service=saveService(staged,{name,kind:'service',...pricingBasis(item),items:[{description:name,...(details?{details}:{}),quantity:Number(item.quantity),rate:item.rate}]});
   }

@@ -1,8 +1,9 @@
 import {navigateActionMenu} from './menu-keyboard.js';
+import {L} from './i18n.js';
 let sequence=0;
 
 // Secondary actions keep their original handlers and record attributes.
-export function moreActions(content,icon,label='More actions'){
+export function moreActions(content,icon,label=L('More actions')){
  if(!content)return '';
  const id=`more-actions-${++sequence}`;
  return `<span class="more-actions"><button type="button" class="btn icon-btn more-actions-trigger" data-action="more-actions" aria-label="${label}" aria-haspopup="dialog" aria-expanded="false" aria-controls="${id}">${icon('more')}</button><span id="${id}" class="record-actions-popover more-actions-menu" popover="auto" role="dialog" aria-label="${label}">${content}</span></span>`;

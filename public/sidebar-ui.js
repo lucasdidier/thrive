@@ -1,4 +1,5 @@
 import {navigateActionMenu} from './menu-keyboard.js';
+import {L} from './i18n.js';
 // Collapse state, toggle and sidebar menus. The motion itself is a CSS width transition
 // (sidebar.css): icons keep their position, so there is nothing to choreograph here.
 export function initSidebarUI(storageKey){
@@ -18,7 +19,7 @@ export function initSidebarUI(storageKey){
   panel.style.top=`${Math.max(12,Math.min(above?r.top-panel.offsetHeight-8:r.bottom+8,innerHeight-panel.offsetHeight-12))}px`;
  }
  function sync(){
-  const button=document.querySelector('[data-sidebar-toggle]'),label=collapsed()?'Expand sidebar':'Collapse sidebar';
+  const button=document.querySelector('[data-sidebar-toggle]'),label=collapsed()?L('Expand sidebar'):L('Collapse sidebar');
   if(button){button.setAttribute('aria-label',label);button.setAttribute('title',label);button.setAttribute('aria-expanded',String(!collapsed()));}
  }
  function apply(next){

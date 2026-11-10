@@ -1,4 +1,14 @@
 import {matchesFieldFilter} from './custom-fields-domain.js';
+import {L,language} from './i18n.js';
+
+// Field names inside a sentence: lowercase, except in German where nouns keep their capital.
+export const lowerLabel=s=>language()==='de'?String(s):String(s).toLowerCase();
+// A stored status value as people read it ("awaiting deposit" → "Awaiting deposit"). The value itself never changes.
+export function statusText(value){
+ const v=String(value??'');
+ const known={planned:L('Planned'),'awaiting deposit':L('Awaiting deposit'),active:L('Active'),Active:L('Active'),completed:L('Completed'),cancelled:L('Cancelled'),draft:L('Draft'),published:L('Published'),accepted:L('Accepted'),signed:L('Signed'),declined:L('Declined'),outstanding:L('Outstanding'),overdue:L('Overdue'),paid:L('Paid'),unpaid:L('Unpaid'),archived:L('Archived'),Paused:L('Paused'),paused:L('Paused'),inquiry:L('Inquiry'),proposal:L('Proposal'),Checked:L('Checked'),Unchecked:L('Unchecked')}[v];
+ return known??v.replace(/[_-]+/g,' ').replace(/^\w/,c=>c.toUpperCase());
+}
 
 export const viewDefaults = columns => ({filters:{},sort:'',direction:'asc',groupBy:'',groupGranularity:'month',groupDirection:'asc',columns:columns.map(c=>c.key),density:'compact'});
 export function queryList(rows, config, search='') {
@@ -18,13 +28,13 @@ export function groupRecords(rows, config, fields) {
  for(const row of rows){
   let value=row[field.key],label;
   const empty=value==null||value===''||Array.isArray(value)&&!value.length;
-  if(empty){value=null;label=`No ${field.label.toLowerCase()}`;}
+  if(empty){value=null;label=L('No {field}',{field:lowerLabel(field.label)});}
   else if(field.type==='date'){
    const day=String(value).slice(0,10),d=new Date(day+'T12:00:00Z');
-   if(Number.isNaN(d.getTime())){value=null;label=`No ${field.label.toLowerCase()}`;}
+   if(Number.isNaN(d.getTime())){value=null;label=L('No {field}',{field:lowerLabel(field.label)});}
    else if(config.groupGranularity==='day'){value=day;label=day;}
-   else if(config.groupGranularity==='week'){d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7));value=d.toISOString().slice(0,10);label='Week of '+value;}
-   else{value=day.slice(0,7);label=d.toLocaleDateString('en-US',{timeZone:'UTC',month:'long',year:'numeric'});}
+   else if(config.groupGranularity==='week'){d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7));value=d.toISOString().slice(0,10);label=L('Week of {date}',{date:value});}
+   else{value=day.slice(0,7);label=d.toLocaleDateString(language(),{timeZone:'UTC',month:'long',year:'numeric'});}
   }else {value=Array.isArray(value)?[...value].sort().join(', '):String(value);label=value;}
   // Relationships with the same display name still represent distinct records.
   const key=JSON.stringify([field.key,value===null?null:field.relationKey?row[field.relationKey]??value:value]);

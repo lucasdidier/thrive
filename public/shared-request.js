@@ -1,3 +1,4 @@
+import {L} from './i18n.js';
 // Client links are authorized by their token. Same-origin cookies also let an
 // authorized preview visitor pass the hosting gate; they do not select a workspace.
 export async function requestShared(endpoint,method='GET',body,fetcher=globalThis.fetch){
@@ -13,11 +14,11 @@ export async function requestShared(endpoint,method='GET',body,fetcher=globalThi
  let data;
  try{data=await response.json();}catch{
   const error=Error([401,403].includes(response.status)
-   ?'This private Thrive preview requires site access. Sign in with an account that has access, then reload this page.'
-   :'The shared page could not be loaded. Please try again.');
+   ?L('This private Thrive preview requires site access. Sign in with an account that has access, then reload this page.')
+   :L('The shared page could not be loaded. Please try again.'));
   error.status=response.status===200?502:response.status;
   throw error;
  }
- if(!response.ok){const error=Error(data.error||'Unable to complete the request.');error.status=response.status;throw error;}
+ if(!response.ok){const error=Error(data.error||L('Unable to complete the request.'));error.status=response.status;throw error;}
  return data;
 }

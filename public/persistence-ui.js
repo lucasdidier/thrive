@@ -1,7 +1,8 @@
+import {L} from './i18n.js';
 // Keep completion feedback behind the persistence boundary, while dispatch stays synchronous.
 export function createPersistenceUI({save,blocked=()=>false,toast=()=>{}}){
  const busy=new WeakSet(),pending=new WeakMap();
- const blockedMessage='Your changes have not synced. Use the recovery options before continuing.';
+ const blockedMessage=L('Your changes have not synced. Use the recovery options before continuing.');
  return async function persist(source,mutate,complete,{form=false}={}){
   if(busy.has(source))return;
   const buttons=form?[...source.querySelectorAll('button[type=submit]')]:[source];

@@ -1,4 +1,5 @@
 import {icon} from './app-icons.js';
+import {L} from './i18n.js';
 // Keep native selects as the form/data contract; enhance their presentation once.
 const controls=new Map();
 let getOptionVisual=()=>null;
@@ -19,16 +20,16 @@ const disabled=o=>o.disabled||o.parentElement?.tagName==='OPTGROUP'&&o.parentEle
 function labelFor(select){
  if(select.getAttribute('aria-label'))return select.getAttribute('aria-label');
  const ids=select.getAttribute('aria-labelledby');if(ids)return ids.split(/\s+/).map(id=>document.getElementById(id)?.textContent||'').join(' ').trim();
- return [...select.labels||[]].map(label=>{const clone=label.cloneNode(true);clone.querySelectorAll('select,.thrive-select,input,textarea,small,.hint').forEach(e=>e.remove());return clone.textContent.trim();}).filter(Boolean).join(' ')||'Choose an option';
+ return [...select.labels||[]].map(label=>{const clone=label.cloneNode(true);clone.querySelectorAll('select,.thrive-select,input,textarea,small,.hint').forEach(e=>e.remove());return clone.textContent.trim();}).filter(Boolean).join(' ')||L('Choose an option');
 }
 function setAttribute(el,key,value){if(el.getAttribute(key)!==String(value))el.setAttribute(key,String(value));}
 function sync(c){
  const {select,button,value}=c,option=select.selectedOptions[0];
  if(!select.isConnected||!c.wrap.isConnected){if(active?.control===c)close(false);controls.delete(select);return;}
- const text=option?.label||select.dataset.placeholder||'Choose an option';if(value.textContent!==text)value.textContent=text;const font=option?.style.fontFamily||'';if(value.style.fontFamily!==font)value.style.fontFamily=font;
+ const text=option?.label||select.dataset.placeholder||L('Choose an option');if(value.textContent!==text)value.textContent=text;const font=option?.style.fontFamily||'';if(value.style.fontFamily!==font)value.style.fontFamily=font;
  const visualKey=JSON.stringify(getOptionVisual(select,option));if(c.visualKey!==visualKey){c.visualKey=visualKey;c.visual?.remove();c.visual=visualFor(select,option);if(c.visual)button.prepend(c.visual);}
  button.disabled=select.matches(':disabled');setAttribute(button,'aria-required',select.required);setAttribute(button,'aria-label',c.label);
- button.classList.toggle('is-placeholder',!select.value&&(select.required||/^(choose|select)\b/i.test(text)));
+ button.classList.toggle('is-placeholder',!select.value&&(select.required||text===L('Choose an option')||/^(choose|select)\b/i.test(text)));
  c.wrap.hidden=select.hidden;
  if(select.validity.valid){button.removeAttribute('aria-invalid');button.removeAttribute('aria-errormessage');c.error?.remove();c.error=null;}
  if(active?.control===c&&(button.disabled||select.closest('dialog')&&!select.closest('dialog').open))close(false);
@@ -82,13 +83,13 @@ function rows(query=''){
   const text=document.createElement('span');text.className='thrive-select-option-label';text.textContent=option.label;if(option.style.fontFamily)text.style.fontFamily=option.style.fontFamily;const visual=visualFor(a.control.select,option);if(visual)node.append(visual);const mark=document.createElement('span');mark.className='thrive-select-check';if(option.selected)mark.innerHTML=check;node.append(text,mark);a.list.append(node);
   if(!disabled(option)){const index=a.rows.length;a.rows.push({node,option});node.addEventListener('pointermove',()=>highlight(index,false));node.addEventListener('click',()=>choose(index));}
  }
- if(!a.list.children.length){const empty=document.createElement('div');empty.className='thrive-select-empty';empty.setAttribute('role','status');empty.textContent='No options found';a.list.append(empty);}
+ if(!a.list.children.length){const empty=document.createElement('div');empty.className='thrive-select-empty';empty.setAttribute('role','status');empty.textContent=L('No options found');a.list.append(empty);}
  let index=a.rows.findIndex(r=>r.option.selected);if(index<0)index=a.rows.length?0:-1;highlight(index);position();
 }
 function open(control,initial=''){
  if(control.button.disabled)return;close(false);const panel=document.createElement('div'),list=document.createElement('div');panel.className='thrive-select-popover';panel.setAttribute('popover','manual');list.className='thrive-select-options';list.id=`${control.button.id}-list`;list.setAttribute('role','listbox');list.setAttribute('aria-label',control.label);
  active={control,panel,list,rows:[],index:-1,search:null,buffer:'',typedAt:0};
- if(control.select.options.length>=8){const box=document.createElement('div');box.className='thrive-select-search';const symbol=document.createElement('span');symbol.innerHTML=searchIcon;const input=document.createElement('input');input.type='text';input.placeholder='Search…';input.autocomplete='off';input.spellcheck=false;input.setAttribute('role','combobox');input.setAttribute('aria-label',`Search ${control.label.toLocaleLowerCase()}`);input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-expanded','true');input.setAttribute('aria-controls',list.id);input.value=initial;box.append(symbol,input);panel.append(box);active.search=input;input.addEventListener('input',e=>{e.stopPropagation();rows(input.value);});input.addEventListener('change',e=>e.stopPropagation());input.addEventListener('keydown',e=>key(e,control));}
+ if(control.select.options.length>=8){const box=document.createElement('div');box.className='thrive-select-search';const symbol=document.createElement('span');symbol.innerHTML=searchIcon;const input=document.createElement('input');input.type='text';input.placeholder=L('Search…');input.autocomplete='off';input.spellcheck=false;input.setAttribute('role','combobox');input.setAttribute('aria-label',L('Search {label}',{label:control.label.toLocaleLowerCase()}));input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-expanded','true');input.setAttribute('aria-controls',list.id);input.value=initial;box.append(symbol,input);panel.append(box);active.search=input;input.addEventListener('input',e=>{e.stopPropagation();rows(input.value);});input.addEventListener('change',e=>e.stopPropagation());input.addEventListener('keydown',e=>key(e,control));}
  panel.append(list);(control.select.closest('dialog')||document.body).append(panel);panel.addEventListener('click',e=>e.stopPropagation());panel.addEventListener('pointerdown',e=>{if(e.target.closest('[role=option]'))e.preventDefault();});panel.showPopover();
  control.button.setAttribute('aria-expanded','true');control.button.setAttribute('aria-controls',list.id);rows(initial);(active.search||control.button).focus({preventScroll:true});position();
 }

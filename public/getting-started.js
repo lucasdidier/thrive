@@ -1,11 +1,12 @@
+import {L} from './i18n.js';
 // Progress belongs to the workspace and survives reloads and skipped steps.
 export const gettingStartedSteps = [
- {id:'clients',label:'Import your clients',icon:'clients',action:'ci-start'},
- {id:'connections',label:'Connect email & calendar',icon:'calendar',page:'settings/connections'},
- {id:'services',label:'Add your first service',icon:'tag',page:'settings/services'},
- {id:'workflows',label:'Create a workflow',icon:'workflows',action:'wf-new'},
- {id:'invoices',label:'Create an invoice',icon:'invoices',action:'new-invoice'},
- {id:'documents',label:'Create a proposal or contract',icon:'documents',action:'new-proposal'},
+ {id:'clients',label:L('Import your clients'),icon:'clients',action:'ci-start'},
+ {id:'connections',label:L('Connect email & calendar'),icon:'calendar',page:'settings/connections'},
+ {id:'services',label:L('Add your first service'),icon:'tag',page:'settings/services'},
+ {id:'workflows',label:L('Create a workflow'),icon:'workflows',action:'wf-new'},
+ {id:'invoices',label:L('Create an invoice'),icon:'invoices',action:'new-invoice'},
+ {id:'documents',label:L('Create a proposal or contract'),icon:'documents',action:'new-proposal'},
 ];
 export function observedSteps(s,connection){
  return [s.clients?.length&&'clients',connection?.account?.gmail&&connection.account.calendar&&'connections',s.services?.length&&'services',s.automation?.workflows?.length&&'workflows',(s.invoices?.length||s.invoiceDrafts?.length)&&'invoices',s.documents?.some(d=>['proposal','contract','agreement'].includes(d.kind))&&'documents'].filter(Boolean);

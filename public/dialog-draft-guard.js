@@ -1,3 +1,4 @@
+import {L} from './i18n.js';
 // Compare native source controls, not the generated controls in Fluid islands.
 export function draftSnapshot(root) {
  return JSON.stringify([...root.querySelectorAll('input,textarea,select')]
@@ -7,7 +8,7 @@ export function draftSnapshot(root) {
 
 // `prompt` (async, in-app) is preferred over the synchronous `confirmDiscard`, which
 // remains for tests and environments without the workspace prompt.
-export function createDialogDraftGuard(dialog,{confirmDiscard=()=>window.confirm('Discard your unsaved changes? Your saved records will be kept.'),prompt=null}={}) {
+export function createDialogDraftGuard(dialog,{confirmDiscard=()=>window.confirm(L('Discard your unsaved changes? Your saved records will be kept.')),prompt=null}={}) {
  let key='',baseline='',generation=0;
  function clear(){key='';baseline='';generation++;}
  function track(){

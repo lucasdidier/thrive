@@ -1,3 +1,4 @@
+import {L} from './i18n.js';
 // Keep the menu in its row for draft capture and delegated actions, while the
 // native popover layer lets it escape scrolling panels without shifting rows.
 export function closeLineItemMenus(root){
@@ -11,7 +12,7 @@ export function openLineItemMenu(button){
   // Light-dismiss runs before click; remember pointer-down state so a second
   // click on the trigger closes the menu rather than immediately reopening it.
   button.addEventListener('pointerdown',()=>button.dataset.menuWasOpen=String(panel.matches(':popover-open')));
-  panel.setAttribute('aria-label','Line item options');
+  panel.setAttribute('aria-label',L('Line item options'));
   panel.addEventListener('toggle',e=>button.setAttribute('aria-expanded',String(e.newState==='open')));
   panel.addEventListener('click',e=>{if(e.target.closest('.line-option-actions button:not(:disabled)'))panel.hidePopover();});
   panel.addEventListener('keydown',e=>{

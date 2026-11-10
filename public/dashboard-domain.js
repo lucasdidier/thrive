@@ -1,5 +1,6 @@
 import {deliveryStatus} from './workspace-domain.js';
 import {timeMinutes} from './time-domain.js';
+import {L} from './i18n.js';
 export function dashboardPriorities(s){
  const outstanding=s.invoices.filter(i=>i.amount>i.paid).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
  const awaiting=s.documents.filter(d=>!d.archived&&d.status==='published'&&d.responseMode!=='none');
@@ -14,14 +15,14 @@ export function dashboardRange(preset='all',now=new Date(),custom={}){
  if(preset==='year')return {start:`${year}-01-01`,end};
  if(preset==='custom'){
   const valid=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
-  if(!valid(custom.start)||!valid(custom.end)||custom.start>custom.end)throw Error('Choose a valid start and end date.');
+  if(!valid(custom.start)||!valid(custom.end)||custom.start>custom.end)throw Error(L('Choose a valid start and end date.'));
   return {start:custom.start,end:custom.end};
  }
  return null;
 }
 export function dashboardGreeting(name,now=new Date()){
- const hour=now.getHours(),greeting=hour<12?'Good morning':hour<18?'Good afternoon':'Good evening',first=/^your name$/i.test(String(name||'').trim())?'':String(name||'').trim().split(/\s+/)[0];
- return first?`${greeting}, ${first}`:greeting;
+ const hour=now.getHours(),greeting=hour<12?L('Good morning'):hour<18?L('Good afternoon'):L('Good evening'),first=/^your name$/i.test(String(name||'').trim())?'':String(name||'').trim().split(/\s+/)[0];
+ return first?(hour<12?L('Good morning, {name}',{name:first}):hour<18?L('Good afternoon, {name}',{name:first}):L('Good evening, {name}',{name:first})):greeting;
 }
 export function calendarDay(offset=0,now=new Date()){
  const start=new Date(now);start.setHours(0,0,0,0);start.setDate(start.getDate()+offset);

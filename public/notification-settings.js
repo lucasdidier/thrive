@@ -1,20 +1,21 @@
 // Email notifications to the workspace owner. Instant emails cover client actions;
 // the summary covers everything that needs attention. Shared by UI, validation and server.
+import {L} from './i18n.js';
 export const instantNotifications=[
- ['formResponse','New form response','forms'],
- ['documentAccepted','Proposal accepted or contract signed','signature'],
- ['documentDeclined','Proposal or contract declined','documents'],
+ ['formResponse',L('New form response'),'forms'],
+ ['documentAccepted',L('Proposal accepted or contract signed'),'signature'],
+ ['documentDeclined',L('Proposal or contract declined'),'documents'],
 ];
 export const summarySections=[
- ['meetings','Upcoming meetings','calendar'],
- ['overdueInvoices','Overdue invoices','invoices'],
- ['awaitingResponse','Waiting on clients','documents'],
- ['projectsDue','Projects due soon','projects'],
- ['unbilledTime','Unbilled time','time'],
- ['emailReplies','Emails to reply to','mail'],
- ['newResponses','New form responses','forms'],
+ ['meetings',L('Upcoming meetings'),'calendar'],
+ ['overdueInvoices',L('Overdue invoices'),'invoices'],
+ ['awaitingResponse',L('Waiting on clients'),'documents'],
+ ['projectsDue',L('Projects due soon'),'projects'],
+ ['unbilledTime',L('Unbilled time'),'time'],
+ ['emailReplies',L('Emails to reply to'),'mail'],
+ ['newResponses',L('New form responses'),'forms'],
 ];
-export const summaryFrequencies=[['daily','Daily'],['weekly','Weekly'],['off','Off']];
+export const summaryFrequencies=[['daily',L('Daily')],['weekly',L('Weekly')],['off',L('Off')]];
 
 export function notificationSettings(s){
  const saved=s.settings?.notifications||{},instant=saved.instant||{},sections=saved.sections||{};
@@ -25,9 +26,9 @@ export function notificationSettings(s){
  };
 }
 export function validateNotificationSettings(n){
- if(!n||typeof n!=='object'||Array.isArray(n))throw Error('Invalid notification settings.');
- const bools=(value,keys)=>{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!keys.includes(k))||Object.values(value).some(v=>typeof v!=='boolean'))throw Error('Invalid notification settings.');};
+ if(!n||typeof n!=='object'||Array.isArray(n))throw Error(L('Invalid notification settings.'));
+ const bools=(value,keys)=>{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!keys.includes(k))||Object.values(value).some(v=>typeof v!=='boolean'))throw Error(L('Invalid notification settings.'));};
  bools(n.instant,instantNotifications.map(([k])=>k));bools(n.sections,summarySections.map(([k])=>k));
- if(!summaryFrequencies.some(([v])=>v===n.summary))throw Error('Invalid summary frequency.');
+ if(!summaryFrequencies.some(([v])=>v===n.summary))throw Error(L('Invalid summary frequency.'));
  return n;
 }

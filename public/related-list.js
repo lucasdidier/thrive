@@ -1,3 +1,4 @@
+import {L} from './i18n.js';
 // Shared related-record lists for record pages: one row anatomy, one empty state.
 // Callers pass pre-escaped HTML for subtitle/value/status; titles are escaped here.
 export function createRelatedList({icon,esc}){
@@ -12,5 +13,5 @@ export function createRelatedList({icon,esc}){
 }
 
 // "18h 30m" reads as effort; "18:30" reads as a time of day.
-export function hoursMinutes(minutes){const m=Math.max(0,Math.round(Number(minutes)||0)),h=Math.floor(m/60),r=m%60;return h&&r?`${h}h ${r}m`:h?`${h}h`:`${r}m`;}
+export function hoursMinutes(minutes){const m=Math.max(0,Math.round(Number(minutes)||0)),h=Math.floor(m/60),r=m%60;return h&&r?L('{h}h {m}m',{h,m:r}):h?L('{h}h',{h}):L('{m}m',{m:r});}
 

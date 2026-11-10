@@ -3,6 +3,7 @@ import {archiveDocument,toggleForm} from './workspace-domain.js';
 import {archiveTimeEntry,timeStatus,timeClaim,entryRate} from './time-domain.js';
 import {deleteInvoiceDraft} from './invoice-domain.js';
 import {validateWorkflow} from './workflow-domain.js';
+import {L} from './i18n.js';
 
 // Selection is scoped to the visible view. Hidden rows never remain selected.
 export function createSelection(){let scope='',active=false,visible=[],selected=new Set(),anchor=null;return {
@@ -13,18 +14,18 @@ export function createSelection(){let scope='',active=false,visible=[],selected=
  selectAll(checked=true){if(active){selected=new Set(checked?visible:[]);anchor=null;}}
  };}
 export function bulkActions(s,scope,rows){const has=rows.length>0,all=fn=>has&&rows.every(fn),actions=[];
- if(['clients','projects','documents','proposals','contracts','forms'].includes(scope)){actions.push({id:'archive',label:'Archive',enabled:all(r=>!r.archived)},{id:'restore',label:'Restore',enabled:all(r=>r.archived)});}
- if(scope==='invoices')actions.push({id:'delete-drafts',label:'Delete drafts',enabled:all(r=>r.status==='draft'),hint:'Only invoice drafts can be deleted.'});
+ if(['clients','projects','documents','proposals','contracts','forms'].includes(scope)){actions.push({id:'archive',label:L('Archive'),enabled:all(r=>!r.archived)},{id:'restore',label:L('Restore'),enabled:all(r=>r.archived)});}
+ if(scope==='invoices')actions.push({id:'delete-drafts',label:L('Delete drafts'),enabled:all(r=>r.status==='draft'),hint:L('Only invoice drafts can be deleted.')});
  if(scope==='time'){
  const singleProject=new Set(rows.map(r=>r.projectId)).size===1,invoiceable=all(r=>timeStatus(s,r)==='unbilled'&&entryRate(s,r)>0&&s.projects.some(p=>p.id===r.projectId&&!p.archived&&p.status!=='cancelled'&&s.clients.some(c=>c.id===p.clientId&&!c.archived)));
- actions.push({id:'invoice-time',label:'Invoice time',enabled:singleProject&&invoiceable,hint:'Choose unbilled entries from one active project, with hourly rates set.'},{id:'archive',label:'Archive',enabled:all(r=>!r.archived&&!timeClaim(s,r.id)),hint:'Entries linked to invoices cannot be archived.'},{id:'restore',label:'Restore',enabled:all(r=>r.archived&&!timeClaim(s,r.id))});
+ actions.push({id:'invoice-time',label:L('Invoice time'),enabled:singleProject&&invoiceable,hint:L('Choose unbilled entries from one active project, with hourly rates set.')},{id:'archive',label:L('Archive'),enabled:all(r=>!r.archived&&!timeClaim(s,r.id)),hint:L('Entries linked to invoices cannot be archived.')},{id:'restore',label:L('Restore'),enabled:all(r=>r.archived&&!timeClaim(s,r.id))});
  }
- if(['workflows','meeting-types'].includes(scope)){const active=r=>scope==='workflows'?r.enabled:r.active;actions.push({id:'pause',label:'Pause',enabled:has&&rows.some(active)},{id:'enable',label:'Enable',enabled:has&&rows.some(r=>!active(r))});}
+ if(['workflows','meeting-types'].includes(scope)){const active=r=>scope==='workflows'?r.enabled:r.active;actions.push({id:'pause',label:L('Pause'),enabled:has&&rows.some(active)},{id:'enable',label:L('Enable'),enabled:has&&rows.some(r=>!active(r))});}
  // Avoid duplicate inverse actions when a homogeneous selection (or view) is known.
  return actions.filter(a=>has?!(['restore','enable'].includes(a.id)&&!a.enabled&&actions.some(x=>['archive','pause'].includes(x.id)&&x.enabled))&&!(['archive','pause'].includes(a.id)&&!a.enabled&&actions.some(x=>['restore','enable'].includes(x.id)&&x.enabled)):!['restore','enable'].includes(a.id));
 }
-export function applyBulkAction(s,scope,ids,action){if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length)throw Error('Select records first.');const next=structuredClone(s),source=scope==='workflows'?next.automation?.workflows:scope==='meeting-types'?next.scheduling?.types:scope==='invoices'?next.invoiceDrafts:next[['proposals','contracts'].includes(scope)?'documents':scope];if(!Array.isArray(source))throw Error('This bulk action is unavailable.');const rows=ids.map(id=>source.find(r=>r.id===id));if(rows.some(r=>!r))throw Error('Some selected records are no longer available.');
- const normalized=rows.map(r=>scope==='forms'?{...r,archived:r.status==='archived'}:scope==='invoices'?{...r,status:'draft'}:r);if(!bulkActions(next,scope,normalized).some(a=>a.id===action&&a.enabled)||action==='invoice-time')throw Error('This action is not available for every selected record.');
+export function applyBulkAction(s,scope,ids,action){if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length)throw Error(L('Select records first.'));const next=structuredClone(s),source=scope==='workflows'?next.automation?.workflows:scope==='meeting-types'?next.scheduling?.types:scope==='invoices'?next.invoiceDrafts:next[['proposals','contracts'].includes(scope)?'documents':scope];if(!Array.isArray(source))throw Error(L('This bulk action is unavailable.'));const rows=ids.map(id=>source.find(r=>r.id===id));if(rows.some(r=>!r))throw Error(L('Some selected records are no longer available.'));
+ const normalized=rows.map(r=>scope==='forms'?{...r,archived:r.status==='archived'}:scope==='invoices'?{...r,status:'draft'}:r);if(!bulkActions(next,scope,normalized).some(a=>a.id===action&&a.enabled)||action==='invoice-time')throw Error(L('This action is not available for every selected record.'));
  for(const r of rows){if(action==='delete-drafts')deleteInvoiceDraft(next,r.id);else if(scope==='clients')archiveClient(next,r.id);else if(scope==='projects')archiveProject(next,r.id);else if(['documents','proposals','contracts'].includes(scope))archiveDocument(next,r.id);else if(scope==='forms')toggleForm(next,r.id);else if(scope==='time')archiveTimeEntry(next,r.id,action==='archive');else if(scope==='workflows'){if(action==='enable')validateWorkflow(next,r);r.enabled=action==='enable';}else if(scope==='meeting-types')r.active=action==='enable';}
  Object.assign(s,next);return rows.length;
 }
