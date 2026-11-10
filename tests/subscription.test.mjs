@@ -212,7 +212,7 @@ test('Paddle webhooks update the account the checkout named, or the one that own
  // Later events without custom data are matched by subscription id.
  r=await handlePaddleWebhook(hook({event_type:'subscription.canceled',occurred_at:iso(1000),data:subscription(user.owner,{status:'canceled',custom_data:null,current_billing_period:null})}),env,{admin,now:at});
  assert.equal(r.status,200);assert.equal(admin.rows[0].status,'canceled');
- r=await handlePaddleWebhook(hook({event_type:'transaction.completed',data:{id:'txn_1'}}),env,{admin,now:at});
+ r=await handlePaddleWebhook(hook({event_type:'transaction.updated',data:{id:'txn_1'}}),env,{admin,now:at});
  assert.deepEqual(await r.json(),{ok:true,ignored:true});
  r=await handlePaddleWebhook(hook({event_type:'subscription.updated',data:subscription('supabase:not-a-user',{id:'sub_unknown',customer_id:'ctm_unknown'})}),env,{admin,now:at});
  assert.deepEqual(await r.json(),{ok:true,ignored:true});
@@ -344,4 +344,18 @@ test('subscribers switch between monthly and yearly: Paddle prices it first, the
  assert.equal(canceling.status,409);assert.match(canceling.message,/Resume it/);
  const trial=await handleBilling(post({action:'switch-preview',plan:'year'}),both,{db:null,user:account()},{admin:fakeAdmin(),now,fetcher:api}).catch(e=>e);
  assert.equal(trial.status,409);
+});
+
+test('every completed payment emails the admin once; credit-paid switches stay quiet',async()=>{
+ const admin=fakeAdmin(),user=account('client@studio.test'),sent=[];
+ admin.rows.push({owner_id:user.owner,email:user.email,trial_ends_at:iso(-DAY),comped:false,status:'active',paddle_subscription_id:'sub_01abc',paddle_customer_id:'ctm_01abc'});
+ const fetcher=async(url,init)=>{sent.push([url,init.headers['Idempotency-Key'],JSON.parse(init.body)]);return new Response('{}');};
+ const txn=extra=>({id:'txn_01paid0000',status:'completed',origin:'subscription_recurring',subscription_id:'sub_01abc',customer_id:'ctm_01abc',currency_code:'USD',details:{totals:{grand_total:'10000'}},items:[{price:{id:'pri_yearly',billing_cycle:{interval:'year',frequency:1}}}],...extra});
+ let r=await handlePaddleWebhook(hook({event_type:'transaction.completed',occurred_at:iso(0),data:txn()}),env,{admin,now:now.getTime(),fetcher});
+ assert.equal((await r.json()).alert,'sent');
+ const [url,key,mail]=sent[0];
+ assert.equal(url,'https://api.resend.com/emails');assert.equal(key,'payment-txn_01paid0000');assert.deepEqual(mail.to,['admin@thrive.test']);
+ assert.equal(mail.subject,'[Sandbox] Payment received: $100.00 from client@studio.test');assert.match(mail.text,/Renewal: \$100\.00, billed yearly/);
+ r=await handlePaddleWebhook(hook({event_type:'transaction.completed',occurred_at:iso(0),data:txn({id:'txn_01free0000',details:{totals:{grand_total:'0'}}})}),env,{admin,now:now.getTime(),fetcher});
+ assert.equal((await r.json()).alert,'free');assert.equal(sent.length,1);
 });

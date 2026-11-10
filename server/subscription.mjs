@@ -9,8 +9,8 @@ import {adminEmail} from './beta.mjs';
 import {appOrigin} from './auth.mjs';
 import {sendOwnerNotification,disconnectNylas} from './nylas.mjs';
 import {workspaceOwner} from './workspace-directory.mjs';
-import {planAccess,trialEmailDue,trialEmail,priceLabel,yearlySaving,lockedSince,TRIAL_DAYS} from '../public/subscription-domain.js';
-import {paddleRequest,verifyPaddleSignature,subscriptionSnapshot,paddlePlans} from './paddle.mjs';
+import {planAccess,trialEmailDue,trialEmail,priceLabel,yearlySaving,lockedSince,formatAmount,TRIAL_DAYS} from '../public/subscription-domain.js';
+import {paddleRequest,verifyPaddleSignature,subscriptionSnapshot,paddlePlans,paddleSandbox} from './paddle.mjs';
 
 const DAY=86400000;
 const COLUMNS='owner_id,email,time_zone,trial_ends_at,trial_email,comped,paddle_customer_id,paddle_subscription_id,status,period_ends_at,cancel_at,price_id,event_at';
@@ -170,13 +170,31 @@ async function ownerFor(admin,sub){
 }
 // Paddle notifications (POST /api/billing/webhook). Subscription events carry the whole subscription, so
 // each one replaces the stored state; transaction events add nothing Thrive needs.
-export async function handlePaddleWebhook(request,env,{admin,now=Date.now()}={}){try{
+// Every completed payment emails the admin: who paid, how much, monthly or yearly, first payment or renewal.
+// Keyed by the transaction, so Paddle's retries send one email. Plan switches paid by credit ($0) don't.
+export async function alertPayment(env,txn,{admin,fetcher=fetch}={}){
+ const to=adminEmail(env),totals=txn.details?.totals||{},paid=String(totals.grand_total??totals.total??'');
+ if(!env.RESEND_API_KEY||!env.THRIVE_NOTIFICATIONS_FROM||!to)return {ok:true,alert:'off'};
+ if(!/^\d+$/.test(paid)||Number(paid)<=0)return {ok:true,alert:'free'};
+ const claimed=txn.custom_data?.thrive_owner,owner=typeof claimed==='string'&&OWNER.test(claimed)?claimed:await ownerFor(admin,{id:txn.subscription_id,customer_id:txn.customer_id}).catch(()=>'');
+ const email=owner?(await readRow(admin,owner).catch(()=>null))?.email||'':'';
+ const amount=formatAmount(paid,txn.currency_code)||`${paid} ${txn.currency_code||''}`,interval=txn.items?.[0]?.price?.billing_cycle?.interval;
+ const kind={subscription_recurring:'Renewal',subscription_update:'Plan change',subscription_charge:'Extra charge'}[txn.origin]||'New subscription';
+ const sandbox=paddleSandbox(env),who=email||txn.customer_id||'an unknown customer';
+ const subject=`${sandbox?'[Sandbox] ':''}Payment received: ${amount} from ${who}`;
+ const text=[`${kind}: ${amount}${interval?`, billed ${interval==='year'?'yearly':'monthly'}`:''}.`,`Customer: ${who}`,`Transaction: ${txn.id}`,`https://${sandbox?'sandbox-':''}vendors.paddle.com/transactions-v2/${encodeURIComponent(txn.id)}`].join('\n');
+ try{const r=await fetcher('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':`payment-${txn.id}`},body:JSON.stringify({from:env.THRIVE_NOTIFICATIONS_FROM,to:[to],subject,text})});return {ok:true,alert:r.ok?'sent':'failed'};}
+ catch{return {ok:true,alert:'failed'};}
+}
+
+export async function handlePaddleWebhook(request,env,{admin,now=Date.now(),fetcher=fetch}={}){try{
  if(request.method!=='POST')throw new StoreError('Method not allowed.',405);
  if(!billingEnabled(env)||!env.PADDLE_WEBHOOK_SECRET)throw new StoreError('Billing is not configured.',503);
  const raw=await request.text();if(raw.length>1_000_000)throw new StoreError('Request is too large.',413);
  if(!await verifyPaddleSignature(raw,request.headers.get('paddle-signature'),env.PADDLE_WEBHOOK_SECRET,{now}))throw new StoreError('Invalid signature.',401);
  let event;try{event=JSON.parse(raw);}catch{throw new StoreError('Invalid JSON.');}
  const sub=event?.data;
+ if(event?.event_type==='transaction.completed'&&typeof sub?.id==='string'){admin??=adminClient(env);return json(await alertPayment(env,sub,{admin,fetcher}));}
  if(!String(event?.event_type||'').startsWith('subscription.')||typeof sub?.id!=='string')return json({ok:true,ignored:true});
  admin??=adminClient(env);
  const claimed=sub.custom_data?.thrive_owner,owner=typeof claimed==='string'&&OWNER.test(claimed)?claimed:await ownerFor(admin,sub);

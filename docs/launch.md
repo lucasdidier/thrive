@@ -145,7 +145,7 @@ Sandbox checkouts work on any domain and take test cards, so staging is where to
    - Create an **API key** (`pdl_sdbx_apikey_…`) with read access to transactions, subscriptions and prices, and write access to subscriptions (switching monthly ↔ yearly) and customer portal sessions.
 4. Events → Notifications → New destination:
    - URL: `https://thrive.lucas-didier-3b9.workers.dev/api/billing/webhook`.
-   - Events: every `subscription.*` event.
+   - Events: every `subscription.*` event, plus `transaction.completed` (it emails `THRIVE_ADMIN_EMAIL` about each payment).
    - Copy its secret key (`pdl_ntfset_…`).
 5. Checkout → Checkout settings: set the **Default payment link** to `https://thrive.lucas-didier-3b9.workers.dev/checkout`.
 6. In `wrangler.self-hosted.jsonc`, set `"THRIVE_BILLING": "paddle"`, `PADDLE_CLIENT_TOKEN` (the `test_…` token), `PADDLE_PRICE_ID` (monthly) and `PADDLE_YEARLY_PRICE_ID`. All are public values.
