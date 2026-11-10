@@ -18,6 +18,10 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-size:25px;font-weight:650;letter-spacing:-.025em;border-radius:6px}
 .brand img{width:28px;height:28px;border-radius:8px}
 .auth-main{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 24px 96px}
+/* Terms, privacy and refunds on every sign-in page (Paddle's website approval checks for them). */
+.auth-legal{display:flex;justify-content:center;gap:20px;padding:0 24px 24px;font-size:12px}
+.auth-legal a{color:var(--muted);text-decoration:none}
+.auth-legal a:hover{color:var(--text);text-decoration:underline}
 .auth-card{width:360px;max-width:100%}
 
 h1{font-size:40px;line-height:1.1;font-weight:650;letter-spacing:-.025em;margin:0 0 28px}
