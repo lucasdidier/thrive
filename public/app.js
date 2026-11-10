@@ -59,10 +59,10 @@ import {initBilling,seed,uid,money,today,totals,projectClient,invoiceStatus,crea
 history.scrollRestoration='manual';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
-// Thrive Cloud plan (server/subscription.mjs). A locked plan shows the lock screen and the workspace never loads.
+// Thrive Cloud plan (server/subscription.mjs). A locked plan still loads the workspace (read-only on the
+// server) so the lock screen sits over the person's own dashboard, blurred; it opens after the first render.
 account.plan=await loadPlan();
 const subscriptionUI=createSubscriptionUI({getPlan:()=>account.plan,setPlan:plan=>{account.plan=plan;},toast:message=>toast(message),onChange:()=>shell()});
-if(account.plan?.access.locked){subscriptionUI.showPaywall();await new Promise(()=>{});}
 settingsSections.find(s=>s.id==='plan').hidden=!account.plan;
 const storageKey='thrive-workspace-v1'+(account.enabled?':'+account.user.owner:'')+(account.workspaceId!=='default'?':workspace:'+account.workspaceId:'');
 const sidebarUI=initSidebarUI(storageKey);
@@ -255,6 +255,7 @@ document.addEventListener('toggle',async event=>{
 },true);
 render();
 resetPagePosition({focus:false});
+if(account.plan?.access.locked)subscriptionUI.showPaywall();
 
 const googleResult=new URLSearchParams(location.search);if(googleResult.has('google_connected')||googleResult.has('google_error')||googleResult.has('nylas_connected')||googleResult.has('nylas_error')){toast(googleResult.get('nylas_error')||googleResult.get('google_error')||'Account connected. Refresh Emails to load client conversations.');for(const key of ['google_connected','google_error','nylas_connected','nylas_error'])googleResult.delete(key);history.replaceState(null,'',location.pathname+(googleResult.size?'?'+googleResult:'')+location.hash);}
 

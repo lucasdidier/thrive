@@ -204,7 +204,7 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   return true;
  }
  // Any request answering 402 means access ended while the app was open (account.js raises the event).
- addEventListener('thrive:locked',async()=>{const p=await loadPlan();if(p?.access.locked)showPaywall(p);});
+ addEventListener('thrive:locked',async()=>{if(document.querySelector('.paywall'))return;const p=await loadPlan();if(p?.access.locked)showPaywall(p);});
  if(!plan()?.access.locked)banner();
  return {mount,showPaywall,click,settingsHTML};
 }
