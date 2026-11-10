@@ -160,14 +160,24 @@ test('a completed checkout opens access at once, and only for the account that p
  assert.equal(bad.status,404);
 });
 
-test('a paid checkout whose subscription is not created yet opens the billing period; an unpaid one waits',async()=>{
+test('a checkout that is unpaid, or paid before Paddle creates the subscription, waits without guessing dates',async()=>{
  const admin=fakeAdmin(),user=account();
  admin.rows.push({owner_id:user.owner,trial_ends_at:iso(-DAY),comped:false,status:null});
- const api=paddleApi({'/transactions/txn_01hwait0000':{status:'billed',custom_data:{thrive_owner:user.owner}},'/transactions/txn_01hpaid0000':{status:'paid',custom_data:{thrive_owner:user.owner},subscription_id:null,customer_id:'ctm_01abc',billing_period:{starts_at:iso(0),ends_at:iso(30*DAY)},items:[{price:{id:'pri_monthly'}}],updated_at:iso(0)}});
- let body=await (await handleBilling(post({action:'confirm',transactionId:'txn_01hwait0000'}),env,{db:null,user},{admin,now,fetcher:api})).json();
- assert.equal(body.pending,true);assert.equal(body.access.locked,true);
- body=await (await handleBilling(post({action:'confirm',transactionId:'txn_01hpaid0000'}),env,{db:null,user},{admin,now,fetcher:api})).json();
- assert.equal(body.access.state,'active');assert.equal(admin.rows[0].period_ends_at,iso(30*DAY));assert.equal(admin.rows[0].paddle_customer_id,'ctm_01abc');
+ const api=paddleApi({'/transactions/txn_01hwait0000':{status:'billed',custom_data:{thrive_owner:user.owner}},'/transactions/txn_01hpaid0000':{status:'paid',custom_data:{thrive_owner:user.owner},subscription_id:null,customer_id:'ctm_01abc',billing_period:null,items:[{price:{id:'pri_monthly'}}],updated_at:iso(0)}});
+ for(const transactionId of ['txn_01hwait0000','txn_01hpaid0000']){
+  const body=await (await handleBilling(post({action:'confirm',transactionId}),env,{db:null,user},{admin,now,fetcher:api})).json();
+  assert.equal(body.pending,true);assert.equal(body.access.locked,true);
+ }
+ assert.equal(admin.rows[0].status,null);assert.equal(admin.rows[0].period_ends_at,undefined);
+});
+
+test('the plan request reads fresh, so a cancellation recorded by another isolate shows at once',async()=>{
+ const admin=fakeAdmin(),user=account();
+ admin.rows.push({owner_id:user.owner,email:user.email,trial_ends_at:iso(-DAY),comped:false,status:'active',paddle_subscription_id:'sub_01abc',period_ends_at:iso(30*DAY),cancel_at:null});
+ await requireAccess(env,user,{admin,now});
+ admin.rows[0]={...admin.rows[0],cancel_at:iso(30*DAY)};
+ const body=await (await handleBilling(new Request('https://app.thrive.test/api/billing'),env,{db:null,user},{admin,now,fetcher:paddleApi({'/prices/pri_monthly':price})})).json();
+ assert.equal(body.access.state,'canceling');assert.equal(body.access.endsAt,iso(30*DAY));
 });
 
 test('the billing portal opens for subscribers with a fresh Paddle session',async()=>{

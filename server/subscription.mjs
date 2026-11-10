@@ -9,7 +9,7 @@ import {adminEmail} from './beta.mjs';
 import {appOrigin} from './auth.mjs';
 import {sendOwnerNotification} from './nylas.mjs';
 import {workspaceOwner} from './workspace-directory.mjs';
-import {planAccess,trialEmailDue,trialEmail,priceLabel,LIVE_STATUSES,TRIAL_DAYS} from '../public/subscription-domain.js';
+import {planAccess,trialEmailDue,trialEmail,priceLabel,TRIAL_DAYS} from '../public/subscription-domain.js';
 import {paddleRequest,verifyPaddleSignature,subscriptionSnapshot,paddlePrice} from './paddle.mjs';
 
 const DAY=86400000;
@@ -29,8 +29,8 @@ async function apply(admin,snapshot){const {data,error}=await admin.rpc('thrive_
 // never cached, so a payment unlocks on the next request.
 const cache=new Map();
 export const forgetPlan=owner=>cache.delete(owner);
-export async function accountPlan(env,user,{admin,now=new Date()}={}){
- const owner=user.owner,comped=isAdmin(env,user.email),hit=cache.get(owner);
+export async function accountPlan(env,user,{admin,now=new Date(),fresh=false}={}){
+ const owner=user.owner,comped=isAdmin(env,user.email),hit=fresh?null:cache.get(owner);
  if(hit&&hit.until>now.getTime())return {row:hit.row,access:planAccess(hit.row,{now,comped})};
  admin??=adminClient(env);
  let row=await readRow(admin,owner);
@@ -65,22 +65,17 @@ async function planResponse(env,user,{admin,fetcher,now},extra={}){
 
 // After Paddle's checkout.completed: check the transaction belongs to this account, then record the
 // subscription right away instead of waiting for the webhook.
-async function confirmCheckout(env,user,body,{admin,fetcher,now}){
+async function confirmCheckout(env,user,body,{admin,fetcher}){
  const id=String(body.transactionId||'');
  if(!/^txn_[a-z0-9]{8,64}$/i.test(id))throw new StoreError('Payment not found.',404);
  const txn=await paddleRequest(env,'/transactions/'+id,{fetcher});
  if(txn.custom_data?.thrive_owner!==user.owner)throw new StoreError('This payment belongs to another account.',403);
  if(!['paid','completed'].includes(txn.status))return {pending:true};
- if(txn.subscription_id){
-  const sub=await paddleRequest(env,'/subscriptions/'+encodeURIComponent(txn.subscription_id),{fetcher});
-  await apply(admin,{...subscriptionSnapshot(sub,{owner:user.owner,eventAt:sub.updated_at}),email:user.email||''});
- }else{
-  // Paid, but Paddle hasn't created the subscription yet: open access for this billing period; the
-  // subscription.created webhook replaces it.
-  forgetPlan(user.owner);
-  const {row}=await accountPlan(env,user,{admin,now});
-  if(!LIVE_STATUSES.includes(row.status))await apply(admin,{owner_id:user.owner,email:user.email||'',subscription_id:null,customer_id:txn.customer_id||null,status:'active',period_ends_at:txn.billing_period?.ends_at||new Date(now.getTime()+32*DAY).toISOString(),cancel_at:null,price_id:txn.items?.[0]?.price?.id||null,event_at:txn.updated_at||now.toISOString()});
- }
+ // Paid but not yet processed: Paddle creates the subscription a moment later, so the browser asks again
+ // (and the subscription.created webhook records it too). Guessing dates here would show the wrong ones.
+ if(!txn.subscription_id)return {pending:true};
+ const sub=await paddleRequest(env,'/subscriptions/'+encodeURIComponent(txn.subscription_id),{fetcher});
+ await apply(admin,{...subscriptionSnapshot(sub,{owner:user.owner,eventAt:sub.updated_at}),email:user.email||''});
  forgetPlan(user.owner);
  return {pending:false};
 }
@@ -111,7 +106,8 @@ export async function handleBilling(request,env,{db,user},{admin,fetcher=fetch,n
  const url=new URL(request.url);
  if(request.method==='GET'){
   if(url.searchParams.has('export'))return exportData(db,user,now);
-  const {row}=await accountPlan(env,user,options),tz=url.searchParams.get('tz'),patch={};
+  // The page asking for its plan always reads it fresh: a webhook may have changed it in another isolate.
+  const {row}=await accountPlan(env,user,{...options,fresh:true}),tz=url.searchParams.get('tz'),patch={};
   if(validZone(tz)&&tz!==row.time_zone)patch.time_zone=tz;
   if(user.email&&user.email!==row.email)patch.email=String(user.email).slice(0,254);
   if(Object.keys(patch).length){await admin.from('thrive_subscriptions').update(patch).eq('owner_id',user.owner);forgetPlan(user.owner);}

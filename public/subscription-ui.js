@@ -38,8 +38,8 @@ function loadPaddle(config){
 
 const lockedTitle=access=>access.state==='ended'?'Your subscription has ended':'Your free trial has ended';
 
-export function createSubscriptionUI({getPlan,setPlan,toast}){
- let busy=false;
+export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
+ let busy=false,returning=false,refreshed=Date.now();
  const plan=()=>getPlan();
  const status=text=>document.querySelectorAll('[data-plan-status]').forEach(el=>{el.textContent=text;el.hidden=!text;});
  const subscribeLabel=()=>`Subscribe${plan()?.price?` for ${plan().price}`:''}`;
@@ -70,7 +70,7 @@ export function createSubscriptionUI({getPlan,setPlan,toast}){
  // Paddle's customer portal opens in a new tab; its links expire, so each click asks for a fresh one.
  async function manage(kind){
   const tab=window.open('','_blank');
-  try{const {url,payment}=await billing({action:'portal'}),target=kind==='payment'?payment:url;if(tab){tab.opener=null;tab.location.href=target;}else location.href=target;}
+  try{const {url,payment}=await billing({action:'portal'}),target=kind==='payment'?payment:url;returning=true;if(tab){tab.opener=null;tab.location.href=target;}else location.href=target;}
   catch(error){tab?.close();throw error;}
  }
 
@@ -81,7 +81,7 @@ export function createSubscriptionUI({getPlan,setPlan,toast}){
   const plan_={
    trial:()=>row('Free trial',`Ends ${esc(day(a.trialEndsAt))} · ${a.lastDay?'last day':`${a.daysLeft} day${a.daysLeft===1?'':'s'} left`}`,subscribe),
    active:()=>row('Thrive Cloud',[p.price,a.renewsAt?`Renews ${day(a.renewsAt)}`:''].filter(Boolean).map(esc).join(' · '),portal),
-   canceling:()=>row('Thrive Cloud',`Ends ${esc(day(a.endsAt))}`,portal),
+   canceling:()=>row('Thrive Cloud',`Canceled · Active until ${esc(day(a.endsAt))}`,portal),
    past_due:()=>callout({title:'Your last payment failed',tone:'negative',role:'alert',body:'<p>Update your payment method to keep using Thrive.</p>'})+row('Thrive Cloud',esc(p.price||''),btn(icon('card')+'Update payment method','plan-payment','','primary')),
    comped:()=>row('Thrive Cloud','Free access'),
    expired:()=>row(lockedTitle(a),'',subscribe),
@@ -94,9 +94,29 @@ export function createSubscriptionUI({getPlan,setPlan,toast}){
 
  async function mount(){
   const host=document.querySelector('#plan-settings');if(!host)return;
-  const fresh=await loadPlan();if(fresh)setPlan(fresh);
-  if(host.isConnected)host.outerHTML=plan()?settingsHTML():'<p class="form-error">Plan details could not be loaded.</p>';
+  const fresh=await loadPlan();
+  if(fresh){const changed=!same(fresh,plan());setPlan(fresh);if(fresh.access.locked){showPaywall(fresh);return;}if(changed)onChange?.(fresh);}
+  if(!host.isConnected)return;
+  host.className='plan-settings';host.removeAttribute('role');
+  host.innerHTML=plan()?settingsHTML():'<p class="form-error">Plan details could not be loaded.</p>';
  }
+
+ // Changes made in Paddle's tab (cancel, new card) reach Thrive by webhook, so the plan is read again when
+ // this tab comes back: a few times after the portal, since the webhook can land a few seconds later.
+ const same=(a,b)=>JSON.stringify([a?.access,a?.price,a?.billing])===JSON.stringify([b?.access,b?.price,b?.billing]);
+ async function refresh(){
+  refreshed=Date.now();
+  const fresh=await loadPlan();if(!fresh||same(fresh,plan()))return;
+  setPlan(fresh);
+  if(fresh.access.locked){showPaywall(fresh);return;}
+  const host=document.querySelector('#plan-settings.plan-settings');if(host)host.innerHTML=settingsHTML();
+  onChange?.(fresh);
+ }
+ document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible'||document.querySelector('.paywall'))return;
+  if(returning){returning=false;for(const ms of [0,4000,12000,30000])setTimeout(()=>void refresh(),ms);}
+  else if(Date.now()-refreshed>300000)void refresh();
+ });
 
  // Locked: the workspace stays closed until a subscription is active. Export and sign-out still work.
  function showPaywall(p=plan()){

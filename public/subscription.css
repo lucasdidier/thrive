@@ -11,7 +11,8 @@
 .app-nav__plan:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 @media (max-width:650px){.app-nav__plan{display:none}}
 
-/* Plan & billing */
+/* Plan & billing: the loaded cards sit in #plan-settings without changing the page's card spacing. */
+.plan-settings{display:contents}
 .plan-status{margin:12px 0 0;color:var(--muted)}
 
 /* Lock screen: covers the app until the account subscribes. */

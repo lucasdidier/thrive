@@ -61,7 +61,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let account;try{account=await loadAccount();}catch(error){document.querySelector('#main').textContent=error.message;throw error;}
 // Thrive Cloud plan (server/subscription.mjs). A locked plan shows the lock screen and the workspace never loads.
 account.plan=await loadPlan();
-const subscriptionUI=createSubscriptionUI({getPlan:()=>account.plan,setPlan:plan=>{account.plan=plan;},toast:message=>toast(message)});
+const subscriptionUI=createSubscriptionUI({getPlan:()=>account.plan,setPlan:plan=>{account.plan=plan;},toast:message=>toast(message),onChange:()=>shell()});
 if(account.plan?.access.locked){subscriptionUI.showPaywall();await new Promise(()=>{});}
 settingsSections.find(s=>s.id==='plan').hidden=!account.plan;
 const storageKey='thrive-workspace-v1'+(account.enabled?':'+account.user.owner:'')+(account.workspaceId!=='default'?':workspace:'+account.workspaceId:'');
