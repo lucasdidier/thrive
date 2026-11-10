@@ -2,7 +2,7 @@
 //   db/YYYY-MM-DD.json.gz  every Thrive table plus account ids/emails (expire via an R2 lifecycle rule)
 //   files/<object key>     form uploads, copied once (Supabase backups do not include Storage)
 // Read-only on Supabase; reruns on the same day do nothing.
-const tables={workspaces:'owner_id',receipts:'owner_id',events:'id',share_links:'token_hash',form_uploads:'id',google_connections:'owner_id',google_oauth_states:'hash',mail_threads:'owner_id',provider_operations:'owner_id',nylas_connections:'owner_id',nylas_oauth_states:'hash',beta_invites:'email',beta_requests:'email',subscriptions:'owner_id'};
+const tables={workspaces:'owner_id',receipts:'owner_id',events:'id',share_links:'token_hash',form_uploads:'id',google_connections:'owner_id',google_oauth_states:'hash',mail_threads:'owner_id',provider_operations:'owner_id',nylas_connections:'owner_id',nylas_oauth_states:'hash',beta_invites:'email',beta_requests:'email',subscriptions:'owner_id',free_access:'email'};
 const PAGE=1000,BACKUP_HOUR_UTC=3;
 async function rows(admin,table,order){
  const out=[];
