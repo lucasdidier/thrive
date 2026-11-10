@@ -2,18 +2,20 @@
 // Ln(n, '{n} day left', '{n} days left'). (Not t(): that name is a local variable all over the codebase.) Each language is one JSON file in /locales, loaded once at start;
 // anything not translated yet shows in English, so modules can move over one at a time.
 // scripts/i18n-extract.mjs lists every key; tests/i18n.test.mjs checks each locale against it.
+// country: the flag shown next to the language in the picker.
 export const LANGUAGES=[
- {code:'en',name:'English'},
- {code:'es',name:'Español'},
- {code:'pt-BR',name:'Português (Brasil)'},
- {code:'fr',name:'Français'},
- {code:'de',name:'Deutsch'},
- {code:'it',name:'Italiano'},
- {code:'nl',name:'Nederlands'},
- {code:'pl',name:'Polski'},
- {code:'tr',name:'Türkçe'},
- {code:'id',name:'Bahasa Indonesia'},
+ {code:'en',name:'English',country:'GB'},
+ {code:'es',name:'Español',country:'ES'},
+ {code:'pt-BR',name:'Português (Brasil)',country:'BR'},
+ {code:'fr',name:'Français',country:'FR'},
+ {code:'de',name:'Deutsch',country:'DE'},
+ {code:'it',name:'Italiano',country:'IT'},
+ {code:'nl',name:'Nederlands',country:'NL'},
+ {code:'pl',name:'Polski',country:'PL'},
+ {code:'tr',name:'Türkçe',country:'TR'},
+ {code:'id',name:'Bahasa Indonesia',country:'ID'},
 ];
+export const languageFlag=code=>{const c=LANGUAGES.find(l=>l.code===code)?.country;return c?String.fromCodePoint(...[...c].map(ch=>0x1f1a5+ch.charCodeAt(0))):'';};
 export const LANGUAGE_CODES=LANGUAGES.map(l=>l.code);
 const STORAGE='thrive-language';
 

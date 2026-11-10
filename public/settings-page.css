@@ -68,3 +68,9 @@ body:has(.page-heading h1) .topbar-title h1,body:has(.settings-page) .topbar-tit
 .timeline-event .timeline-detail{display:block;font-size:12px;line-height:18px;color:var(--muted);margin:2px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .timeline-event .timeline-detail:empty{display:none}
 .timeline-event>.timeline-content{display:block;width:auto;height:auto;border-radius:0;background:transparent;color:inherit;place-items:normal}
+
+/* Appearance › Language: a compact picker on the right of the row, flags before each language. */
+.settings-language-row{align-items:center;gap:24px}
+.settings-language-row>div:first-child{min-width:0}
+.settings-language-select{flex:none;width:240px;max-width:100%}
+@media(max-width:650px){.settings-language-row{flex-direction:column;align-items:stretch;gap:12px}.settings-language-select{width:100%}}
