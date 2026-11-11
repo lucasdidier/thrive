@@ -64,12 +64,12 @@ const LOGO='<img src="/favicon.svg" width="28" height="28" alt="">';
 const THEME_SCRIPT=`<script>(()=>{const d=document.documentElement,dark=matchMedia('(prefers-color-scheme: dark)');let p='system';try{p=localStorage.getItem('thrive-theme')||'system'}catch{}const apply=()=>{d.dataset.theme=p==='light'||p==='dark'?p:dark.matches?'dark':'light'};apply();dark.addEventListener('change',()=>{if(p!=='light'&&p!=='dark')apply()})})()</script>`;
 const fmtDate=(lang,iso)=>new Intl.DateTimeFormat(lang,{year:'numeric',month:'long',day:'numeric',timeZone:'UTC'}).format(new Date(iso+'T00:00:00Z'));
 
-function languageMenu(lang,hrefFor,available){
+export function languageMenu(lang,hrefFor,available){
  const current=LANGUAGES.find(l=>l.code===lang);
  return `<details class="blog-lang"><summary aria-label="${esc(blogText(lang,'language'))}: ${esc(current.name)}"><span aria-hidden="true">${languageFlag(lang)}</span> ${esc(current.name)}</summary><ul>${LANGUAGES.filter(l=>available.includes(l.code)).map(l=>`<li><a href="${esc(hrefFor(l.code))}" hreflang="${l.code}" lang="${l.code}"${l.code===lang?' aria-current="true"':''}><span aria-hidden="true">${languageFlag(l.code)}</span> ${esc(l.name)}</a></li>`).join('')}</ul></details>`;
 }
 
-function page({lang,title,description,path,alternates,image,jsonld,body,origin,app}){
+function page({lang,title,description,path,alternates,image,jsonld,body,origin,app,home='/'}){
  const t=k=>esc(blogText(lang,k));
  const url=origin+path;
  return `<!doctype html>
@@ -92,9 +92,9 @@ ${jsonld?`<script type="application/ld+json">${JSON.stringify(jsonld).replace(/<
 <a class="skip" href="#main">Skip to content</a>
 <header class="bar">
  <div class="wrap bar-row">
-  <a class="mark" href="/" aria-label="Thrive home">${LOGO}thrive</a>
-  <nav class="bar-links" aria-label="Thrive"><a href="/#features">${t('features')}</a><a href="/#pricing">${t('pricing')}</a><a href="${blogURL(lang)}" aria-current="page">${t('blog')}</a></nav>
-  <div class="bar-act"><a href="${app}/auth/sign-in">${t('signIn')}</a><a class="btn sm" href="${app}/auth/sign-up">${t('trial')}</a></div>
+  <a class="mark" href="${home}" aria-label="Thrive home">${LOGO}thrive</a>
+  <nav class="bar-links" aria-label="Thrive"><a href="${home}#features">${t('features')}</a><a href="${home}#pricing">${t('pricing')}</a><a href="${blogURL(lang)}" aria-current="page">${t('blog')}</a></nav>
+  <div class="bar-act"><a href="${app}/auth/sign-in${lang==='en'?'':'?lang='+lang}">${t('signIn')}</a><a class="btn sm" href="${app}/auth/sign-up${lang==='en'?'':'?lang='+lang}">${t('trial')}</a></div>
  </div>
 </header>
 <main id="main">
@@ -102,10 +102,10 @@ ${body}
 </main>
 <footer class="foot">
  <div class="wrap foot-grid">
-  <div class="foot-brand"><a class="mark" href="/" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a><p>${t('tagline')}</p></div>
+  <div class="foot-brand"><a class="mark" href="${home}" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a><p>${t('tagline')}</p></div>
   <nav class="foot-links" aria-label="Footer">
-   <ul><li><a href="/#features">${t('features')}</a></li><li><a href="/#pricing">${t('pricing')}</a></li><li><a href="${blogURL(lang)}">${t('blog')}</a></li></ul>
-   <ul><li><a href="${app}/auth/sign-up">${t('trial')}</a></li><li><a href="${app}/auth/sign-in">${t('signIn')}</a></li></ul>
+   <ul><li><a href="${home}#features">${t('features')}</a></li><li><a href="${home}#pricing">${t('pricing')}</a></li><li><a href="${blogURL(lang)}">${t('blog')}</a></li></ul>
+   <ul><li><a href="${app}/auth/sign-up${lang==='en'?'':'?lang='+lang}">${t('trial')}</a></li><li><a href="${app}/auth/sign-in${lang==='en'?'':'?lang='+lang}">${t('signIn')}</a></li></ul>
    <ul><li><a href="https://github.com/lucasdidier/thrive">GitHub</a></li><li><a href="/privacy">${t('privacy')}</a></li><li><a href="/terms">${t('terms')}</a></li></ul>
   </nav>
  </div>
@@ -117,14 +117,15 @@ ${body}
 
 function cta(lang,app){
  const t=k=>esc(blogText(lang,k));
- return `<aside class="blog-cta" aria-labelledby="blog-cta-title"><h2 id="blog-cta-title">${t('ctaTitle')}</h2><p>${t('ctaText')}</p><a class="btn" href="${app}/auth/sign-up">${t('ctaButton')}</a><p class="blog-cta-note">${t('ctaNote')}</p></aside>`;
+ return `<aside class="blog-cta" aria-labelledby="blog-cta-title"><h2 id="blog-cta-title">${t('ctaTitle')}</h2><p>${t('ctaText')}</p><a class="btn" href="${app}/auth/sign-up${lang==='en'?'':'?lang='+lang}">${t('ctaButton')}</a><p class="blog-cta-note">${t('ctaNote')}</p></aside>`;
 }
 function card(lang,slug,a){
  return `<li class="blog-card"><a href="${blogURL(lang,slug)}">${blogArt(slug)}<span class="blog-card-meta">${esc(blogText(lang,'min',{n:a.meta.minutes}))}</span><strong>${esc(a.meta.title)}</strong><span>${esc(a.meta.description)}</span></a></li>`;
 }
 
 // articles: {slug: {lang: source}}. Returns null when the page doesn't exist.
-export function renderBlog(pathname,{articles,origin='',app='',hasShot=()=>true,published=PUBLISHED}){
+// homeFor(lang): the landing page in that language (runonthrive.com/fr…), so the logo and nav keep the reader's language.
+export function renderBlog(pathname,{articles,origin='',app='',hasShot=()=>true,published=PUBLISHED,homeFor=l=>l==='en'?'/':'/'+l}){
  const route=blogPath(pathname);if(!route)return null;
  const {lang,slug}=route;
  const load=(s,l)=>{const src=articles[s]?.[l];if(!src)return null;const a=parseArticle(src);const cover=firstShot(a.body);return {...a,cover,shotLang:hasShot(l,cover)?l:'en'};};
@@ -135,7 +136,7 @@ export function renderBlog(pathname,{articles,origin='',app='',hasShot=()=>true,
   const available=BLOG_LANGUAGES.filter(l=>order.some(s=>articles[s]?.[l]));
   const alternates=Object.fromEntries(available.map(l=>[l,blogURL(l)]));
   const body=`<div class="wrap blog-index"><header class="blog-head"><div class="blog-head-row"><p class="blog-kicker">${esc(blogText(lang,'blog'))}</p>${languageMenu(lang,l=>blogURL(l),available)}</div><h1>${esc(blogText(lang,'indexTitle'))}</h1><p class="blog-lede">${esc(blogText(lang,'indexLede'))}</p></header><ul class="blog-cards">${list.map(([s,a])=>card(lang,s,a)).join('')}</ul>${cta(lang,app)}</div>`;
-  return page({lang,title:blogText(lang,'indexTitle'),description:blogText(lang,'indexLede'),path:blogURL(lang),alternates,image:`/blog-shots/${list[0][1].shotLang}/${list[0][1].cover}.webp`,body,origin,app});
+  return page({lang,title:blogText(lang,'indexTitle'),description:blogText(lang,'indexLede'),path:blogURL(lang),alternates,image:`/blog-shots/${list[0][1].shotLang}/${list[0][1].cover}.webp`,body,origin,app,home:homeFor(lang)});
  }
  const a=load(slug,lang);if(!a)return null;
  const available=BLOG_LANGUAGES.filter(l=>articles[slug]?.[l]);
@@ -145,7 +146,7 @@ export function renderBlog(pathname,{articles,origin='',app='',hasShot=()=>true,
  const image=`/blog-shots/${a.shotLang}/${a.cover}.webp`;
  const jsonld={'@context':'https://schema.org','@type':'BlogPosting',headline:a.meta.title,description:a.meta.description,inLanguage:lang,datePublished:published,image:origin+image,mainEntityOfPage:origin+blogURL(lang,slug),author:{'@type':'Organization',name:'Thrive'},publisher:{'@type':'Organization',name:'Thrive',logo:{'@type':'ImageObject',url:origin+'/apple-touch-icon.png'}}};
  const body=`<article class="wrap blog-article"><header class="blog-head"><div class="blog-head-row"><a class="blog-kicker" href="${blogURL(lang)}">← ${esc(blogText(lang,'all'))}</a>${languageMenu(lang,l=>blogURL(l,slug),available)}</div><h1>${esc(a.meta.title)}</h1><p class="blog-meta"><time datetime="${published}">${esc(date)}</time> · ${esc(blogText(lang,'min',{n:a.meta.minutes}))}</p></header><div class="blog-body">${renderShots(a.body,lang,hasShot)}</div>${cta(lang,app)}${others.length?`<section class="blog-more" aria-labelledby="blog-more-title"><h2 id="blog-more-title">${esc(blogText(lang,'more'))}</h2><ul class="blog-cards">${others.map(([s,x])=>card(lang,s,x)).join('')}</ul></section>`:''}</article>`;
- return page({lang,title:`${a.meta.title} · Thrive`,description:a.meta.description,path:blogURL(lang,slug),alternates,image,jsonld,body,origin,app});
+ return page({lang,title:`${a.meta.title} · Thrive`,description:a.meta.description,path:blogURL(lang,slug),alternates,image,jsonld,body,origin,app,home:homeFor(lang)});
 }
 
 // Every blog URL, for /sitemap.xml.

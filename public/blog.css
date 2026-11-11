@@ -76,3 +76,6 @@ a.blog-kicker:hover{text-decoration:underline}
  .blog-cta{padding:28px 20px}
  .blog-lang ul{min-width:200px}
 }
+
+.bar-act .blog-lang a{display:flex}
+.bar-act .blog-lang{margin-right:4px}

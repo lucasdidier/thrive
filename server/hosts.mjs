@@ -1,6 +1,7 @@
 // Production runs on two hostnames from one Worker: runonthrive.com is the marketing site (landing, legal
 // pages, llms.txt, static files) and app.runonthrive.com is the app (THRIVE_APP_URL). THRIVE_SITE_URL names
 // the site origin; without it (staging, self-hosting) a single origin serves both, as before.
+import {LANGUAGE_CODES} from '../public/i18n.js';
 const LOCAL=/^(localhost|127\.0\.0\.1)$/;
 export function siteOrigin(env){
  let site,app='';
@@ -24,6 +25,11 @@ export function siteRoute(request,env){
  const url=new URL(request.url);
  if(url.pathname==='/')return {request:new Request(new URL('/landing'+url.search,url),request)};
  if(url.pathname==='/landing')return {response:new Response(null,{status:308,headers:{Location:url.origin+'/'+url.search}})};
+ // The landing page in other languages: /fr, /de… (served by /landing/<language>).
+ const lang=url.pathname.replace(/\/$/,'').slice(1);
+ if(lang!=='en'&&LANGUAGE_CODES.includes(lang))return {request:new Request(new URL('/landing/'+lang+url.search,url),request)};
+ const old=/^\/landing\/([A-Za-z-]+)\/?$/.exec(url.pathname);
+ if(old&&LANGUAGE_CODES.includes(old[1])&&old[1]!=='en')return {response:new Response(null,{status:308,headers:{Location:url.origin+'/'+old[1]+url.search}})};
  if(PAGES.has(url.pathname)||url.pathname==='/blog'||url.pathname.startsWith('/blog/')||STATIC.test(url.pathname))return null;
  return {response:new Response(null,{status:308,headers:{Location:new URL(url.pathname+url.search,env.THRIVE_APP_URL).href,'Cache-Control':'public, max-age=3600'}})};
 }

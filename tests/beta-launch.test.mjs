@@ -136,7 +136,7 @@ test('landing, legal pages and production config ship together',()=>{
  for(const media of [...landing.matchAll(/(?:src|poster)="\/landing\/([a-z-]+\.(?:mp4|webp))"/g)].map(m=>m[1]))assert.ok(existsSync(new URL('../public/landing/'+media,import.meta.url)),media);
  for(const page of ['privacy','terms'])assert.match(readFileSync(new URL(`../ui/${page}.html`,import.meta.url),'utf8'),/Last updated/);
  // /landing previews the page on any deployment (staging included) and stays out of search results.
- assert.match(readFileSync(new URL('../app/landing/route.ts',import.meta.url),'utf8'),/landing\.html\?raw[\s\S]*'X-Robots-Tag':'noindex'/);
+ assert.match(readFileSync(new URL('../app/landing/handler.ts',import.meta.url),'utf8'),/landing\.html\?raw[\s\S]*'X-Robots-Tag':'noindex'/);
  const prod=readFileSync(new URL('../wrangler.production.jsonc',import.meta.url),'utf8');
  for(const s of ['"THRIVE_ACCESS": "open"','RATE_LIMIT_SIGNUP','"binding": "BACKUPS"','"observability"'])assert.ok(prod.includes(s),s);
  assert.doesNotMatch(prod,/SECRET|API_KEY"\s*:/);

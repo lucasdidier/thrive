@@ -54,7 +54,9 @@ test('every screenshot the articles use exists in English, and the pages render 
  assert.match(html,/<html lang="de">/);
  assert.match(html,/hreflang="fr" href="https:\/\/runonthrive.com\/blog\/fr\/how-to-invoice-clients"/);
  assert.match(html,/hreflang="x-default" href="https:\/\/runonthrive.com\/blog\/how-to-invoice-clients"/);
- assert.match(html,/href="https:\/\/app.runonthrive.com\/auth\/sign-up">Kostenlos testen/);
+ assert.match(html,/href="https:\/\/app.runonthrive.com\/auth\/sign-up\?lang=de">Kostenlos testen/);
+ assert.match(html,/<a class="mark" href="\/de" aria-label="Thrive home">/,'the logo opens the German landing page');
+ assert.match(html,/href="\/de#pricing"/);
  assert.match(html,/<img src="\/blog-shots\/(de|en)\/invoice.webp"/);
  assert.match(html,/"@type":"BlogPosting"/);
  assert.ok(html.includes(blogText('de','ctaButton')));
