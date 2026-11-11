@@ -3285,5 +3285,7 @@
  "“{name}” saved as a new template.": "“{name}” yeni şablon olarak kaydedildi.",
  "“{option}” is in use. Clear its values before removing it.": "“{option}” kullanımda. Kaldırmadan önce değerlerini temizleyin.",
  "＋ Create a new client": "＋ Yeni müşteri oluştur",
- "Language & theme": "Dil ve tema"
+ "Language & theme": "Dil ve tema",
+ "Private link for {name}": "{name} için özel bağlantı",
+ "Shared with Thrive": "Thrive ile paylaşıldı"
 }

@@ -3253,5 +3253,7 @@
  "“{name}” saved as a new template.": "“{name}” disimpan sebagai template baru.",
  "“{option}” is in use. Clear its values before removing it.": "“{option}” sedang digunakan. Kosongkan nilainya sebelum menghapusnya.",
  "＋ Create a new client": "＋ Buat klien baru",
- "Language & theme": "Bahasa & tema"
+ "Language & theme": "Bahasa & tema",
+ "Private link for {name}": "Tautan pribadi untuk {name}",
+ "Shared with Thrive": "Dibagikan dengan Thrive"
 }

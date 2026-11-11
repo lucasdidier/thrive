@@ -1,0 +1,103 @@
+<!--meta {"title":"Angarya işlerden kurtul: serbest çalışanlar ve küçük stüdyolar için 11 iş akışı fikri","description":"Hangi idari işlerin otomatikleştirilmeye değdiğini nasıl anlarsın? Yeni taleplerden ödenen faturalara, freelancerlar için 11 pratik iş akışı fikri.","minutes":7} -->
+<p class="lede">Çoğu freelancer haftasını zor problemlere kaptırmaz. Küçük işlere kaptırır: yeni bir potansiyel müşteriyi etiketlemek, müşterinin adını sözleşmeye kopyalamak, kapora faturasını göndermeyi hatırlamak, aynı "teşekkürler, sıradaki adımlar şöyle" e-postasını kırkıncı kez yazmak. Hiçbiri uzun sürmez. Ama hepsi birikir ve unuttukların sana gerçek para kaybettirir. Bu tür işleri nasıl fark edeceğini ve onları senin yerine halleden on bir basit otomasyonu aşağıda bulabilirsin.</p>
+
+<h2>Otomatikleştirmeye değer angarya işleri nasıl fark edersin?</h2>
+<p>Her ufak iş otomatikleştirilmemeli. İyi bir aday üç testi geçer:</p>
+<ul>
+<li><strong>Tekrar ediyor.</strong> Her müşteri, her proje ya da her fatura için yapıyorsun. Yılda iki kez oluyorsa elle yap, geç.</li>
+<li><strong>Bir kurala bağlı.</strong> "X olunca Y'yi yap" diye söyleyebiliyorsun ve sonuna "canım isterse" eklemen gerekmiyor. Karmaşık bir projeyi fiyatlamak gibi muhakeme isteyen kararlar sende kalır.</li>
+<li><strong>Kolayca unutuluyor.</strong> Adım iki büyük anın arasında kalıyor, bu yüzden gözden kaçıyor. Teklif cuma akşamı kabul ediliyor, kapora faturası çarşamba gidiyor, çünkü kimse sana hatırlatmadı.</li>
+</ul>
+<p>Kısa bir alıştırma: bir hafta boyunca bir not açık tut ve yaptığın her küçük idari işi, onu başlatan anla birlikte yaz. "Müşteri imzaladı, projeyi devam ediyor olarak değiştirdim." "Talep geldi, potansiyel müşteri olarak etiketledim." Cuma gününe kadar elinde tetikleyici ve eylem çiftlerinden oluşan bir liste olur. O liste senin otomasyon planın.</p>
+
+<h2>Thrive'da iş akışları nasıl çalışır?</h2>
+<p>Thrive'da bir iş akışı, bir tetikleyici ve bir ya da daha fazla eylemden (en fazla yirmi) oluşur. Tetikleyici, çalışma alanında olan bir şeydir: bir form gönderilir, bir teklif kabul edilir, bir sözleşme imzalanır, bir fatura tamamen ödenir, bir toplantı tamamlanır. Eylemler ise Thrive'ın buna karşılık yaptığı şeylerdir: etiket eklemek, not eklemek, taslak oluşturmak, projenin durumunu değiştirmek, fatura kesmek.</p>
+<p>Birkaç detay bunu göründüğünden daha güvenli kılar:</p>
+<ul>
+<li>Metin alanları <code>{{client.name}}</code>, <code>{{project.name}}</code> ya da <code>{{document.title}}</code> gibi değişkenleri kabul eder. Bunlar, çalışmayı tetikleyen kayıttan doldurulur.</li>
+<li>Bir iş akışını açmadan önce örnek bir kayıt üzerinde test edebilirsin. Test bir kopya üzerinde çalışır ve hiçbir şeyi değiştirmez.</li>
+<li>E-postalar her zaman yalnızca taslak olarak hazırlanır. Sen gözden geçirip gönder'e basmadan müşteriye hiçbir şey gitmez.</li>
+<li>Her çalışma, sonucuyla birlikte çalışma geçmişine düşer: başarılı, atlandı ya da başarısız, ve nedeni.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>İş akışları sayfası: her otomasyon tetikleyicisi, eylemleri, durumu ve son çalışmasıyla birlikte.</figcaption></figure>
+
+<h2>11 iş akışı fikri</h2>
+<p>Aşağıdaki her fikir tetikleyici → eylem şeklinde yazıldı ve bugün Thrive'da var olan tetikleyicileri ve eylemleri kullanıyor. On birinin hepsiyle değil, iki üçüyle başla.</p>
+
+<h3>1. Her yeni talebi etiketle</h3>
+<p><strong>Form gönderildi</strong> (talep formunla sınırlandırılmış) → <strong>Müşteri etiketi ekle</strong> "Yeni talep".</p>
+<p>Formun e-posta sorusunu bir müşteriyle eşleştirmek ya da yeni müşteri oluşturmak için kullanıyorsa, her talep müşteri listene filtreleyebileceğin bir etiketle düşer. Hangi potansiyel müşterilere henüz dönmediğini merak etmezsin. O formu hâlâ kuruyorsan, <a href="/blog/tr/generate-leads-with-forms">formlarla nasıl müşteri adayı toplanır</a> yazısına göz at.</p>
+
+<h3>2. "Teşekkürler, sıradaki adımlar şöyle" yanıtını taslak olarak hazırla</h3>
+<p><strong>Form gönderildi</strong> → <strong>E-posta taslağı hazırla</strong>, konu: "Ulaştığın için teşekkürler, {{client.contact}}".</p>
+<p>Her talebe yazdığın yanıt büyük ölçüde aynıdır: teşekkür, sıradaki adımlar ve görüşme ayarlamak için bir bağlantı. Taslağı iş akışı yazar; sen kişisel bir cümle ekleyip gönderirsin. Hızlı yanıt iş kazandırır ve bu akış boş sayfa derdini ortadan kaldırır.</p>
+
+<h3>3. Potansiyel müşteri nitelikli olunca teklife başla</h3>
+<p><strong>Etiket eklendi</strong> "Nitelikli" → <strong>Teklif taslağı oluştur</strong>, başlık: "{{client.name}} teklifi".</p>
+<p>Tanışma görüşmesinden sonra müşteriyi "Nitelikli" olarak etiketlersin. Yazmaya oturduğunda taslak zaten müşterinin kaydında seni bekliyor olur. Bu, yeni bir iş akışı oluştururken Thrive'ın sunduğu şablonlardan biri.</p>
+
+<h3>4. Tanışma görüşmesinden sonra takip taslağını hazırla</h3>
+<p><strong>Toplantı tamamlandı</strong> ("Tanışma görüşmesi" toplantı türünle sınırlandırılmış) → <strong>Toplantı takibi taslağı oluştur</strong>.</p>
+<p>Bu eylem, o müşteri için bir teklif taslağı ve bir e-posta taslağı oluşturur; ikisi de senin incelemen için. Hiçbir şey gönderilmez. İyi bir görüşmenin yarattığı ivme birkaç gün içinde söner, bu yüzden ikisinin de aynı öğleden sonra hazır olması işe yarar.</p>
+
+<h3>5. Teklif kabul edildiği anda sözleşmeyi oluştur</h3>
+<p><strong>Teklif kabul edildi</strong> → <strong>Sözleşme taslağı oluştur</strong>, başlık: "{{client.name}} sözleşmesi".</p>
+<p>Müşteri evet dedi. Sonraki adım her zaman aynıdır ve yoğun bir haftada tam da gözden kaçan türden bir adımdır. Bu geçişin tamamı için <a href="/blog/tr/proposals-and-contracts">imzalanan teklifler ve sözleşmeler</a> yazısını oku.</p>
+
+<h3>6. Kabulde kapora faturasını kes</h3>
+<p><strong>Teklif kabul edildi</strong> → <strong>Kapora faturası oluştur</strong>.</p>
+<p>Diyelim ki ödeme planında %50 kapora olan 4.800 €'luk bir marka projesi sattın. Teklif kabul edildiğinde Thrive, o plandan 2.400 €'luk kapora faturasını üzerinde ödeme talimatlarınla birlikte keser. Proje için zaten bir kapora faturası varsa yenisi oluşturulmaz, mevcut olan kullanılır. Parayı Thrive tahsil etmez: müşterin banka havalesiyle ya da talimatlarında belirttiğin yöntemle öder, sen de ödemeyi kaydedersin.</p>
+
+<h3>7. Sözleşme imzalanınca projeyi ilerlet</h3>
+<p><strong>Sözleşme imzalandı</strong> → <strong>Proje durumunu değiştir</strong>: "Devam ediyor", ardından <strong>Proje hedef tarihini ayarla</strong>: olaydan 30 gün sonra.</p>
+<p>Tek iş akışında iki eylem. Kartları sürüklemene gerek kalmadan proje panon güncel kalır ve her projenin ilk günden bir hedef tarihi olur.</p>
+
+<h3>8. Reddedilen tekliflerin kaydını tut</h3>
+<p><strong>Teklif reddedildi</strong> → <strong>Müşteri etiketi ekle</strong> "Kaybedildi", ardından <strong>Müşteri notu ekle</strong> "{{document.title}} reddedildi. Nedenini sor ve üç ay sonra tekrar yokla."</p>
+<p>Kaybedilen işler değerli veridir. Etiket sayesinde onları sonra sayabilirsin; not ise müşteri seneye geri geldiğinde gelecekteki sana ne olduğunu hatırlatır.</p>
+
+<h3>9. Ödeme yapan müşterileri işaretle</h3>
+<p><strong>Fatura tamamen ödendi</strong> → <strong>Müşteri etiketi ekle</strong> "Ödendi".</p>
+<p>Bir faturanın son ödemesini kaydettiğinde müşteri etiketlenir. Kimin hesabının temiz olduğunu görmek için bu etikete göre filtrele ya da etiket yerine bir not kullan: "{{invoice.number}} tamamen ödendi."</p>
+
+<h3>10. Proje bitince geri bildirim iste</h3>
+<p><strong>Durum değişti</strong>: "Tamamlandı" → <strong>E-posta taslağı hazırla</strong> "{{project.name}} nasıl geçti?", ardından <strong>Müşteri etiketi ekle</strong> "Eski müşteri".</p>
+<p>Referanslar ve tavsiyeler doğru anda istemekten gelir. O an da teslimattan hemen sonradır, yani zaten bir sonraki işe daldığın zaman. Taslak hazırdır; ne zaman göndereceğine sen karar verirsin.</p>
+
+<h3>11. Zamanı müşteri kaydına işle</h3>
+<p><strong>Zaman kaydı eklendi</strong> → <strong>Müşteri notu ekle</strong> "{{project.name}} üzerinde {{time.hours}} saat: {{time.note}}".</p>
+<p>Bir müşterinin geçmişini tek yerde okumayı seviyorsan ya da stüdyodan başka biri o müşteriyi devralacaksa işe yarar. Bu da hazır şablonlardan biri.</p>
+
+<figure data-shot="builder"><figcaption>Düzenleyicide bir iş akışı: bir müşteriye “Nitelikli” etiketi eklendiğinde Thrive bir teklif taslağı hazırlar.</figcaption></figure>
+
+<h2>(Henüz) beklememen gerekenler</h2>
+<p>Sınırları dürüstçe bilmek, hiç çalışmayacak bir şey kurmaktan seni korur:</p>
+<ul>
+<li><strong>Tetikleyiciler tarih değil, olaydır.</strong> Thrive çalışma alanında olan şeylere tepki verir. "Vade tarihinden 7 gün sonra" gibi bir tetikleyici yok, bu yüzden gecikmiş ödeme hatırlatmaları hâlâ haftalık bir alışkanlık: faturalarını duruma göre filtrele ve takip et.</li>
+<li><strong>Gönderme işi sende kalır.</strong> İş akışları e-postaları taslak olarak hazırlar, asla göndermez. Bu bilinçli bir tercih.</li>
+<li><strong>Ödemeler Thrive dışında yapılır.</strong> "Fatura tamamen ödendi", para bankana geldiğinde değil, sen ödemeyi kaydettiğinde tetiklenir.</li>
+</ul>
+
+<h2>Bir iş akışını açmadan önce kısa kontrol listesi</h2>
+<ul>
+<li>Onu tek cümlede "X olunca Y'yi yap" diye anlatabiliyor musun?</li>
+<li>Tetikleyiciyi yeterince daralttın mı? (Belirli bir form, tek bir toplantı türü, tek bir etiket değeri.)</li>
+<li>Gerçek bir örnek kayıtta test edip sonucu okudun mu?</li>
+<li>Oluşturduğu her taslak, gerçekten bakacağın bir yere düşüyor mu?</li>
+<li>Bir hafta sonra çalışma geçmişinde atlanan ya da başarısız çalışmalarla dolu bir liste değil, başarılı çalışmalar mı görüyorsun?</li>
+</ul>
+
+<h2>Yapay zekâ asistanlarıyla bir adım öteye</h2>
+<p>İş akışları kurala bağlı adımları halleder. Biraz yazı ya da okuma gerektiren kısımlar için Claude veya ChatGPT gibi bir yapay zekâ asistanını MCP üzerinden Thrive'a bağlayabilirsin. Kenar çubuğundaki "Yapay zekâ ile kullan" sayfasından Thrive'a giriş yapıp asistana bir kez izin vermen yeterli.</p>
+<p>Bağlandıktan sonra asistan, uygulamadaki kontrollerin aynısından geçerek gerçek kayıtlarınla çalışır. Sorabileceğin bazı şeyler:</p>
+<ul>
+<li>"Harbor Coffee ile yaptığım görüşmenin notlarını oku ve web sitesi yenilemesi için bir teklif taslağı hazırla." Taslağı düzenlemen için Thrive'da oluşturabilir.</li>
+<li>"Haftamı özetle: proje başına kaydedilen zaman, kesilen faturalar ve hâlâ müşteriden yanıt bekleyen her şey."</li>
+<li>"Hangi faturalar ödenmedi ve vadesi geçti?" İş akışlarının yapmadığı tarih bazlı hatırlatmalar için fena olmayan bir alternatif.</li>
+<li>"Yeni talepleri etiketleyen bir iş akışı kur." İş akışı oluşturup test de edebilir.</li>
+</ul>
+<p>Aynı güvenlik önlemleri burada da geçerli. Asistan bir değişikliği yapmadan önce önizleyebilir, yaptıkları üzerinde iş akışların yine çalışır ve sana mesajın tam halini gösterip onayını almadan e-posta ya da takvim daveti gönderemez. Ödeme tahsil edemez, imza da taklit edemez.</p>
+<figure data-shot="mcp"><figcaption>"Yapay zekâ ile kullan" sayfası: bağlantı adresi ve Claude veya ChatGPT için bir kurulum istemi.</figcaption></figure>
+
+<h2>Bir sonraki projende dene</h2>
+<p>En son unuttuğun adımı seç; bir kapora faturası, bir sözleşme taslağı ya da bir talebe verilecek yanıt olabilir. Onu bir iş akışına dönüştür. Geçmiş bir müşteri üzerinde test et, aç ve bir sonraki projenin onun üzerinden akmasına izin ver. Thrive aylık 10 $ ve 7 günlük ücretsiz deneme sunuyor; <a href="https://app.runonthrive.com/auth/sign-up">kart bilgisi vermeden başlayabilirsin</a>.</p>

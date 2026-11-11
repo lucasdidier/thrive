@@ -1,0 +1,103 @@
+<!--meta {"title":"Automatiseer het klusjeswerk: 11 workflow-ideeën voor freelancers en kleine studio's","description":"Zo herken je welke administratie je kunt automatiseren, plus 11 praktische workflows voor freelancers en studio's, van nieuwe aanvraag tot betaalde factuur.","minutes":7} -->
+<p class="lede">De meeste freelancers verliezen hun week niet aan moeilijke problemen. Ze verliezen hem aan kleine dingen: een nieuwe lead taggen, de naam van een klant in een contract overtikken, onthouden dat de aanbetalingsfactuur de deur uit moet, voor de veertigste keer hetzelfde "bedankt, dit gebeurt er nu"-mailtje schrijven. Niets daarvan kost veel tijd. Bij elkaar opgeteld wel, en wat je vergeet kost echt geld. Zo herken je dat soort werk, plus elf eenvoudige automatiseringen die het van je overnemen.</p>
+
+<h2>Zo herken je klusjeswerk dat je kunt automatiseren</h2>
+<p>Niet elk klusje hoeft geautomatiseerd te worden. Een goede kandidaat doorstaat drie tests:</p>
+<ul>
+<li><strong>Het komt steeds terug.</strong> Je doet het voor elke klant, elk project of elke factuur. Gebeurt het twee keer per jaar, doe het dan gewoon met de hand.</li>
+<li><strong>Het volgt een vaste regel.</strong> Je kunt het zeggen als "als X gebeurt, doe Y" zonder "tenzij ik er geen zin in heb" toe te voegen. Inschattingen, zoals de prijs van een lastig project, blijven bij jou.</li>
+<li><strong>Het schiet er makkelijk bij in.</strong> De stap zit tussen twee grotere momenten in, dus hij glipt erdoor. Een offerte wordt op vrijdagavond geaccepteerd en de aanbetalingsfactuur gaat pas woensdag de deur uit, omdat niemand je eraan herinnerde.</li>
+</ul>
+<p>Een snelle oefening: houd een week lang een notitie open en schrijf elk klein administratief klusje op, met het moment waardoor het begon. "Klant heeft getekend, dus ik heb het project op bezig gezet." "Aanvraag binnengekomen, dus ik heb ze als lead getagd." Op vrijdag heb je een lijst met paren van trigger en actie. Die lijst is je automatiseringsplan.</p>
+
+<h2>Zo werken workflows in Thrive</h2>
+<p>In Thrive bestaat een workflow uit één trigger en één of meer acties (tot twintig). De trigger is iets wat in je werkruimte gebeurt: een formulier wordt verzonden, een offerte wordt geaccepteerd, een contract wordt ondertekend, een factuur is volledig betaald, een afspraak is afgerond. De acties zijn wat Thrive daarop doet: een tag toevoegen, een notitie toevoegen, een concept maken, de status van een project wijzigen, een factuur uitgeven.</p>
+<p>Een paar details maken dit veiliger dan het klinkt:</p>
+<ul>
+<li>Tekstvelden accepteren variabelen zoals <code>{{client.name}}</code>, <code>{{project.name}}</code> of <code>{{document.title}}</code>, die worden ingevuld vanuit het record dat de workflow startte.</li>
+<li>Je kunt een workflow testen op een voorbeeldrecord voordat je hem aanzet. De test draait op een kopie en verandert niets.</li>
+<li>E-mails worden alleen opgesteld. Er gaat niets naar een klant totdat jij het hebt nagelezen en op verzenden drukt.</li>
+<li>Elke uitvoering komt in de uitvoergeschiedenis met het resultaat: geslaagd, overgeslagen of mislukt, en waarom.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>De pagina Workflows: elke automatisering met trigger, acties, status en laatste uitvoering.</figcaption></figure>
+
+<h2>11 workflow-ideeën</h2>
+<p>Elk idee hieronder staat genoteerd als trigger → actie, met triggers en acties die vandaag al in Thrive zitten. Begin met twee of drie, niet met alle elf.</p>
+
+<h3>1. Tag elke nieuwe aanvraag</h3>
+<p><strong>Formulier verzonden</strong> (gefilterd op je aanvraagformulier) → <strong>Klanttag toevoegen</strong> "Nieuwe aanvraag".</p>
+<p>Als je formulier de e-mailvraag gebruikt om een klant te koppelen of aan te maken, komt elke aanvraag in je klantenlijst terecht met een tag waarop je kunt filteren. Je hoeft je nooit meer af te vragen welke leads nog op antwoord wachten. Ben je dat formulier nog aan het bouwen, lees dan <a href="/blog/nl/generate-leads-with-forms">hoe je leads binnenhaalt met formulieren</a>.</p>
+
+<h3>2. Stel het "bedankt, dit zijn de volgende stappen"-antwoord op</h3>
+<p><strong>Formulier verzonden</strong> → <strong>E-mail opstellen</strong> met als onderwerp "Bedankt voor je bericht, {{client.contact}}".</p>
+<p>Het antwoord dat je op elke aanvraag schrijft is grotendeels hetzelfde: bedankt, dit gebeurt er nu, een link om een gesprek in te plannen. De workflow schrijft het concept; jij voegt één persoonlijke zin toe en verstuurt het. Wie snel reageert, wint opdrachten, en zo begin je nooit met een leeg scherm.</p>
+
+<h3>3. Start een offerte zodra een lead gekwalificeerd is</h3>
+<p><strong>Tag toegevoegd</strong> "Gekwalificeerd" → <strong>Conceptofferte maken</strong> met de titel "Offerte {{client.name}}".</p>
+<p>Na het kennismakingsgesprek tag je de klant als "Gekwalificeerd". Tegen de tijd dat je gaat schrijven, staat het concept al klaar in hun dossier. Dit is een van de sjablonen die Thrive aanbiedt als je een nieuwe workflow maakt.</p>
+
+<h3>4. Stel de opvolging na een kennismakingsgesprek op</h3>
+<p><strong>Afspraak afgerond</strong> (gefilterd op je afspraaktype "Kennismakingsgesprek") → <strong>Opvolging van afspraak opstellen</strong>.</p>
+<p>Deze actie maakt een conceptofferte en een concept-e-mail voor die klant, allebei om na te lezen. Er wordt niets verstuurd. Het momentum na een goed gesprek is binnen een paar dagen weg, dus het helpt als allebei dezelfde middag klaarstaan.</p>
+
+<h3>5. Maak het contract zodra een offerte is geaccepteerd</h3>
+<p><strong>Offerte geaccepteerd</strong> → <strong>Conceptcontract maken</strong> met de titel "Overeenkomst {{client.name}}".</p>
+<p>De klant heeft ja gezegd. De volgende stap is altijd dezelfde, en het is precies het soort stap dat in een drukke week blijft liggen. Een complete uitleg van die overdracht lees je in <a href="/blog/nl/proposals-and-contracts">offertes en contracten die getekend worden</a>.</p>
+
+<h3>6. Verstuur de aanbetalingsfactuur bij acceptatie</h3>
+<p><strong>Offerte geaccepteerd</strong> → <strong>Aanbetalingsfactuur maken</strong>.</p>
+<p>Stel dat je een brandingproject van € 4.800 hebt verkocht met 50% aanbetaling in het betaalschema. Zodra de offerte is geaccepteerd, maakt Thrive op basis van dat schema de aanbetalingsfactuur van € 2.400, met jouw betaalinstructies erop. Bestaat er al een aanbetalingsfactuur voor het project, dan wordt die hergebruikt en niet dubbel aangemaakt. Thrive int het geld niet: je klant betaalt via een bankoverschrijving of de methode die in je instructies staat, en jij registreert de betaling.</p>
+
+<h3>7. Zet het project door zodra het contract getekend is</h3>
+<p><strong>Contract ondertekend</strong> → <strong>Projectstatus wijzigen</strong> naar "Bezig", daarna <strong>Streefdatum van project instellen</strong> op 30 dagen na de gebeurtenis.</p>
+<p>Twee acties in één workflow. Je projectbord klopt zonder dat je kaarten hoeft te verslepen, en elk project heeft vanaf dag één een streefdatum.</p>
+
+<h3>8. Houd bij welke offertes zijn afgewezen</h3>
+<p><strong>Offerte geweigerd</strong> → <strong>Klanttag toevoegen</strong> "Verloren", daarna <strong>Klantnotitie toevoegen</strong> "{{document.title}} afgewezen. Vraag waarom en kijk over drie maanden opnieuw."</p>
+<p>Verloren deals zijn nuttige informatie. Met een tag kun je ze later tellen; een notitie vertelt de toekomstige jij wat er gebeurde als de klant volgend jaar terugkomt.</p>
+
+<h3>9. Markeer klanten die betaald hebben</h3>
+<p><strong>Factuur volledig betaald</strong> → <strong>Klanttag toevoegen</strong> "Betaald".</p>
+<p>Als je de laatste betaling op een factuur registreert, krijgt de klant een tag. Filter op die tag om te zien wie bij is, of vervang hem door een notitie: "{{invoice.number}} volledig betaald."</p>
+
+<h3>10. Vraag om feedback als een project is afgerond</h3>
+<p><strong>Status gewijzigd</strong> naar "Voltooid" → <strong>E-mail opstellen</strong> "Hoe is {{project.name}} bevallen?", daarna <strong>Klanttag toevoegen</strong> "Oud-klant".</p>
+<p>Reviews en doorverwijzingen krijg je door op het juiste moment te vragen, en dat is vlak na de oplevering, als je alweer druk bent met het volgende. Het concept staat klaar; jij bepaalt wanneer je het verstuurt.</p>
+
+<h3>11. Log tijd in het klantdossier</h3>
+<p><strong>Tijdregistratie toegevoegd</strong> → <strong>Klantnotitie toevoegen</strong> "{{time.hours}} uur aan {{project.name}}: {{time.note}}".</p>
+<p>Handig als je de geschiedenis van een klant graag op één plek leest, of als iemand anders in de studio de klant overneemt. Ook dit is een kant-en-klaar sjabloon.</p>
+
+<figure data-shot="builder"><figcaption>Een workflow in de editor: krijgt een klant de tag ‘Gekwalificeerd’, dan maakt Thrive een conceptofferte.</figcaption></figure>
+
+<h2>Wat je (nog) niet moet verwachten</h2>
+<p>Eerlijke grenzen voorkomen dat je iets bouwt dat nooit afgaat:</p>
+<ul>
+<li><strong>Triggers zijn gebeurtenissen, geen datums.</strong> Thrive reageert op wat er in je werkruimte gebeurt. Er is geen trigger voor "7 dagen na de vervaldatum", dus herinneringen voor achterstallige facturen blijven een wekelijkse gewoonte: filter je facturen op status en volg ze op.</li>
+<li><strong>Versturen blijft handwerk.</strong> Workflows stellen e-mails op, maar versturen ze nooit. Dat is met opzet.</li>
+<li><strong>Betalingen gebeuren buiten Thrive.</strong> "Factuur volledig betaald" gaat af als jij de betaling registreert, niet als het geld op je rekening staat.</li>
+</ul>
+
+<h2>Een korte checklist voordat je er een aanzet</h2>
+<ul>
+<li>Kun je hem in één zin beschrijven als "als X, doe Y"?</li>
+<li>Heb je de trigger scherp genoeg gefilterd? (Eén specifiek formulier, één afspraaktype, één tagwaarde.)</li>
+<li>Heb je hem getest op een echt voorbeeldrecord en het resultaat gelezen?</li>
+<li>Komt elk concept dat hij maakt terecht op een plek waar je echt kijkt?</li>
+<li>Laat de uitvoergeschiedenis na een week geslaagde uitvoeringen zien, en geen muur van overgeslagen of mislukte?</li>
+</ul>
+
+<h2>Verder met AI-agents</h2>
+<p>Workflows nemen de stappen met vaste regels voor hun rekening. Voor de onderdelen waar wat lees- of schrijfwerk bij komt kijken, kun je een AI-assistent zoals Claude of ChatGPT via MCP aan Thrive koppelen. Je logt in bij Thrive en geeft de assistent eenmalig toestemming, via de pagina "Gebruiken met AI" in de zijbalk.</p>
+<p>Eenmaal gekoppeld werkt de assistent met je echte gegevens, met dezelfde controles als de app. Een paar dingen die je kunt vragen:</p>
+<ul>
+<li>"Lees de notities van mijn gesprek met Harbor Coffee en schrijf een offerte voor een vernieuwde website." De assistent kan het concept in Thrive aanmaken, zodat jij het kunt bewerken.</li>
+<li>"Vat mijn week samen: geregistreerde tijd per project, uitgegeven facturen en alles wat nog op een klant wacht."</li>
+<li>"Welke facturen zijn onbetaald en over de vervaldatum?" Een prima vervanger voor de datumgebaseerde herinneringen die workflows niet doen.</li>
+<li>"Maak een workflow die nieuwe aanvragen tagt." Ook workflows maken en testen kan de assistent.</li>
+</ul>
+<p>Dezelfde waarborgen gelden. De assistent kan een wijziging eerst als voorbeeld tonen, workflows reageren gewoon op wat hij doet, en hij kan geen e-mail of agenda-uitnodiging versturen zonder jou het exacte bericht te laten zien en je akkoord te krijgen. Betalingen innen of een handtekening vervalsen kan hij ook niet.</p>
+<figure data-shot="mcp"><figcaption>De pagina "Gebruiken met AI", met het koppeladres en een instructie om Claude of ChatGPT in te stellen.</figcaption></figure>
+
+<h2>Probeer het bij je volgende project</h2>
+<p>Kies de stap die je het laatst bent vergeten, of dat nu een aanbetalingsfactuur, een conceptcontract of een antwoord op een aanvraag was, en maak er een workflow van. Test hem op een oud-klant, zet hem aan en laat je volgende project erdoorheen lopen. Thrive kost $10 per maand met een gratis proefperiode van 7 dagen, en je kunt <a href="https://app.runonthrive.com/auth/sign-up">beginnen zonder creditcard</a>.</p>

@@ -11,6 +11,7 @@ export function siteOrigin(env){
 }
 export const onSite=(request,env)=>{const site=siteOrigin(env);return !!site&&new URL(request.url).origin===site;};
 
+// The blog (/blog, /blog/…) is served on the site too.
 const PAGES=new Set(['/privacy','/terms','/checkout']);
 const STATIC=/\/[^/]+\.[a-z0-9]{2,5}$/i;
 // On the site host: `/` shows the landing page, pages and static files are served, and every other path
@@ -21,6 +22,6 @@ export function siteRoute(request,env){
  const url=new URL(request.url);
  if(url.pathname==='/')return {request:new Request(new URL('/landing'+url.search,url),request)};
  if(url.pathname==='/landing')return {response:new Response(null,{status:308,headers:{Location:url.origin+'/'+url.search}})};
- if(PAGES.has(url.pathname)||STATIC.test(url.pathname))return null;
+ if(PAGES.has(url.pathname)||url.pathname==='/blog'||url.pathname.startsWith('/blog/')||STATIC.test(url.pathname))return null;
  return {response:new Response(null,{status:308,headers:{Location:new URL(url.pathname+url.search,env.THRIVE_APP_URL).href,'Cache-Control':'public, max-age=3600'}})};
 }

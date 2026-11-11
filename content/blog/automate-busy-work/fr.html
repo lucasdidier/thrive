@@ -1,0 +1,103 @@
+<!--meta {"title":"Automatiser les tâches répétitives : 11 idées d’automatisations pour freelances et petits studios","description":"Repérer l’administratif qui mérite d’être automatisé, et 11 automatisations concrètes pour freelances et petits studios, de la demande à la facture payée.","minutes":7} -->
+<p class="lede">La plupart des freelances ne perdent pas leur semaine sur des problèmes difficiles. Ils la perdent sur des petits : étiqueter un nouveau prospect, recopier le nom d’un client dans un contrat, penser à envoyer la facture d’acompte, rédiger pour la quarantième fois le même e-mail « merci, voici la suite ». Rien de tout ça ne prend longtemps. Mais tout s’additionne, et ce que vous oubliez vous coûte de l’argent. Voici comment repérer ce genre de tâches, et onze automatisations simples pour vous en débarrasser.</p>
+
+<h2>Comment repérer les tâches qui méritent d’être automatisées</h2>
+<p>Toutes les corvées ne sont pas bonnes à automatiser. Une bonne candidate passe trois tests :</p>
+<ul>
+<li><strong>Elle se répète.</strong> Vous la faites pour chaque client, chaque projet ou chaque facture. Si elle arrive deux fois par an, faites-la à la main.</li>
+<li><strong>Elle suit une règle.</strong> Vous pouvez la formuler en « quand X se produit, faire Y » sans ajouter « sauf si j’en ai envie ». Les décisions qui demandent du jugement, comme chiffrer un projet délicat, restent entre vos mains.</li>
+<li><strong>Elle s’oublie facilement.</strong> L’étape tombe entre deux moments plus importants, alors elle passe à la trappe. Une proposition est acceptée un vendredi soir et la facture d’acompte part le mercredi suivant, parce que personne ne vous l’a rappelé.</li>
+</ul>
+<p>Un petit exercice : pendant une semaine, gardez une note ouverte et écrivez chaque petite tâche administrative que vous faites, avec ce qui l’a déclenchée. « Le client a signé, donc j’ai passé le projet en cours. » « Une demande est arrivée, donc je l’ai étiqueté comme prospect. » Le vendredi, vous aurez une liste de paires déclencheur et action. Cette liste, c’est votre plan d’automatisation.</p>
+
+<h2>Comment fonctionnent les automatisations dans Thrive</h2>
+<p>Dans Thrive, une automatisation, c’est un déclencheur et une ou plusieurs actions (jusqu’à vingt). Le déclencheur est un événement dans votre espace de travail : un formulaire est envoyé, une proposition est acceptée, un contrat est signé, une facture est entièrement payée, une réunion est terminée. Les actions sont ce que Thrive fait en réponse : ajouter une étiquette, ajouter une note, créer un brouillon, changer le statut d’un projet, émettre une facture.</p>
+<p>Quelques détails rendent tout ça plus sûr qu’il n’y paraît :</p>
+<ul>
+<li>Les champs de texte acceptent des variables comme <code>{{client.name}}</code>, <code>{{project.name}}</code> ou <code>{{document.title}}</code>, remplies à partir de l’élément qui a déclenché l’exécution.</li>
+<li>Vous pouvez tester une automatisation sur un exemple avant de l’activer. Le test tourne sur une copie et ne modifie rien.</li>
+<li>Les e-mails sont uniquement rédigés en brouillon. Rien ne part chez un client tant que vous ne l’avez pas relu et envoyé vous-même.</li>
+<li>Chaque exécution apparaît dans l’historique d’exécution avec son résultat : réussi, ignoré ou en échec, et pourquoi.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>La page Automatisations : chaque automatisation avec son déclencheur, ses actions, son statut et sa dernière exécution.</figcaption></figure>
+
+<h2>11 idées d’automatisations</h2>
+<p>Chaque idée ci-dessous s’écrit déclencheur → action, avec des déclencheurs et des actions qui existent aujourd’hui dans Thrive. Commencez par deux ou trois, pas les onze.</p>
+
+<h3>1. Étiqueter chaque nouvelle demande</h3>
+<p><strong>Formulaire envoyé</strong> (filtré sur votre formulaire de demande) → <strong>Ajouter une étiquette client</strong> « Nouvelle demande ».</p>
+<p>Si votre formulaire utilise la question sur l’e-mail pour retrouver ou créer un client, chaque demande arrive dans votre liste de clients avec une étiquette sur laquelle filtrer. Vous ne vous demandez plus à quels prospects vous n’avez pas encore répondu. Si vous êtes encore en train de créer ce formulaire, lisez <a href="/blog/fr/generate-leads-with-forms">comment trouver des clients grâce aux formulaires</a>.</p>
+
+<h3>2. Préparer la réponse « merci, voici la suite »</h3>
+<p><strong>Formulaire envoyé</strong> → <strong>Rédiger un e-mail</strong> avec l’objet « Merci pour votre message, {{client.contact}} ».</p>
+<p>La réponse que vous écrivez à chaque demande est presque toujours la même : merci, voici la suite, un lien pour réserver un appel. L’automatisation rédige le brouillon ; vous ajoutez une phrase personnelle et vous l’envoyez. Répondre vite fait gagner des projets, et ça vous évite la page blanche.</p>
+
+<h3>3. Lancer une proposition quand un prospect est qualifié</h3>
+<p><strong>Étiquette ajoutée</strong> « Qualifié » → <strong>Créer un brouillon de proposition</strong> intitulé « Proposition {{client.name}} ».</p>
+<p>Après l’appel découverte, vous ajoutez l’étiquette « Qualifié » au client. Quand vous vous asseyez pour rédiger, le brouillon vous attend déjà dans sa fiche. C’est l’un des modèles que Thrive propose quand vous créez une nouvelle automatisation.</p>
+
+<h3>4. Préparer le suivi après un appel découverte</h3>
+<p><strong>Réunion terminée</strong> (filtré sur votre type de rendez-vous « Appel découverte ») → <strong>Rédiger le suivi du rendez-vous</strong>.</p>
+<p>Cette action crée un brouillon de proposition et un brouillon d’e-mail pour ce client, à relire. Rien n’est envoyé. L’élan d’un bon appel retombe en quelques jours, alors avoir les deux prêts l’après-midi même fait la différence.</p>
+
+<h3>5. Créer le contrat dès qu’une proposition est acceptée</h3>
+<p><strong>Proposition acceptée</strong> → <strong>Créer un brouillon de contrat</strong> intitulé « Contrat {{client.name}} ».</p>
+<p>Le client a dit oui. L’étape suivante est toujours la même, et c’est exactement le genre d’étape qui saute pendant une semaine chargée. Pour le passage de relais complet, lisez <a href="/blog/fr/proposals-and-contracts">des propositions et des contrats qui se font signer</a>.</p>
+
+<h3>6. Émettre la facture d’acompte à l’acceptation</h3>
+<p><strong>Proposition acceptée</strong> → <strong>Créer la facture d’acompte</strong>.</p>
+<p>Imaginons que vous ayez vendu un projet d’identité de marque à 4 800 € avec un acompte de 50 % dans son échéancier. Quand la proposition est acceptée, Thrive émet la facture d’acompte de 2 400 € à partir de cet échéancier, avec vos instructions de paiement. Si une facture d’acompte existe déjà pour le projet, elle est réutilisée, pas dupliquée. Thrive n’encaisse pas l’argent : votre client paie par virement ou par le moyen indiqué dans vos instructions, et vous enregistrez le paiement.</p>
+
+<h3>7. Faire avancer le projet quand le contrat est signé</h3>
+<p><strong>Contrat signé</strong> → <strong>Changer le statut du projet</strong> en « En cours », puis <strong>Définir la date cible du projet</strong> à 30 jours après l’événement.</p>
+<p>Deux actions dans une seule automatisation. Votre tableau de projets reste à jour sans que vous ayez à déplacer des cartes, et chaque projet a une date cible dès le premier jour.</p>
+
+<h3>8. Garder une trace des propositions refusées</h3>
+<p><strong>Proposition refusée</strong> → <strong>Ajouter une étiquette client</strong> « Perdu », puis <strong>Ajouter une note client</strong> « A refusé {{document.title}}. Demander pourquoi et reprendre contact dans trois mois. »</p>
+<p>Les projets perdus sont des données utiles. Une étiquette vous permet de les compter plus tard ; une note rappelle au futur vous ce qui s’est passé quand le client revient l’année suivante.</p>
+
+<h3>9. Repérer les clients qui ont payé</h3>
+<p><strong>Facture entièrement payée</strong> → <strong>Ajouter une étiquette client</strong> « Payé ».</p>
+<p>Quand vous enregistrez le dernier paiement d’une facture, le client reçoit l’étiquette. Filtrez dessus pour voir qui est à jour, ou remplacez-la par une note : « {{invoice.number}} payée intégralement. »</p>
+
+<h3>10. Demander un retour à la fin d’un projet</h3>
+<p><strong>Statut modifié</strong> en « Terminé » → <strong>Rédiger un e-mail</strong> « Comment s’est passé {{project.name}} ? », puis <strong>Ajouter une étiquette client</strong> « Ancien client ».</p>
+<p>Les témoignages et les recommandations viennent quand on les demande au bon moment, c’est-à-dire juste après la livraison, quand vous êtes déjà pris par le projet suivant. Le brouillon est prêt ; vous choisissez quand l’envoyer.</p>
+
+<h3>11. Consigner le temps dans la fiche client</h3>
+<p><strong>Saisie de temps ajoutée</strong> → <strong>Ajouter une note client</strong> « {{time.hours}} heures sur {{project.name}} : {{time.note}} ».</p>
+<p>Pratique si vous aimez lire l’historique d’un client au même endroit, ou si quelqu’un d’autre au studio reprend le dossier. Celle-ci existe aussi en modèle prêt à l’emploi.</p>
+
+<figure data-shot="builder"><figcaption>Une automatisation dans l’éditeur : quand un client reçoit l’étiquette « Qualifié », Thrive prépare un brouillon de proposition.</figcaption></figure>
+
+<h2>Ce qu’il ne faut pas (encore) attendre</h2>
+<p>Connaître les limites vous évite de construire quelque chose qui ne se déclenchera jamais :</p>
+<ul>
+<li><strong>Les déclencheurs sont des événements, pas des dates.</strong> Thrive réagit à ce qui se passe dans votre espace de travail. Il n’existe pas de déclencheur « 7 jours après l’échéance », donc les relances de retard restent une habitude hebdomadaire : filtrez vos factures par statut et relancez.</li>
+<li><strong>L’envoi reste manuel.</strong> Les automatisations rédigent des e-mails ; elles ne les envoient jamais. C’est voulu.</li>
+<li><strong>Les paiements se font en dehors de Thrive.</strong> « Facture entièrement payée » se déclenche quand vous enregistrez le paiement, pas quand l’argent arrive sur votre compte.</li>
+</ul>
+
+<h2>Une petite checklist avant d’en activer une</h2>
+<ul>
+<li>Pouvez-vous la décrire en une phrase, « quand X, faire Y » ?</li>
+<li>Avez-vous assez filtré le déclencheur ? (Un formulaire précis, un type de rendez-vous, une valeur d’étiquette.)</li>
+<li>L’avez-vous testée sur un vrai exemple, et avez-vous lu le résultat ?</li>
+<li>Chaque brouillon qu’elle crée atterrit-il à un endroit que vous regardez vraiment ?</li>
+<li>Au bout d’une semaine, l’historique d’exécution montre-t-il des réussites, et pas une liste d’exécutions ignorées ou en échec ?</li>
+</ul>
+
+<h2>Aller plus loin avec les agents IA</h2>
+<p>Les automatisations gèrent les étapes qui suivent une règle. Pour ce qui demande un peu de rédaction ou de lecture, vous pouvez connecter un assistant IA comme Claude ou ChatGPT à Thrive via MCP. Vous vous connectez à Thrive et autorisez l’assistant une seule fois, depuis la page « Utiliser avec l’IA » dans la barre latérale.</p>
+<p>Une fois connecté, l’assistant travaille sur vos vraies données, avec les mêmes contrôles que l’application. Quelques exemples de demandes :</p>
+<ul>
+<li>« Lis les notes de mon appel avec Harbor Coffee et prépare une proposition pour une refonte du site. » Il peut créer le brouillon dans Thrive pour que vous le retravailliez.</li>
+<li>« Résume ma semaine : temps saisi par projet, factures émises, et tout ce qui attend encore une réponse d’un client. »</li>
+<li>« Quelles factures sont impayées et dépassent leur échéance ? » Une bonne alternative aux relances par date que les automatisations ne font pas.</li>
+<li>« Crée une automatisation qui étiquette les nouvelles demandes. » Il peut aussi créer et tester des automatisations.</li>
+</ul>
+<p>Les mêmes garde-fous s’appliquent. L’assistant peut prévisualiser une modification avant de la faire, les automatisations se déclenchent toujours sur ce qu’il fait, et il ne peut pas envoyer un e-mail ou une invitation sans vous montrer le message exact et obtenir votre feu vert. Il ne peut pas non plus encaisser de paiement ni falsifier une signature.</p>
+<figure data-shot="mcp"><figcaption>La page « Utiliser avec l’IA », avec l’adresse de connexion et un prompt de configuration pour Claude ou ChatGPT.</figcaption></figure>
+
+<h2>Essayez sur votre prochain projet</h2>
+<p>Choisissez l’étape que vous avez oubliée le plus récemment, qu’il s’agisse d’une facture d’acompte, d’un brouillon de contrat ou d’une réponse à une demande, et transformez-la en automatisation. Testez-la sur un ancien client, activez-la, et faites passer votre prochain projet par elle. Thrive coûte 10 $ par mois avec un essai gratuit de 7 jours, et vous pouvez <a href="https://app.runonthrive.com/auth/sign-up">commencer sans carte bancaire</a>.</p>

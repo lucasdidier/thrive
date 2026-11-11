@@ -1,0 +1,103 @@
+<!--meta {"title":"Automatizza il lavoro ripetitivo: 11 idee di automazioni per freelance e piccoli studi","description":"Quale lavoro amministrativo vale la pena automatizzare, più 11 automazioni pratiche per freelance e studi: dalle nuove richieste alle fatture pagate.","minutes":7} -->
+<p class="lede">La maggior parte dei freelance non perde la settimana per colpa dei problemi difficili. La perde per quelli piccoli: taggare un nuovo contatto, copiare il nome del cliente in un contratto, ricordarsi di mandare la fattura di acconto, scrivere per la quarantesima volta la stessa email "grazie, ecco i prossimi passi". Niente di tutto questo richiede molto tempo. Tutto insieme però pesa, e le cose che dimentichi costano soldi veri. Ecco come riconoscere questo tipo di lavoro, e undici automazioni semplici che te lo tolgono di mezzo.</p>
+
+<h2>Come riconoscere il lavoro ripetitivo da automatizzare</h2>
+<p>Non tutte le incombenze vanno automatizzate. Un buon candidato supera tre prove:</p>
+<ul>
+<li><strong>Si ripete.</strong> Lo fai per ogni cliente, ogni progetto o ogni fattura. Se capita due volte l'anno, fallo a mano.</li>
+<li><strong>Segue una regola.</strong> Puoi descriverlo come "quando succede X, fai Y" senza aggiungere "a meno che non mi vada". Le valutazioni, come il prezzo di un progetto complicato, restano a te.</li>
+<li><strong>È facile da dimenticare.</strong> Il passaggio sta tra due momenti più importanti, quindi scivola via. Una proposta viene accettata il venerdì sera e la fattura di acconto parte il mercoledì, perché nessuno te l'ha ricordato.</li>
+</ul>
+<p>Un esercizio veloce: per una settimana tieni aperta una nota e scrivi ogni piccola attività amministrativa che fai, insieme al momento che l'ha fatta partire. "Il cliente ha firmato, quindi ho messo il progetto in corso." "È arrivata una richiesta, quindi l'ho taggata come contatto." Entro venerdì avrai una lista di coppie evento e azione. Quella lista è il tuo piano di automazione.</p>
+
+<h2>Come funzionano le automazioni in Thrive</h2>
+<p>In Thrive un'automazione è un evento scatenante (trigger) e una o più azioni (fino a venti). Il trigger è qualcosa che succede nel tuo spazio di lavoro: viene inviato un modulo, viene accettata una proposta, viene firmato un contratto, una fattura viene pagata per intero, una riunione viene completata. Le azioni sono ciò che Thrive fa in risposta: aggiungere un tag, aggiungere una nota, creare una bozza, cambiare lo stato di un progetto, emettere una fattura.</p>
+<p>Alcuni dettagli lo rendono più sicuro di quanto sembri:</p>
+<ul>
+<li>I campi di testo accettano variabili come <code>{{client.name}}</code>, <code>{{project.name}}</code> o <code>{{document.title}}</code>, compilate a partire dal record che ha avviato l'esecuzione.</li>
+<li>Puoi testare un'automazione su un record di esempio prima di attivarla. Il test gira su una copia e non modifica niente.</li>
+<li>Le email vengono solo preparate come bozze. Niente arriva a un cliente finché non lo rivedi e premi invia.</li>
+<li>Ogni esecuzione finisce nella cronologia esecuzioni con il suo esito: riuscito, saltato o non riuscito, e perché.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>La pagina Automazioni: ogni automazione con il suo trigger, le azioni, lo stato e l'ultima esecuzione.</figcaption></figure>
+
+<h2>11 idee di automazioni</h2>
+<p>Ogni idea qui sotto è scritta come trigger → azione, usando trigger e azioni che esistono oggi in Thrive. Inizia con due o tre, non con tutte e undici.</p>
+
+<h3>1. Tagga ogni nuova richiesta</h3>
+<p><strong>Modulo inviato</strong> (filtrato sul tuo modulo di richiesta) → <strong>Aggiungi tag cliente</strong> "Nuova richiesta".</p>
+<p>Se il tuo modulo usa la domanda sull'email per collegare o creare un cliente, ogni richiesta finisce nella tua lista clienti con un tag su cui puoi filtrare. Non ti chiedi più a quali contatti non hai ancora risposto. Se stai ancora costruendo quel modulo, leggi <a href="/blog/it/generate-leads-with-forms">come generare contatti con i moduli</a>.</p>
+
+<h3>2. Prepara la risposta "grazie, ecco i prossimi passi"</h3>
+<p><strong>Modulo inviato</strong> → <strong>Scrivi bozza email</strong> con oggetto "Grazie per avermi scritto, {{client.contact}}".</p>
+<p>La risposta che scrivi a ogni richiesta è quasi sempre la stessa: grazie, cosa succede ora, un link per prenotare una call. L'automazione scrive la bozza; tu aggiungi una riga personale e la mandi. Rispondere in fretta fa vincere lavori, e così sparisce la pagina bianca.</p>
+
+<h3>3. Avvia una proposta quando un contatto è qualificato</h3>
+<p><strong>Tag aggiunto</strong> "Qualificato" → <strong>Crea bozza di proposta</strong> intitolata "Proposta per {{client.name}}".</p>
+<p>Dopo la call conoscitiva, tagghi il cliente come "Qualificato". Quando ti siedi a scrivere, la bozza ti aspetta già nella sua scheda. È uno dei modelli che Thrive ti propone quando crei una nuova automazione.</p>
+
+<h3>4. Prepara il follow-up dopo una call conoscitiva</h3>
+<p><strong>Riunione completata</strong> (filtrata sul tipo di riunione "Chiamata conoscitiva") → <strong>Prepara follow-up della riunione</strong>.</p>
+<p>Questa azione crea una bozza di proposta e una bozza di email per quel cliente, entrambe da rivedere. Non viene inviato niente. Lo slancio dopo una buona call svanisce in pochi giorni, quindi avere tutto pronto nello stesso pomeriggio aiuta.</p>
+
+<h3>5. Crea il contratto appena una proposta viene accettata</h3>
+<p><strong>Proposta accettata</strong> → <strong>Crea bozza di contratto</strong> intitolata "Accordo con {{client.name}}".</p>
+<p>Il cliente ha detto sì. Il passo successivo è sempre lo stesso, ed è proprio il tipo di passaggio che scivola via nelle settimane piene. Per una guida completa a questo passaggio, leggi <a href="/blog/it/proposals-and-contracts">proposte e contratti che vengono firmati</a>.</p>
+
+<h3>6. Emetti la fattura di acconto all'accettazione</h3>
+<p><strong>Proposta accettata</strong> → <strong>Crea fattura di acconto</strong>.</p>
+<p>Mettiamo che tu abbia venduto un progetto di brand da 4.800 € con un acconto del 50% nel piano di pagamento. Quando la proposta viene accettata, Thrive emette da quel piano la fattura di acconto da 2.400 €, con le tue istruzioni di pagamento. Se per il progetto esiste già una fattura di acconto, viene riutilizzata, non duplicata. Thrive non incassa i soldi: il cliente paga con bonifico o con il metodo descritto nelle tue istruzioni, e tu registri il pagamento.</p>
+
+<h3>7. Fai avanzare il progetto quando il contratto è firmato</h3>
+<p><strong>Contratto firmato</strong> → <strong>Cambia stato del progetto</strong> in "In corso", poi <strong>Imposta data obiettivo del progetto</strong> a 30 giorni dall'evento.</p>
+<p>Due azioni in un'unica automazione. La bacheca dei progetti resta aggiornata senza che tu debba trascinare schede, e ogni progetto ha una data obiettivo fin dal primo giorno.</p>
+
+<h3>8. Tieni traccia delle proposte rifiutate</h3>
+<p><strong>Proposta rifiutata</strong> → <strong>Aggiungi tag cliente</strong> "Perso", poi <strong>Aggiungi nota cliente</strong> "Ha rifiutato {{document.title}}. Chiedere il motivo e risentirsi tra tre mesi."</p>
+<p>Le trattative perse sono dati utili. Un tag ti permette di contarle più avanti; una nota ricorda al te del futuro cosa era successo quando il cliente si rifà vivo l'anno dopo.</p>
+
+<h3>9. Segna i clienti che hanno pagato</h3>
+<p><strong>Fattura pagata per intero</strong> → <strong>Aggiungi tag cliente</strong> "Pagato".</p>
+<p>Quando registri il pagamento finale di una fattura, il cliente riceve il tag. Filtra per quel tag per vedere chi è in regola, oppure sostituiscilo con una nota: "{{invoice.number}} pagata per intero."</p>
+
+<h3>10. Chiedi un feedback a fine progetto</h3>
+<p><strong>Stato modificato</strong> in "Completato" → <strong>Scrivi bozza email</strong> "Com'è andato {{project.name}}?", poi <strong>Aggiungi tag cliente</strong> "Ex cliente".</p>
+<p>Testimonianze e passaparola arrivano chiedendo al momento giusto, cioè subito dopo la consegna, quando sei già preso dal lavoro successivo. La bozza è pronta; decidi tu quando mandarla.</p>
+
+<h3>11. Annota le ore nella scheda del cliente</h3>
+<p><strong>Registrazione ore aggiunta</strong> → <strong>Aggiungi nota cliente</strong> "{{time.hours}} ore su {{project.name}}: {{time.note}}".</p>
+<p>Utile se ti piace leggere la storia di un cliente in un unico posto, o se qualcun altro nello studio prende in mano il cliente. Anche questo è un modello già pronto.</p>
+
+<figure data-shot="builder"><figcaption>Un’automazione nell’editor: quando un cliente riceve il tag “Qualificato”, Thrive prepara una bozza di proposta.</figcaption></figure>
+
+<h2>Cosa non aspettarti (per ora)</h2>
+<p>Conoscere i limiti ti evita di costruire qualcosa che non scatterà mai:</p>
+<ul>
+<li><strong>I trigger sono eventi, non date.</strong> Thrive reagisce a cose che succedono nel tuo spazio di lavoro. Non esiste un trigger "7 giorni dopo la scadenza", quindi i solleciti per le fatture scadute restano un'abitudine settimanale: filtra le fatture per stato e fai i tuoi promemoria.</li>
+<li><strong>L'invio resta manuale.</strong> Le automazioni preparano le email, non le inviano mai. È una scelta voluta.</li>
+<li><strong>I pagamenti avvengono fuori da Thrive.</strong> "Fattura pagata per intero" scatta quando registri il pagamento, non quando i soldi arrivano sul conto.</li>
+</ul>
+
+<h2>Una breve checklist prima di attivarne una</h2>
+<ul>
+<li>Riesci a descriverla come "quando X, fai Y" in una frase?</li>
+<li>Hai filtrato abbastanza il trigger? (Un modulo specifico, un tipo di riunione, un valore di tag.)</li>
+<li>L'hai testata su un record di esempio reale e hai letto il risultato?</li>
+<li>Ogni bozza che crea finisce in un posto che guardi davvero?</li>
+<li>Dopo una settimana, la cronologia esecuzioni mostra esecuzioni riuscite, non un muro di saltate o non riuscite?</li>
+</ul>
+
+<h2>Andare oltre con gli agenti di IA</h2>
+<p>Le automazioni gestiscono i passaggi basati su regole. Per le parti che richiedono un po' di scrittura o di lettura, puoi collegare a Thrive un assistente di IA come Claude o ChatGPT tramite MCP. Accedi a Thrive e approvi l'assistente una volta sola, dalla pagina "Usa con l’IA" nella barra laterale.</p>
+<p>Una volta collegato, l'assistente lavora sui tuoi dati reali con gli stessi controlli dell'app. Alcune cose che puoi chiedere:</p>
+<ul>
+<li>"Leggi gli appunti della mia call con Harbor Coffee e prepara una proposta per il restyling del sito." Può creare la bozza in Thrive da modificare.</li>
+<li>"Fammi il riepilogo della settimana: ore registrate per progetto, fatture emesse e tutto ciò che è ancora in attesa di un cliente."</li>
+<li>"Quali fatture non sono pagate e hanno superato la scadenza?" Un buon sostituto dei promemoria basati sulle date che le automazioni non fanno.</li>
+<li>"Crea un'automazione che tagga le nuove richieste." Può anche creare e testare automazioni.</li>
+</ul>
+<p>Valgono le stesse protezioni. L'assistente può mostrarti l'anteprima di una modifica prima di farla, le automazioni scattano anche su quello che fa lui, e non può inviare un'email o un invito in calendario senza mostrarti il messaggio esatto e avere il tuo via libera. Non può nemmeno incassare pagamenti o falsificare una firma.</p>
+<figure data-shot="mcp"><figcaption>La pagina "Usa con l’IA", con l'indirizzo di connessione e un prompt di configurazione per Claude o ChatGPT.</figcaption></figure>
+
+<h2>Provalo sul tuo prossimo progetto</h2>
+<p>Scegli il passaggio che hai dimenticato più di recente, che sia una fattura di acconto, una bozza di contratto o la risposta a una richiesta, e trasformalo in un'automazione. Testala su un cliente passato, attivala e lascia che il tuo prossimo progetto ci passi attraverso. Thrive costa 10 $ al mese con 7 giorni di prova gratuita, e puoi <a href="https://app.runonthrive.com/auth/sign-up">iniziare senza carta</a>.</p>

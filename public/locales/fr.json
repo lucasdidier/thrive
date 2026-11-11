@@ -3337,5 +3337,7 @@
  "“{name}” saved as a new template.": "« {name} » enregistré comme nouveau modèle.",
  "“{option}” is in use. Clear its values before removing it.": "« {option} » est utilisé. Effacez ses valeurs avant de le retirer.",
  "＋ Create a new client": "＋ Créer un nouveau client",
- "Language & theme": "Langue et thème"
+ "Language & theme": "Langue et thème",
+ "Private link for {name}": "Lien privé pour {name}",
+ "Shared with Thrive": "Partagé avec Thrive"
 }

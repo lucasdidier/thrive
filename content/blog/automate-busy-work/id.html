@@ -1,0 +1,103 @@
+<!--meta {"title":"Otomatiskan pekerjaan remeh: 11 ide alur kerja untuk freelancer dan studio kecil","description":"Cara melihat urusan admin yang layak diotomatiskan, plus 11 alur kerja pemicu dan aksi untuk freelancer dan studio kecil, dari pertanyaan baru ke faktur lunas.","minutes":7} -->
+<p class="lede">Kebanyakan freelancer tidak kehilangan minggunya karena masalah besar. Waktu mereka habis untuk hal-hal kecil: memberi tag pada calon klien baru, menyalin nama klien ke kontrak, mengingat untuk mengirim faktur uang muka, menulis email "terima kasih, ini langkah selanjutnya" yang sama untuk keempat puluh kalinya. Masing-masing tidak lama. Tapi kalau dijumlahkan, banyak, dan yang terlupa bisa membuat Anda rugi uang sungguhan. Berikut cara mengenali pekerjaan semacam itu, dan sebelas otomatisasi sederhana yang bisa mengambil alihnya dari Anda.</p>
+
+<h2>Cara mengenali pekerjaan remeh yang layak diotomatiskan</h2>
+<p>Tidak semua tugas perlu diotomatiskan. Kandidat yang bagus lolos tiga uji:</p>
+<ul>
+<li><strong>Berulang.</strong> Anda melakukannya untuk setiap klien, setiap proyek, atau setiap faktur. Kalau hanya terjadi dua kali setahun, kerjakan saja secara manual.</li>
+<li><strong>Mengikuti aturan.</strong> Anda bisa merumuskannya sebagai "kalau X terjadi, lakukan Y" tanpa menambahkan "kecuali saya sedang tidak mau". Keputusan yang butuh pertimbangan, seperti menentukan harga proyek yang rumit, tetap di tangan Anda.</li>
+<li><strong>Mudah terlupa.</strong> Langkahnya terselip di antara dua momen yang lebih besar, jadi sering terlewat. Proposal diterima Jumat malam, dan faktur uang muka baru terkirim hari Rabu, karena tidak ada yang mengingatkan Anda.</li>
+</ul>
+<p>Latihan singkat: selama seminggu, buka satu catatan dan tulis setiap tugas admin kecil yang Anda kerjakan, beserta kejadian yang memicunya. "Klien tanda tangan, jadi saya ubah proyek ke sedang berjalan." "Ada pertanyaan masuk, jadi saya beri tag calon klien." Di hari Jumat, Anda sudah punya daftar pasangan pemicu dan aksi. Daftar itulah rencana otomatisasi Anda.</p>
+
+<h2>Cara kerja alur kerja di Thrive</h2>
+<p>Di Thrive, alur kerja terdiri dari satu pemicu dan satu aksi atau lebih (maksimal dua puluh). Pemicunya adalah sesuatu yang terjadi di workspace Anda: formulir dikirim, proposal diterima, kontrak ditandatangani, faktur lunas, rapat selesai. Aksinya adalah hal yang dilakukan Thrive sebagai tanggapan: menambahkan tag, menambahkan catatan, membuat draf, mengubah status proyek, menerbitkan faktur.</p>
+<p>Beberapa detail membuatnya lebih aman daripada kedengarannya:</p>
+<ul>
+<li>Kolom teks bisa memakai variabel seperti <code>{{client.name}}</code>, <code>{{project.name}}</code>, atau <code>{{document.title}}</code>, yang diisi dari data yang memicu eksekusi.</li>
+<li>Anda bisa menguji alur kerja pada data contoh sebelum mengaktifkannya. Pengujian berjalan pada salinan dan tidak mengubah apa pun.</li>
+<li>Email hanya dibuat sebagai draf. Tidak ada yang terkirim ke klien sampai Anda memeriksanya dan menekan kirim.</li>
+<li>Setiap eksekusi tercatat di riwayat eksekusi beserta hasilnya: berhasil, dilewati, atau gagal, dan alasannya.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>Halaman Alur kerja: setiap otomatisasi dengan pemicu, aksi, status, dan eksekusi terakhirnya.</figcaption></figure>
+
+<h2>11 ide alur kerja</h2>
+<p>Setiap ide di bawah ditulis sebagai pemicu → aksi, memakai pemicu dan aksi yang sudah ada di Thrive saat ini. Mulailah dengan dua atau tiga, jangan langsung sebelas.</p>
+
+<h3>1. Beri tag pada setiap pertanyaan baru</h3>
+<p><strong>Formulir dikirim</strong> (difilter ke formulir permintaan Anda) → <strong>Tambahkan tag klien</strong> "Pertanyaan baru".</p>
+<p>Kalau formulir Anda memakai pertanyaan email untuk mencocokkan atau membuat klien, setiap pertanyaan masuk ke daftar klien dengan tag yang bisa Anda filter. Anda tidak perlu lagi bertanya-tanya calon klien mana yang belum dibalas. Kalau formulirnya belum ada, baca <a href="/blog/id/generate-leads-with-forms">cara mendapatkan calon klien lewat formulir</a>.</p>
+
+<h3>2. Siapkan draf balasan "terima kasih, ini langkah selanjutnya"</h3>
+<p><strong>Formulir dikirim</strong> → <strong>Susun draf email</strong> dengan subjek "Terima kasih sudah menghubungi, {{client.contact}}".</p>
+<p>Balasan Anda untuk setiap pertanyaan sebagian besar sama: terima kasih, apa langkah selanjutnya, tautan untuk menjadwalkan panggilan. Alur kerja menulis drafnya; Anda menambahkan satu kalimat personal lalu mengirimnya. Balasan cepat memenangkan proyek, dan cara ini menghilangkan halaman kosong.</p>
+
+<h3>3. Mulai proposal saat calon klien berkualifikasi</h3>
+<p><strong>Tag ditambahkan</strong> "Berkualifikasi" → <strong>Buat draf proposal</strong> berjudul "Proposal {{client.name}}".</p>
+<p>Setelah panggilan perkenalan, Anda memberi tag "Berkualifikasi" pada klien. Saat Anda duduk untuk menulis, drafnya sudah menunggu di data klien tersebut. Ini salah satu templat yang ditawarkan Thrive saat Anda membuat alur kerja baru.</p>
+
+<h3>4. Siapkan draf tindak lanjut setelah panggilan perkenalan</h3>
+<p><strong>Rapat selesai</strong> (difilter ke jenis rapat "Panggilan perkenalan" Anda) → <strong>Buat draf tindak lanjut rapat</strong>.</p>
+<p>Aksi ini membuat draf proposal dan draf email untuk klien tersebut, keduanya untuk Anda periksa. Tidak ada yang terkirim. Semangat setelah panggilan yang bagus memudar dalam beberapa hari, jadi punya keduanya siap di sore yang sama sangat membantu.</p>
+
+<h3>5. Buat kontrak begitu proposal diterima</h3>
+<p><strong>Proposal diterima</strong> → <strong>Buat draf kontrak</strong> berjudul "Perjanjian {{client.name}}".</p>
+<p>Klien sudah bilang ya. Langkah berikutnya selalu sama, dan justru langkah seperti inilah yang terlewat di minggu yang sibuk. Untuk panduan lengkap serah terima itu, baca <a href="/blog/id/proposals-and-contracts">proposal dan kontrak yang ditandatangani</a>.</p>
+
+<h3>6. Terbitkan faktur uang muka saat proposal diterima</h3>
+<p><strong>Proposal diterima</strong> → <strong>Buat faktur uang muka</strong>.</p>
+<p>Misalnya Anda menjual proyek branding senilai €4.800 dengan uang muka 50% di jadwal pembayarannya. Saat proposal diterima, Thrive menerbitkan faktur uang muka €2.400 dari jadwal itu, lengkap dengan instruksi pembayaran Anda. Kalau faktur uang muka untuk proyek itu sudah ada, faktur tersebut dipakai ulang, bukan diduplikasi. Thrive tidak menerima uangnya: klien membayar lewat transfer bank atau metode lain yang Anda jelaskan di instruksi, lalu Anda mencatat pembayarannya.</p>
+
+<h3>7. Majukan proyek saat kontrak ditandatangani</h3>
+<p><strong>Kontrak ditandatangani</strong> → <strong>Ubah status proyek</strong> ke "Sedang berjalan", lalu <strong>Atur tanggal target proyek</strong> 30 hari setelah kejadian.</p>
+<p>Dua aksi dalam satu alur kerja. Papan proyek Anda tetap akurat tanpa harus menyeret kartu ke sana kemari, dan setiap proyek punya tanggal target sejak hari pertama.</p>
+
+<h3>8. Simpan jejak proposal yang ditolak</h3>
+<p><strong>Proposal ditolak</strong> → <strong>Tambahkan tag klien</strong> "Gagal", lalu <strong>Tambahkan catatan klien</strong> "Menolak {{document.title}}. Tanyakan alasannya dan hubungi lagi dalam tiga bulan."</p>
+<p>Kesepakatan yang gagal adalah data yang berguna. Tag membantu Anda menghitungnya nanti; catatan mengingatkan Anda di masa depan apa yang terjadi saat klien itu kembali tahun depan.</p>
+
+<h3>9. Tandai klien yang sudah membayar</h3>
+<p><strong>Faktur lunas</strong> → <strong>Tambahkan tag klien</strong> "Lunas".</p>
+<p>Saat Anda mencatat pembayaran terakhir pada sebuah faktur, klien diberi tag. Filter berdasarkan tag itu untuk melihat siapa yang pembayarannya lancar, atau ganti dengan catatan: "{{invoice.number}} sudah dibayar penuh."</p>
+
+<h3>10. Minta masukan saat proyek selesai</h3>
+<p><strong>Status diubah</strong> ke "Selesai" → <strong>Susun draf email</strong> "Bagaimana {{project.name}} menurut Anda?", lalu <strong>Tambahkan tag klien</strong> "Mantan klien".</p>
+<p>Testimoni dan rekomendasi datang dari bertanya di saat yang tepat, yaitu tepat setelah serah terima, saat Anda sudah sibuk dengan pekerjaan berikutnya. Drafnya siap; Anda yang memutuskan kapan mengirimnya.</p>
+
+<h3>11. Catat waktu di data klien</h3>
+<p><strong>Entri waktu ditambahkan</strong> → <strong>Tambahkan catatan klien</strong> "{{time.hours}} jam untuk {{project.name}}: {{time.note}}".</p>
+<p>Berguna kalau Anda suka membaca riwayat klien di satu tempat, atau kalau ada orang lain di studio yang mengambil alih klien itu. Yang satu ini juga tersedia sebagai templat siap pakai.</p>
+
+<figure data-shot="builder"><figcaption>Alur kerja di editor: saat klien diberi tag “Berkualifikasi”, Thrive menyiapkan draf proposal.</figcaption></figure>
+
+<h2>Yang belum bisa diharapkan</h2>
+<p>Mengetahui batasannya sejak awal mencegah Anda membuat sesuatu yang tidak akan pernah jalan:</p>
+<ul>
+<li><strong>Pemicu berupa kejadian, bukan tanggal.</strong> Thrive bereaksi terhadap hal yang terjadi di workspace Anda. Tidak ada pemicu "7 hari setelah jatuh tempo", jadi pengingat faktur yang terlambat tetap jadi kebiasaan mingguan: filter faktur Anda berdasarkan status dan tindak lanjuti.</li>
+<li><strong>Pengiriman tetap manual.</strong> Alur kerja membuat draf email; tidak pernah mengirimnya. Itu memang disengaja.</li>
+<li><strong>Pembayaran terjadi di luar Thrive.</strong> "Faktur lunas" terpicu saat Anda mencatat pembayaran, bukan saat uang masuk ke rekening Anda.</li>
+</ul>
+
+<h2>Daftar periksa singkat sebelum mengaktifkannya</h2>
+<ul>
+<li>Bisakah Anda menjelaskannya sebagai "kalau X, lakukan Y" dalam satu kalimat?</li>
+<li>Apakah pemicunya sudah cukup difilter? (Satu formulir tertentu, satu jenis rapat, satu nilai tag.)</li>
+<li>Sudahkah Anda mengujinya pada data contoh yang nyata dan membaca hasilnya?</li>
+<li>Apakah setiap draf yang dibuatnya muncul di tempat yang benar-benar Anda lihat?</li>
+<li>Setelah seminggu, apakah riwayat eksekusi menunjukkan keberhasilan, bukan deretan eksekusi yang dilewati atau gagal?</li>
+</ul>
+
+<h2>Lebih jauh dengan agen AI</h2>
+<p>Alur kerja menangani langkah-langkah berbasis aturan. Untuk bagian yang perlu sedikit menulis atau membaca, Anda bisa menghubungkan asisten AI seperti Claude atau ChatGPT ke Thrive lewat MCP. Anda masuk ke Thrive dan menyetujui asisten itu sekali saja, dari halaman "Gunakan dengan AI" di sidebar.</p>
+<p>Setelah terhubung, asisten bekerja dengan data asli Anda melalui pemeriksaan yang sama seperti di aplikasi. Beberapa hal yang bisa Anda minta:</p>
+<ul>
+<li>"Baca catatan panggilan saya dengan Harbor Coffee dan buat draf proposal untuk pembaruan situs web." Asisten bisa membuat drafnya di Thrive untuk Anda sunting.</li>
+<li>"Rangkum minggu saya: waktu yang tercatat per proyek, faktur yang diterbitkan, dan apa saja yang masih menunggu klien."</li>
+<li>"Faktur mana yang belum dibayar dan sudah lewat jatuh tempo?" Pengganti yang lumayan untuk pengingat berbasis tanggal yang tidak bisa dilakukan alur kerja.</li>
+<li>"Buat alur kerja yang memberi tag pada pertanyaan baru." Asisten juga bisa membuat dan menguji alur kerja.</li>
+</ul>
+<p>Pengamannya tetap sama. Asisten bisa menampilkan pratinjau perubahan sebelum membuatnya, alur kerja tetap berjalan atas apa yang dilakukannya, dan asisten tidak bisa mengirim email atau undangan kalender tanpa menunjukkan pesan persisnya kepada Anda dan mendapat persetujuan Anda. Asisten juga tidak bisa menerima pembayaran atau memalsukan tanda tangan.</p>
+<figure data-shot="mcp"><figcaption>Halaman "Gunakan dengan AI", dengan alamat koneksi dan prompt penyiapan untuk Claude atau ChatGPT.</figcaption></figure>
+
+<h2>Coba di proyek Anda berikutnya</h2>
+<p>Pilih satu langkah yang paling terakhir Anda lupakan, entah itu faktur uang muka, draf kontrak, atau balasan untuk pertanyaan calon klien, lalu jadikan alur kerja. Uji pada klien lama, aktifkan, dan biarkan proyek berikutnya berjalan melaluinya. Thrive seharga $10 per bulan dengan uji coba gratis 7 hari, dan Anda bisa <a href="https://app.runonthrive.com/auth/sign-up">mulai tanpa kartu</a>.</p>

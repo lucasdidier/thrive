@@ -53,7 +53,7 @@ test('portal project rows stack title and details in the shared list; client pag
 
 test('the client page header names the private link and has room for the agency logo',()=>{
  const page=read('ui/client.html'),view=read('public/client-view.js');
- assert.ok(!page.includes('Shared with you'));assert.match(page,/id="private-label" hidden>.*Private link for <span id="private-client">/);assert.match(page,/<img class="client-logo" id="client-logo" alt="" hidden>/);
+ assert.ok(!page.includes('Shared with you'));assert.match(page,/id="private-label" hidden>.*<span id="private-client">/);assert.ok(view.includes("L('Private link for {name}',{name:client})"),'the label is translated');assert.match(page,/<img class="client-logo" id="client-logo" alt="" hidden>/);
  assert.ok(page.includes('/title-fonts.css'));assert.ok(read('ui/index.html').includes('/title-fonts.css'));
  assert.ok(!view.includes('Download copy')&&!view.includes('Print / Save PDF'));assert.ok(view.includes('Save PDF')&&view.includes('Pay invoice'));
 });

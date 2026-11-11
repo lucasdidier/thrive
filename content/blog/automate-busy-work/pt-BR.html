@@ -1,0 +1,103 @@
+<!--meta {"title":"Automatize o trabalho repetitivo: 11 ideias de fluxos para freelancers e pequenos estúdios","description":"Como identificar a burocracia que vale automatizar, mais 11 fluxos práticos de gatilho e ação para freelancers e estúdios, do novo pedido à fatura paga.","minutes":7} -->
+<p class="lede">A maioria dos freelancers não perde a semana com problemas difíceis. Perde com os pequenos: marcar um novo lead, copiar o nome do cliente para um contrato, lembrar de mandar a fatura de sinal, escrever pela quadragésima vez o mesmo e-mail de "obrigado, os próximos passos são estes". Nada disso demora. Tudo isso se acumula, e o que você esquece custa dinheiro de verdade. Veja como identificar esse tipo de tarefa e onze automações simples que tiram isso das suas mãos.</p>
+
+<h2>Como identificar o trabalho repetitivo que vale automatizar</h2>
+<p>Nem toda tarefa deve ser automatizada. Uma boa candidata passa em três testes:</p>
+<ul>
+<li><strong>Ela se repete.</strong> Você faz para todo cliente, todo projeto ou toda fatura. Se acontece duas vezes por ano, faça à mão.</li>
+<li><strong>Ela segue uma regra.</strong> Dá para descrever como "quando X acontece, faça Y" sem acrescentar "a menos que eu esteja com vontade". Decisões que pedem julgamento, como precificar um projeto complicado, continuam com você.</li>
+<li><strong>Ela é fácil de esquecer.</strong> O passo fica entre dois momentos maiores, então escapa. Uma proposta é aceita numa sexta à noite e a fatura de sinal só sai na quarta, porque ninguém te lembrou.</li>
+</ul>
+<p>Um exercício rápido: durante uma semana, deixe uma nota aberta e anote cada pequena tarefa administrativa que fizer, junto com o que a disparou. "Cliente assinou, então mudei o projeto para em andamento." "Chegou um pedido, então marquei como lead." Na sexta, você terá uma lista de pares de gatilho e ação. Essa lista é o seu plano de automação.</p>
+
+<h2>Como funcionam os fluxos de trabalho no Thrive</h2>
+<p>No Thrive, um fluxo de trabalho é um gatilho e uma ou mais ações (até vinte). O gatilho é algo que acontece no seu espaço de trabalho: um formulário é enviado, uma proposta é aceita, um contrato é assinado, uma fatura é totalmente paga, uma reunião é concluída. As ações são o que o Thrive faz em resposta: adicionar uma tag, adicionar uma nota, criar um rascunho, mudar o status de um projeto, emitir uma fatura.</p>
+<p>Alguns detalhes deixam isso mais seguro do que parece:</p>
+<ul>
+<li>Campos de texto aceitam variáveis como <code>{{client.name}}</code>, <code>{{project.name}}</code> ou <code>{{document.title}}</code>, preenchidas a partir do registro que disparou a execução.</li>
+<li>Você pode testar um fluxo num registro de exemplo antes de ativá-lo. O teste roda numa cópia e não altera nada.</li>
+<li>E-mails são sempre apenas rascunhos. Nada chega ao cliente até você revisar e clicar em enviar.</li>
+<li>Toda execução vai para um histórico de execuções com o resultado: concluído, pulado ou falhou, e o motivo.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>A página Fluxos de trabalho: cada automação com seu gatilho, ações, status e última execução.</figcaption></figure>
+
+<h2>11 ideias de fluxos</h2>
+<p>Cada ideia abaixo está escrita como gatilho → ação, usando gatilhos e ações que já existem no Thrive. Comece com duas ou três, não com as onze.</p>
+
+<h3>1. Marque cada novo pedido</h3>
+<p><strong>Formulário enviado</strong> (filtrado para o seu formulário de pedidos) → <strong>Adicionar tag ao cliente</strong> "Nova consulta".</p>
+<p>Se o seu formulário usa a pergunta de e-mail para encontrar ou criar um cliente, cada pedido cai na sua lista de clientes com uma tag que você pode filtrar. Você nunca mais fica na dúvida sobre quais leads ainda não respondeu. Se ainda está montando esse formulário, veja <a href="/blog/pt-BR/generate-leads-with-forms">como gerar leads com formulários</a>.</p>
+
+<h3>2. Rascunhe a resposta "obrigado, os próximos passos são estes"</h3>
+<p><strong>Formulário enviado</strong> → <strong>Redigir e-mail</strong> com o assunto "Obrigado pelo contato, {{client.contact}}".</p>
+<p>A resposta que você escreve para cada pedido é quase sempre a mesma: obrigado, o que acontece agora, um link para marcar uma call. O fluxo escreve o rascunho; você acrescenta uma linha pessoal e envia. Responder rápido fecha trabalhos, e isso acaba com a página em branco.</p>
+
+<h3>3. Comece uma proposta quando o lead for qualificado</h3>
+<p><strong>Tag adicionada</strong> "Qualificado" → <strong>Criar rascunho de proposta</strong> com o título "Proposta para {{client.name}}".</p>
+<p>Depois da call inicial, você marca o cliente como "Qualificado". Quando se senta para escrever, o rascunho já está esperando no cadastro dele. É um dos modelos que o Thrive oferece quando você cria um novo fluxo de trabalho.</p>
+
+<h3>4. Rascunhe o acompanhamento depois da call inicial</h3>
+<p><strong>Reunião concluída</strong> (filtrada para o seu tipo de reunião "Chamada inicial") → <strong>Redigir acompanhamento da reunião</strong>.</p>
+<p>Essa ação cria um rascunho de proposta e um rascunho de e-mail para aquele cliente, ambos para revisão. Nada é enviado. O embalo depois de uma boa conversa some em poucos dias, então ter os dois prontos na mesma tarde ajuda.</p>
+
+<h3>5. Crie o contrato assim que a proposta for aceita</h3>
+<p><strong>Proposta aceita</strong> → <strong>Criar rascunho de contrato</strong> com o título "Contrato com {{client.name}}".</p>
+<p>O cliente disse sim. O próximo passo é sempre o mesmo, e é exatamente o tipo de passo que escapa numa semana corrida. Para ver essa passagem em detalhes, leia <a href="/blog/pt-BR/proposals-and-contracts">propostas e contratos que são assinados</a>.</p>
+
+<h3>6. Emita a fatura de sinal no aceite</h3>
+<p><strong>Proposta aceita</strong> → <strong>Criar fatura de sinal</strong>.</p>
+<p>Digamos que você vendeu um projeto de marca de € 4.800 com 50% de sinal no cronograma de pagamento. Quando a proposta é aceita, o Thrive emite a fatura de sinal de € 2.400 a partir desse cronograma, com suas instruções de pagamento. Se já existe uma fatura de sinal para o projeto, ela é reaproveitada, não duplicada. O Thrive não recebe o dinheiro: seu cliente paga por transferência bancária ou pela forma que as suas instruções descrevem, e você registra o pagamento.</p>
+
+<h3>7. Avance o projeto quando o contrato for assinado</h3>
+<p><strong>Contrato assinado</strong> → <strong>Mudar status do projeto</strong> para "Em andamento", depois <strong>Definir data prevista do projeto</strong> para 30 dias após o evento.</p>
+<p>Duas ações num só fluxo. Seu quadro de projetos fica fiel à realidade sem você arrastar cartões, e todo projeto ganha uma data prevista desde o primeiro dia.</p>
+
+<h3>8. Guarde um histórico das propostas recusadas</h3>
+<p><strong>Proposta recusada</strong> → <strong>Adicionar tag ao cliente</strong> "Perdido", depois <strong>Adicionar nota ao cliente</strong> "Recusou {{document.title}}. Perguntar o motivo e retomar o contato em três meses."</p>
+<p>Negócios perdidos são dados úteis. Uma tag permite contá-los depois; uma nota lembra o você do futuro do que aconteceu quando o cliente voltar no ano que vem.</p>
+
+<h3>9. Marque os clientes que pagaram</h3>
+<p><strong>Fatura totalmente paga</strong> → <strong>Adicionar tag ao cliente</strong> "Pago".</p>
+<p>Quando você registra o último pagamento de uma fatura, o cliente recebe a tag. Filtre por ela para ver quem está em dia, ou troque por uma nota: "{{invoice.number}} paga integralmente."</p>
+
+<h3>10. Peça feedback quando o projeto terminar</h3>
+<p><strong>Status alterado</strong> para "Concluído" → <strong>Redigir e-mail</strong> "Como foi o {{project.name}}?", depois <strong>Adicionar tag ao cliente</strong> "Ex-cliente".</p>
+<p>Depoimentos e indicações vêm de pedir no momento certo, que é logo depois da entrega, quando você já está ocupado com o próximo trabalho. O rascunho fica pronto; você decide quando enviar.</p>
+
+<h3>11. Registre o tempo no cadastro do cliente</h3>
+<p><strong>Registro de tempo adicionado</strong> → <strong>Adicionar nota ao cliente</strong> "{{time.hours}} horas em {{project.name}}: {{time.note}}".</p>
+<p>Útil se você gosta de ler o histórico de um cliente num só lugar, ou se outra pessoa do estúdio assumir a conta. Este também é um modelo pronto.</p>
+
+<figure data-shot="builder"><figcaption>Uma automação no editor: quando um cliente recebe a tag “Qualificado”, a Thrive cria um rascunho de proposta.</figcaption></figure>
+
+<h2>O que não esperar (por enquanto)</h2>
+<p>Conhecer os limites evita que você monte algo que nunca vai disparar:</p>
+<ul>
+<li><strong>Gatilhos são eventos, não datas.</strong> O Thrive reage a coisas que acontecem no seu espaço de trabalho. Não existe um gatilho "7 dias depois do vencimento", então lembretes de atraso continuam sendo um hábito semanal: filtre suas faturas por status e faça a cobrança.</li>
+<li><strong>O envio continua manual.</strong> Os fluxos redigem e-mails; nunca os enviam. Isso é de propósito.</li>
+<li><strong>Os pagamentos acontecem fora do Thrive.</strong> "Fatura totalmente paga" dispara quando você registra o pagamento, não quando o dinheiro cai na sua conta.</li>
+</ul>
+
+<h2>Um checklist rápido antes de ativar um fluxo</h2>
+<ul>
+<li>Dá para descrever como "quando X, faça Y" numa frase?</li>
+<li>Você filtrou o gatilho o suficiente? (Um formulário específico, um tipo de reunião, um valor de tag.)</li>
+<li>Você testou num registro de exemplo real e leu o resultado?</li>
+<li>Cada rascunho que ele cria vai parar num lugar que você realmente olha?</li>
+<li>Depois de uma semana, o histórico de execuções mostra sucessos, e não uma parede de execuções puladas ou com falha?</li>
+</ul>
+
+<h2>Indo além com agentes de IA</h2>
+<p>Os fluxos cuidam dos passos baseados em regras. Para as partes que pedem um pouco de escrita ou leitura, você pode conectar um assistente de IA como o Claude ou o ChatGPT ao Thrive via MCP. Você entra no Thrive e aprova o assistente uma vez, pela página "Usar com IA" na barra lateral.</p>
+<p>Depois de conectado, o assistente trabalha com os seus registros reais passando pelas mesmas verificações do app. Algumas coisas que você pode pedir:</p>
+<ul>
+<li>"Leia as notas da minha call com a Harbor Coffee e rascunhe uma proposta para renovar o site." Ele pode criar o rascunho no Thrive para você editar.</li>
+<li>"Resuma minha semana: tempo registrado por projeto, faturas emitidas e tudo o que ainda depende de algum cliente."</li>
+<li>"Quais faturas estão em aberto e já passaram do vencimento?" Um bom substituto para os lembretes por data que os fluxos não fazem.</li>
+<li>"Crie um fluxo que marque os novos pedidos com uma tag." Ele também pode criar e testar fluxos.</li>
+</ul>
+<p>As mesmas proteções valem. O assistente pode pré-visualizar uma mudança antes de fazê-la, os fluxos continuam rodando sobre o que ele faz, e ele não pode enviar um e-mail ou um convite de agenda sem te mostrar a mensagem exata e receber seu ok. Ele também não pode receber pagamentos nem forjar uma assinatura.</p>
+<figure data-shot="mcp"><figcaption>A página "Usar com IA", com o endereço de conexão e um prompt de configuração para o Claude ou o ChatGPT.</figcaption></figure>
+
+<h2>Teste no seu próximo projeto</h2>
+<p>Escolha o último passo que você esqueceu, seja uma fatura de sinal, um rascunho de contrato ou a resposta a um pedido, e transforme em um fluxo de trabalho. Teste com um cliente antigo, ative e deixe seu próximo projeto passar por ele. O Thrive custa US$ 10 por mês, com 7 dias de teste grátis, e você pode <a href="https://app.runonthrive.com/auth/sign-up">começar sem cartão</a>.</p>

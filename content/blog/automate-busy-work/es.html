@@ -1,0 +1,103 @@
+<!--meta {"title":"Automatiza el trabajo administrativo: 11 ideas de flujos para freelance y pequeños estudios","description":"Cómo detectar qué tareas administrativas merece la pena automatizar y 11 flujos prácticos para freelance y estudios, de nuevas consultas hasta facturas pagadas.","minutes":7} -->
+<p class="lede">La mayoría de los freelance no pierden la semana con problemas difíciles. La pierden con los pequeños: etiquetar un nuevo cliente potencial, copiar el nombre de un cliente en un contrato, acordarse de enviar la factura del anticipo, escribir por cuadragésima vez el mismo correo de «gracias, estos son los siguientes pasos». Nada de eso lleva mucho tiempo. Todo suma, y lo que se te olvida cuesta dinero de verdad. Así puedes detectar ese tipo de trabajo, con once automatizaciones sencillas que te lo quitan de encima.</p>
+
+<h2>Cómo detectar el trabajo administrativo que merece la pena automatizar</h2>
+<p>No toda tarea debería automatizarse. Una buena candidata pasa tres pruebas:</p>
+<ul>
+<li><strong>Se repite.</strong> La haces con cada cliente, cada proyecto o cada factura. Si pasa dos veces al año, hazla a mano.</li>
+<li><strong>Sigue una regla.</strong> Puedes expresarla como «cuando pase X, haz Y» sin añadir «salvo que me apetezca otra cosa». Las decisiones de criterio, como presupuestar un proyecto complicado, siguen siendo tuyas.</li>
+<li><strong>Es fácil de olvidar.</strong> El paso queda entre dos momentos más importantes, así que se escapa. Una propuesta se acepta un viernes por la tarde y la factura del anticipo sale el miércoles, porque nadie te lo recordó.</li>
+</ul>
+<p>Un ejercicio rápido: durante una semana, ten una nota abierta y apunta cada pequeña tarea administrativa que hagas, junto con lo que la provocó. «El cliente firmó, así que pasé el proyecto a en curso». «Llegó una consulta, así que la etiqueté como cliente potencial». El viernes tendrás una lista de pares de disparador y acción. Esa lista es tu plan de automatización.</p>
+
+<h2>Cómo funcionan los flujos de trabajo en Thrive</h2>
+<p>En Thrive, un flujo de trabajo es un disparador y una o más acciones (hasta veinte). El disparador es algo que ocurre en tu espacio de trabajo: se envía un formulario, se acepta una propuesta, se firma un contrato, se paga por completo una factura, se completa una reunión. Las acciones son lo que hace Thrive en respuesta: añadir una etiqueta, añadir una nota, crear un borrador, cambiar el estado de un proyecto, emitir una factura.</p>
+<p>Algunos detalles lo hacen más seguro de lo que parece:</p>
+<ul>
+<li>Los campos de texto aceptan variables como <code>{{client.name}}</code>, <code>{{project.name}}</code> o <code>{{document.title}}</code>, que se rellenan con el registro que activó la ejecución.</li>
+<li>Puedes probar un flujo con un registro de ejemplo antes de activarlo. La prueba se ejecuta sobre una copia y no cambia nada.</li>
+<li>Los correos solo se redactan. Nada llega a un cliente hasta que lo revisas y pulsas enviar.</li>
+<li>Cada ejecución queda en un historial con su resultado: correcta, omitida o fallida, y el motivo.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>La página Flujos de trabajo: cada automatización con su disparador, sus acciones, su estado y su última ejecución.</figcaption></figure>
+
+<h2>11 ideas de flujos de trabajo</h2>
+<p>Cada idea está escrita como disparador → acción, con disparadores y acciones que ya existen en Thrive. Empieza con dos o tres, no con las once.</p>
+
+<h3>1. Etiqueta cada nueva consulta</h3>
+<p><strong>Formulario enviado</strong> (filtrado a tu formulario de solicitud) → <strong>Añadir etiqueta al cliente</strong> «Nueva consulta».</p>
+<p>Si tu formulario usa la pregunta del correo para encontrar o crear un cliente, cada consulta llega a tu lista de clientes con una etiqueta por la que puedes filtrar. Nunca te preguntarás a qué clientes potenciales no has respondido todavía. Si aún estás montando ese formulario, consulta <a href="/blog/es/generate-leads-with-forms">cómo conseguir clientes con formularios</a>.</p>
+
+<h3>2. Redacta la respuesta de «gracias, esto es lo siguiente»</h3>
+<p><strong>Formulario enviado</strong> → <strong>Redactar correo</strong> con el asunto «Gracias por escribirnos, {{client.contact}}».</p>
+<p>La respuesta que escribes a cada consulta es casi siempre igual: gracias, qué pasa ahora, un enlace para reservar una llamada. El flujo escribe el borrador; tú añades una frase personal y lo envías. Responder rápido consigue trabajo, y esto te quita la página en blanco.</p>
+
+<h3>3. Empieza una propuesta cuando un cliente potencial está calificado</h3>
+<p><strong>Etiqueta añadida</strong> «Calificado» → <strong>Crear borrador de propuesta</strong> con el título «Propuesta para {{client.name}}».</p>
+<p>Después de la llamada de descubrimiento, etiquetas al cliente como «Calificado». Cuando te sientas a escribir, el borrador ya te espera en su ficha. Es una de las plantillas que ofrece Thrive al crear un flujo nuevo.</p>
+
+<h3>4. Redacta el seguimiento después de una llamada de descubrimiento</h3>
+<p><strong>Reunión completada</strong> (filtrado a tu tipo de reunión «Llamada de descubrimiento») → <strong>Redactar seguimiento de la reunión</strong>.</p>
+<p>Esta acción crea un borrador de propuesta y un borrador de correo para ese cliente, los dos para revisar. No se envía nada. El impulso de una buena llamada se pierde en pocos días, así que tener ambos listos esa misma tarde ayuda.</p>
+
+<h3>5. Crea el contrato en cuanto se acepta una propuesta</h3>
+<p><strong>Propuesta aceptada</strong> → <strong>Crear borrador de contrato</strong> con el título «Contrato con {{client.name}}».</p>
+<p>El cliente ha dicho que sí. El siguiente paso es siempre el mismo, y es justo el tipo de paso que se escapa en una semana con mucho lío. Para ver ese traspaso paso a paso, lee <a href="/blog/es/proposals-and-contracts">propuestas y contratos que se firman</a>.</p>
+
+<h3>6. Emite la factura del anticipo al aceptar</h3>
+<p><strong>Propuesta aceptada</strong> → <strong>Crear factura de anticipo</strong>.</p>
+<p>Imagina que vendiste un proyecto de marca de 4.800 € con un anticipo del 50 % en su calendario de pagos. Cuando se acepta la propuesta, Thrive emite la factura de anticipo de 2.400 € a partir de ese calendario, con tus instrucciones de pago. Si ya existe una factura de anticipo para el proyecto, se reutiliza en lugar de duplicarse. Thrive no cobra el dinero: tu cliente paga por transferencia o por el método que indiquen tus instrucciones, y tú registras el pago.</p>
+
+<h3>7. Haz avanzar el proyecto cuando se firma el contrato</h3>
+<p><strong>Contrato firmado</strong> → <strong>Cambiar estado del proyecto</strong> a «En curso», y luego <strong>Definir fecha objetivo del proyecto</strong> a 30 días del evento.</p>
+<p>Dos acciones en un mismo flujo. Tu tablero de proyectos se mantiene al día sin que tengas que arrastrar tarjetas, y cada proyecto tiene una fecha objetivo desde el primer día.</p>
+
+<h3>8. Deja constancia de las propuestas rechazadas</h3>
+<p><strong>Propuesta rechazada</strong> → <strong>Añadir etiqueta al cliente</strong> «Perdido», y luego <strong>Añadir nota al cliente</strong> «Rechazó {{document.title}}. Preguntar el motivo y volver a contactar en tres meses».</p>
+<p>Las oportunidades perdidas son datos útiles. Una etiqueta te permite contarlas más adelante; una nota le recuerda a tu yo del futuro qué pasó cuando el cliente vuelva el año que viene.</p>
+
+<h3>9. Marca a los clientes que han pagado</h3>
+<p><strong>Factura pagada por completo</strong> → <strong>Añadir etiqueta al cliente</strong> «Pagado».</p>
+<p>Cuando registras el último pago de una factura, el cliente queda etiquetado. Filtra por esa etiqueta para ver quién está al día, o cámbiala por una nota: «{{invoice.number}} pagada por completo».</p>
+
+<h3>10. Pide opinión cuando termina un proyecto</h3>
+<p><strong>Estado cambiado</strong> a «Completado» → <strong>Redactar correo</strong> «¿Qué tal ha ido {{project.name}}?», y luego <strong>Añadir etiqueta al cliente</strong> «Antiguo cliente».</p>
+<p>Los testimonios y las recomendaciones llegan cuando preguntas en el momento adecuado, que es justo después de la entrega, cuando ya estás liado con lo siguiente. El borrador está listo; tú decides cuándo enviarlo.</p>
+
+<h3>11. Registra el tiempo en la ficha del cliente</h3>
+<p><strong>Registro de tiempo añadido</strong> → <strong>Añadir nota al cliente</strong> «{{time.hours}} horas en {{project.name}}: {{time.note}}».</p>
+<p>Útil si te gusta leer el historial de un cliente en un solo sitio, o si otra persona del estudio se hace cargo de la cuenta. Esta también es una plantilla ya hecha.</p>
+
+<figure data-shot="builder"><figcaption>Un flujo en el editor: cuando etiquetas a un cliente como “Calificado”, Thrive prepara un borrador de propuesta.</figcaption></figure>
+
+<h2>Lo que no debes esperar (todavía)</h2>
+<p>Conocer los límites te evita montar algo que nunca se va a activar:</p>
+<ul>
+<li><strong>Los disparadores son eventos, no fechas.</strong> Thrive reacciona a cosas que pasan en tu espacio de trabajo. No hay un disparador de «7 días después del vencimiento», así que los recordatorios de facturas vencidas siguen siendo un hábito semanal: filtra tus facturas por estado y haz el seguimiento.</li>
+<li><strong>El envío sigue siendo manual.</strong> Los flujos redactan correos; nunca los envían. Es a propósito.</li>
+<li><strong>Los pagos se hacen fuera de Thrive.</strong> «Factura pagada por completo» se activa cuando registras el pago, no cuando el dinero llega a tu banco.</li>
+</ul>
+
+<h2>Una lista rápida antes de activar uno</h2>
+<ul>
+<li>¿Puedes describirlo como «cuando X, haz Y» en una frase?</li>
+<li>¿Has filtrado bien el disparador? (Un formulario concreto, un tipo de reunión, un valor de etiqueta).</li>
+<li>¿Lo has probado con un registro real de ejemplo y has leído el resultado?</li>
+<li>¿Cada borrador que crea acaba en un sitio que de verdad vas a mirar?</li>
+<li>Al cabo de una semana, ¿el historial de ejecuciones muestra ejecuciones correctas y no un muro de omitidas o fallidas?</li>
+</ul>
+
+<h2>Ir más allá con agentes de IA</h2>
+<p>Los flujos de trabajo se encargan de los pasos que siguen reglas. Para lo que requiere algo de redacción o lectura, puedes conectar un asistente de IA como Claude o ChatGPT a Thrive mediante MCP. Inicias sesión en Thrive y apruebas el asistente una sola vez, desde la página «Usar con IA» de la barra lateral.</p>
+<p>Una vez conectado, el asistente trabaja con tus registros reales pasando por las mismas comprobaciones que la app. Algunas cosas que puedes pedirle:</p>
+<ul>
+<li>«Lee las notas de mi llamada con Harbor Coffee y prepara una propuesta para renovar su web». Puede crear el borrador en Thrive para que lo edites.</li>
+<li>«Resúmeme la semana: tiempo registrado por proyecto, facturas emitidas y todo lo que sigue pendiente de un cliente».</li>
+<li>«¿Qué facturas están sin pagar y ya han vencido?». Un buen sustituto de los recordatorios por fecha que los flujos no hacen.</li>
+<li>«Crea un flujo que etiquete las nuevas consultas». También puede crear y probar flujos.</li>
+</ul>
+<p>Se aplican las mismas salvaguardas. El asistente puede previsualizar un cambio antes de hacerlo, los flujos se siguen ejecutando con lo que hace, y no puede enviar un correo ni una invitación de calendario sin enseñarte el mensaje exacto y recibir tu visto bueno. Tampoco puede cobrar pagos ni falsificar una firma.</p>
+<figure data-shot="mcp"><figcaption>La página «Usar con IA», con la dirección de conexión y unas instrucciones de configuración para Claude o ChatGPT.</figcaption></figure>
+
+<h2>Pruébalo en tu próximo proyecto</h2>
+<p>Elige el último paso que se te olvidó, ya sea una factura de anticipo, un borrador de contrato o la respuesta a una consulta, y conviértelo en un flujo de trabajo. Pruébalo con un cliente antiguo, actívalo y deja que tu próximo proyecto pase por él. Thrive cuesta 10 $ al mes con una prueba gratuita de 7 días, y puedes <a href="https://app.runonthrive.com/auth/sign-up">empezar sin tarjeta</a>.</p>

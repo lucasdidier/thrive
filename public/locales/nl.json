@@ -3314,5 +3314,7 @@
  "“{name}” saved as a new template.": "‘{name}’ opgeslagen als nieuw sjabloon.",
  "“{option}” is in use. Clear its values before removing it.": "‘{option}’ is in gebruik. Wis de waarden voordat je de optie verwijdert.",
  "＋ Create a new client": "＋ Nieuwe klant maken",
- "Language & theme": "Taal en thema"
+ "Language & theme": "Taal en thema",
+ "Private link for {name}": "Privélink voor {name}",
+ "Shared with Thrive": "Gedeeld met Thrive"
 }

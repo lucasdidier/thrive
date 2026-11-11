@@ -3436,5 +3436,7 @@
  "“{name}” saved as a new template.": "„{name}” zapisano jako nowy szablon.",
  "“{option}” is in use. Clear its values before removing it.": "„{option}” jest w użyciu. Wyczyść jej wartości, zanim ją usuniesz.",
  "＋ Create a new client": "＋ Utwórz nowego klienta",
- "Language & theme": "Język i motyw"
+ "Language & theme": "Język i motyw",
+ "Private link for {name}": "Prywatny link dla: {name}",
+ "Shared with Thrive": "Udostępnione przez Thrive"
 }

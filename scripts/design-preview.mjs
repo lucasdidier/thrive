@@ -20,6 +20,8 @@ const showcase=process.env.THRIVE_SHOWCASE==='1';
 const {showcaseWorkspace,showcaseEvents,showcaseThreads}=showcase?await import('./showcase-data.mjs'):{};
 const {clientProjection}=showcase?await import('../server/sharing.mjs'):{};
 if(showcase)showcaseWorkspace(state);
+// THRIVE_LANGUAGE=fr: the workspace's language, so the app and the pages clients open use it (blog screenshots).
+if(process.env.THRIVE_LANGUAGE)state.settings={...state.settings,language:process.env.THRIVE_LANGUAGE};
 // THRIVE_FRESH=1: an empty new account's workspace, which opens in onboarding.
 if(process.env.THRIVE_FRESH==='1'){const {emptyWorkspace}=await import('../server/account-workspace.mjs');state=emptyWorkspace({});}
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
@@ -52,7 +54,7 @@ const server=createServer(async(req,res)=>{
     let link={entity,recordId,version:doc?.currentVersion};const item=url.searchParams.get('item');
     if(item&&entity==='portal'){const e=portalEntry(state,recordId,item);link={entity:e.entity,recordId:e.recordId,version:e.version};}
     const result=clientProjection(state,link);if(entity==='portal'&&!item)result.portal=true;
-    return json({...result,actions:[]});
+    return json({...result,language:state.settings.language,actions:[]});
    }catch(e){return json({error:e.message},404);}
   }
   // A Thrive Cloud trial (THRIVE_PLAN=trial or last-day) can't connect email & calendar until it subscribes.

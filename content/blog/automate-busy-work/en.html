@@ -1,0 +1,103 @@
+<!--meta {"title":"Automate the busy work: 11 workflow ideas for freelancers and small studios","description":"How to spot the admin worth automating, plus 11 practical trigger-and-action workflows for freelancers and small studios, from new inquiries to paid invoices.","minutes":7} -->
+<p class="lede">Most freelancers don't lose their week to hard problems. They lose it to small ones: tagging a new lead, copying a client's name into a contract, remembering to send the deposit invoice, writing the same "thanks, here's what happens next" email for the fortieth time. None of it takes long. All of it adds up, and the bits you forget cost real money. Here is how to spot that kind of work, and eleven simple automations that take it off your plate.</p>
+
+<h2>How to spot busy work worth automating</h2>
+<p>Not every chore should be automated. A good candidate passes three tests:</p>
+<ul>
+<li><strong>It repeats.</strong> You do it for every client, every project or every invoice. If it happens twice a year, just do it by hand.</li>
+<li><strong>It follows a rule.</strong> You can say it as "when X happens, do Y" without adding "unless I feel like it". Judgement calls, like pricing a tricky project, stay with you.</li>
+<li><strong>It's easy to forget.</strong> The step sits between two bigger moments, so it slips. A proposal gets accepted on a Friday evening and the deposit invoice goes out on Wednesday, because nobody reminded you.</li>
+</ul>
+<p>A quick exercise: for one week, keep a note open and write down every small admin task you do, with the moment that started it. "Client signed, so I changed the project to in progress." "Inquiry came in, so I tagged them as a lead." By Friday you will have a list of trigger and action pairs. That list is your automation plan.</p>
+
+<h2>How workflows work in Thrive</h2>
+<p>In Thrive, a workflow is one trigger and one or more actions (up to twenty). The trigger is something that happens in your workspace: a form is submitted, a proposal is accepted, a contract is signed, an invoice is fully paid, a meeting is completed. The actions are things Thrive does in response: add a tag, add a note, create a draft, change a project's status, issue an invoice.</p>
+<p>A few details make this safer than it sounds:</p>
+<ul>
+<li>Text fields accept variables such as <code>{{client.name}}</code>, <code>{{project.name}}</code> or <code>{{document.title}}</code>, filled in from the record that triggered the run.</li>
+<li>You can test a workflow on a sample record before turning it on. The test runs on a copy and changes nothing.</li>
+<li>Emails are only ever drafted. Nothing goes to a client until you review it and press send.</li>
+<li>Every run lands in a run history with its result: succeeded, skipped or failed, and why.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>The Workflows page: each automation with its trigger, actions, status and last run.</figcaption></figure>
+
+<h2>11 workflow ideas</h2>
+<p>Each idea below is written as trigger → action, using triggers and actions that exist in Thrive today. Start with two or three, not all eleven.</p>
+
+<h3>1. Tag every new inquiry</h3>
+<p><strong>Form submitted</strong> (filtered to your inquiry form) → <strong>Add client tag</strong> "New inquiry".</p>
+<p>If your form uses the email question to match or create a client, every inquiry lands in your client list with a tag you can filter on. You never wonder which leads you haven't answered yet. If you're still building that form, see <a href="/blog/generate-leads-with-forms">how to generate leads with forms</a>.</p>
+
+<h3>2. Draft the "thanks, here's what's next" reply</h3>
+<p><strong>Form submitted</strong> → <strong>Draft email</strong> with the subject "Thanks for reaching out, {{client.contact}}".</p>
+<p>The reply you write to every inquiry is mostly the same: thanks, what happens next, a link to book a call. The workflow writes the draft; you add one personal line and send it. Fast replies win work, and this removes the blank page.</p>
+
+<h3>3. Start a proposal when a lead is qualified</h3>
+<p><strong>Tag added</strong> "Qualified" → <strong>Create proposal draft</strong> titled "{{client.name}} proposal".</p>
+<p>After the discovery call, you tag the client "Qualified". By the time you sit down to write, the draft is waiting in their record. It's one of the templates Thrive offers when you create a new workflow.</p>
+
+<h3>4. Draft the follow-up after a discovery call</h3>
+<p><strong>Meeting completed</strong> (filtered to your "Discovery call" meeting type) → <strong>Draft meeting follow-up</strong>.</p>
+<p>This action creates a proposal draft and an email draft for that client, both for review. Nothing is sent. The momentum after a good call fades within days, so having both ready the same afternoon helps.</p>
+
+<h3>5. Create the contract the moment a proposal is accepted</h3>
+<p><strong>Proposal accepted</strong> → <strong>Create contract draft</strong> titled "{{client.name}} agreement".</p>
+<p>The client said yes. The next step is always the same, and it is exactly the kind of step that slips on a busy week. For a full walkthrough of that handover, read <a href="/blog/proposals-and-contracts">proposals and contracts that get signed</a>.</p>
+
+<h3>6. Issue the deposit invoice on acceptance</h3>
+<p><strong>Proposal accepted</strong> → <strong>Create deposit invoice</strong>.</p>
+<p>Say you sold a €4,800 brand project with a 50% deposit in its payment schedule. When the proposal is accepted, Thrive issues the €2,400 deposit invoice from that schedule, with your payment instructions on it. If a deposit invoice already exists for the project, it's reused, not duplicated. Thrive doesn't collect the money: your client pays by bank transfer or whatever method your instructions describe, and you record the payment.</p>
+
+<h3>7. Move the project forward when the contract is signed</h3>
+<p><strong>Contract signed</strong> → <strong>Change project status</strong> to "In progress", then <strong>Set project target date</strong> 30 days from the event.</p>
+<p>Two actions in one workflow. Your project board stays honest without you dragging cards around, and every project gets a target date from day one.</p>
+
+<h3>8. Keep a paper trail of declined proposals</h3>
+<p><strong>Proposal declined</strong> → <strong>Add client tag</strong> "Lost", then <strong>Add client note</strong> "Declined {{document.title}}. Ask why and check back in three months."</p>
+<p>Lost deals are useful data. A tag lets you count them later; a note reminds future you what happened when the client comes back next year.</p>
+
+<h3>9. Mark clients who've paid</h3>
+<p><strong>Invoice fully paid</strong> → <strong>Add client tag</strong> "Paid".</p>
+<p>When you record the final payment on an invoice, the client is tagged. Filter by that tag to see who is in good standing, or swap it for a note: "{{invoice.number}} paid in full."</p>
+
+<h3>10. Ask for feedback when a project wraps up</h3>
+<p><strong>Status changed</strong> to "Completed" → <strong>Draft email</strong> "How did {{project.name}} go?", then <strong>Add client tag</strong> "Past client".</p>
+<p>Testimonials and referrals come from asking at the right moment, which is right after delivery, when you're already busy with the next thing. The draft is ready; you decide when to send it.</p>
+
+<h3>11. Log time on the client record</h3>
+<p><strong>Time entry added</strong> → <strong>Add client note</strong> "{{time.hours}} hours on {{project.name}}: {{time.note}}".</p>
+<p>Useful if you like reading a client's history in one place, or if someone else in the studio picks up the account. This one is also a ready-made template.</p>
+
+<figure data-shot="builder"><figcaption>A workflow in the builder: when a client is tagged “Qualified”, Thrive drafts a proposal for them.</figcaption></figure>
+
+<h2>What not to expect (yet)</h2>
+<p>Honest limits save you from building something that won't fire:</p>
+<ul>
+<li><strong>Triggers are events, not dates.</strong> Thrive reacts to things that happen in your workspace. There is no "7 days after the due date" trigger, so overdue reminders are still a weekly habit: filter your invoices by status and follow up.</li>
+<li><strong>Sending stays manual.</strong> Workflows draft emails; they never send them. That's on purpose.</li>
+<li><strong>Payments happen outside Thrive.</strong> "Invoice fully paid" fires when you record the payment, not when money arrives in your bank.</li>
+</ul>
+
+<h2>A short checklist before you switch one on</h2>
+<ul>
+<li>Can you describe it as "when X, do Y" in one sentence?</li>
+<li>Have you filtered the trigger enough? (One specific form, one meeting type, one tag value.)</li>
+<li>Did you test it on a real sample record and read the result?</li>
+<li>Does every draft it creates end up somewhere you'll actually look?</li>
+<li>After a week, does the run history show successes, not a wall of skipped or failed runs?</li>
+</ul>
+
+<h2>Going further with AI agents</h2>
+<p>Workflows handle the rule-based steps. For the parts that need a bit of writing or reading, you can connect an AI assistant such as Claude or ChatGPT to Thrive through MCP. You sign in to Thrive and approve the assistant once, from the "Use with AI" page in the sidebar.</p>
+<p>Once connected, the assistant works with your real records through the same checks as the app. Some things you can ask:</p>
+<ul>
+<li>"Read the notes from my call with Harbor Coffee and draft a proposal for a website refresh." It can create the draft in Thrive for you to edit.</li>
+<li>"Summarize my week: time logged per project, invoices issued, and anything still waiting on a client."</li>
+<li>"Which invoices are unpaid and past their due date?" A decent stand-in for the date-based reminders workflows don't do.</li>
+<li>"Set up a workflow that tags new inquiries." It can create and test workflows too.</li>
+</ul>
+<p>The same safeguards apply. The assistant can preview a change before making it, workflows still run on what it does, and it can't send an email or a calendar invite without showing you the exact message and getting your go-ahead. It also can't collect payments or fake a signature.</p>
+<figure data-shot="mcp"><figcaption>The "Use with AI" page, with the connection address and a setup prompt for Claude or ChatGPT.</figcaption></figure>
+
+<h2>Try it on your next project</h2>
+<p>Pick the one step you forgot most recently, whether that's a deposit invoice, a contract draft or a reply to an inquiry, and turn it into a workflow. Test it on a past client, switch it on, and let your next project run through it. Thrive is $10 a month with a 7-day free trial, and you can <a href="https://app.runonthrive.com/auth/sign-up">start without a card</a>.</p>

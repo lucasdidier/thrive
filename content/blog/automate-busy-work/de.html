@@ -1,0 +1,103 @@
+<!--meta {"title":"Kleinkram automatisieren: 11 Workflow-Ideen für Freelancer und kleine Studios","description":"Welche Admin-Aufgaben sich zum Automatisieren lohnen, plus 11 praktische Workflows aus Auslöser und Aktion, von neuen Anfragen bis zu bezahlten Rechnungen.","minutes":7} -->
+<p class="lede">Die meisten Freelancer verlieren ihre Woche nicht an schwierige Probleme. Sie verlieren sie an kleine: einen neuen Lead taggen, den Namen eines Kunden in einen Vertrag kopieren, an die Anzahlungsrechnung denken, zum vierzigsten Mal dieselbe Mail „Danke, so geht es jetzt weiter“ schreiben. Nichts davon dauert lange. Alles zusammen läppert sich, und was du vergisst, kostet echtes Geld. Hier erfährst du, wie du solche Aufgaben erkennst, und bekommst elf einfache Automatisierungen, die sie dir abnehmen.</p>
+
+<h2>So erkennst du Kleinkram, der sich zum Automatisieren lohnt</h2>
+<p>Nicht jede lästige Aufgabe sollte automatisiert werden. Ein guter Kandidat besteht drei Tests:</p>
+<ul>
+<li><strong>Er wiederholt sich.</strong> Du machst es bei jedem Kunden, jedem Projekt oder jeder Rechnung. Wenn es zweimal im Jahr vorkommt, mach es einfach von Hand.</li>
+<li><strong>Er folgt einer Regel.</strong> Du kannst es als „Wenn X passiert, mach Y“ formulieren, ohne „außer mir ist gerade nicht danach“ anzuhängen. Ermessensfragen, etwa wie du ein kniffliges Projekt bepreist, bleiben bei dir.</li>
+<li><strong>Er wird leicht vergessen.</strong> Der Schritt liegt zwischen zwei größeren Momenten und rutscht deshalb durch. Ein Angebot wird am Freitagabend angenommen, und die Anzahlungsrechnung geht erst am Mittwoch raus, weil dich niemand daran erinnert hat.</li>
+</ul>
+<p>Eine kleine Übung: Lass eine Woche lang eine Notiz offen und schreib jede kleine Admin-Aufgabe auf, zusammen mit dem Moment, der sie ausgelöst hat. „Kunde hat unterschrieben, also habe ich das Projekt auf ‚In Arbeit‘ gesetzt.“ „Anfrage kam rein, also habe ich sie als Lead getaggt.“ Am Freitag hast du eine Liste aus Paaren von Auslöser und Aktion. Diese Liste ist dein Automatisierungsplan.</p>
+
+<h2>So funktionieren Workflows in Thrive</h2>
+<p>In Thrive besteht ein Workflow aus einem Auslöser und einer oder mehreren Aktionen (bis zu zwanzig). Der Auslöser ist etwas, das in deinem Arbeitsbereich passiert: Ein Formular wird gesendet, ein Angebot angenommen, ein Vertrag unterschrieben, eine Rechnung vollständig bezahlt, ein Termin abgeschlossen. Die Aktionen sind das, was Thrive daraufhin tut: einen Tag hinzufügen, eine Notiz anlegen, einen Entwurf erstellen, den Status eines Projekts ändern, eine Rechnung stellen.</p>
+<p>Ein paar Details machen das sicherer, als es klingt:</p>
+<ul>
+<li>Textfelder akzeptieren Variablen wie <code>{{client.name}}</code>, <code>{{project.name}}</code> oder <code>{{document.title}}</code>, die aus dem Datensatz befüllt werden, der den Lauf ausgelöst hat.</li>
+<li>Du kannst einen Workflow mit einem Beispieldatensatz testen, bevor du ihn einschaltest. Der Test läuft auf einer Kopie und ändert nichts.</li>
+<li>E-Mails werden immer nur entworfen. Nichts geht an einen Kunden, bevor du es geprüft und auf Senden gedrückt hast.</li>
+<li>Jeder Lauf landet im Ausführungsverlauf, mit seinem Ergebnis: erfolgreich, übersprungen oder fehlgeschlagen, und warum.</li>
+</ul>
+<figure data-shot="workflows"><figcaption>Die Seite „Workflows“: jede Automatisierung mit Auslöser, Aktionen, Status und letztem Lauf.</figcaption></figure>
+
+<h2>11 Workflow-Ideen</h2>
+<p>Jede Idee unten ist als Auslöser → Aktion formuliert, mit Auslösern und Aktionen, die es in Thrive heute gibt. Fang mit zwei oder drei an, nicht mit allen elf.</p>
+
+<h3>1. Jede neue Anfrage taggen</h3>
+<p><strong>Formular gesendet</strong> (gefiltert auf dein Anfrageformular) → <strong>Kunden-Tag hinzufügen</strong> „Neue Anfrage“.</p>
+<p>Wenn dein Formular über die E-Mail-Frage einen Kunden zuordnet oder anlegt, landet jede Anfrage in deiner Kundenliste, mit einem Tag, nach dem du filtern kannst. Du fragst dich nie wieder, welche Leads du noch nicht beantwortet hast. Falls du das Formular noch aufbaust, lies <a href="/blog/de/generate-leads-with-forms">wie du mit Formularen Leads gewinnst</a>.</p>
+
+<h3>2. Die Antwort „Danke, so geht es weiter“ vorbereiten</h3>
+<p><strong>Formular gesendet</strong> → <strong>E-Mail entwerfen</strong> mit dem Betreff „Danke für deine Nachricht, {{client.contact}}“.</p>
+<p>Die Antwort auf jede Anfrage ist im Kern immer gleich: Danke, so geht es weiter, hier ist ein Link, um ein Gespräch zu buchen. Der Workflow schreibt den Entwurf, du ergänzt einen persönlichen Satz und schickst ihn ab. Schnelle Antworten gewinnen Aufträge, und so starrst du nie auf eine leere Seite.</p>
+
+<h3>3. Ein Angebot beginnen, sobald ein Lead qualifiziert ist</h3>
+<p><strong>Tag hinzugefügt</strong> „Qualifiziert“ → <strong>Angebotsentwurf erstellen</strong> mit dem Titel „Angebot für {{client.name}}“.</p>
+<p>Nach dem Kennenlerngespräch taggst du den Kunden mit „Qualifiziert“. Wenn du dich zum Schreiben hinsetzt, wartet der Entwurf schon in seinem Datensatz. Das ist eine der Vorlagen, die Thrive dir beim Anlegen eines neuen Workflows anbietet.</p>
+
+<h3>4. Das Nachfassen nach einem Kennenlerngespräch vorbereiten</h3>
+<p><strong>Termin abgeschlossen</strong> (gefiltert auf deine Terminart „Kennenlerngespräch“) → <strong>Nachfassen zum Termin entwerfen</strong>.</p>
+<p>Diese Aktion erstellt für den Kunden einen Angebotsentwurf und einen E-Mail-Entwurf, beide zum Prüfen. Nichts wird verschickt. Der Schwung nach einem guten Gespräch verfliegt innerhalb weniger Tage, deshalb hilft es, beides noch am selben Nachmittag parat zu haben.</p>
+
+<h3>5. Den Vertrag erstellen, sobald ein Angebot angenommen ist</h3>
+<p><strong>Angebot angenommen</strong> → <strong>Vertragsentwurf erstellen</strong> mit dem Titel „Vereinbarung mit {{client.name}}“.</p>
+<p>Der Kunde hat Ja gesagt. Der nächste Schritt ist immer derselbe, und genau so ein Schritt rutscht in einer vollen Woche durch. Den ganzen Ablauf dieser Übergabe findest du in <a href="/blog/de/proposals-and-contracts">Angebote und Verträge, die unterschrieben werden</a>.</p>
+
+<h3>6. Die Anzahlungsrechnung bei Annahme stellen</h3>
+<p><strong>Angebot angenommen</strong> → <strong>Anzahlungsrechnung erstellen</strong>.</p>
+<p>Angenommen, du hast ein Branding-Projekt für 4.800 € verkauft, mit 50 % Anzahlung im Zahlungsplan. Sobald das Angebot angenommen ist, stellt Thrive aus diesem Plan die Anzahlungsrechnung über 2.400 €, mit deinen Zahlungsinformationen darauf. Gibt es für das Projekt schon eine Anzahlungsrechnung, wird sie wiederverwendet statt doppelt angelegt. Thrive zieht das Geld nicht ein: Dein Kunde zahlt per Überweisung oder auf dem Weg, den du in deinen Zahlungsinformationen beschreibst, und du erfasst die Zahlung.</p>
+
+<h3>7. Das Projekt voranbringen, wenn der Vertrag unterschrieben ist</h3>
+<p><strong>Vertrag unterschrieben</strong> → <strong>Projektstatus ändern</strong> auf „In Arbeit“, dann <strong>Projekt-Zieldatum festlegen</strong> auf 30 Tage nach dem Ereignis.</p>
+<p>Zwei Aktionen in einem Workflow. Dein Projektboard bleibt aktuell, ohne dass du Karten herumschiebst, und jedes Projekt hat vom ersten Tag an ein Zieldatum.</p>
+
+<h3>8. Abgelehnte Angebote dokumentieren</h3>
+<p><strong>Angebot abgelehnt</strong> → <strong>Kunden-Tag hinzufügen</strong> „Verloren“, dann <strong>Kundennotiz hinzufügen</strong> „{{document.title}} abgelehnt. Nach dem Grund fragen und in drei Monaten wieder melden.“</p>
+<p>Verlorene Aufträge sind nützliche Daten. Mit einem Tag kannst du sie später zählen, und eine Notiz erinnert dein zukünftiges Ich daran, was passiert ist, wenn der Kunde nächstes Jahr wiederkommt.</p>
+
+<h3>9. Kunden markieren, die bezahlt haben</h3>
+<p><strong>Rechnung vollständig bezahlt</strong> → <strong>Kunden-Tag hinzufügen</strong> „Bezahlt“.</p>
+<p>Wenn du die letzte Zahlung auf einer Rechnung erfasst, bekommt der Kunde den Tag. Filtere danach, um zu sehen, wer alles beglichen hat, oder nimm stattdessen eine Notiz: „{{invoice.number}} vollständig bezahlt.“</p>
+
+<h3>10. Nach Feedback fragen, wenn ein Projekt abgeschlossen ist</h3>
+<p><strong>Status geändert</strong> auf „Abgeschlossen“ → <strong>E-Mail entwerfen</strong> „Wie lief {{project.name}} für dich?“, dann <strong>Kunden-Tag hinzufügen</strong> „Ehemaliger Kunde“.</p>
+<p>Referenzen und Empfehlungen bekommst du, wenn du im richtigen Moment fragst, also direkt nach der Übergabe, wenn du schon mit dem nächsten Projekt beschäftigt bist. Der Entwurf liegt bereit, du entscheidest, wann er rausgeht.</p>
+
+<h3>11. Zeit in der Kundenakte festhalten</h3>
+<p><strong>Zeiteintrag hinzugefügt</strong> → <strong>Kundennotiz hinzufügen</strong> „{{time.hours}} Stunden für {{project.name}}: {{time.note}}“.</p>
+<p>Praktisch, wenn du die Historie eines Kunden gern an einem Ort liest oder wenn jemand anderes im Studio den Kunden übernimmt. Auch das gibt es als fertige Vorlage.</p>
+
+<figure data-shot="builder"><figcaption>Ein Workflow im Editor: Bekommt ein Kunde das Tag „Qualifiziert“, erstellt Thrive einen Angebotsentwurf.</figcaption></figure>
+
+<h2>Was du (noch) nicht erwarten solltest</h2>
+<p>Ehrliche Grenzen bewahren dich davor, etwas zu bauen, das nie auslöst:</p>
+<ul>
+<li><strong>Auslöser sind Ereignisse, keine Termine.</strong> Thrive reagiert auf Dinge, die in deinem Arbeitsbereich passieren. Einen Auslöser „7 Tage nach Fälligkeit“ gibt es nicht. Zahlungserinnerungen bleiben also eine wöchentliche Gewohnheit: Rechnungen nach Status filtern und nachhaken.</li>
+<li><strong>Versenden bleibt Handarbeit.</strong> Workflows entwerfen E-Mails, sie verschicken sie nie. Das ist Absicht.</li>
+<li><strong>Zahlungen laufen außerhalb von Thrive.</strong> „Rechnung vollständig bezahlt“ löst aus, wenn du die Zahlung erfasst, nicht wenn das Geld auf deinem Konto eingeht.</li>
+</ul>
+
+<h2>Eine kurze Checkliste, bevor du einen Workflow einschaltest</h2>
+<ul>
+<li>Kannst du ihn in einem Satz als „Wenn X, dann Y“ beschreiben?</li>
+<li>Hast du den Auslöser eng genug gefiltert? (Ein bestimmtes Formular, eine Terminart, ein Tag-Wert.)</li>
+<li>Hast du ihn mit einem echten Beispieldatensatz getestet und das Ergebnis gelesen?</li>
+<li>Landet jeder Entwurf, den er erstellt, an einer Stelle, an der du auch wirklich nachschaust?</li>
+<li>Zeigt der Ausführungsverlauf nach einer Woche erfolgreiche Läufe statt einer Wand aus übersprungenen oder fehlgeschlagenen?</li>
+</ul>
+
+<h2>Noch einen Schritt weiter mit KI-Agenten</h2>
+<p>Workflows übernehmen die regelbasierten Schritte. Für die Teile, bei denen etwas geschrieben oder gelesen werden muss, kannst du einen KI-Assistenten wie Claude oder ChatGPT über MCP mit Thrive verbinden. Du meldest dich bei Thrive an und gibst den Assistenten einmal frei, über die Seite „Mit KI nutzen“ in der Seitenleiste.</p>
+<p>Danach arbeitet der Assistent mit deinen echten Daten, mit denselben Prüfungen wie die App. Ein paar Dinge, um die du ihn bitten kannst:</p>
+<ul>
+<li>„Lies die Notizen aus meinem Gespräch mit Harbor Coffee und entwirf ein Angebot für einen Website-Relaunch.“ Er kann den Entwurf direkt in Thrive anlegen, damit du ihn bearbeitest.</li>
+<li>„Fass meine Woche zusammen: erfasste Zeit pro Projekt, gestellte Rechnungen und alles, was noch auf einen Kunden wartet.“</li>
+<li>„Welche Rechnungen sind unbezahlt und schon überfällig?“ Ein ordentlicher Ersatz für die terminbasierten Erinnerungen, die Workflows nicht können.</li>
+<li>„Richte einen Workflow ein, der neue Anfragen taggt.“ Er kann auch Workflows anlegen und testen.</li>
+</ul>
+<p>Es gelten dieselben Schutzmechanismen. Der Assistent kann eine Änderung vorab zeigen, bevor er sie macht, Workflows laufen auch bei seinen Aktionen, und er kann keine E-Mail und keine Kalendereinladung verschicken, ohne dir die genaue Nachricht zu zeigen und dein Okay einzuholen. Zahlungen einziehen oder eine Unterschrift fälschen kann er auch nicht.</p>
+<figure data-shot="mcp"><figcaption>Die Seite „Mit KI nutzen“ mit der Verbindungsadresse und einem Einrichtungs-Prompt für Claude oder ChatGPT.</figcaption></figure>
+
+<h2>Probier es bei deinem nächsten Projekt aus</h2>
+<p>Nimm den Schritt, den du zuletzt vergessen hast, ob Anzahlungsrechnung, Vertragsentwurf oder Antwort auf eine Anfrage, und mach daraus einen Workflow. Teste ihn mit einem früheren Kunden, schalte ihn ein und lass dein nächstes Projekt hindurchlaufen. Thrive kostet 10 $ im Monat mit 7 Tagen kostenloser Testphase, und du kannst <a href="https://app.runonthrive.com/auth/sign-up">ohne Kreditkarte starten</a>.</p>
