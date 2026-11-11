@@ -29,7 +29,7 @@ body:has(> .design-preview-notice):has(> #plan-banner) .app-nav{top:calc(30px + 
 .paywall-card .plan-choose{flex-direction:column;align-items:stretch;width:100%;margin-top:12px}
 .paywall-card .plan-choose .settings-segmented{align-self:center}
 /* The Monthly | Yearly switch and Subscribe share one height and centre line. */
-.plan-choose .settings-segmented{align-self:center;display:inline-flex;align-items:stretch;height:var(--control-height);box-sizing:border-box}
+.plan-choose .settings-segmented{align-self:center;margin:0;display:inline-flex;align-items:stretch;height:var(--control-height);box-sizing:border-box}
 .plan-choose .settings-segmented label{display:flex}
 .plan-choose .settings-segmented span{display:flex;align-items:center;padding:0 12px}
 .plan-choose>.btn{height:var(--control-height);min-height:var(--control-height)}
