@@ -1,7 +1,19 @@
 // The sign-in pages load without boot.js, so pick the language here before drawing anything.
 import {L,setLanguage,startLanguage} from './i18n.js';
 // ?lang=fr from the site (landing page or blog in that language) picks the language for this browser.
-await setLanguage(startLanguage(new URLSearchParams(location.search).get('lang')));
+const lang=await setLanguage(startLanguage(new URLSearchParams(location.search).get('lang')));
+// The showcase beside the form: its words, the legal links, and the product screenshot in this language
+// (the blog's screenshots, scripts/blog-shots.mjs).
+if(lang!=='en'){
+ const set=(sel,text)=>{const el=document.querySelector(sel);if(el)el.textContent=text;};
+ set('#showcase-copy h2',L('All your client work, in one place'));
+ set('#showcase-copy p',L('Clients, proposals, invoices, time and email in one workspace for freelancers and small studios.'));
+ set('#showcase-toast strong',L('Sophie Chen signed your contract'));
+ set('#showcase-toast span',L('Brand identity agreement · just now'));
+ const links=document.querySelectorAll('#auth-legal a');[L('Terms'),L('Privacy'),L('Refunds')].forEach((t,i)=>{if(links[i])links[i].textContent=t;});
+ document.querySelector('#auth-legal')?.setAttribute('aria-label',L('Legal'));
+ const shot=document.querySelector('#showcase-shot');if(shot)shot.src=`/blog-shots/${lang}/overview.webp`;
+}
 const $=id=>document.getElementById(id),esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const view=location.pathname.split('/').at(-1),params=new URLSearchParams(location.search);let config,busy=false,lastEmail='',resendTimer;
 const google='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.7Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6h-4a12 12 0 0 0 0 10.8l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A11.5 11.5 0 0 0 12 0 12 12 0 0 0 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9Z"/></svg>';
