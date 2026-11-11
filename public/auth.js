@@ -30,6 +30,25 @@ function heading(title,subtitle=''){$('heading').textContent=title;$('subtitle')
 function notice(text){$('notice').textContent=text;$('notice').hidden=!text;}
 function showError(message){$('error').textContent=message||'';}
 function controls(){document.querySelectorAll('#content button,#content input').forEach(el=>el.disabled=busy||!config?.enabled||(el.dataset.provider&&!config.providers[el.dataset.provider])||(el.id==='resend'&&!!resendTimer));}
+// Cloudflare Turnstile before emailing a code (when the server asks for it: config.turnstileSiteKey).
+// Invisible for most people; it shows a check only when Cloudflare wants one. Each code request gets a
+// fresh token, so "Resend" works too.
+let captcha=null,captchaWaiting=null,captchaScript=null;
+function loadTurnstile(){return captchaScript??=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=()=>resolve(window.turnstile);s.onerror=()=>{captchaScript=null;reject(Error(L('We couldn’t load the security check. Please try again, or continue with Google.')));};document.head.append(s);});}
+async function captchaToken(){
+ const key=config?.turnstileSiteKey;if(!key)return '';
+ const turnstile=await loadTurnstile();
+ let box=document.getElementById('captcha');
+ if(!box){box=document.createElement('div');box.id='captcha';box.className='captcha';document.querySelector('.auth-card').append(box);}
+ return new Promise((resolve,reject)=>{
+  captchaWaiting={resolve,reject};
+  const fail=()=>{captchaWaiting?.reject(Error(L('We couldn’t confirm you’re a person. Please try again, or continue with Google.')));captchaWaiting=null;};
+  if(captcha===null)captcha=turnstile.render(box,{sitekey:key,execution:'execute',appearance:'interaction-only',callback:t=>{captchaWaiting?.resolve(t);captchaWaiting=null;},'error-callback':fail,'timeout-callback':fail});
+  else turnstile.reset(captcha);
+  turnstile.execute(captcha);
+ });
+}
+async function codeRequest(email){let turnstile='';try{turnstile=await captchaToken();}catch(error){showError(error.message);return null;}return action({action:'email-code',email,...(turnstile?{turnstile}:{})});}
 async function action(body){if(busy)return;busy=true;showError('');controls();try{const response=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(params.get('next')?{...body,next:params.get('next')}:body)});const result=await response.json();if(!response.ok)throw Error(result.error||L('Please try again.'));if(result.redirect){location.assign(result.redirect);return;}return result;}catch(error){showError(error.message);}finally{busy=false;controls();}}
 function googleButtons(){document.querySelectorAll('[data-provider]').forEach(button=>button.onclick=()=>action({action:'oauth',provider:button.dataset.provider}));}
 
@@ -41,7 +60,7 @@ function codeSignIn(){
  $('content').innerHTML=`<button class="btn" type="button" data-provider="google">${google}${L('Continue with Google')}</button><div class="divider">${L('or')}</div><form id="code-form" class="stack" novalidate><label class="sr-only" for="email">${L('Email')}</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="${esc(L('Email'))}" required maxlength="254" value="${esc(lastEmail)}"><button class="btn primary" type="submit">${L('Email me a code')}${arrow}</button></form>`;
  $('footer').innerHTML=config.inviteOnly?notInvited():joining?haveAccount():newToThrive();
  googleButtons();
- $('code-form').onsubmit=async event=>{event.preventDefault();const email=$('email').value.trim();if(!$('email').checkValidity()||!email){showError(L('Enter a valid email address.'));$('email').focus();return;}lastEmail=email;if((await action({action:'email-code',email}))?.sent)codeStep();};
+ $('code-form').onsubmit=async event=>{event.preventDefault();const email=$('email').value.trim();if(!$('email').checkValidity()||!email){showError(L('Enter a valid email address.'));$('email').focus();return;}lastEmail=email;if((await codeRequest(email))?.sent)codeStep();};
  controls();
 }
 function startResendTimer(){let left=60;const tick=()=>{const button=$('resend');if(!button){clearInterval(resendTimer);resendTimer=undefined;return;}if(left<=0){clearInterval(resendTimer);resendTimer=undefined;button.textContent=L('Resend code');controls();return;}button.textContent=L('Resend code in {seconds}s',{seconds:left--});};clearInterval(resendTimer);resendTimer=setInterval(tick,1000);tick();controls();}
@@ -51,7 +70,7 @@ function codeStep(){
  $('footer').textContent=L('Can’t find it? Check spam, or open the link in the same email on this device.');
  $('verify-form').onsubmit=async event=>{event.preventDefault();const code=$('code').value.replace(/\s+/g,'');if(!/^\d{6,10}$/.test(code)){showError(L('Enter the code from your email.'));$('code').focus();return;}await action({action:'verify-code',email:lastEmail,code});};
  $('code').oninput=event=>{event.target.value=event.target.value.replace(/[^\d\s]/g,'');};
- $('resend').onclick=async()=>{if((await action({action:'email-code',email:lastEmail}))?.sent){notice(L('A new code is on its way.'));startResendTimer();}};
+ $('resend').onclick=async()=>{if((await codeRequest(lastEmail))?.sent){notice(L('A new code is on its way.'));startResendTimer();}};
  $('other-email').onclick=()=>{showError('');codeSignIn();$('email').focus();};
  startResendTimer();$('code').focus();
 }

@@ -3337,5 +3337,7 @@
  "Legal": "Legal",
  "Refunds": "Reembolsos",
  "Privacy": "Privacidad",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "Enviamos un código de acceso a {email}. Caduca en 10 minutos."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Enviamos un código de acceso a {email}. Caduca en 10 minutos.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "No pudimos cargar la comprobación de seguridad. Inténtalo de nuevo o continúa con Google.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "No pudimos confirmar que eres una persona. Inténtalo de nuevo o continúa con Google."
 }

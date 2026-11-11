@@ -1,4 +1,5 @@
 import {allow,hashKey} from './limits.mjs';
+import {turnstileSiteKey,turnstileEnabled,verifyTurnstile} from './turnstile.mjs';
 import {createServerClient,parseCookieHeader,serializeCookieHeader} from '@supabase/ssr';
 import {StoreError} from './store.mjs';
 import {json,readBody,errorResponse} from './http.mjs';
@@ -21,7 +22,7 @@ const nextCookie=(origin,value)=>`${NEXT}=${value?encodeURIComponent(value):''};
 const savedNext=request=>{const raw=(request.headers.get('cookie')||'').split(/;\s*/).find(c=>c.startsWith(NEXT+'='))?.slice(NEXT.length+1)||'';try{return safeNext(decodeURIComponent(raw));}catch{return '';}};
 const keepNext=(context,body)=>safeNext(body.next)?[nextCookie(context.origin,safeNext(body.next))]:[];
 const supportEmail=env=>{const v=String(env.THRIVE_SUPPORT_EMAIL||'').trim();return /^[^\s@<>"]{1,64}@[^\s@<>"]{1,190}\.[a-z]{2,}$/i.test(v)?v:'';};
-export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(enabled&&supportEmail(env)?{supportEmail:supportEmail(env)}:{}),...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(openAccess(env)?{openSignup:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),providers:{google:enabled&&(passwordless(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
+export function accountConfig(env){const enabled=accountsEnabled(env);return {mode:enabled?'supabase':'preview',enabled,...(enabled&&supportEmail(env)?{supportEmail:supportEmail(env)}:{}),...(ownerEmail(env)?{ownerOnly:true}:{}),...(inviteOnly(env)?{inviteOnly:true}:{}),...(openAccess(env)?{openSignup:true}:{}),...(emailCodes(env)?{emailCode:true}:{}),...(emailCodes(env)&&turnstileEnabled(env)?{turnstileSiteKey:turnstileSiteKey(env)}:{}),providers:{google:enabled&&(passwordless(env)||env.THRIVE_GOOGLE_LOGIN==='true'),microsoft:enabled&&!googleOnly(env)&&env.THRIVE_MICROSOFT_LOGIN==='true'}};}
 // Supabase can return to its configured Site URL when a callback URL is not
 // allowlisted. Complete that same PKCE exchange before checking the session.
 export async function accountHome(request,env,html,{contextFactory=authContext,landing}={}){
@@ -77,6 +78,8 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase();
  if(inviteOnly(env)&&!await invited(email,env))throw new StoreError('This email isn’t on the beta list yet.',403);
+ // The captcha first, so bots never count against a real person's limits below.
+ if(!await verifyTurnstile(env,body.turnstile,request.headers.get('cf-connecting-ip')||''))throw new StoreError('We couldn’t confirm you’re a person. Please try again, or continue with Google.',403);
  if(await codeLimited(request,env,email))throw new StoreError('Too many codes requested. Please wait a minute and try again.',429);
  // At most 8 codes a day to one address, and 300 an hour in total (the email provider's quota is shared).
  if(!await allow(env,'code-day:'+await hashKey(email),{window:86400,max:8}))throw new StoreError('Too many codes were sent to this address today. Try again tomorrow, or continue with Google.',429);

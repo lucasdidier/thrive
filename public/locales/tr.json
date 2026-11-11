@@ -3294,5 +3294,7 @@
  "Legal": "Yasal",
  "Refunds": "İadeler",
  "Privacy": "Gizlilik",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "{email} adresine bir giriş kodu gönderdik. Kodun süresi 10 dakika içinde dolar."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "{email} adresine bir giriş kodu gönderdik. Kodun süresi 10 dakika içinde dolar.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "Güvenlik kontrolü yüklenemedi. Tekrar dene ya da Google ile devam et.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "Gerçek bir kişi olduğunu doğrulayamadık. Tekrar dene ya da Google ile devam et."
 }

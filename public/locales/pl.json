@@ -3445,5 +3445,7 @@
  "Legal": "Informacje prawne",
  "Refunds": "Zwroty",
  "Privacy": "Prywatność",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "Wysłaliśmy kod logowania na adres {email}. Wygaśnie za 10 minut."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Wysłaliśmy kod logowania na adres {email}. Wygaśnie za 10 minut.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "Nie udało się wczytać weryfikacji bezpieczeństwa. Spróbuj ponownie lub kontynuuj przez Google.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "Nie udało się potwierdzić, że jesteś człowiekiem. Spróbuj ponownie lub kontynuuj przez Google."
 }

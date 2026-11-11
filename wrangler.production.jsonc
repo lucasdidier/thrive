@@ -43,6 +43,8 @@
     // the price id are public. The Paddle API key and webhook signing key are Worker secrets.
     // Basic product analytics (server/analytics.mjs): page and button names in thrive_usage.
     "THRIVE_ANALYTICS": "on",
+    // Cloudflare Turnstile before emailed sign-in codes (server/turnstile.mjs). Public; the secret is a Worker secret.
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAF8wInBdIrFrA7yZ",
     // Daily digest at 7:00 Lisbon (server/digest.mjs): visits, sign-ups, plans, usage and Search Console.
     // Search Console needs the GSC_SERVICE_ACCOUNT secret (a service account JSON key).
     "THRIVE_DIGEST_TO": "owner@example.com",

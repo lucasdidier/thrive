@@ -89,3 +89,6 @@ footer a{font-weight:550}
 .consent-layout h1{font-size:28px;line-height:1.2;margin-bottom:24px;overflow-wrap:anywhere}
 .consent-points{margin:0 0 24px;padding:0 0 0 18px;color:var(--text);line-height:1.55;display:grid;gap:8px}
 .consent-actions{display:grid;gap:12px}
+
+/* Cloudflare Turnstile: empty (invisible) unless Cloudflare asks for a check. */
+.captcha:not(:empty){display:flex;justify-content:center;margin-top:16px}

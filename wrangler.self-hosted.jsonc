@@ -30,6 +30,8 @@
     // the price id are public. The Paddle API key and webhook signing key are Worker secrets.
     // Basic product analytics (server/analytics.mjs): page and button names in thrive_usage.
     "THRIVE_ANALYTICS": "on",
+    // Cloudflare Turnstile before emailed sign-in codes (server/turnstile.mjs). Public; the secret is a Worker secret.
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAF8wInBdIrFrA7yZ",
     "THRIVE_BILLING": "paddle",
     "PADDLE_CLIENT_TOKEN": "test_c634b496f3a7c34416896db6152",
     "PADDLE_PRICE_ID": "pri_01m7336057fjpm0j7g070gmcm4",

@@ -3323,5 +3323,7 @@
  "Legal": "Juridisch",
  "Refunds": "Terugbetalingen",
  "Privacy": "Privacy",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "We hebben een inlogcode naar {email} gestuurd. Deze verloopt over 10 minuten."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "We hebben een inlogcode naar {email} gestuurd. Deze verloopt over 10 minuten.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "De beveiligingscontrole kon niet worden geladen. Probeer het opnieuw of ga verder met Google.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "We konden niet bevestigen dat je een persoon bent. Probeer het opnieuw of ga verder met Google."
 }

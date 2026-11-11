@@ -3346,5 +3346,7 @@
  "Legal": "Mentions légales",
  "Refunds": "Remboursements",
  "Privacy": "Confidentialité",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "Nous avons envoyé un code de connexion à {email}. Il expire dans 10 minutes."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Nous avons envoyé un code de connexion à {email}. Il expire dans 10 minutes.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "Impossible de charger la vérification de sécurité. Réessayez ou continuez avec Google.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "Impossible de confirmer que vous êtes une personne. Réessayez ou continuez avec Google."
 }

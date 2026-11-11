@@ -3262,5 +3262,7 @@
  "Legal": "Legal",
  "Refunds": "Pengembalian dana",
  "Privacy": "Privasi",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "Kami mengirim kode masuk ke {email}. Kode berlaku selama 10 menit."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Kami mengirim kode masuk ke {email}. Kode berlaku selama 10 menit.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "Pemeriksaan keamanan gagal dimuat. Coba lagi, atau lanjutkan dengan Google.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "Kami tidak dapat memastikan bahwa Anda manusia. Coba lagi, atau lanjutkan dengan Google."
 }

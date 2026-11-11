@@ -3323,5 +3323,7 @@
  "Legal": "Rechtliches",
  "Refunds": "Erstattungen",
  "Privacy": "Datenschutz",
- "We sent a sign-in code to {email}. It expires in 10 minutes.": "Wir haben einen Anmeldecode an {email} gesendet. Er läuft in 10 Minuten ab."
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Wir haben einen Anmeldecode an {email} gesendet. Er läuft in 10 Minuten ab.",
+ "We couldn’t load the security check. Please try again, or continue with Google.": "Die Sicherheitsprüfung konnte nicht geladen werden. Versuch es noch einmal oder fahre mit Google fort.",
+ "We couldn’t confirm you’re a person. Please try again, or continue with Google.": "Wir konnten nicht bestätigen, dass du ein Mensch bist. Versuch es noch einmal oder fahre mit Google fort."
 }
