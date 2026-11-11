@@ -40,6 +40,10 @@
     // the price id are public. The Paddle API key and webhook signing key are Worker secrets.
     // Basic product analytics (server/analytics.mjs): page and button names in thrive_usage.
     "THRIVE_ANALYTICS": "on",
+    // Daily digest at 7:00 Lisbon (server/digest.mjs): visits, sign-ups, plans, usage and Search Console.
+    // Search Console needs the GSC_SERVICE_ACCOUNT secret (a service account JSON key).
+    "THRIVE_DIGEST_TO": "owner@example.com",
+    "GSC_SITE": "sc-domain:runonthrive.com",
     "THRIVE_BILLING": "paddle",
     "PADDLE_CLIENT_TOKEN": "live_1c255d0743c442de3269d7ce3f9",
     "PADDLE_PRICE_ID": "pri_01m7386yc3jfzqrateakq0pmq8",

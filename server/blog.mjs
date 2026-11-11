@@ -86,6 +86,7 @@ ${Object.entries(alternates).map(([code,p])=>`<link rel="alternate" hreflang="${
 <link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/typography.css"><link rel="stylesheet" href="/landing.css"><link rel="stylesheet" href="/blog.css">
 ${THEME_SCRIPT}
+<script src="/visit.js" defer></script>
 ${jsonld?`<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g,'\\u003c')}</script>`:''}
 </head>
 <body class="blog">

@@ -198,3 +198,18 @@ Sandbox checkouts work on any domain and take test cards, so staging is where to
   - Access requests: 3 per minute per IP address.
   - Emailed sign-in codes: 3 per minute per IP address.
   - Sign-in, client responses, form posts and error reports: 30 per minute per IP address.
+
+## Daily digest
+
+Every day at 7:00 (Lisbon) production emails `THRIVE_DIGEST_TO` a summary of yesterday (server/digest.mjs). The admin can also open it any time at https://app.runonthrive.com/api/digest.
+
+- **Visits**: `thrive_visits`, counted by public/visit.js on the landing page, blog and sign-in pages. No cookies, IP addresses or identifiers. Migration: `supabase/migrations/202611130001_visits.sql`.
+- **Sign-ups and plans**: `thrive_subscriptions` (new accounts, paying monthly/yearly, MRR, trials, free access).
+- **Product use**: `thrive_usage` (active people, most opened pages, most used buttons).
+- **Google Search**: Search Console's free API, once connected:
+  1. https://console.cloud.google.com: create a project (e.g. "thrive-digest"), then APIs & Services › Library › **Google Search Console API** › Enable.
+  2. IAM & Admin › Service accounts › Create service account ("thrive-digest", no roles). Open it › Keys › Add key › JSON. A key file downloads.
+  3. Search Console › Settings › Users and permissions › Add user: the service account's email (`…@….iam.gserviceaccount.com`), permission **Restricted**.
+  4. Store the key and delete the file:
+     `cd ~/Documents/Code/Thrive/prototype && cat ~/Downloads/<key>.json | npx wrangler secret put GSC_SERVICE_ACCOUNT --config wrangler.production.jsonc && rm ~/Downloads/<key>.json`
+  `GSC_SITE` in wrangler.production.jsonc names the property (`sc-domain:runonthrive.com`). Search numbers lag 2–3 days.

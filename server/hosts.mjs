@@ -15,7 +15,7 @@ export const landingURL=env=>{const site=siteOrigin(env);return site?site+'/':'/
 export const onSite=(request,env)=>{const site=siteOrigin(env);return !!site&&new URL(request.url).origin===site;};
 
 // The blog (/blog, /blog/…) is served on the site too.
-const PAGES=new Set(['/privacy','/terms','/checkout']);
+const PAGES=new Set(['/privacy','/terms','/checkout','/visit']);
 const STATIC=/\/[^/]+\.[a-z0-9]{2,5}$/i;
 // On the site host: `/` shows the landing page, pages and static files are served, and every other path
 // (sign-in, /api, /mcp, consent, client links, embeds) moves permanently to the same path on the app, so

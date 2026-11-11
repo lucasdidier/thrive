@@ -6,6 +6,8 @@ import {adminClient} from './supabase-store.mjs';
 import {appOrigin} from './auth.mjs';
 import {reportError} from './guard.mjs';
 import {pruneUsage} from './analytics.mjs';
+import {pruneVisits} from './visits.mjs';
+import {sendDigest} from './digest.mjs';
 // Each job runs independently; a failure alerts the admin and never blocks the others.
 export async function runScheduled(env,{jobs}={}){
  const admin=()=>adminClient(env);
@@ -16,6 +18,8 @@ export async function runScheduled(env,{jobs}={}){
   trials:()=>sendTrialEmails(env),
   connections:()=>disconnectLockedAccounts(env),
   usage:()=>pruneUsage(env,{admin:admin()}),
+  visits:()=>pruneVisits(env,{admin:admin()}),
+  digest:()=>sendDigest(env,{admin:admin()}),
  };
  const results={};
  for(const [name,job] of Object.entries(jobs)){
