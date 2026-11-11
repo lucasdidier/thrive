@@ -6,19 +6,20 @@
 <script src="/appearance.js"></script>
 <link rel="stylesheet" href="/typography.css"><link rel="stylesheet" href="/auth.css">
 </head>
-<body data-paddle-token="__PADDLE_TOKEN__">
+<body data-paddle-token="__PADDLE_TOKEN__" data-app-url="__APP_URL__">
 <div class="auth-layout checkout-layout">
  <section class="auth-side">
   <header class="auth-header"><a href="/" class="brand" aria-label="Thrive home"><img src="/favicon.svg" alt="" width="28" height="28">thrive</a></header>
   <main class="auth-main">
    <div class="auth-card">
     <h1 id="checkout-heading">Opening checkout…</h1>
-    <footer><a href="/">Back to Thrive</a></footer>
+    <p id="checkout-detail" hidden></p>
+    <footer><a href="/" id="checkout-back">Back to Thrive</a></footer>
    </div>
   </main>
  </section>
 </div>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
-<script src="/paddle-checkout.js"></script>
+<script type="module" src="/paddle-checkout.js"></script>
 </body>
 </html>

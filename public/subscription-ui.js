@@ -25,6 +25,9 @@ function localPrice(raw,fallback=''){
 }
 const btn=(text,action,extra='',cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`;
 
+// The checkout page to send people to, when it is on another origin (production's public site). Same origin
+// (staging, self-hosted): null, and the overlay opens in place.
+export function checkoutTarget(url,here=globalThis.location?.origin){try{const u=new URL(url);return u.protocol==='https:'&&u.origin!==here&&u.pathname==='/checkout'?u.origin+u.pathname:null;}catch{return null;}}
 export async function loadPlan(){
  try{const r=await fetch('/api/billing?tz='+encodeURIComponent(zone()),{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)return null;const plan=await r.json();return plan?.enabled?plan:null;}
  catch{return null;}
@@ -89,8 +92,12 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
   if(!p?.paddle)throw Error(p?.support?L('Subscriptions aren’t open yet. Write to {email}.',{email:p.support}):L('Subscriptions aren’t open yet.'));
   if(busy)return;busy=true;status('');
   try{
+   const priceId=chosen()?.priceId||p.paddle.priceId,theme=document.documentElement.dataset.theme==='dark'?'dark':'light';
+   // Production: checkout runs on the public site (an approved Paddle domain), which sends people back here.
+   const page=checkoutTarget(p.paddle.checkoutUrl);
+   if(page){location.assign(page+'#'+new URLSearchParams({price:priceId,owner:p.owner,...(p.email?{email:p.email}:{}),theme}));return;}
    const Paddle=await loadPaddle(p.paddle);
-   Paddle.Checkout.open({items:[{priceId:chosen()?.priceId||p.paddle.priceId,quantity:1}],customer:p.email?{email:p.email}:undefined,customData:{thrive_owner:p.owner},settings:{displayMode:'overlay',theme:document.documentElement.dataset.theme==='dark'?'dark':'light'}});
+   Paddle.Checkout.open({items:[{priceId,quantity:1}],customer:p.email?{email:p.email}:undefined,customData:{thrive_owner:p.owner},settings:{displayMode:'overlay',theme}});
   }finally{busy=false;}
  }
 
@@ -226,5 +233,8 @@ export function createSubscriptionUI({getPlan,setPlan,toast,onChange}){
  // Any request answering 402 means access ended while the app was open (account.js raises the event).
  addEventListener('thrive:locked',async()=>{if(document.querySelector('.paywall'))return;const p=await loadPlan();if(p?.access.locked)showPaywall(p);});
  if(!plan()?.access.locked)banner();
+ // Back from the site's checkout page: confirm the payment it reports, then drop it from the address bar.
+ const paid=new URLSearchParams(location.search).get('paid');
+ if(paid&&/^txn_[a-z0-9]{10,60}$/i.test(paid)){history.replaceState(null,'',location.pathname+location.hash);setTimeout(()=>void confirm(paid),0);}
  return {mount,showPaywall,click,settingsHTML};
 }

@@ -138,7 +138,7 @@ test('Plan & billing reports the plan and the public checkout settings, never th
  const r=await handleBilling(new Request('https://app.thrive.test/api/billing?tz=Europe%2FLisbon'),env,{db:null,user},{admin,now,fetcher:paddleApi({'/prices/pri_monthly':price})});
  const body=await r.json();
  assert.equal(body.enabled,true);assert.equal(body.access.state,'trial');assert.equal(body.price,'$10 / month');assert.equal(body.owner,user.owner);
- assert.deepEqual(body.paddle,{token:'test_token',priceId:'pri_monthly',sandbox:true});
+ assert.deepEqual(body.paddle,{token:'test_token',priceId:'pri_monthly',sandbox:true,checkoutUrl:'https://app.thrive.test/checkout'});
  assert.doesNotMatch(JSON.stringify(body),/pdl_|secret/);
  assert.equal(admin.rows[0].time_zone,'Europe/Lisbon');
  await handleBilling(new Request('https://app.thrive.test/api/billing?tz=Mars%2FOlympus'),env,{db:null,user},{admin,now,fetcher:paddleApi({})});

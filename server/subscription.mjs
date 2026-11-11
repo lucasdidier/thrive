@@ -7,6 +7,7 @@ import {json,readBody,errorResponse} from './http.mjs';
 import {adminClient,SupabaseDatabase} from './supabase-store.mjs';
 import {adminEmail} from './beta.mjs';
 import {appOrigin} from './auth.mjs';
+import {siteOrigin} from './hosts.mjs';
 import {sendOwnerNotification,disconnectNylas} from './nylas.mjs';
 import {workspaceOwner} from './workspace-directory.mjs';
 import {planAccess,trialEmailDue,trialEmail,priceLabel,yearlySaving,lockedSince,formatAmount,TRIAL_DAYS} from '../public/subscription-domain.js';
@@ -18,6 +19,9 @@ const COLUMNS='owner_id,email,time_zone,trial_ends_at,trial_email,comped,paddle_
 const OWNER=/^supabase:[0-9a-f-]{36}$/i;
 const unavailable=()=>new StoreError('Account service unavailable. Please try again.',503);
 
+// Checkout runs on the public site (runonthrive.com/checkout) when there is one: Paddle only approves domains
+// its reviewers can open, and the app is behind sign-in. Staging and self-hosted use the app's own /checkout.
+export function checkoutPage(env){const origin=siteOrigin(env);if(origin)return origin+'/checkout';try{return appOrigin(env)+'/checkout';}catch{return '/checkout';}}
 export const billingEnabled=env=>env.THRIVE_BILLING==='paddle'&&env.THRIVE_AUTH_MODE==='supabase'&&env.THRIVE_DATA_BACKEND==='supabase';
 export const trialDays=env=>{const n=Number(env.THRIVE_TRIAL_DAYS);return Number.isInteger(n)&&n>=1&&n<=60?n:TRIAL_DAYS;};
 // The admin (THRIVE_ADMIN_EMAIL) always has access; anyone else gets it with comped = true.
@@ -71,7 +75,7 @@ async function planResponse(env,user,{admin,fetcher,now},extra={}){
  // price: what this account pays (its subscription's plan), else the monthly price. plans: what checkout offers.
  const current=year&&row.price_id===year.priceId?year:month;
  const plans=[month&&{id:'month',priceId:month.priceId,label:priceLabel(month.price),amount:month.price||null,saving:0},year&&{id:'year',priceId:year.priceId,label:priceLabel(year.price),amount:year.price||null,saving:yearlySaving(month?.price,year.price)}].filter(Boolean);
- return json({enabled:true,owner:user.owner,email:user.email||'',access,price:priceLabel(current?.price),priceAmount:current?.price||null,interval:row.paddle_subscription_id&&current?(current===year?'year':'month'):null,plans,billing:!!row.paddle_customer_id,support:String(env.THRIVE_SUPPORT_EMAIL||''),paddle:token&&month?{token,priceId:month.priceId,sandbox:token.startsWith('test_')}:null,...extra});
+ return json({enabled:true,owner:user.owner,email:user.email||'',access,price:priceLabel(current?.price),priceAmount:current?.price||null,interval:row.paddle_subscription_id&&current?(current===year?'year':'month'):null,plans,billing:!!row.paddle_customer_id,support:String(env.THRIVE_SUPPORT_EMAIL||''),paddle:token&&month?{token,priceId:month.priceId,sandbox:token.startsWith('test_'),checkoutUrl:checkoutPage(env)}:null,...extra});
 }
 
 // After Paddle's checkout.completed: check the transaction belongs to this account, then record the
