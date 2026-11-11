@@ -16,7 +16,8 @@ export function renderLanding(html,{lang='en',maps={},origin='',site=false,app='
  let out=support?html.replaceAll('hello@thrive.example',support):html;
  if(map)out=translateHTML(out,map);
  if(site&&app)out=out.replaceAll('href="/auth/',`href="${app}/auth/`);
- if(lang!=='en')out=out.replace(/href="([^"]*\/auth\/sign-(?:up|in))"/g,`href="$1?lang=${lang}"`);
+ // Always name the language, English too, so the sign-in page doesn't fall back to one used before.
+ out=out.replace(/href="([^"]*\/auth\/sign-(?:up|in))"/g,`href="$1?lang=${lang}"`);
  out=out.replace('<html lang="en">',`<html lang="${lang}">`);
  out=out.replaceAll('href="/blog"',`href="${blogURL(lang)}"`);
  const url=origin+landingPath(lang,true);

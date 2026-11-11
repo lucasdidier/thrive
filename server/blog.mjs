@@ -95,7 +95,7 @@ ${jsonld?`<script type="application/ld+json">${JSON.stringify(jsonld).replace(/<
  <div class="wrap bar-row">
   <a class="mark" href="${home}" aria-label="Thrive home">${LOGO}thrive</a>
   <nav class="bar-links" aria-label="Thrive"><a href="${home}#features">${t('features')}</a><a href="${home}#pricing">${t('pricing')}</a><a href="${blogURL(lang)}" aria-current="page">${t('blog')}</a></nav>
-  <div class="bar-act"><a href="${app}/auth/sign-in${lang==='en'?'':'?lang='+lang}">${t('signIn')}</a><a class="btn sm" href="${app}/auth/sign-up${lang==='en'?'':'?lang='+lang}">${t('trial')}</a></div>
+  <div class="bar-act"><a href="${app}/auth/sign-in?lang=${lang}">${t('signIn')}</a><a class="btn sm" href="${app}/auth/sign-up?lang=${lang}">${t('trial')}</a></div>
  </div>
 </header>
 <main id="main">
@@ -106,7 +106,7 @@ ${body}
   <div class="foot-brand"><a class="mark" href="${home}" aria-label="Thrive home"><img src="/favicon.svg" width="28" height="28" alt="">thrive</a><p>${t('tagline')}</p></div>
   <nav class="foot-links" aria-label="Footer">
    <ul><li><a href="${home}#features">${t('features')}</a></li><li><a href="${home}#pricing">${t('pricing')}</a></li><li><a href="${blogURL(lang)}">${t('blog')}</a></li></ul>
-   <ul><li><a href="${app}/auth/sign-up${lang==='en'?'':'?lang='+lang}">${t('trial')}</a></li><li><a href="${app}/auth/sign-in${lang==='en'?'':'?lang='+lang}">${t('signIn')}</a></li></ul>
+   <ul><li><a href="${app}/auth/sign-up?lang=${lang}">${t('trial')}</a></li><li><a href="${app}/auth/sign-in?lang=${lang}">${t('signIn')}</a></li></ul>
    <ul><li><a href="https://github.com/lucasdidier/thrive">GitHub</a></li><li><a href="/privacy">${t('privacy')}</a></li><li><a href="/terms">${t('terms')}</a></li></ul>
   </nav>
  </div>
@@ -118,7 +118,7 @@ ${body}
 
 function cta(lang,app){
  const t=k=>esc(blogText(lang,k));
- return `<aside class="blog-cta" aria-labelledby="blog-cta-title"><h2 id="blog-cta-title">${t('ctaTitle')}</h2><p>${t('ctaText')}</p><a class="btn" href="${app}/auth/sign-up${lang==='en'?'':'?lang='+lang}">${t('ctaButton')}</a><p class="blog-cta-note">${t('ctaNote')}</p></aside>`;
+ return `<aside class="blog-cta" aria-labelledby="blog-cta-title"><h2 id="blog-cta-title">${t('ctaTitle')}</h2><p>${t('ctaText')}</p><a class="btn" href="${app}/auth/sign-up?lang=${lang}">${t('ctaButton')}</a><p class="blog-cta-note">${t('ctaNote')}</p></aside>`;
 }
 function card(lang,slug,a){
  return `<li class="blog-card"><a href="${blogURL(lang,slug)}">${blogArt(slug)}<span class="blog-card-meta">${esc(blogText(lang,'min',{n:a.meta.minutes}))}</span><strong>${esc(a.meta.title)}</strong><span>${esc(a.meta.description)}</span></a></li>`;

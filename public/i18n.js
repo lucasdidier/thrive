@@ -43,7 +43,7 @@ export function Ln(n,one,other,vars={}){
 export async function setLanguage(code,{fetcher=globalThis.fetch}={}){
  const next=supported(code)?code:'en';
  let data={};
- if(next!=='en'){try{const r=await fetcher(`/locales/${next}.json`,{cache:'force-cache'});if(r.ok)data=await r.json();}catch{}}
+ if(next!=='en'){try{const r=await fetcher(`/locales/${next}.json`,{cache:'no-cache'});if(r.ok)data=await r.json();}catch{}}
  current=next;catalog=data&&typeof data==='object'?data:{};plurals=new Intl.PluralRules(next);
  try{globalThis.document&&(document.documentElement.lang=next);}catch{}
  try{globalThis.localStorage?.setItem(STORAGE,next);}catch{}

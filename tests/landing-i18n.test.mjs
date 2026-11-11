@@ -51,3 +51,10 @@ test('every finished language covers all the strings', ()=>{
   assert.deepEqual(strings.filter(s=>typeof map[s]!=='string'),[],lang);
  }
 });
+
+test('sign-up links always name the language, English included', ()=>{
+ const en=renderLanding(html,{lang:'en',site:true,app:'https://app.runonthrive.com',origin:'https://runonthrive.com'});
+ assert.match(en,/href="https:\/\/app.runonthrive.com\/auth\/sign-up\?lang=en"/);
+ assert.doesNotMatch(en,/href="[^"]*\/auth\/sign-up"/);
+ assert.match(read('public/i18n.js'),/cache:'no-cache'/,'translations revalidate, so a deploy reaches browsers that loaded an older file');
+});
