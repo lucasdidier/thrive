@@ -73,3 +73,11 @@ test('the sitemap lists each index and article once per language', ()=>{
  assert.equal(urls.length,BLOG_LANGUAGES.length*(1+ARTICLE_ORDER.length));
  assert.equal(new Set(urls).size,urls.length);
 });
+
+test('cards show an illustration per article, the same in every language', async()=>{
+ const {blogArt}=await import('../server/blog-art.mjs');
+ const html=renderBlog('/blog/it',{articles,hasShot:()=>true});
+ assert.equal((html.match(/class="blog-art"/g)||[]).length,ARTICLE_ORDER.length);
+ for(const slug of ARTICLE_ORDER)assert.match(blogArt(slug),/^<span class="blog-art" style="--c:#[0-9a-f]{6}" aria-hidden="true"><svg/);
+ assert.doesNotMatch(blogArt('how-to-invoice-clients'),/€/,'the euro sign is an entity');
+});

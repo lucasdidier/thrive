@@ -5,6 +5,7 @@
 // (content/blog/BRIEF.md). <figure data-shot="name"> becomes that screenshot in the article's language
 // (public/blog-shots/<language>/<name>.webp, from scripts/blog-shots.mjs), falling back to English.
 import {LANGUAGES,languageFlag} from '../public/i18n.js';
+import {blogArt} from './blog-art.mjs';
 
 export const BLOG_LANGUAGES=LANGUAGES.map(l=>l.code);
 export const ARTICLE_ORDER=['how-to-invoice-clients','proposals-and-contracts','generate-leads-with-forms','automate-busy-work','time-tracking-for-freelancers','how-to-price-freelance-work','client-portals','run-your-business-with-ai'];
@@ -119,7 +120,7 @@ function cta(lang,app){
  return `<aside class="blog-cta" aria-labelledby="blog-cta-title"><h2 id="blog-cta-title">${t('ctaTitle')}</h2><p>${t('ctaText')}</p><a class="btn" href="${app}/auth/sign-up">${t('ctaButton')}</a><p class="blog-cta-note">${t('ctaNote')}</p></aside>`;
 }
 function card(lang,slug,a){
- return `<li class="blog-card"><a href="${blogURL(lang,slug)}"><img src="/blog-shots/${a.shotLang}/${a.cover}.webp" alt="" width="1800" height="1125" loading="lazy" decoding="async"><span class="blog-card-meta">${esc(blogText(lang,'min',{n:a.meta.minutes}))}</span><strong>${esc(a.meta.title)}</strong><span>${esc(a.meta.description)}</span></a></li>`;
+ return `<li class="blog-card"><a href="${blogURL(lang,slug)}">${blogArt(slug)}<span class="blog-card-meta">${esc(blogText(lang,'min',{n:a.meta.minutes}))}</span><strong>${esc(a.meta.title)}</strong><span>${esc(a.meta.description)}</span></a></li>`;
 }
 
 // articles: {slug: {lang: source}}. Returns null when the page doesn't exist.
