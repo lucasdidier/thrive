@@ -7,7 +7,7 @@
 import {LANGUAGES,languageFlag} from '../public/i18n.js';
 
 export const BLOG_LANGUAGES=LANGUAGES.map(l=>l.code);
-export const ARTICLE_ORDER=['how-to-invoice-clients','proposals-and-contracts','generate-leads-with-forms','automate-busy-work','time-tracking-for-freelancers'];
+export const ARTICLE_ORDER=['how-to-invoice-clients','proposals-and-contracts','generate-leads-with-forms','automate-busy-work','time-tracking-for-freelancers','how-to-price-freelance-work','client-portals','run-your-business-with-ai'];
 export const PUBLISHED='2026-11-11';
 
 // The page around the articles, in each language.

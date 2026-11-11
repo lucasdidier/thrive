@@ -1,0 +1,91 @@
+<!--meta {"title":"AI inzetten voor de administratie van je freelancebedrijf (veilig)","description":"Waar Claude en ChatGPT goed in zijn voor freelancers, wat ze nooit zelf moeten doen, hoe je ze koppelt aan je bedrijfsgegevens, en 10 prompts om te kopiëren.","minutes":7} -->
+<p class="lede">Een AI-assistent haalt geen klanten voor je binnen en doet je ontwerpwerk niet. Maar hij is heel goed in de administratie rond dat werk: rommelige gespreksnotities omzetten in een eerste concept, de factuur vinden waar je niet achteraan bent gegaan, een klantenlijst opruimen die in drie verschillende spreadsheets is gegroeid. Het trucje is hem de juiste taken te geven, de risicovolle zelf te houden en te stoppen met je bedrijf in een chatvenster te plakken. Zo richt je dat in.</p>
+
+<h2>Waar AI echt goed in is voor freelancers</h2>
+<p>Assistenten als Claude en ChatGPT zijn het sterkst als de taak lezen, sorteren of een concept schrijven is, en jij het resultaat controleert. Voor een freelancer of kleine studio is dat een groot deel van de week:</p>
+<ul>
+<li><strong>Offertes opstellen uit gespreksnotities.</strong> Je plakt vijftien regels notities van een kennismakingsgesprek. De assistent maakt er een scope van, een lijst met deliverables en een prijs op basis van de diensten die je al verkoopt. Het eindbedrag bepaal je nog steeds zelf, maar je begint met een pagina die voor 70% klaar is.</li>
+<li><strong>Je week samenvatten.</strong> Wat heb je gefactureerd, wie heeft getekend, welke projecten moeten als eerste af, wat wacht nog op een klant. Vijf minuten lezen in plaats van door tien schermen klikken.</li>
+<li><strong>Achterstallige facturen vinden.</strong> "Welke facturen zijn over de vervaldatum, voor welk bedrag en hoe lang al?" is een vraag die hij goed beantwoordt, en een concept-herinnering voor elke factuur is een logische volgende stap.</li>
+<li><strong>Klantgegevens opschonen.</strong> Dubbele contacten, bedrijfsnamen die steeds anders gespeld zijn, een CSV-export uit je oude tool met de helft van de kolommen op de verkeerde plek. Dat uitzoeken is saai voor jou en makkelijk voor een model.</li>
+<li><strong>Workflows inrichten.</strong> Beschrijf een regel in gewone woorden ("als een offerte is geaccepteerd, maak dan een concept van het contract") en laat hem de automatisering bouwen. Heb je nog niet nagedacht over welke stappen je wilt automatiseren, begin dan met <a href="/blog/nl/automate-busy-work">deze ideeën voor workflows</a>.</li>
+</ul>
+
+<h2>Wat hij niet zelfstandig moet doen</h2>
+<p>De grens is simpel: alles wat je workspace verlaat, je juridisch bindt, met geld te maken heeft of iets verwijdert, heeft jouw uitdrukkelijke ja nodig. Een fout daar kost veel meer dan even nakijken.</p>
+<ul>
+<li><strong>Versturen.</strong> Een mail aan een klant is een belofte in jouw naam. Een model kan net de verkeerde toon kiezen, twee projecten door elkaar halen of het tarief van vorig jaar noemen. Laat hem het concept schrijven; jij verstuurt.</li>
+<li><strong>Tekenen.</strong> Contracten zijn afspraken tussen jou en een persoon. De klant hoort ze te lezen en te tekenen via de eigen link, nooit via een assistent die op een knop drukt.</li>
+<li><strong>Geld.</strong> Een factuur uitgeven, een betaling registreren of een prijs wijzigen moet altijd een stap zijn die jij bevestigt. Een factuur van € 4.800 die twee keer is uitgegeven, of een aanbetaling die als betaald staat terwijl dat niet zo is, kost veel meer tijd om recht te zetten dan het nakijken had gekost.</li>
+</ul>
+
+<h2>Waarom koppelen beter is dan kopiëren en plakken</h2>
+<p>De meeste freelancers beginnen met dingen in een chat te plakken: een lijst met facturen, een mailwisseling met een klant, een half geschreven offerte. Dat werkt, min of meer. Maar kopiëren en plakken heeft echte nadelen:</p>
+<ul>
+<li>De gegevens zijn al verouderd als je ze plakt, en het antwoord is maar zo goed als wat je eraan dacht mee te geven.</li>
+<li>Wat eruit komt, kopieer je met de hand terug.</li>
+<li>Niets controleert het resultaat. Een typfout in het mailadres van een klant of een totaal dat niet klopt, gaat zo je administratie in.</li>
+</ul>
+<p>MCP (Model Context Protocol) is een open standaard waarmee een assistent rechtstreeks tools in een andere app kan gebruiken. Gekoppeld aan je bedrijfssoftware leest de assistent je echte klanten, projecten en facturen, en kan hij concepten terugzetten waar ze horen. Het belangrijke is dat hij langs dezelfde controles gaat als jij wanneer je zelf rondklikt: verplichte velden, validatie en de automatiseringen die je al hebt ingesteld.</p>
+
+<h2>Wat de MCP van Thrive wel en niet kan</h2>
+<p>Thrive is een MCP-server, dus een assistent die eraan gekoppeld is, kan met je echte workspace werken. In de praktijk kan hij:</p>
+<ul>
+<li>Je klanten, projecten, offertes, contracten, facturen, tijdregistraties, formulieren, afspraken en notities lezen en doorzoeken.</li>
+<li>Items aanmaken en bewerken: offertes en contracten opstellen vanuit je templates, notities en tags toevoegen, niet-gefactureerde uren omzetten in conceptfacturen, formulieren en workflows maken.</li>
+<li>Elke wijziging eerst als voorbeeld tonen. Dat voorbeeld draait op een kopie van je workspace, laat zien wat je workflows erop zouden doen en slaat niets op.</li>
+<li>Een klantimport uit een CSV (tot 500 rijen) als voorbeeld tonen, met fouten en dubbele mailadressen gemarkeerd, voordat er iets wordt geïmporteerd.</li>
+<li>Als je je Google- of Microsoft-mailbox en -agenda in Thrive hebt gekoppeld: mailwisselingen met klanten lezen, kijken wanneer je bezet bent en conceptantwoorden opslaan.</li>
+</ul>
+<p>En de grenzen, gewoon op een rij:</p>
+<ul>
+<li><strong>Hij kan niet blind een mail of agenda-uitnodiging versturen.</strong> Versturen is een aparte stap, waarbij eerst precies het opgeslagen concept als voorbeeld getoond moet worden; wat verstuurd wordt, is wat getoond is. Thrive vraagt de assistent ook om voor dat specifieke bericht jouw ja te krijgen.</li>
+<li><strong>Hij kan geen geld verplaatsen.</strong> Thrive verwerkt voor niemand betalingen. Facturen tonen de betaalinstructies die jij schrijft, en klanten betalen buiten Thrive om. De assistent kan een betaling registreren die jij doorgeeft, en juist daarom verdient die stap jouw bevestiging.</li>
+<li><strong>Hij kan niet doen alsof een klant iets heeft gedaan.</strong> Een handtekening of een geaccepteerde offerte komt via de eigen link van de klant. Een assistent kan een contract niet als getekend laten lijken door een gebeurtenis te versturen.</li>
+<li><strong>Hij draait niet op de achtergrond.</strong> Hij doet iets als jij erom vraagt, in een gesprek. Er zijn geen triggers op basis van datums, dus "ga achter achterstallige facturen aan" is iets wat je vraagt, bijvoorbeeld elke maandag.</li>
+</ul>
+<figure data-shot="overview"><figcaption>Het dashboard Home: dezelfde totalen, projecten en items die op een reactie wachten die een gekoppelde assistent kan lezen en samenvatten.</figcaption></figure>
+
+<h2>Thrive in een paar minuten koppelen</h2>
+<p>Open <strong>Gebruiken met AI</strong> in Thrive. Er zijn twee manieren, afhankelijk van de assistent die je gebruikt.</p>
+<h3>Claude (claude.ai of de desktop-app) en ChatGPT</h3>
+<ol>
+<li>Kopieer de server-URL op de pagina. Bij de gehoste versie is dat <code>https://app.runonthrive.com/mcp</code>.</li>
+<li>Ga in Claude naar Instellingen en dan Connectors, en voeg een aangepaste connector toe met die URL. Voeg in ChatGPT een aangepaste connector (MCP-server) toe in Instellingen, met dezelfde URL.</li>
+<li>Je browser opent Thrive. Log in en geef de assistent toestemming op de toestemmingspagina van Thrive.</li>
+</ol>
+<p>Je hoeft geen API-sleutel aan te maken of te plakken. Je geeft één keer toegang, en je geeft de assistent nooit je wachtwoord.</p>
+<h3>Claude Code, Codex, Cursor en GitHub Copilot</h3>
+<p>Klik op <strong>Koppel je agent aan Thrive</strong>. Dat kopieert een setup-prompt van één regel. Plak die in je agent; die leest de installatie-instructies van Thrive, voegt de server zelf toe en vraagt je in te loggen. De agent krijgt de opdracht om tijdens de setup niets aan te maken of te wijzigen, en de koppeling alleen te bevestigen door je workspace te lezen.</p>
+<figure data-shot="mcp"><figcaption>De pagina "Gebruiken met AI": de setup-prompt voor coding agents, de URL voor Claude en ChatGPT, en voorbeeldvragen die je kunt kopiëren.</figcaption></figure>
+<p>Eén detail: de koppeling gebruikt de eerste workspace in je account, en voor de meeste freelancers is dat de enige.</p>
+
+<h2>10 prompts om te kopiëren</h2>
+<p>Elke prompt vraagt om een voorbeeld of een concept, dus er gebeurt niets onomkeerbaars zonder jou. Vul je eigen klantnamen in.</p>
+<ol>
+<li>"Hier zijn mijn notities van het gesprek van vandaag met Harbor Coffee. Stel in Thrive een offerte op met mijn dienstencatalogus. Laat me het voorbeeld zien voordat je opslaat."</li>
+<li>"Vat mijn week in Thrive samen: nieuwe klanten, geaccepteerde of getekende documenten, betaalde facturen en alles wat achterstallig is."</li>
+<li>"Geef me mijn achterstallige facturen met bedrag en aantal dagen te laat. Schrijf voor elke factuur een vriendelijke herinneringsmail en sla die op als concept. Verstuur niets."</li>
+<li>"Zoek mijn niet-gefactureerde uren van oktober en maak per project één conceptfactuur. Laat de concepten als voorbeeld zien; geef ze niet uit."</li>
+<li>"Welke projecten moeten de komende twee weken af? Geef per project de klant, de status en wat er nog moet gebeuren."</li>
+<li>"Importeer de bijgevoegde CSV met klanten. Laat eerst een voorbeeld zien, toon dubbele items en rijen met fouten, en wacht op mijn akkoord."</li>
+<li>"Zoek in mijn klanten naar waarschijnlijke dubbele items of bedrijfsnamen die verschillend gespeld zijn. Geef aan wat je zou samenvoegen of hernoemen en waarom. Verander nog niets."</li>
+<li>"Maak een workflow: als een klant een offerte accepteert, maak een conceptcontract en voeg de tag 'Gewonnen' toe. Test het op mijn laatste geaccepteerde offerte en laat me het resultaat zien voordat je opslaat."</li>
+<li>"Welke mailwisselingen wachten op een antwoord van mij? Oudste eerst, met een kort conceptantwoord voor elk, alleen opgeslagen als concept."</li>
+<li>"Wanneer heb ik donderdagmiddag 30 minuten vrij? Stel drie tijdstippen voor die ik aan Lena van North Studio kan aanbieden."</li>
+</ol>
+<p>Prompt 8 is de klassieke overstap van offerte naar contract. Wil je dat deel van je proces eerst aanscherpen, lees dan <a href="/blog/nl/proposals-and-contracts">offertes en contracten die getekend worden</a>.</p>
+<figure data-shot="workflows"><figcaption>De pagina Workflows, waar automatiseringen die een assistent maakt naast je eigen staan, met hun status en laatste uitvoering.</figcaption></figure>
+
+<h2>Veiligheidsregels die je wilt houden</h2>
+<p>Een korte checklist om een assistent nuttig en onschadelijk te houden:</p>
+<ul>
+<li><strong>Vraag altijd om een voorbeeld.</strong> Zet "laat me eerst een voorbeeld zien" in je prompts tot het een gewoonte is. De eigen instructies van Thrive aan agents zeggen hetzelfde.</li>
+<li><strong>Lees elk concept voordat het de deur uit gaat.</strong> Check de ontvanger, de bedragen en de projectnaam. Daar gaan modellen het vaakst de mist in.</li>
+<li><strong>Keur één actie tegelijk goed.</strong> "Ja, stuur deze herinnering naar Harbor Coffee" is beter dan "stuur ze allemaal".</li>
+<li><strong>Laat de toolgoedkeuringen van je assistent aan staan.</strong> Vraagt je app om bevestiging voordat een tool iets wijzigt, laat dat dan zo.</li>
+<li><strong>Bekijk de uitvoergeschiedenis.</strong> Heeft een assistent een workflow ingericht, kijk dan na een week naar de uitvoeringen om te zien of hij doet wat je bedoelde.</li>
+</ul>
+
+<h2>Probeer het bij je volgende project</h2>
+<p>Begin klein: koppel je assistent, vraag om een samenvatting van je week en vraag daarna om één herinnering voor een achterstallige factuur, als concept. Klopt het allebei, geef hem dan de volgende taak. Thrive kost $10 per maand met een gratis proefperiode van 7 dagen, en je kunt <a href="https://app.runonthrive.com/auth/sign-up">beginnen zonder creditcard</a>.</p>

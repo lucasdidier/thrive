@@ -1,0 +1,91 @@
+<!--meta {"title":"Como usar IA para cuidar da parte administrativa do seu negócio freelance (com segurança)","description":"No que Claude e ChatGPT ajudam freelancers, o que nunca devem fazer sozinhos, como conectá-los aos dados reais do seu negócio e 10 prompts para copiar.","minutes":7} -->
+<p class="lede">Um assistente de IA não vai conquistar clientes nem fazer o seu trabalho de design por você. Mas ele é muito bom na burocracia em volta desse trabalho: transformar anotações bagunçadas de uma reunião num primeiro rascunho, achar a fatura que você esqueceu de cobrar, arrumar uma lista de clientes que cresceu em três planilhas diferentes. O segredo é dar a ele as tarefas certas, guardar as arriscadas para você e parar de copiar e colar o seu negócio numa janela de chat. Veja como montar isso.</p>
+
+<h2>No que a IA realmente ajuda freelancers</h2>
+<p>Assistentes como Claude e ChatGPT rendem mais quando a tarefa é ler, organizar ou rascunhar, e você confere o resultado. Para um freelancer ou um pequeno estúdio, isso cobre boa parte da semana:</p>
+<ul>
+<li><strong>Rascunhar propostas a partir de anotações de reunião.</strong> Você cola quinze linhas de anotações de uma reunião de briefing. O assistente transforma isso em escopo, lista de entregas e um preço baseado nos serviços que você já vende. O número final continua sendo seu, mas você começa de uma página que já está 70% pronta.</li>
+<li><strong>Resumir a semana.</strong> O que você faturou, quem assinou, quais projetos vencem em seguida, o que ainda depende do cliente. Cinco minutos de leitura em vez de clicar por dez telas.</li>
+<li><strong>Encontrar faturas vencidas.</strong> "Quais faturas passaram do vencimento, de quanto e há quanto tempo?" é uma pergunta que ele responde bem, e um rascunho de lembrete para cada uma é o passo natural seguinte.</li>
+<li><strong>Limpar dados de clientes.</strong> Contatos duplicados, nomes de empresa inconsistentes, um CSV exportado da sua ferramenta antiga com metade das colunas no lugar errado. Arrumar isso é chato para você e fácil para um modelo.</li>
+<li><strong>Configurar fluxos de trabalho.</strong> Descreva uma regra em palavras simples ("quando uma proposta for aceita, rascunhe o contrato") e deixe que ele monte a automação. Se você ainda não pensou em quais etapas automatizar, comece por <a href="/blog/pt-BR/automate-busy-work">estas ideias de fluxos</a>.</li>
+</ul>
+
+<h2>O que ela não deve fazer sozinha</h2>
+<p>A regra é simples: tudo o que sai do seu espaço de trabalho, cria uma obrigação legal, mexe com dinheiro ou apaga algo precisa do seu sim explícito. Um erro aí custa muito mais do que uma revisão rápida.</p>
+<ul>
+<li><strong>Enviar.</strong> Um e-mail para um cliente é uma promessa em seu nome. Um modelo pode errar um pouco o tom, confundir dois projetos ou citar o preço do ano passado. Deixe ele rascunhar; quem envia é você.</li>
+<li><strong>Assinar.</strong> Contratos são acordos entre você e uma pessoa. O cliente deve ler e assinar pelo próprio link, nunca por um assistente clicando num botão.</li>
+<li><strong>Dinheiro.</strong> Emitir uma fatura, registrar um pagamento ou mudar um preço deve ser sempre um passo que você confirma. Uma fatura de € 4.800 emitida duas vezes, ou um sinal marcado como pago sem ter sido, dá muito mais trabalho para desfazer do que teria dado conferir.</li>
+</ul>
+
+<h2>Por que conectar é melhor do que copiar e colar</h2>
+<p>A maioria dos freelancers começa colando coisas num chat: uma lista de faturas, a troca de e-mails com um cliente, uma proposta pela metade. Funciona, mais ou menos. Mas copiar e colar tem problemas reais:</p>
+<ul>
+<li>Os dados já estão desatualizados quando você cola, e a resposta só é tão boa quanto aquilo que você lembrou de incluir.</li>
+<li>Tudo o que ele produz, você copia de volta à mão.</li>
+<li>Nada confere o resultado. Um erro de digitação no e-mail de um cliente ou um total que não fecha vai direto para os seus registros.</li>
+</ul>
+<p>MCP (Model Context Protocol) é um padrão aberto que permite a um assistente usar ferramentas de outro aplicativo diretamente. Conectado à sua ferramenta de gestão, o assistente lê seus clientes, projetos e faturas de verdade, e pode salvar rascunhos de volta no lugar certo. O mais importante é que ele passa pelas mesmas verificações que você passa quando usa o app: campos obrigatórios, validações e as automações que você já configurou.</p>
+
+<h2>O que o MCP do Thrive pode e não pode fazer</h2>
+<p>O Thrive é um servidor MCP, então um assistente conectado a ele trabalha com o seu espaço de trabalho real. Na prática, ele pode:</p>
+<ul>
+<li>Ler e pesquisar seus clientes, projetos, propostas, contratos, faturas, registros de tempo, formulários, reuniões e anotações.</li>
+<li>Criar e editar registros: rascunhar propostas e contratos a partir dos seus modelos, adicionar anotações e tags, transformar tempo não faturado em rascunhos de fatura, criar formulários e fluxos de trabalho.</li>
+<li>Mostrar uma prévia de qualquer alteração antes de fazê-la. A prévia roda numa cópia do seu espaço de trabalho, mostra o que os seus fluxos fariam em resposta e não salva nada.</li>
+<li>Mostrar uma prévia da importação de clientes a partir de um CSV (até 500 linhas), com erros e e-mails duplicados sinalizados, antes de importar qualquer coisa.</li>
+<li>Se você conectou sua caixa de e-mail e sua agenda do Google ou da Microsoft no Thrive, ler conversas por e-mail com clientes, verificar quando você está ocupado e salvar rascunhos de resposta.</li>
+</ul>
+<p>E os limites, sem rodeios:</p>
+<ul>
+<li><strong>Ele não envia um e-mail ou um convite de agenda às cegas.</strong> Enviar é um passo separado, que exige ver antes a prévia exata do rascunho salvo; o que sai é o que foi mostrado. O Thrive também orienta o assistente a pedir o seu sim para aquela mensagem específica.</li>
+<li><strong>Ele não movimenta dinheiro.</strong> O Thrive não processa pagamentos para ninguém. As faturas mostram as instruções de pagamento que você escreve, e os clientes pagam fora do Thrive. O assistente pode registrar um pagamento que você informar, e é exatamente por isso que esse passo merece a sua confirmação.</li>
+<li><strong>Ele não consegue fingir o que um cliente fez.</strong> Uma assinatura ou uma proposta aceita vem do próprio link do cliente. Um assistente não consegue fazer um contrato parecer assinado disparando um evento.</li>
+<li><strong>Ele não roda em segundo plano.</strong> Ele age quando você pede, numa conversa. Não há gatilhos por data, então "cobrar faturas vencidas" é algo que você pede, por exemplo, toda segunda-feira.</li>
+</ul>
+<figure data-shot="overview"><figcaption>O painel Início: os mesmos totais, projetos e itens aguardando resposta que um assistente conectado consegue ler e resumir.</figcaption></figure>
+
+<h2>Como conectar o Thrive em poucos minutos</h2>
+<p>Abra <strong>Usar com IA</strong> no Thrive. Há dois caminhos, dependendo do assistente que você usa.</p>
+<h3>Claude (claude.ai ou o app para desktop) e ChatGPT</h3>
+<ol>
+<li>Copie a URL do servidor que aparece na página. Na versão hospedada, é <code>https://app.runonthrive.com/mcp</code>.</li>
+<li>No Claude, vá em Configurações, depois Conectores, e adicione um conector personalizado com essa URL. No ChatGPT, adicione um conector personalizado (servidor MCP) nas Configurações com a mesma URL.</li>
+<li>Seu navegador abre o Thrive. Entre na sua conta e aprove o assistente na página de consentimento do Thrive.</li>
+</ol>
+<p>Não há chave de API para gerar nem colar. Você aprova o acesso uma vez e nunca passa sua senha para o assistente.</p>
+<h3>Claude Code, Codex, Cursor e GitHub Copilot</h3>
+<p>Clique em <strong>Conecte seu agente ao Thrive</strong>. Isso copia um prompt de configuração de uma linha. Cole no seu agente, que lê as instruções de configuração do Thrive, adiciona o servidor sozinho e pede para você entrar na sua conta. Ele é orientado a não criar nem alterar nada durante a configuração, só a confirmar a conexão lendo o seu espaço de trabalho.</p>
+<figure data-shot="mcp"><figcaption>A página "Usar com IA": o prompt de configuração para agentes de programação, a URL para Claude e ChatGPT e exemplos de pedidos para copiar.</figcaption></figure>
+<p>Um detalhe: a conexão usa o primeiro espaço de trabalho da sua conta, que para a maioria dos freelancers é o único.</p>
+
+<h2>10 prompts para copiar</h2>
+<p>Cada um pede uma prévia ou um rascunho, então nada irreversível acontece sem você. Troque pelos nomes dos seus clientes.</p>
+<ol>
+<li>"Estas são minhas anotações da reunião de hoje com a Harbor Coffee. Rascunhe uma proposta no Thrive usando meu catálogo de serviços. Me mostre a prévia antes de salvar."</li>
+<li>"Resuma minha semana no Thrive: clientes novos, documentos aceitos ou assinados, faturas pagas e tudo o que estiver vencido."</li>
+<li>"Liste minhas faturas vencidas com valor e dias de atraso. Rascunhe um e-mail de lembrete simpático para cada uma e salve como rascunho. Não envie nada."</li>
+<li>"Encontre meus registros de tempo não faturados de outubro e crie um rascunho de fatura por projeto. Mostre a prévia dos rascunhos; não emita."</li>
+<li>"Quais projetos vencem nas próximas duas semanas? Para cada um, me diga o cliente, o status e o que ainda falta fazer."</li>
+<li>"Importe o CSV de clientes em anexo. Mostre a prévia primeiro, aponte duplicados e linhas com erro e espere a minha aprovação."</li>
+<li>"Procure nos meus clientes possíveis duplicados ou nomes de empresa inconsistentes. Liste o que você uniria ou renomearia e por quê. Não altere nada ainda."</li>
+<li>"Crie um fluxo de trabalho: quando um cliente aceitar uma proposta, crie um rascunho de contrato e adicione a tag 'Fechado'. Teste com a minha última proposta aceita e me mostre o resultado antes de salvar."</li>
+<li>"Quais conversas por e-mail estão esperando uma resposta minha? Das mais antigas para as mais recentes, com um rascunho curto de resposta para cada uma, salvo só como rascunho."</li>
+<li>"Quando tenho 30 minutos livres na quinta à tarde? Sugira três horários que eu possa oferecer à Lena, da North Studio."</li>
+</ol>
+<p>O prompt 8 é a passagem clássica de proposta para contrato. Se você quer ajustar essa parte do seu processo primeiro, leia <a href="/blog/pt-BR/proposals-and-contracts">propostas e contratos que são assinados</a>.</p>
+<figure data-shot="workflows"><figcaption>A página Fluxos de trabalho, onde as automações criadas por um assistente aparecem ao lado das suas, com status e última execução.</figcaption></figure>
+
+<h2>Cuidados que valem a pena manter</h2>
+<p>Um checklist curto para manter o assistente útil e inofensivo:</p>
+<ul>
+<li><strong>Sempre peça uma prévia.</strong> Coloque "me mostre uma prévia antes" nos seus prompts até virar hábito. As próprias instruções do Thrive para agentes dizem o mesmo.</li>
+<li><strong>Revise cada rascunho antes de sair.</strong> Confira o destinatário, os valores e o nome do projeto. É aí que os modelos escorregam.</li>
+<li><strong>Aprove uma ação por vez.</strong> "Sim, envie este lembrete para a Harbor Coffee" é melhor do que "envie todos".</li>
+<li><strong>Mantenha ativas as aprovações de ferramentas do seu assistente.</strong> Se o seu app pergunta antes de uma ferramenta alterar algo, deixe perguntar.</li>
+<li><strong>Confira o histórico de execuções.</strong> Depois que um assistente configurar um fluxo, olhe as execuções dele após uma semana para ter certeza de que faz o que você queria.</li>
+</ul>
+
+<h2>Teste no seu próximo projeto</h2>
+<p>Comece pequeno: conecte seu assistente, peça um resumo da sua semana e depois peça um lembrete de fatura vencida como rascunho. Se os dois saírem certos, passe a próxima tarefa. O Thrive custa US$ 10 por mês com 7 dias de teste grátis, e você pode <a href="https://app.runonthrive.com/auth/sign-up">começar sem cartão</a>.</p>

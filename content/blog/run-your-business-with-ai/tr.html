@@ -1,0 +1,91 @@
+<!--meta {"title":"Freelance işinin idari tarafını yapay zekâyla (güvenle) nasıl yönetirsin?","description":"Claude ve ChatGPT freelancerlar için neyde iyi, neyi asla tek başına yapmamalı, gerçek iş verilerine nasıl bağlanır ve kopyalayabileceğin 10 komut.","minutes":7} -->
+<p class="lede">Bir yapay zekâ asistanı sana müşteri kazandırmaz ya da tasarım işini senin yerine yapmaz. Ama o işin etrafındaki idari işlerde çok iyidir: dağınık görüşme notlarını ilk taslağa dönüştürmek, takip etmeyi unuttuğun faturayı bulmak, üç ayrı tabloda büyümüş bir müşteri listesini toparlamak. İşin püf noktası ona doğru işleri vermek, riskli olanları kendine saklamak ve işini bir sohbet penceresine kopyala-yapıştır yapmayı bırakmak. Bunu nasıl kuracağını aşağıda anlatıyoruz.</p>
+
+<h2>Yapay zekâ freelancerlar için gerçekten neyde iyi?</h2>
+<p>Claude ve ChatGPT gibi asistanlar, iş okumak, düzenlemek ya da taslak yazmak olduğunda ve sonucu sen kontrol ettiğinde en güçlü hallerindedir. Bir freelancer ya da küçük bir stüdyo için bu, haftanın büyük bir kısmını kapsar:</p>
+<ul>
+<li><strong>Görüşme notlarından teklif taslağı hazırlamak.</strong> Bir keşif görüşmesinden on beş satırlık notu yapıştırırsın. Asistan bunları, zaten sattığın hizmetlere dayanan bir kapsama, teslim edilecekler listesine ve fiyata dönüştürür. Son rakamı yine sen belirlersin, ama %70'i hazır bir sayfadan başlarsın.</li>
+<li><strong>Haftayı özetlemek.</strong> Neyi faturaladın, kim imzaladı, sırada hangi projelerin teslimi var, hâlâ müşteriden ne bekleniyor. On ekran arasında tıklamak yerine beş dakikalık okuma.</li>
+<li><strong>Gecikmiş faturaları bulmak.</strong> "Hangi faturaların vadesi geçti, ne kadar ve ne zamandır?" iyi yanıtladığı bir sorudur; her biri için bir hatırlatma taslağı da doğal bir sonraki adım.</li>
+<li><strong>Müşteri verilerini temizlemek.</strong> Yinelenen kişiler, tutarsız şirket adları, eski aracından alınmış ve sütunlarının yarısı yanlış yerde olan bir CSV. Bunu düzeltmek senin için sıkıcı, bir model için kolay.</li>
+<li><strong>İş akışları kurmak.</strong> Bir kuralı sade bir dille anlat ("bir teklif kabul edilince sözleşme taslağını hazırla") ve otomasyonu ona kurdur. Hangi adımları otomatikleştireceğini henüz düşünmediysen, <a href="/blog/tr/automate-busy-work">bu iş akışı fikirleriyle</a> başla.</li>
+</ul>
+
+<h2>Tek başına yapmaması gerekenler</h2>
+<p>Çizgi basit: çalışma alanından dışarı çıkan, seni hukuken bağlayan, paraya dokunan ya da bir şeyi silen her şey senin açık onayını gerektirir. Oradaki bir hata, hızlı bir kontrolden çok daha pahalıya patlar.</p>
+<ul>
+<li><strong>Göndermek.</strong> Bir müşteriye giden e-posta senin adına verilmiş bir sözdür. Bir model tonu biraz kaçırabilir, iki projeyi karıştırabilir ya da geçen yılın ücretini yazabilir. Taslağı o yazsın, gönderen sen ol.</li>
+<li><strong>İmzalamak.</strong> Sözleşmeler seninle bir insan arasındaki anlaşmalardır. Müşteri onları bir asistanın bir düğmeye tıklamasıyla değil, kendi bağlantısından okuyup imzalamalı.</li>
+<li><strong>Para.</strong> Bir fatura kesmek, bir ödeme kaydetmek ya da bir fiyatı değiştirmek her zaman senin onayladığın bir adım olmalı. İki kez kesilmiş 4.800 €'luk bir fatura ya da ödenmediği halde ödendi olarak işaretlenmiş bir kapora, kontrol etmenin alacağı süreden çok daha uzun sürede çözülür.</li>
+</ul>
+
+<h2>Bağlamak neden kopyala-yapıştırdan iyi?</h2>
+<p>Çoğu freelancer işe bir sohbete bir şeyler yapıştırarak başlar: bir fatura listesi, bir müşterinin e-posta yazışması, yarım kalmış bir teklif. Bir yere kadar işe yarar. Ama kopyala-yapıştırın gerçek sorunları var:</p>
+<ul>
+<li>Veri, yapıştırdığın anda zaten eskimiştir ve yanıt ancak eklemeyi hatırladığın şeyler kadar iyidir.</li>
+<li>Ne üretirse, onu elle geri kopyalarsın.</li>
+<li>Sonucu hiçbir şey kontrol etmez. Bir müşterinin e-posta adresindeki bir yazım hatası ya da tutmayan bir toplam doğrudan kayıtlarına girer.</li>
+</ul>
+<p>MCP (Model Context Protocol), bir asistanın başka bir uygulamadaki araçları doğrudan kullanmasını sağlayan açık bir standarttır. İş aracına bağlandığında asistan gerçek müşterilerini, projelerini ve faturalarını okur, taslakları da ait oldukları yere geri kaydedebilir. Önemli olan, senin tıklayarak geçtiğin kontrollerin aynısından geçmesi: zorunlu alanlar, doğrulama ve önceden kurduğun otomasyonlar.</p>
+
+<h2>Thrive'ın MCP'si neler yapabilir, neler yapamaz?</h2>
+<p>Thrive bir MCP sunucusudur, yani ona bağlanan bir asistan gerçek çalışma alanınla çalışabilir. Pratikte şunları yapabilir:</p>
+<ul>
+<li>Müşterilerini, projelerini, tekliflerini, sözleşmelerini, faturalarını, zaman kayıtlarını, formlarını, toplantılarını ve notlarını okuyup arayabilir.</li>
+<li>Kayıt oluşturup düzenleyebilir: şablonlarından teklif ve sözleşme taslakları hazırlar, not ve etiket ekler, faturalanmamış zamanı fatura taslaklarına dönüştürür, form ve iş akışı oluşturur.</li>
+<li>Herhangi bir değişikliği yapmadan önce önizleyebilir. Önizleme çalışma alanının bir kopyası üzerinde çalışır, iş akışlarının buna karşılık ne yapacağını gösterir ve hiçbir şey kaydetmez.</li>
+<li>Bir CSV'den müşteri içe aktarımını (en fazla 500 satır), hatalar ve yinelenen e-postalar işaretlenmiş halde, hiçbir şey içe aktarılmadan önizleyebilir.</li>
+<li>Google ya da Microsoft posta kutunu ve takvimini Thrive'a bağladıysan, müşteri e-posta yazışmalarını okuyabilir, ne zaman meşgul olduğunu kontrol edebilir ve yanıt taslakları kaydedebilir.</li>
+</ul>
+<p>Sınırları da açıkça söyleyelim:</p>
+<ul>
+<li><strong>Bir e-postayı ya da takvim davetini körü körüne gönderemez.</strong> Gönderme ayrı bir adımdır ve önce kaydedilen taslağın birebir önizlenmesini gerektirir; giden şey gösterilen şeydir. Thrive ayrıca asistana o mesaj için senin onayını almasını söyler.</li>
+<li><strong>Para hareket ettiremez.</strong> Thrive kimse için ödeme almaz. Faturalar yazdığın ödeme talimatlarını gösterir ve müşteriler Thrive dışında öder. Asistan, sana bildirdiğin bir ödemeyi kaydedebilir; bu adımın senin onayını hak etmesinin sebebi de tam olarak bu.</li>
+<li><strong>Müşterinin yaptığı bir şeyi taklit edemez.</strong> Bir imza ya da kabul edilmiş bir teklif, müşterinin kendi bağlantısından gelir. Bir asistan bir olay tetikleyerek sözleşmeyi imzalanmış gibi gösteremez.</li>
+<li><strong>Arka planda çalışmaz.</strong> Bir sohbette, sen istediğinde harekete geçer. Tarihe bağlı tetikleyiciler yoktur, bu yüzden "gecikmiş faturaları takip et" diye, örneğin her pazartesi, sen istersin.</li>
+</ul>
+<figure data-shot="overview"><figcaption>Ana sayfa paneli: bağlı bir asistanın okuyup özetleyebildiği toplamlar, projeler ve yanıt bekleyen öğeler.</figcaption></figure>
+
+<h2>Thrive'ı birkaç dakikada nasıl bağlarsın?</h2>
+<p>Thrive'da <strong>Yapay zekâ ile kullan</strong> sayfasını aç. Kullandığın asistana göre iki yol var.</p>
+<h3>Claude (claude.ai ya da masaüstü uygulaması) ve ChatGPT</h3>
+<ol>
+<li>Sayfada gösterilen sunucu URL'sini kopyala. Barındırılan sürümde bu <code>https://app.runonthrive.com/mcp</code>.</li>
+<li>Claude'da Ayarlar'a, ardından Bağlayıcılar'a git ve bu URL ile özel bir bağlayıcı ekle. ChatGPT'de Ayarlar'dan aynı URL ile özel bir bağlayıcı (MCP sunucusu) ekle.</li>
+<li>Tarayıcın Thrive'ı açar. Giriş yap ve Thrive'ın onay sayfasında asistana izin ver.</li>
+</ol>
+<p>Oluşturup yapıştıracağın bir API anahtarı yok. Erişimi bir kez onaylarsın ve şifreni asistana asla vermezsin.</p>
+<h3>Claude Code, Codex, Cursor ve GitHub Copilot</h3>
+<p><strong>Ajanınızı Thrive’a bağlayın</strong> düğmesine tıkla. Tek satırlık bir kurulum komutu kopyalar. Bunu ajanına yapıştır; ajan Thrive'ın kurulum talimatlarını okur, sunucuyu kendisi ekler ve senden giriş yapmanı ister. Kurulum sırasında hiçbir şey oluşturmaması ya da değiştirmemesi, yalnızca çalışma alanını okuyarak bağlantıyı doğrulaması söylenir.</p>
+<figure data-shot="mcp"><figcaption>"Yapay zekâ ile kullan" sayfası: kodlama ajanları için kurulum komutu, Claude ve ChatGPT için URL ve kopyalayabileceğin örnek istekler.</figcaption></figure>
+<p>Bir ayrıntı: bağlantı hesabındaki ilk çalışma alanını kullanır; çoğu freelancer için bu zaten tek çalışma alanıdır.</p>
+
+<h2>Kopyalayabileceğin 10 komut</h2>
+<p>Her biri bir önizleme ya da taslak istiyor, yani sen olmadan geri alınamaz hiçbir şey olmuyor. Kendi müşteri adlarını yaz.</p>
+<ol>
+<li>"Harbor Coffee ile bugünkü görüşmemden notlarım burada. Hizmet kataloğumu kullanarak Thrive'da bir teklif taslağı hazırla. Kaydetmeden önce önizlemeyi göster."</li>
+<li>"Thrive'daki haftamı özetle: yeni müşteriler, kabul edilen ya da imzalanan belgeler, ödenen faturalar ve gecikmiş her şey."</li>
+<li>"Gecikmiş faturalarımı tutar ve gecikme günüyle listele. Her biri için samimi bir hatırlatma e-postası taslağı yaz ve taslak olarak kaydet. Hiçbir şey gönderme."</li>
+<li>"Ekim ayındaki faturalanmamış zaman kayıtlarımı bul ve her proje için bir fatura taslağı oluştur. Taslakları önizle; kesme."</li>
+<li>"Önümüzdeki iki hafta içinde teslimi olan projeler hangileri? Her biri için müşteriyi, durumu ve hâlâ yapılması gerekenleri ver."</li>
+<li>"Ekteki müşteri CSV'sini içe aktar. Önce önizle, yinelenenleri ve hatalı satırları göster ve onayımı bekle."</li>
+<li>"Müşterilerimde muhtemel yinelenenleri ya da tutarsız şirket adlarını ara. Neyi birleştireceğini ya da yeniden adlandıracağını ve nedenini listele. Henüz hiçbir şeyi değiştirme."</li>
+<li>"Bir iş akışı oluştur: bir müşteri teklifi kabul ettiğinde bir sözleşme taslağı oluştur ve 'Kazanıldı' etiketini ekle. Son kabul edilen teklifim üzerinde test et ve kaydetmeden önce sonucu göster."</li>
+<li>"Hangi e-posta yazışmaları benden yanıt bekliyor? En eskiden başlayarak, her biri için kısa bir yanıt taslağıyla, yalnızca taslak olarak kaydet."</li>
+<li>"Perşembe öğleden sonra 30 dakikalığına ne zaman boşum? North Studio'dan Lena'ya önerebileceğim üç zaman aralığı öner."</li>
+</ol>
+<p>8. komut, tekliften sözleşmeye klasik geçiş. Önce sürecinin bu kısmını sıkılaştırmak istiyorsan <a href="/blog/tr/proposals-and-contracts">imzalanan teklifler ve sözleşmeler</a> rehberimizi oku.</p>
+<figure data-shot="workflows"><figcaption>İş akışları sayfası: bir asistanın oluşturduğu otomasyonlar, durumları ve son çalışmalarıyla seninkilerin yanında görünür.</figcaption></figure>
+
+<h2>Korunmaya değer güvenlik önlemleri</h2>
+<p>Bir asistanı faydalı ve zararsız tutmak için kısa bir kontrol listesi:</p>
+<ul>
+<li><strong>Her zaman önizleme iste.</strong> Alışkanlık haline gelene kadar komutlarına "önce önizlemeyi göster" ekle. Thrive'ın ajanlara verdiği talimatlar da aynısını söylüyor.</li>
+<li><strong>Her taslağı gitmeden önce gözden geçir.</strong> Alıcıyı, tutarları ve proje adını oku. Modellerin hata yaptığı yerler bunlar.</li>
+<li><strong>Eylemleri tek tek onayla.</strong> "Evet, bu hatırlatmayı Harbor Coffee'ye gönder", "hepsini gönder"den iyidir.</li>
+<li><strong>Asistanının araç onaylarını açık tut.</strong> Uygulaman bir araç bir şeyi değiştirmeden önce soruyorsa, sormasına izin ver.</li>
+<li><strong>Çalışma geçmişini kontrol et.</strong> Bir asistan bir iş akışı kurduktan sonra, bir hafta sonra çalışmalarına bakıp kastettiğin şeyi yaptığından emin ol.</li>
+</ul>
+
+<h2>Bir sonraki projende dene</h2>
+<p>Küçük başla: asistanını bağla, haftanın özetini iste, sonra gecikmiş bir fatura için tek bir hatırlatmayı taslak olarak iste. İkisi de doğruysa ona bir sonraki işi ver. Thrive 7 günlük ücretsiz denemeyle aylık 10 $ ve <a href="https://app.runonthrive.com/auth/sign-up">kart olmadan başlayabilirsin</a>.</p>

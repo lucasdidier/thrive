@@ -45,6 +45,7 @@ call-to-action box after it, so don't write a button.
 - client-contract: what the client sees to sign the contract (typed-name signature)
 - invoice: an invoice open in Thrive (lines, totals, status)
 - client-invoice: what the client sees when they open the invoice link (payment instructions)
+- client-portal: a client's portal page (their proposals, contracts, invoices and files in one private link)
 - time: time tracking page (timer, entries by project, billable hours)
 - forms: a form's submissions (e.g. a project inquiry form)
 - workflows: list of automations (e.g. "when a proposal is accepted, create the contract")

@@ -33,6 +33,7 @@ const shots={
  'client-proposal':{path:'/share/document.doc-p1',w:1120},
  'client-contract':{path:'/share/contract.latest',w:1120},
  'client-invoice':{path:'/share/invoice.latest',w:1120},
+ 'client-portal':{path:'/share/portal.c1',w:1120},
 };
 
 async function cdp(url){

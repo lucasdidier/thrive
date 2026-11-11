@@ -9,6 +9,8 @@ export function siteOrigin(env){
  if(site.protocol!=='https:'&&!(site.protocol==='http:'&&LOCAL.test(site.hostname)))return '';
  return site.origin!==app?site.origin:'';
 }
+// Where the Thrive logo on app pages leads: the public site's home, else this deployment's /landing.
+export const landingURL=env=>{const site=siteOrigin(env);return site?site+'/':'/landing';};
 export const onSite=(request,env)=>{const site=siteOrigin(env);return !!site&&new URL(request.url).origin===site;};
 
 // The blog (/blog, /blog/…) is served on the site too.

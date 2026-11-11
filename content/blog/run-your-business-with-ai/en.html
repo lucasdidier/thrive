@@ -1,0 +1,91 @@
+<!--meta {"title":"How to use AI to run the admin side of your freelance business (safely)","description":"What Claude and ChatGPT are good at for freelancers, what they should never do alone, how to connect them to your real business data, and 10 prompts to copy.","minutes":7} -->
+<p class="lede">An AI assistant won't win you clients or do your design work for you. But it is very good at the admin around that work: turning messy call notes into a first draft, finding the invoice you forgot to chase, tidying a client list that grew in three different spreadsheets. The trick is to give it the right jobs, keep the risky ones for yourself, and stop copy-pasting your business into a chat window. Here is how to set that up.</p>
+
+<h2>What AI is genuinely good at for freelancers</h2>
+<p>Assistants like Claude and ChatGPT are strongest when the task is reading, sorting or drafting, and you check the result. For a freelancer or a small studio, that covers a lot of the week:</p>
+<ul>
+<li><strong>Drafting proposals from call notes.</strong> You paste in fifteen lines of notes from a discovery call. The assistant turns them into a scope, a list of deliverables and a price based on the services you already sell. You still set the final number, but you start from a page that's 70% there.</li>
+<li><strong>Summarizing the week.</strong> What did you invoice, who signed, which projects are due next, what is still waiting on a client. Five minutes of reading instead of clicking through ten screens.</li>
+<li><strong>Finding overdue invoices.</strong> "Which invoices are past their due date, by how much, and for how long?" is a question it answers well, and a reminder draft for each is a natural next step.</li>
+<li><strong>Cleaning up client data.</strong> Duplicate contacts, inconsistent company names, a CSV export from your old tool with half the columns in the wrong place. Sorting that out is tedious for you and easy for a model.</li>
+<li><strong>Setting up workflows.</strong> Describe a rule in plain words ("when a proposal is accepted, draft the contract") and let it build the automation. If you haven't thought about which steps to automate yet, start with <a href="/blog/automate-busy-work">these workflow ideas</a>.</li>
+</ul>
+
+<h2>What it should not do on its own</h2>
+<p>The line is simple: anything that leaves your workspace, binds you legally, touches money or deletes something needs your explicit yes. A mistake there costs far more than a quick review.</p>
+<ul>
+<li><strong>Sending.</strong> An email to a client is a promise in your name. A model can get the tone slightly wrong, mix up two projects, or quote last year's rate. Let it draft; you send.</li>
+<li><strong>Signing.</strong> Contracts are agreements between you and a person. The client should read and sign them through their own link, never through an assistant clicking a button.</li>
+<li><strong>Money.</strong> Issuing an invoice, recording a payment or changing a price should always be a step you confirm. A €4,800 invoice issued twice, or a deposit marked paid when it isn't, takes far longer to untangle than it would have taken to check.</li>
+</ul>
+
+<h2>Why connecting beats copy-pasting</h2>
+<p>Most freelancers start by pasting things into a chat: an invoice list, a client's email thread, a half-written proposal. It works, sort of. But copy-paste has real problems:</p>
+<ul>
+<li>The data is already stale when you paste it, and the answer is only as good as what you remembered to include.</li>
+<li>Whatever it produces, you copy back by hand.</li>
+<li>Nothing checks the result. A typo in a client's email or a total that doesn't add up goes straight into your records.</li>
+</ul>
+<p>MCP (Model Context Protocol) is an open standard that lets an assistant use tools in another app directly. Connected to your business tool, the assistant reads your actual clients, projects and invoices, and can save drafts back where they belong. The important part is that it goes through the same checks as you do when you click around: required fields, validation, and the automations you've already set up.</p>
+
+<h2>What Thrive's MCP can and can't do</h2>
+<p>Thrive is an MCP server, so an assistant connected to it can work with your real workspace. In practice it can:</p>
+<ul>
+<li>Read and search your clients, projects, proposals, contracts, invoices, time entries, forms, meetings and notes.</li>
+<li>Create and edit records: draft proposals and contracts from your templates, add notes and tags, turn unbilled time into invoice drafts, create forms and workflows.</li>
+<li>Preview any change before making it. The preview runs against a copy of your workspace, shows what your workflows would do in response, and saves nothing.</li>
+<li>Preview a client import from a CSV (up to 500 rows), with errors and duplicate emails flagged, before anything is imported.</li>
+<li>If you've connected your Google or Microsoft mailbox and calendar in Thrive, read client email threads, check when you're busy, and save reply drafts.</li>
+</ul>
+<p>And the limits, stated plainly:</p>
+<ul>
+<li><strong>It can't send an email or a calendar invite blindly.</strong> Sending is a separate step that requires the exact saved draft to be previewed first; what goes out is what was shown. Thrive also tells the assistant to get your yes for that specific message.</li>
+<li><strong>It can't move money.</strong> Thrive doesn't process payments for anyone. Invoices show the payment instructions you write, and clients pay outside Thrive. The assistant can record a payment you tell it about, which is exactly why that step deserves your confirmation.</li>
+<li><strong>It can't fake what a client did.</strong> A signature or an accepted proposal comes from the client's own link. An assistant can't make a contract look signed by emitting an event.</li>
+<li><strong>It doesn't run in the background.</strong> It acts when you ask it to, in a conversation. There are no date-based triggers, so "chase overdue invoices" is something you ask for, say, every Monday.</li>
+</ul>
+<figure data-shot="overview"><figcaption>The Home dashboard: the same totals, projects and items awaiting a response that a connected assistant can read and summarize.</figcaption></figure>
+
+<h2>How to connect Thrive in a few minutes</h2>
+<p>Open <strong>Use with AI</strong> in Thrive. There are two ways in, depending on the assistant you use.</p>
+<h3>Claude (claude.ai or the desktop app) and ChatGPT</h3>
+<ol>
+<li>Copy the server URL shown on the page. On the hosted version it's <code>https://app.runonthrive.com/mcp</code>.</li>
+<li>In Claude, go to Settings, then Connectors, and add a custom connector with that URL. In ChatGPT, add a custom connector (MCP server) in Settings with the same URL.</li>
+<li>Your browser opens Thrive. Sign in, and approve the assistant on Thrive's consent page.</li>
+</ol>
+<p>There's no API key to generate or paste. You approve access once, and you never give the assistant your password.</p>
+<h3>Claude Code, Codex, Cursor and GitHub Copilot</h3>
+<p>Click <strong>Onboard your agent to Thrive</strong>. It copies a one-line setup prompt. Paste it into your agent, which reads Thrive's setup instructions, adds the server itself and asks you to sign in. It's told not to create or change anything during setup, only to confirm the connection by reading your workspace.</p>
+<figure data-shot="mcp"><figcaption>The "Use with AI" page: the setup prompt for coding agents, the URL for Claude and ChatGPT, and example requests you can copy.</figcaption></figure>
+<p>One detail: the connection uses the first workspace on your account, which for most freelancers is the only one.</p>
+
+<h2>10 prompts you can copy</h2>
+<p>Each one asks for a preview or a draft, so nothing irreversible happens without you. Swap in your own client names.</p>
+<ol>
+<li>"Here are my notes from today's call with Harbor Coffee. Draft a proposal in Thrive using my service catalog. Show me the preview before saving it."</li>
+<li>"Summarize my week in Thrive: new clients, documents accepted or signed, invoices paid, and anything overdue."</li>
+<li>"List my overdue invoices with amount and days late. Draft a friendly reminder email for each and save them as drafts. Don't send anything."</li>
+<li>"Find my unbilled time entries for October and create one invoice draft per project. Preview the drafts; don't issue them."</li>
+<li>"Which projects are due in the next two weeks? For each, give me the client, the status and what still needs doing."</li>
+<li>"Import the attached CSV of clients. Preview it first, show me duplicates and rows with errors, and wait for my approval."</li>
+<li>"Look through my clients for likely duplicates or inconsistent company names. List what you'd merge or rename and why. Change nothing yet."</li>
+<li>"Create a workflow: when a client accepts a proposal, create a contract draft and add the tag 'Won'. Test it on my last accepted proposal and show me the result before saving."</li>
+<li>"Which email conversations are waiting on a reply from me? Oldest first, with a short draft answer for each, saved as drafts only."</li>
+<li>"When am I free for 30 minutes on Thursday afternoon? Suggest three slots I could offer to Lena at North Studio."</li>
+</ol>
+<p>Prompt 8 is the classic proposal-to-contract handover. If you want to tighten that part of your process first, read <a href="/blog/proposals-and-contracts">proposals and contracts that get signed</a>.</p>
+<figure data-shot="workflows"><figcaption>The Workflows page, where automations an assistant creates show up next to your own, with their status and last run.</figcaption></figure>
+
+<h2>Guardrails worth keeping</h2>
+<p>A short checklist to keep an assistant useful and harmless:</p>
+<ul>
+<li><strong>Always ask for a preview.</strong> Put "show me a preview first" in your prompts until it's a habit. Thrive's own instructions to agents say the same.</li>
+<li><strong>Review every draft before it goes out.</strong> Read the recipient, the amounts and the project name. Those are where models slip.</li>
+<li><strong>Approve one action at a time.</strong> "Yes, send this reminder to Harbor Coffee" is better than "send them all".</li>
+<li><strong>Keep your assistant's tool approvals on.</strong> If your app asks before a tool changes something, let it.</li>
+<li><strong>Check the run history.</strong> After an assistant sets up a workflow, look at its runs after a week to make sure it does what you meant.</li>
+</ul>
+
+<h2>Try it on your next project</h2>
+<p>Start small: connect your assistant, ask for a summary of your week, then ask for one overdue-invoice reminder as a draft. If both are right, give it the next job. Thrive is $10 a month with a 7-day free trial, and you can <a href="https://app.runonthrive.com/auth/sign-up">start without a card</a>.</p>

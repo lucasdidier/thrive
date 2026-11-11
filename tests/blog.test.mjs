@@ -9,7 +9,7 @@ const articles={};
 for(const slug of readdirSync(dir,{withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>d.name))
  for(const f of readdirSync(new URL(slug+'/',dir)))if(f.endsWith('.html'))(articles[slug]??={})[f.slice(0,-5)]=readFileSync(new URL(`${slug}/${f}`,dir),'utf8');
 const shots=JSON.parse(readFileSync(new URL('shots.json',dir),'utf8')).files;
-const SHOTS=new Set(['overview','clients','project','proposal','contracts','client-proposal','client-contract','invoice','client-invoice','time','forms','workflows','builder','scheduling','mcp']);
+const SHOTS=new Set(['overview','clients','project','proposal','contracts','client-proposal','client-contract','invoice','client-invoice','time','forms','workflows','builder','scheduling','mcp','client-portal']);
 const ALLOWED=new Set(['p','h2','h3','ul','ol','li','strong','em','a','blockquote','figure','figcaption','table','thead','tbody','tr','th','td','code','br']);
 
 test('blog URLs: English at /blog, other languages under /blog/<language>', ()=>{

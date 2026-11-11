@@ -32,3 +32,9 @@ test('after paying, people return to the app plan page, which confirms the trans
  assert.equal(returnURL('https://app.runonthrive.com','txn_01abcdefghijk'),'https://app.runonthrive.com/?paid=txn_01abcdefghijk#account/plan');
  assert.equal(returnURL('https://app.runonthrive.com','javascript:alert(1)'),'https://app.runonthrive.com/#account/plan');
 });
+
+test('the sign-in page logo leads to the landing page, not the app', async()=>{
+ const {landingURL}=await import('../server/hosts.mjs');
+ assert.equal(landingURL(prod),'https://runonthrive.com/');
+ assert.equal(landingURL({THRIVE_APP_URL:'https://thrive.example.workers.dev'}),'/landing');
+});

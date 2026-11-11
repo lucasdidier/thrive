@@ -1,0 +1,91 @@
+<!--meta {"title":"Cara memakai AI untuk mengurus admin usaha freelance Anda (dengan aman)","description":"Keunggulan Claude dan ChatGPT untuk freelancer, apa yang tidak boleh mereka lakukan sendiri, cara menghubungkannya ke data usaha Anda, dan 10 prompt siap pakai.","minutes":7} -->
+<p class="lede">Asisten AI tidak akan memenangkan klien untuk Anda atau mengerjakan desain Anda. Tapi asisten AI sangat bagus untuk urusan admin di sekitar pekerjaan itu: mengubah catatan telepon yang berantakan menjadi draf pertama, menemukan faktur yang lupa Anda tagih, merapikan daftar klien yang tumbuh di tiga spreadsheet berbeda. Kuncinya adalah memberinya tugas yang tepat, menyimpan tugas yang berisiko untuk diri sendiri, dan berhenti menyalin-tempel usaha Anda ke jendela chat. Berikut cara menyiapkannya.</p>
+
+<h2>Apa yang benar-benar dikuasai AI untuk freelancer</h2>
+<p>Asisten seperti Claude dan ChatGPT paling kuat saat tugasnya membaca, memilah, atau membuat draf, dan Anda memeriksa hasilnya. Bagi freelancer atau studio kecil, itu mencakup banyak pekerjaan dalam seminggu:</p>
+<ul>
+<li><strong>Membuat draf proposal dari catatan telepon.</strong> Anda menempelkan lima belas baris catatan dari telepon discovery. Asisten mengubahnya menjadi lingkup kerja, daftar hasil kerja, dan harga berdasarkan layanan yang sudah Anda jual. Angka akhirnya tetap Anda yang menentukan, tapi Anda mulai dari halaman yang sudah 70% jadi.</li>
+<li><strong>Merangkum minggu Anda.</strong> Apa yang sudah Anda tagih, siapa yang menandatangani, proyek mana yang jatuh tempo berikutnya, apa yang masih menunggu klien. Lima menit membaca, bukan mengklik sepuluh layar.</li>
+<li><strong>Menemukan faktur yang terlambat.</strong> "Faktur mana yang sudah lewat jatuh tempo, berapa jumlahnya, dan sudah berapa lama?" adalah pertanyaan yang bisa dijawabnya dengan baik, dan draf pengingat untuk masing-masing adalah langkah berikutnya yang wajar.</li>
+<li><strong>Merapikan data klien.</strong> Kontak ganda, nama perusahaan yang tidak konsisten, ekspor CSV dari tool lama Anda dengan separuh kolom di tempat yang salah. Membereskannya membosankan bagi Anda dan mudah bagi model AI.</li>
+<li><strong>Menyiapkan alur kerja.</strong> Jelaskan aturannya dengan kata-kata biasa ("saat proposal diterima, buat draf kontrak") dan biarkan asisten membangun otomatisasinya. Kalau Anda belum memikirkan langkah mana yang mau diotomatiskan, mulai dari <a href="/blog/id/automate-busy-work">ide-ide alur kerja ini</a>.</li>
+</ul>
+
+<h2>Apa yang tidak boleh dilakukannya sendiri</h2>
+<p>Garisnya sederhana: apa pun yang keluar dari workspace Anda, mengikat Anda secara hukum, menyentuh uang, atau menghapus sesuatu butuh persetujuan tegas dari Anda. Kesalahan di sana jauh lebih mahal daripada pemeriksaan singkat.</p>
+<ul>
+<li><strong>Mengirim.</strong> Email ke klien adalah janji atas nama Anda. Model AI bisa sedikit salah nada, tertukar antara dua proyek, atau menyebut tarif tahun lalu. Biarkan ia membuat draf; Anda yang mengirim.</li>
+<li><strong>Menandatangani.</strong> Kontrak adalah kesepakatan antara Anda dan seseorang. Klien harus membaca dan menandatanganinya lewat tautan mereka sendiri, bukan lewat asisten yang mengklik tombol.</li>
+<li><strong>Uang.</strong> Menerbitkan faktur, mencatat pembayaran, atau mengubah harga harus selalu menjadi langkah yang Anda konfirmasi. Faktur €4.800 yang terbit dua kali, atau uang muka yang ditandai lunas padahal belum, butuh waktu jauh lebih lama untuk dibereskan daripada untuk diperiksa.</li>
+</ul>
+
+<h2>Kenapa menghubungkan lebih baik daripada menyalin-tempel</h2>
+<p>Kebanyakan freelancer mulai dengan menempelkan berbagai hal ke chat: daftar faktur, utas email klien, proposal yang baru setengah jadi. Cara itu lumayan berhasil. Tapi menyalin-tempel punya masalah nyata:</p>
+<ul>
+<li>Datanya sudah usang saat Anda menempelkannya, dan jawabannya hanya sebaik apa yang Anda ingat untuk disertakan.</li>
+<li>Apa pun hasilnya, Anda harus menyalinnya kembali secara manual.</li>
+<li>Tidak ada yang memeriksa hasilnya. Salah ketik di email klien atau total yang tidak cocok langsung masuk ke catatan Anda.</li>
+</ul>
+<p>MCP (Model Context Protocol) adalah standar terbuka yang memungkinkan asisten memakai tool di aplikasi lain secara langsung. Saat terhubung ke tool usaha Anda, asisten membaca klien, proyek, dan faktur Anda yang sebenarnya, dan bisa menyimpan draf kembali ke tempatnya. Yang penting, asisten melewati pemeriksaan yang sama seperti saat Anda mengklik sendiri: kolom wajib, validasi, dan otomatisasi yang sudah Anda siapkan.</p>
+
+<h2>Apa yang bisa dan tidak bisa dilakukan MCP Thrive</h2>
+<p>Thrive adalah server MCP, jadi asisten yang terhubung dengannya bisa bekerja dengan workspace Anda yang sebenarnya. Dalam praktiknya, asisten bisa:</p>
+<ul>
+<li>Membaca dan mencari klien, proyek, proposal, kontrak, faktur, entri waktu, formulir, rapat, dan catatan Anda.</li>
+<li>Membuat dan mengedit catatan: membuat draf proposal dan kontrak dari template Anda, menambahkan catatan dan tag, mengubah waktu yang belum ditagih menjadi draf faktur, membuat formulir dan alur kerja.</li>
+<li>Menampilkan pratinjau setiap perubahan sebelum menjalankannya. Pratinjau berjalan di salinan workspace Anda, menunjukkan apa yang akan dilakukan alur kerja Anda sebagai responsnya, dan tidak menyimpan apa pun.</li>
+<li>Menampilkan pratinjau impor klien dari CSV (hingga 500 baris), dengan error dan email ganda ditandai, sebelum ada yang diimpor.</li>
+<li>Kalau Anda sudah menghubungkan kotak masuk dan kalender Google atau Microsoft di Thrive, membaca utas email klien, memeriksa kapan Anda sibuk, dan menyimpan draf balasan.</li>
+</ul>
+<p>Dan batasannya, terus terang:</p>
+<ul>
+<li><strong>Asisten tidak bisa mengirim email atau undangan kalender begitu saja.</strong> Mengirim adalah langkah terpisah yang mengharuskan draf tersimpan yang persis sama ditampilkan pratinjaunya lebih dulu; yang terkirim adalah yang sudah ditampilkan. Thrive juga meminta asisten untuk mendapatkan persetujuan Anda untuk pesan itu secara spesifik.</li>
+<li><strong>Asisten tidak bisa memindahkan uang.</strong> Thrive tidak memproses pembayaran untuk siapa pun. Faktur menampilkan instruksi pembayaran yang Anda tulis, dan klien membayar di luar Thrive. Asisten bisa mencatat pembayaran yang Anda beritahukan, dan justru karena itu langkah tersebut perlu konfirmasi Anda.</li>
+<li><strong>Asisten tidak bisa memalsukan tindakan klien.</strong> Tanda tangan atau proposal yang diterima berasal dari tautan klien sendiri. Asisten tidak bisa membuat kontrak terlihat sudah ditandatangani dengan memicu sebuah event.</li>
+<li><strong>Asisten tidak berjalan di latar belakang.</strong> Ia bertindak saat Anda memintanya, dalam percakapan. Tidak ada pemicu berbasis tanggal, jadi "tagih faktur yang terlambat" adalah hal yang Anda minta, misalnya setiap Senin.</li>
+</ul>
+<figure data-shot="overview"><figcaption>Dasbor Beranda: total, proyek, dan item yang menunggu tanggapan, yang juga bisa dibaca dan dirangkum oleh asisten yang terhubung.</figcaption></figure>
+
+<h2>Cara menghubungkan Thrive dalam beberapa menit</h2>
+<p>Buka <strong>Gunakan dengan AI</strong> di Thrive. Ada dua cara, tergantung asisten yang Anda pakai.</p>
+<h3>Claude (claude.ai atau aplikasi desktop) dan ChatGPT</h3>
+<ol>
+<li>Salin URL server yang ditampilkan di halaman itu. Di versi hosted, URL-nya <code>https://app.runonthrive.com/mcp</code>.</li>
+<li>Di Claude, buka Settings, lalu Connectors, dan tambahkan custom connector dengan URL tersebut. Di ChatGPT, tambahkan custom connector (server MCP) di Settings dengan URL yang sama.</li>
+<li>Browser Anda membuka Thrive. Masuk, lalu setujui asisten di halaman persetujuan Thrive.</li>
+</ol>
+<p>Tidak ada API key yang perlu dibuat atau ditempel. Anda menyetujui akses sekali, dan Anda tidak pernah memberikan kata sandi ke asisten.</p>
+<h3>Claude Code, Codex, Cursor, dan GitHub Copilot</h3>
+<p>Klik <strong>Hubungkan agen Anda ke Thrive</strong>. Tombol ini menyalin prompt penyiapan satu baris. Tempelkan ke agen Anda, yang akan membaca instruksi penyiapan Thrive, menambahkan servernya sendiri, dan meminta Anda masuk. Agen diminta untuk tidak membuat atau mengubah apa pun selama penyiapan, hanya memastikan koneksinya dengan membaca workspace Anda.</p>
+<figure data-shot="mcp"><figcaption>Halaman "Gunakan dengan AI": prompt penyiapan untuk agen coding, URL untuk Claude dan ChatGPT, dan contoh permintaan yang bisa Anda salin.</figcaption></figure>
+<p>Satu detail: koneksinya memakai workspace pertama di akun Anda, yang bagi kebanyakan freelancer adalah satu-satunya workspace.</p>
+
+<h2>10 prompt yang bisa Anda salin</h2>
+<p>Setiap prompt meminta pratinjau atau draf, jadi tidak ada yang tidak bisa dibatalkan terjadi tanpa Anda. Ganti dengan nama klien Anda sendiri.</p>
+<ol>
+<li>"Ini catatan saya dari telepon hari ini dengan Harbor Coffee. Buat draf proposal di Thrive memakai katalog layanan saya. Tunjukkan pratinjaunya sebelum disimpan."</li>
+<li>"Rangkum minggu saya di Thrive: klien baru, dokumen yang diterima atau ditandatangani, faktur yang dibayar, dan apa pun yang terlambat."</li>
+<li>"Daftar faktur saya yang terlambat beserta jumlah dan berapa hari terlambatnya. Buat draf email pengingat yang ramah untuk masing-masing dan simpan sebagai draf. Jangan kirim apa pun."</li>
+<li>"Cari entri waktu saya yang belum ditagih untuk bulan Oktober dan buat satu draf faktur per proyek. Tampilkan pratinjau drafnya; jangan diterbitkan."</li>
+<li>"Proyek mana yang jatuh tempo dalam dua minggu ke depan? Untuk masing-masing, sebutkan kliennya, statusnya, dan apa yang masih perlu dikerjakan."</li>
+<li>"Impor CSV klien terlampir. Tampilkan pratinjaunya dulu, tunjukkan data ganda dan baris yang error, lalu tunggu persetujuan saya."</li>
+<li>"Periksa klien saya untuk kemungkinan data ganda atau nama perusahaan yang tidak konsisten. Daftar apa yang akan kamu gabungkan atau ganti namanya dan alasannya. Jangan ubah apa pun dulu."</li>
+<li>"Buat alur kerja: saat klien menerima proposal, buat draf kontrak dan tambahkan tag 'Won'. Uji pada proposal terakhir saya yang diterima dan tunjukkan hasilnya sebelum disimpan."</li>
+<li>"Percakapan email mana yang menunggu balasan dari saya? Urutkan dari yang terlama, dengan draf jawaban singkat untuk masing-masing, simpan sebagai draf saja."</li>
+<li>"Kapan saya kosong 30 menit pada Kamis sore? Sarankan tiga slot yang bisa saya tawarkan ke Lena di North Studio."</li>
+</ol>
+<p>Prompt 8 adalah serah terima klasik dari proposal ke kontrak. Kalau Anda ingin merapikan bagian proses itu lebih dulu, baca <a href="/blog/id/proposals-and-contracts">proposal dan kontrak yang ditandatangani</a>.</p>
+<figure data-shot="workflows"><figcaption>Halaman Alur kerja, tempat otomatisasi yang dibuat asisten muncul di samping otomatisasi Anda sendiri, dengan status dan waktu terakhir dijalankan.</figcaption></figure>
+
+<h2>Pengaman yang layak dipertahankan</h2>
+<p>Daftar periksa singkat supaya asisten tetap berguna dan tidak berbahaya:</p>
+<ul>
+<li><strong>Selalu minta pratinjau.</strong> Tulis "tunjukkan pratinjaunya dulu" di prompt Anda sampai menjadi kebiasaan. Instruksi Thrive untuk agen juga mengatakan hal yang sama.</li>
+<li><strong>Periksa setiap draf sebelum dikirim.</strong> Baca penerima, jumlah, dan nama proyeknya. Di situlah model AI sering keliru.</li>
+<li><strong>Setujui satu tindakan setiap kali.</strong> "Ya, kirim pengingat ini ke Harbor Coffee" lebih baik daripada "kirim semuanya".</li>
+<li><strong>Biarkan persetujuan tool di asisten Anda tetap menyala.</strong> Kalau aplikasi Anda bertanya sebelum sebuah tool mengubah sesuatu, biarkan saja.</li>
+<li><strong>Periksa riwayat jalannya.</strong> Setelah asisten menyiapkan alur kerja, lihat riwayat jalannya setelah seminggu untuk memastikan alur kerja itu melakukan yang Anda maksud.</li>
+</ul>
+
+<h2>Coba di proyek Anda berikutnya</h2>
+<p>Mulai dari yang kecil: hubungkan asisten Anda, minta rangkuman minggu Anda, lalu minta satu pengingat faktur terlambat sebagai draf. Kalau keduanya benar, beri tugas berikutnya. Thrive seharga $10 per bulan dengan uji coba gratis 7 hari, dan Anda bisa <a href="https://app.runonthrive.com/auth/sign-up">mulai tanpa kartu</a>.</p>

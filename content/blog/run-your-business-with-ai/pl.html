@@ -1,0 +1,91 @@
+<!--meta {"title":"Jak (bezpiecznie) wykorzystać AI do administracji w działalności freelancera","description":"W czym Claude i ChatGPT pomagają freelancerom, czego nie powinny robić same, jak połączyć je z danymi twojej firmy i 10 promptów do skopiowania.","minutes":7} -->
+<p class="lede">Asystent AI nie zdobędzie za ciebie klientów ani nie zrobi twojej pracy projektowej. Świetnie radzi sobie jednak z administracją wokół tej pracy: zamienia chaotyczne notatki z rozmowy w pierwszy szkic, znajduje fakturę, o którą zapomniałeś się upomnieć, porządkuje listę klientów, która rozrosła się w trzech różnych arkuszach. Cała sztuka polega na tym, żeby dać mu właściwe zadania, ryzykowne zostawić sobie i przestać wklejać swoją firmę do okna czatu. Oto jak to ustawić.</p>
+
+<h2>W czym AI naprawdę pomaga freelancerom</h2>
+<p>Asystenci tacy jak Claude i ChatGPT są najmocniejsi, gdy zadanie polega na czytaniu, porządkowaniu albo pisaniu szkiców, a ty sprawdzasz wynik. U freelancera czy w małym studiu to spora część tygodnia:</p>
+<ul>
+<li><strong>Szkice ofert z notatek z rozmowy.</strong> Wklejasz piętnaście linijek notatek z pierwszej rozmowy z klientem. Asystent zamienia je w zakres, listę rezultatów i cenę opartą na usługach, które już sprzedajesz. Ostateczną kwotę nadal ustalasz ty, ale zaczynasz od strony gotowej w 70%.</li>
+<li><strong>Podsumowanie tygodnia.</strong> Co zafakturowałeś, kto podpisał, które projekty mają najbliższe terminy, na co wciąż czekasz od klienta. Pięć minut czytania zamiast klikania po dziesięciu ekranach.</li>
+<li><strong>Szukanie zaległych faktur.</strong> „Które faktury są po terminie, na jaką kwotę i od jak dawna?” to pytanie, na które odpowiada dobrze, a szkic przypomnienia do każdej z nich to naturalny kolejny krok.</li>
+<li><strong>Porządkowanie danych klientów.</strong> Zdublowane kontakty, różnie zapisane nazwy firm, eksport CSV ze starego narzędzia z połową kolumn nie na swoim miejscu. Dla ciebie to żmudna robota, dla modelu łatwe zadanie.</li>
+<li><strong>Ustawianie automatyzacji.</strong> Opisz regułę zwykłymi słowami („gdy oferta zostanie zaakceptowana, przygotuj szkic umowy”) i pozwól mu zbudować automatyzację. Jeśli jeszcze nie wiesz, które kroki zautomatyzować, zacznij od <a href="/blog/pl/automate-busy-work">tych pomysłów na automatyzacje</a>.</li>
+</ul>
+
+<h2>Czego nie powinien robić sam</h2>
+<p>Granica jest prosta: wszystko, co wychodzi poza twoje konto, zobowiązuje cię prawnie, dotyczy pieniędzy albo coś usuwa, wymaga twojego wyraźnego „tak”. Błąd w tych miejscach kosztuje dużo więcej niż szybkie sprawdzenie.</p>
+<ul>
+<li><strong>Wysyłanie.</strong> Mail do klienta to obietnica złożona w twoim imieniu. Model może lekko chybić z tonem, pomylić dwa projekty albo podać zeszłoroczną stawkę. Niech pisze szkic, a wysyłasz ty.</li>
+<li><strong>Podpisywanie.</strong> Umowy to porozumienia między tobą a człowiekiem. Klient powinien je przeczytać i podpisać przez własny link, nigdy przez asystenta klikającego przycisk.</li>
+<li><strong>Pieniądze.</strong> Wystawienie faktury, zarejestrowanie płatności czy zmiana ceny zawsze powinny być krokiem, który potwierdzasz. Faktura na 4 800 € wystawiona dwa razy albo zaliczka oznaczona jako opłacona, choć nie jest, to dużo więcej odkręcania niż czasu, który zajęłoby sprawdzenie.</li>
+</ul>
+
+<h2>Dlaczego połączenie wygrywa z kopiowaniem i wklejaniem</h2>
+<p>Większość freelancerów zaczyna od wklejania rzeczy do czatu: listy faktur, wątku mailowego z klientem, napisanej do połowy oferty. To jakoś działa. Ale kopiuj-wklej ma realne wady:</p>
+<ul>
+<li>Dane są nieaktualne już w chwili wklejenia, a odpowiedź jest tylko tak dobra, jak to, o czym pamiętałeś, żeby je dołączyć.</li>
+<li>Cokolwiek asystent przygotuje, przenosisz to z powrotem ręcznie.</li>
+<li>Nic nie sprawdza wyniku. Literówka w mailu klienta albo suma, która się nie zgadza, trafia prosto do twoich danych.</li>
+</ul>
+<p>MCP (Model Context Protocol) to otwarty standard, który pozwala asystentowi bezpośrednio korzystać z narzędzi w innej aplikacji. Po połączeniu z twoim narzędziem do prowadzenia firmy asystent czyta twoich prawdziwych klientów, projekty i faktury i może zapisywać szkice tam, gdzie ich miejsce. Najważniejsze jest to, że przechodzi przez te same kontrole co ty, gdy klikasz w aplikacji: wymagane pola, walidację i automatyzacje, które już ustawiłeś.</p>
+
+<h2>Co MCP w Thrive potrafi, a czego nie</h2>
+<p>Thrive jest serwerem MCP, więc połączony z nim asystent może pracować na twoim prawdziwym koncie. W praktyce może:</p>
+<ul>
+<li>Czytać i przeszukiwać twoich klientów, projekty, oferty, umowy, faktury, wpisy czasu, formularze, spotkania i notatki.</li>
+<li>Tworzyć i edytować rekordy: przygotowywać szkice ofert i umów z twoich szablonów, dodawać notatki i tagi, zamieniać niezafakturowany czas w wersje robocze faktur, tworzyć formularze i automatyzacje.</li>
+<li>Pokazać podgląd każdej zmiany, zanim ją wprowadzi. Podgląd działa na kopii twojego konta, pokazuje, co zrobiłyby w odpowiedzi twoje automatyzacje, i niczego nie zapisuje.</li>
+<li>Pokazać podgląd importu klientów z pliku CSV (do 500 wierszy) z zaznaczonymi błędami i zdublowanymi adresami e-mail, zanim cokolwiek zostanie zaimportowane.</li>
+<li>Jeśli połączyłeś w Thrive skrzynkę i kalendarz Google lub Microsoft: czytać wątki mailowe z klientami, sprawdzać, kiedy jesteś zajęty, i zapisywać szkice odpowiedzi.</li>
+</ul>
+<p>I ograniczenia, powiedziane wprost:</p>
+<ul>
+<li><strong>Nie wyśle maila ani zaproszenia do kalendarza w ciemno.</strong> Wysyłka to osobny krok, który wymaga wcześniejszego podglądu dokładnie tego zapisanego szkicu; wychodzi to, co zostało pokazane. Thrive dodatkowo każe asystentowi uzyskać twoje „tak” dla tej konkretnej wiadomości.</li>
+<li><strong>Nie przeleje pieniędzy.</strong> Thrive nie obsługuje płatności dla nikogo. Na fakturach są instrukcje płatności, które sam wpisujesz, a klienci płacą poza Thrive. Asystent może zarejestrować płatność, o której mu powiesz, i właśnie dlatego ten krok wymaga twojego potwierdzenia.</li>
+<li><strong>Nie podrobi tego, co zrobił klient.</strong> Podpis albo akceptacja oferty pochodzą z własnego linku klienta. Asystent nie sprawi, że umowa będzie wyglądać na podpisaną, wysyłając jakieś zdarzenie.</li>
+<li><strong>Nie działa w tle.</strong> Działa, gdy go o to poprosisz, w rozmowie. Nie ma wyzwalaczy opartych na datach, więc o „przypomnij o zaległych fakturach” musisz poprosić sam, na przykład w każdy poniedziałek.</li>
+</ul>
+<figure data-shot="overview"><figcaption>Pulpit Start: te same sumy, projekty i sprawy oczekujące na odpowiedź, które połączony asystent może odczytać i podsumować.</figcaption></figure>
+
+<h2>Jak połączyć Thrive w kilka minut</h2>
+<p>Otwórz w Thrive stronę <strong>Używaj z AI</strong>. Są dwie drogi, w zależności od asystenta, z którego korzystasz.</p>
+<h3>Claude (claude.ai lub aplikacja desktopowa) i ChatGPT</h3>
+<ol>
+<li>Skopiuj adres URL serwera widoczny na stronie. W wersji hostowanej to <code>https://app.runonthrive.com/mcp</code>.</li>
+<li>W Claude przejdź do Ustawień, potem do Konektorów, i dodaj własny konektor z tym adresem. W ChatGPT dodaj w Ustawieniach własny konektor (serwer MCP) z tym samym adresem.</li>
+<li>Przeglądarka otworzy Thrive. Zaloguj się i zatwierdź asystenta na stronie zgody w Thrive.</li>
+</ol>
+<p>Nie musisz generować ani wklejać żadnego klucza API. Zatwierdzasz dostęp raz i nigdy nie podajesz asystentowi swojego hasła.</p>
+<h3>Claude Code, Codex, Cursor i GitHub Copilot</h3>
+<p>Kliknij <strong>Połącz swojego agenta z Thrive</strong>. Skopiujesz w ten sposób jednolinijkowy prompt konfiguracyjny. Wklej go do swojego agenta, który przeczyta instrukcje konfiguracji Thrive, sam doda serwer i poprosi cię o zalogowanie. Agent dostaje polecenie, żeby podczas konfiguracji niczego nie tworzył ani nie zmieniał, tylko potwierdził połączenie, odczytując twoje konto.</p>
+<figure data-shot="mcp"><figcaption>Strona „Używaj z AI”: prompt konfiguracyjny dla agentów programistycznych, adres URL dla Claude i ChatGPT oraz przykładowe polecenia do skopiowania.</figcaption></figure>
+<p>Jeden szczegół: połączenie korzysta z pierwszej przestrzeni roboczej na twoim koncie, która u większości freelancerów jest jedyna.</p>
+
+<h2>10 promptów do skopiowania</h2>
+<p>Każdy z nich prosi o podgląd albo szkic, więc nic nieodwracalnego nie dzieje się bez ciebie. Wstaw nazwy swoich klientów.</p>
+<ol>
+<li>„Oto moje notatki z dzisiejszej rozmowy z Harbor Coffee. Przygotuj w Thrive szkic oferty na podstawie mojego katalogu usług. Pokaż mi podgląd, zanim go zapiszesz”.</li>
+<li>„Podsumuj mój tydzień w Thrive: nowi klienci, zaakceptowane lub podpisane dokumenty, opłacone faktury i wszystko, co jest po terminie”.</li>
+<li>„Wypisz moje zaległe faktury z kwotą i liczbą dni opóźnienia. Do każdej przygotuj uprzejmy mail z przypomnieniem i zapisz go jako szkic. Niczego nie wysyłaj”.</li>
+<li>„Znajdź moje niezafakturowane wpisy czasu z października i utwórz jedną wersję roboczą faktury na projekt. Pokaż podgląd wersji roboczych; nie wystawiaj ich”.</li>
+<li>„Które projekty mają termin w ciągu najbliższych dwóch tygodni? Przy każdym podaj klienta, status i to, co jeszcze zostało do zrobienia”.</li>
+<li>„Zaimportuj klientów z załączonego pliku CSV. Najpierw pokaż podgląd, wskaż duplikaty i wiersze z błędami i poczekaj na moją zgodę”.</li>
+<li>„Przejrzyj moich klientów pod kątem prawdopodobnych duplikatów albo niespójnych nazw firm. Wypisz, co byś połączył lub przemianował i dlaczego. Na razie niczego nie zmieniaj”.</li>
+<li>„Utwórz automatyzację: gdy klient zaakceptuje ofertę, utwórz szkic umowy i dodaj tag »Wygrana«. Przetestuj ją na mojej ostatniej zaakceptowanej ofercie i pokaż mi wynik, zanim ją zapiszesz”.</li>
+<li>„Które rozmowy mailowe czekają na moją odpowiedź? Od najstarszej, z krótkim szkicem odpowiedzi do każdej, zapisanym tylko jako szkic”.</li>
+<li>„Kiedy mam wolne 30 minut w czwartek po południu? Zaproponuj trzy terminy, które mógłbym zaproponować Lenie z North Studio”.</li>
+</ol>
+<p>Prompt 8 to klasyczne przejście od oferty do umowy. Jeśli najpierw chcesz dopracować tę część swojego procesu, przeczytaj o <a href="/blog/pl/proposals-and-contracts">ofertach i umowach, które klienci podpisują</a>.</p>
+<figure data-shot="workflows"><figcaption>Strona Automatyzacje, na której automatyzacje utworzone przez asystenta pojawiają się obok twoich własnych, z ich statusem i ostatnim uruchomieniem.</figcaption></figure>
+
+<h2>Zabezpieczenia, których warto się trzymać</h2>
+<p>Krótka lista kontrolna, dzięki której asystent będzie przydatny i nieszkodliwy:</p>
+<ul>
+<li><strong>Zawsze proś o podgląd.</strong> Dopisuj „najpierw pokaż mi podgląd” do swoich promptów, aż wejdzie ci to w nawyk. Instrukcje Thrive dla agentów mówią to samo.</li>
+<li><strong>Przeglądaj każdy szkic, zanim wyjdzie.</strong> Sprawdź odbiorcę, kwoty i nazwę projektu. To tam modele najczęściej się mylą.</li>
+<li><strong>Zatwierdzaj jedną akcję naraz.</strong> „Tak, wyślij to przypomnienie do Harbor Coffee” jest lepsze niż „wyślij wszystkie”.</li>
+<li><strong>Nie wyłączaj zatwierdzania narzędzi w asystencie.</strong> Jeśli twoja aplikacja pyta, zanim narzędzie coś zmieni, niech pyta.</li>
+<li><strong>Sprawdzaj historię uruchomień.</strong> Gdy asystent ustawi automatyzację, po tygodniu przejrzyj jej uruchomienia, żeby upewnić się, że robi to, o co ci chodziło.</li>
+</ul>
+
+<h2>Wypróbuj to przy następnym projekcie</h2>
+<p>Zacznij od małych rzeczy: połącz asystenta, poproś o podsumowanie tygodnia, a potem o jedno przypomnienie o zaległej fakturze jako szkic. Jeśli oba wyniki są w porządku, daj mu kolejne zadanie. Thrive kosztuje 10 USD miesięcznie z 7-dniowym darmowym okresem próbnym, a <a href="https://app.runonthrive.com/auth/sign-up">zacząć możesz bez karty</a>.</p>
