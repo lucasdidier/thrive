@@ -71,3 +71,11 @@ test('Search Console needs both the service account and the site', ()=>{
  assert.equal(searchConsoleConfig({GSC_SITE:'sc-domain:x',GSC_SERVICE_ACCOUNT:'not json'}),null);
  assert.deepEqual(searchConsoleConfig({GSC_SITE:'sc-domain:x',GSC_SERVICE_ACCOUNT:JSON.stringify({client_email:'a@b.iam.gserviceaccount.com',private_key:'k'})}),{email:'a@b.iam.gserviceaccount.com',key:'k',site:'sc-domain:x'});
 });
+
+test('the app shell shows a loading skeleton until the first render replaces it', async()=>{
+ const {readFileSync}=await import('node:fs');
+ const shell=readFileSync(new URL('../ui/index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../public/app.js',import.meta.url),'utf8');
+ assert.match(shell,/<main id="main" tabindex="-1" aria-busy="true"><div class="sk-page"/);
+ assert.match(shell,/prefers-reduced-motion:reduce\)\{\.sk::after\{animation:none\}/);
+ assert.match(app,/function render\(\)\{document\.querySelector\('#main\[aria-busy\]'\)\?\.removeAttribute\('aria-busy'\)/);
+});
