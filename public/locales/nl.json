@@ -2810,7 +2810,6 @@
  "Waiting on clients": "Wachten op klanten",
  "Watch": "Volgen",
  "We sent a confirmation link to {email}.": "We hebben een bevestigingslink naar {email} gestuurd.",
- "We sent a sign-in code to {email}. It expires in an hour.": "We hebben een inlogcode naar {email} gestuurd. Deze verloopt over een uur.",
  "Web & software development": "Web- & softwareontwikkeling",
  "Website": "Website",
  "Website brief": "Websitebriefing",
@@ -3323,5 +3322,6 @@
  "Brand identity agreement · just now": "Overeenkomst merkidentiteit · zojuist",
  "Legal": "Juridisch",
  "Refunds": "Terugbetalingen",
- "Privacy": "Privacy"
+ "Privacy": "Privacy",
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "We hebben een inlogcode naar {email} gestuurd. Deze verloopt over 10 minuten."
 }

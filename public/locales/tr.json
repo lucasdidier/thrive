@@ -2806,7 +2806,6 @@
  "Waiting on clients": "Müşterilerden beklenenler",
  "Watch": "İzle",
  "We sent a confirmation link to {email}.": "{email} adresine bir onay bağlantısı gönderdik.",
- "We sent a sign-in code to {email}. It expires in an hour.": "{email} adresine bir giriş kodu gönderdik. Kodun süresi bir saat içinde dolar.",
  "Web & software development": "Web ve yazılım geliştirme",
  "Website": "Web sitesi",
  "Website brief": "Web sitesi brifi",
@@ -3294,5 +3293,6 @@
  "Brand identity agreement · just now": "Marka kimliği sözleşmesi · az önce",
  "Legal": "Yasal",
  "Refunds": "İadeler",
- "Privacy": "Gizlilik"
+ "Privacy": "Gizlilik",
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "{email} adresine bir giriş kodu gönderdik. Kodun süresi 10 dakika içinde dolar."
 }

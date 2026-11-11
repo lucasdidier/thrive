@@ -2803,7 +2803,6 @@
  "Waiting on clients": "Menunggu klien",
  "Watch": "Pantau",
  "We sent a confirmation link to {email}.": "Kami mengirim tautan konfirmasi ke {email}.",
- "We sent a sign-in code to {email}. It expires in an hour.": "Kami mengirim kode masuk ke {email}. Kode berlaku selama satu jam.",
  "Web & software development": "Pengembangan web & perangkat lunak",
  "Website": "Situs web",
  "Website brief": "Brief situs web",
@@ -3262,5 +3261,6 @@
  "Brand identity agreement · just now": "Perjanjian identitas merek · baru saja",
  "Legal": "Legal",
  "Refunds": "Pengembalian dana",
- "Privacy": "Privasi"
+ "Privacy": "Privasi",
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Kami mengirim kode masuk ke {email}. Kode berlaku selama 10 menit."
 }

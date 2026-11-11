@@ -46,7 +46,7 @@ function codeSignIn(){
 }
 function startResendTimer(){let left=60;const tick=()=>{const button=$('resend');if(!button){clearInterval(resendTimer);resendTimer=undefined;return;}if(left<=0){clearInterval(resendTimer);resendTimer=undefined;button.textContent=L('Resend code');controls();return;}button.textContent=L('Resend code in {seconds}s',{seconds:left--});};clearInterval(resendTimer);resendTimer=setInterval(tick,1000);tick();controls();}
 function codeStep(){
- heading(L('Check your email'),L('We sent a sign-in code to {email}. It expires in an hour.',{email:lastEmail}));
+ heading(L('Check your email'),L('We sent a sign-in code to {email}. It expires in 10 minutes.',{email:lastEmail}));
  $('content').innerHTML=`<form id="verify-form" class="stack" novalidate><label class="sr-only" for="code">${L('Sign-in code')}</label><input id="code" name="code" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="${esc(L('Enter code'))}" required spellcheck="false"><button class="btn primary" type="submit">${L('Sign in')}${arrow}</button></form><div class="code-links"><button type="button" class="link" id="resend">${L('Resend code')}</button><button type="button" class="link" id="other-email">${L('Use another email')}</button></div>`;
  $('footer').textContent=L('Can’t find it? Check spam, or open the link in the same email on this device.');
  $('verify-form').onsubmit=async event=>{event.preventDefault();const code=$('code').value.replace(/\s+/g,'');if(!/^\d{6,10}$/.test(code)){showError(L('Enter the code from your email.'));$('code').focus();return;}await action({action:'verify-code',email:lastEmail,code});};

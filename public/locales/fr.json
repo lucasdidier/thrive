@@ -2811,7 +2811,6 @@
  "Waiting on clients": "En attente des clients",
  "Watch": "Surveiller",
  "We sent a confirmation link to {email}.": "Nous avons envoyé un lien de confirmation à {email}.",
- "We sent a sign-in code to {email}. It expires in an hour.": "Nous avons envoyé un code de connexion à {email}. Il expire dans une heure.",
  "Web & software development": "Développement web et logiciel",
  "Website": "Site web",
  "Website brief": "Brief site web",
@@ -3346,5 +3345,6 @@
  "Brand identity agreement · just now": "Contrat d’identité de marque · à l’instant",
  "Legal": "Mentions légales",
  "Refunds": "Remboursements",
- "Privacy": "Confidentialité"
+ "Privacy": "Confidentialité",
+ "We sent a sign-in code to {email}. It expires in 10 minutes.": "Nous avons envoyé un code de connexion à {email}. Il expire dans 10 minutes."
 }
