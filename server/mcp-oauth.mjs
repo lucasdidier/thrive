@@ -64,7 +64,7 @@ const redirect=location=>new Response(null,{status:303,headers:{Location:locatio
 function consent(details){
  const name=details.client?.name?.trim()||'An AI assistant',back=host(details.redirect_uri);
  return page(`<h1>Allow ${esc(name)} to use your Thrive workspace?</h1><p class="subtitle">${esc(details.user?.email)}${back?` · returns to ${esc(back)}`:''}</p>
-<ul class="consent-points"><li>It can read and change your clients, projects, documents, invoices, time and other records.</li><li>It can’t send email or calendar invitations without your OK, or take payments.</li></ul>
+<ul class="consent-points"><li>It can read and change your clients, projects, documents, invoices, time and other records.</li><li>It can send email and calendar invitations from accounts you’ve connected, after previewing the exact message. Ask it to show you each one first.</li><li>It can’t take payments, sign for your clients, or change your plan and billing.</li></ul>
 <form method="post" action="/oauth/consent" class="consent-actions"><input type="hidden" name="authorization_id" value="${esc(details.authorization_id)}"><button class="btn primary" name="decision" value="approve">Allow access</button><button class="btn" name="decision" value="deny">Deny</button></form>`);
 }
 

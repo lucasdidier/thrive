@@ -1,3 +1,4 @@
+import {allow} from './limits.mjs';
 import {documentLabel} from '../public/document-labels.js';
 import {notifyFormResponse,notifyDocumentResponse} from './form-notifications.mjs';
 import {portalProjection,portalEntry,portalFormResponse} from '../public/portal-domain.js';
@@ -15,6 +16,8 @@ import {json,checkOrigin,readBody,errorResponse} from './http.mjs';
 const pick=(object,keys)=>Object.fromEntries(keys.filter(k=>object?.[k]!==undefined).map(k=>[k,object[k]]));
 const publicOffer=o=>({...pick(o,['id','name','description','rate','amount','billingModel','unit','mode','group','min','max','quantity','taxRate','subtotal','taxAmount']),...(o.packageItems?{packageItems:o.packageItems.map(i=>pick(i,['id','name','description','rate','amount','billingModel','unit','quantity']))}:{})});
 const unavailable=()=>new StoreError('This link is unavailable. Ask the sender for a new link.',404);
+// Raw workspace size above which public forms stop taking answers (the stored limit is 8 MB raw, 1.8 MB gzipped).
+export const FORM_INTAKE_LIMIT=5_000_000;
 export async function resolveShare(db,token){
  if(!validShareToken(token))throw unavailable();
  const entry=await db.prepare('SELECT owner_id,share_id FROM share_links WHERE token_hash=?').bind(await hashRequest(token)).first();
@@ -91,6 +94,10 @@ export async function respondToShare(db,token,body,item=null,{env,notify=notifyF
    if(nextLink.submissionWindow&&Date.now()-Date.parse(nextLink.submissionWindow)<3600000&&nextLink.submissionCount>=30)throw new StoreError('This form has received too many submissions. Try again later.',429);
    if(!nextLink.submissionWindow||Date.now()-Date.parse(nextLink.submissionWindow)>=3600000){nextLink.submissionWindow=at;nextLink.submissionCount=0;}
    nextLink.submissionCount=(nextLink.submissionCount||0)+1;
+   // Every answer lives in the owner's workspace, which has a size limit. Stop public submissions well before
+   // it (so the owner can always keep working) and cap them per form per day.
+   if(JSON.stringify(state).length>FORM_INTAKE_LIMIT)throw new StoreError('This form isn’t accepting responses right now. Please contact the business directly.',507);
+   if(env&&!await allow(env,'form-day:'+link.id,{window:86400,max:200}))throw new StoreError('This form has received too many submissions today. Try again tomorrow.',429);
    try{if(body.data.answers!==undefined){const f=next.forms.find(f=>f.id===link.recordId),checked=validateFormAnswers(f,body.data.answers);await validateUploadedAnswers(db,owner,f.id,checked.snapshots,{shareId:link.id,requestId:body.request_id,revision:body.form_revision});}submitForm(next,link.recordId,body.data,key,portalContext||{});}catch(e){if(/archived/.test(e.message))throw new StoreError('Unable to submit this request. Contact the sender.');throw e;}
   }else{
    respondDocument(next,link.recordId,link.version,body.action,{name:body.name,consent:body.consent,selections:body.selections});

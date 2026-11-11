@@ -17,6 +17,7 @@ export function usageRows(user,body){
 
 export async function recordUsage(request,env,user,{admin}={}){
  if(!analyticsEnabled(env)||!user?.owner)return new Response(null,{status:204});
+ if(Number(request.headers.get('content-length')||0)>8000)return new Response(null,{status:204});
  let body;try{const text=await request.text();if(text.length>8000)return new Response(null,{status:204});body=JSON.parse(text);}catch{return new Response(null,{status:204});}
  const rows=usageRows(user,body);
  if(rows.length){admin??=adminClient(env);await admin.from('thrive_usage').insert(rows).then(()=>{},()=>{});}

@@ -120,5 +120,5 @@ test('emailed codes count against the strict signup limit, separately from ordin
  const ask=()=>{const m=client();return handleAuth(new Request('https://thrive.test/api/auth',{method:'POST',headers:{'content-type':'application/json',origin:'https://thrive.test','cf-connecting-ip':'203.0.113.9'},body:JSON.stringify({action:'email-code',email:'sam@example.test'})}),open,{contextFactory:m.factory,invited:async()=>true});};
  for(let i=0;i<3;i++)assert.equal((await ask()).status,200);
  const r=await ask();assert.equal(r.status,429);assert.match((await r.json()).error,/Too many codes/);
- assert.deepEqual([...hits.keys()],['code:203.0.113.9']);
+ assert.deepEqual([...hits.keys()].sort(),['code-to:b2bfa4c94d77de96','code:203.0.113.9'],'per IP and per address');
 });

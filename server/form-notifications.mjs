@@ -9,7 +9,7 @@ import {inWorkspaceLanguage} from './email-language.mjs';
 // Recipient comes exclusively from the authenticated account directory.
 export async function accountNotificationEmail(db,owner){
  if(!owner.startsWith('supabase:')||!db.client?.auth?.admin)return null;
- const {data,error}=await db.client.auth.admin.getUserById(owner.slice(9));
+ const {data,error}=await db.client.auth.admin.getUserById(owner.split(':workspace:')[0].slice(9));
  if(error)throw Error('Account email lookup failed.');
  const user=data?.user;
  return user?.email_confirmed_at&&validEmail(user.email)?user.email:null;

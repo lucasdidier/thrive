@@ -1,3 +1,4 @@
+import {allow,hashKey} from './limits.mjs';
 import {createServerClient,parseCookieHeader,serializeCookieHeader} from '@supabase/ssr';
 import {StoreError} from './store.mjs';
 import {json,readBody,errorResponse} from './http.mjs';
@@ -76,13 +77,18 @@ export async function handleAuth(request,env,{contextFactory=authContext,invited
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase();
  if(inviteOnly(env)&&!await invited(email,env))throw new StoreError('This email isn’t on the beta list yet.',403);
- if(await codeLimited(request,env))throw new StoreError('Too many codes requested. Please wait a minute and try again.',429);
+ if(await codeLimited(request,env,email))throw new StoreError('Too many codes requested. Please wait a minute and try again.',429);
+ // At most 8 codes a day to one address, and 300 an hour in total (the email provider's quota is shared).
+ if(!await allow(env,'code-day:'+await hashKey(email),{window:86400,max:8}))throw new StoreError('Too many codes were sent to this address today. Try again tomorrow, or continue with Google.',429);
+ if(!await allow(env,'code-hour:all',{window:3600,max:300}))throw new StoreError('We’re sending a lot of codes right now. Please try again in a few minutes, or continue with Google.',429);
  checked(await auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:callback}}),'We couldn’t send a code. Please try again in a minute.');
  return context.finish(json({ok:true,sent:true}),keepNext(context,body));}
  case 'verify-code':{
  if(!emailCodes(env))throw new StoreError('Email codes are not available here.',403);
  const email=emailValue(body).toLowerCase(),token=String(body.code||'').replace(/\s+/g,'');
  if(!/^\d{6,10}$/.test(token))throw new StoreError('Enter the code from your email.');
+ // Guessing codes: 10 tries per address per 15 minutes, whatever the IP.
+ if(!await allow(env,'verify:'+await hashKey(email),{window:900,max:10}))throw new StoreError('Too many attempts for this email. Ask for a new code in a few minutes.',429);
  data=checked(await auth.verifyOtp({email,token,type:'email'}),'That code is incorrect or has expired. Ask for a new one.');
  if(!data?.user){await auth.signOut({scope:'local'});throw new StoreError('That code didn’t work. Ask for a new one.');}
  if(inviteOnly(env)&&!await grant(data.user,env)){await auth.signOut({scope:'local'});throw new StoreError('This email isn’t on the beta list yet.',403);}

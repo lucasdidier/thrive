@@ -13,6 +13,7 @@ export class SupabaseDatabase{
  table(name){if(!tableNames.includes(name))throw Error('Unknown table.');return this.client.from('thrive_'+name);}
  rpc(name,args){return checked(this.client.rpc('thrive_'+name,args));}
  async loadWorkspace(owner){const row=await checked(this.table('workspaces').select('revision,state,updated_at').eq('owner_id',owner).maybeSingle());return row?{revision:row.revision,state:await decodeState(bytes(row.state)),updatedAt:row.updated_at}:null;}
+ async loadRevision(owner){const row=await checked(this.table('workspaces').select('revision').eq('owner_id',owner).maybeSingle());return row?Number(row.revision):null;}
  async bootstrap(owner,state){const links=await shareIndex(state);await this.rpc('bootstrap',{p_owner:owner,p_state:hex(await encodeState(state)),p_links:links});return this.loadWorkspace(owner);}
  async receiptFor(owner,id,hash){const row=await checked(this.table('receipts').select('hash,result').eq('owner_id',owner).eq('request_id',id).maybeSingle());if(row&&row.hash!==hash)throw new StoreError('This request ID was used for a different operation.',409);return row?JSON.parse(row.result):null;}
  async commitWorkspace(owner,expected,state,requestId,hash,result,events){return this.rpc('commit',{p_owner:owner,p_expected:expected,p_state:hex(await encodeState(state)),p_request_id:requestId,p_hash:hash,p_result:result,p_links:await shareIndex(state),p_events:events.map(e=>({type:e.type,entity:e.entity,record_id:e.recordId,detail:{eventId:e.id,fieldId:e.fieldId,value:e.value,previousValue:e.previousValue}}))});}

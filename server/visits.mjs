@@ -16,6 +16,10 @@ export function visitRow(body,{country=''}={}){
 export async function recordVisit(request,env,{admin}={}){
  const done=new Response(null,{status:204});
  if(request.method!=='POST'||!analyticsEnabled(env)||BOT.test(request.headers.get('user-agent')||''))return done;
+ if(Number(request.headers.get('content-length')||0)>2000)return done;
+ // Only from Thrive's own pages (sendBeacon sends the Origin header).
+ const origins=[new URL(request.url).origin,...[env.THRIVE_SITE_URL,env.THRIVE_APP_URL].map(u=>{try{return new URL(u).origin;}catch{return '';}})];
+ if(!origins.includes(request.headers.get('origin')||''))return done;
  let body;try{const text=await request.text();if(text.length>2000)return done;body=JSON.parse(text);}catch{return done;}
  const row=visitRow(body,{country:request.headers.get('cf-ipcountry')||''});
  if(row){admin??=adminClient(env);await admin.from('thrive_visits').insert(row).then(()=>{},()=>{});}

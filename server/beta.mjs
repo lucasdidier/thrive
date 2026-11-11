@@ -41,6 +41,8 @@ export async function grantBetaAccess(user,env,{admin=adminClient(env)}={}){
 // Landing page "Request access". Same answer whether or not the email is known.
 export async function handleBetaRequest(request,env,{admin,send=sendOwnerNotification}={}){try{
  if(request.method!=='POST')throw new StoreError('Method not allowed.',405);
+ // Only invite-only installs take access requests; with open sign-up the form isn't shown, so the endpoint is closed.
+ if(!inviteOnly(env))throw new StoreError('Not found.',404);
  const origin=new URL(request.url).origin;if(request.headers.get('origin')!==origin)throw new StoreError('Open this page on the Thrive website to continue.',403);
  const body=await readBody(request,4000);
  const done=json({ok:true});

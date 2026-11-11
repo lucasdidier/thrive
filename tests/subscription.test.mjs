@@ -109,7 +109,10 @@ test('the first visit starts the trial; the admin is never locked; a locked plan
  const {row,access}=await accountPlan(env,user,{admin,now});
  assert.equal(row.trial_ends_at,iso(7*DAY));assert.equal(access.state,'trial');assert.equal(admin.rows.length,1);
  await accountPlan(env,user,{admin,now});assert.equal(admin.rows.length,1);
- assert.equal((await accountPlan({...env,THRIVE_TRIAL_DAYS:'14'},account(),{admin,now})).row.trial_ends_at,iso(14*DAY));
+ assert.equal((await accountPlan({...env,THRIVE_TRIAL_DAYS:'14'},account('fourteen@example.test'),{admin,now})).row.trial_ends_at,iso(14*DAY));
+ // One trial per person: the same Gmail address with a +tag or dots starts without one.
+ assert.equal((await accountPlan(env,account('Pat.Smith@gmail.com'),{admin,now})).row.trial_ends_at,iso(7*DAY));
+ assert.equal((await accountPlan(env,account('patsmith+again@gmail.com'),{admin,now})).row.trial_ends_at,now.toISOString());
  const late=account(),boss=account('Admin@Thrive.test');
  admin.rows.push({owner_id:late.owner,trial_ends_at:iso(-DAY),comped:false,status:null},{owner_id:boss.owner,trial_ends_at:iso(-DAY),comped:false,status:null});
  await assert.rejects(requireAccess(env,late,{admin,now}),e=>e instanceof StoreError&&e.status===402&&/free trial has ended\. Subscribe at https:\/\/app\.thrive\.test/.test(e.message));

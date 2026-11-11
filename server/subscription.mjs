@@ -6,6 +6,7 @@ import {StoreError,loadWorkspace} from './store.mjs';
 import {json,readBody,errorResponse} from './http.mjs';
 import {adminClient,SupabaseDatabase} from './supabase-store.mjs';
 import {adminEmail} from './beta.mjs';
+import {canonicalEmail} from './limits.mjs';
 import {appOrigin} from './auth.mjs';
 import {siteOrigin} from './hosts.mjs';
 import {sendOwnerNotification,disconnectNylas} from './nylas.mjs';
@@ -40,8 +41,15 @@ export async function accountPlan(env,user,{admin,now=new Date(),fresh=false}={}
  admin??=adminClient(env);
  let row=await readRow(admin,owner);
  if(!row){
-  // First visit: the trial starts now.
-  const {error}=await admin.from('thrive_subscriptions').upsert({owner_id:owner,email:String(user.email||'').slice(0,254),trial_ends_at:new Date(now.getTime()+trialDays(env)*DAY).toISOString()},{onConflict:'owner_id',ignoreDuplicates:true});
+  // First visit: the trial starts now, unless the same person (same address without +tags or Gmail dots)
+  // already had one; then the account starts without a trial and can subscribe.
+  const canonical=canonicalEmail(user.email);
+  let trialEnds=new Date(now.getTime()+trialDays(env)*DAY);
+  if(canonical){const {data:twin}=await admin.from('thrive_subscriptions').select('owner_id').eq('canonical_email',canonical).neq('owner_id',owner).limit(1);if(twin?.length)trialEnds=now;}
+  const fields={owner_id:owner,email:String(user.email||'').slice(0,254),trial_ends_at:trialEnds.toISOString()};
+  let {error}=await admin.from('thrive_subscriptions').upsert({...fields,canonical_email:canonical},{onConflict:'owner_id',ignoreDuplicates:true});
+  // Before the canonical_email migration runs, insert without it.
+  if(error&&/canonical_email/.test(error.message||''))({error}=await admin.from('thrive_subscriptions').upsert(fields,{onConflict:'owner_id',ignoreDuplicates:true}));
   if(error)throw unavailable();
   row=await readRow(admin,owner);if(!row)throw unavailable();
  }
@@ -196,6 +204,7 @@ export async function alertPayment(env,txn,{admin,fetcher=fetch}={}){
 export async function handlePaddleWebhook(request,env,{admin,now=Date.now(),fetcher=fetch}={}){try{
  if(request.method!=='POST')throw new StoreError('Method not allowed.',405);
  if(!billingEnabled(env)||!env.PADDLE_WEBHOOK_SECRET)throw new StoreError('Billing is not configured.',503);
+ if(Number(request.headers.get('content-length')||0)>1_000_000)throw new StoreError('Request is too large.',413);
  const raw=await request.text();if(raw.length>1_000_000)throw new StoreError('Request is too large.',413);
  if(!await verifyPaddleSignature(raw,request.headers.get('paddle-signature'),env.PADDLE_WEBHOOK_SECRET,{now}))throw new StoreError('Invalid signature.',401);
  let event;try{event=JSON.parse(raw);}catch{throw new StoreError('Invalid JSON.');}
@@ -251,7 +260,7 @@ export async function lockedOwners(env,{admin,now=new Date()}={}){
 export async function sendTrialEmails(env,{admin,send=sendOwnerNotification,now=new Date(),fetcher=fetch}={}){
  if(!billingEnabled(env)||!env.RESEND_API_KEY||!env.THRIVE_NOTIFICATIONS_FROM)return {sent:0};
  admin??=adminClient(env);
- const {data,error}=await admin.from('thrive_subscriptions').select(COLUMNS).is('status',null).eq('comped',false).neq('trial_email','ended').gt('trial_ends_at',new Date(now.getTime()-3*DAY).toISOString()).limit(500);
+ const {data,error}=await admin.from('thrive_subscriptions').select(COLUMNS).is('status',null).eq('comped',false).neq('trial_email','ended').gt('trial_ends_at',new Date(now.getTime()-3*DAY).toISOString()).order('trial_ends_at').limit(500);
  if(error)throw Error('Trial lookup failed.');
  const due=(data||[]).map(row=>[row,trialEmailDue(row,{now})]).filter(([row,stage])=>stage&&row.email&&!isAdmin(env,row.email));
  if(!due.length)return {sent:0};

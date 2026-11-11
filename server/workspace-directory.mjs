@@ -26,9 +26,13 @@ export async function listWorkspaces(db,user){
  const row=await directory(db,user),workspaces=await Promise.all(row.state.workspaceIds.map(async id=>{const w=await loadWorkspace(db,workspaceOwner(user.owner,id)),s=w?.state.settings;return {id,name:s?.business||user.business||'My workspace',logo:s?.workspaceLogo||''};}));
  return {workspaces,profile:row.state.profile};
 }
+export const MAX_WORKSPACES=20;
 export async function createWorkspace(db,user,{id,name,currency}){
  if(!validId(id)||typeof name!=='string'||!name.trim()||name.trim().length>80||!Object.hasOwn(currencies,currency))throw new StoreError('Enter a workspace name and choose a currency.');
- const row=await directory(db,user),state=emptyWorkspace({...user,name:row.state.profile.name,business:name.trim()});
+ const row=await directory(db,user);
+ // A cap keeps one account from creating workspaces without end (each can hold up to 8 MB).
+ if(!row.state.workspaceIds.includes(id)&&row.state.workspaceIds.length>=MAX_WORKSPACES)throw new StoreError(`You can have up to ${MAX_WORKSPACES} workspaces. Write to us if you need more.`,409);
+ const state=emptyWorkspace({...user,name:row.state.profile.name,business:name.trim()});
  Object.assign(state.settings,row.state.profile,{currency});
  // A client-generated ID makes a retry safe even if the response is lost.
  await bootstrap(db,workspaceOwner(user.owner,id),state);
