@@ -56,7 +56,7 @@ a.blog-kicker:hover{text-decoration:underline}
 
 /* Cards */
 .blog-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px;margin:48px 0 0;padding:0;list-style:none}
-.blog-card a{display:grid;gap:10px;height:100%;color:inherit;text-decoration:none}
+.blog-card a{display:grid;gap:10px;align-content:start;height:100%;color:inherit;text-decoration:none}
 .blog-art{--art-bg:color-mix(in srgb,var(--c) 9%,var(--bg));--art-paper:var(--paper);--art-line:var(--rule);--art-ink:var(--ink);--art-shadow:rgba(16,24,40,.07);display:block;aspect-ratio:16/10;overflow:hidden;border-radius:14px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 18%,transparent)}
 :root:not([data-theme=light]) .blog-art{--art-bg:color-mix(in srgb,var(--c) 16%,var(--bg));--art-shadow:rgba(0,0,0,.35)}
 .blog-art svg{display:block;width:100%;height:100%}
