@@ -1018,7 +1018,7 @@ button.m-item:hover{background:var(--nav-hover)}
 /* ---- Phone: its own composition ---- */
 @media (max-width:640px){
  :root{--t-b:17px}
- .bar-act a:not(.btn,.gh-link){display:none}
+ .bar-act>a:not(.btn,.gh-link){display:none}
  .hero{padding-top:44px}
  .hero-head{gap:22px}
  .hero h1{font-size:10.6vw}

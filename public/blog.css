@@ -89,7 +89,9 @@ a.blog-kicker:hover{text-decoration:underline}
  .bar-act .blog-lang{margin-right:0}
  .bar-act .blog-lang summary{gap:0;padding:0 10px;font-size:0}
  .bar-act .blog-lang summary>span{font-size:16px;line-height:1}
- .bar-act .blog-lang ul{font-size:14px}
+ /* The open list hangs from the header's right margin, not the small flag button, so it stays on screen. */
+ .bar-act .blog-lang{position:static}
+ .bar-act .blog-lang ul{right:var(--m);top:calc(100% - 6px);font-size:14px}
 }
 @media (max-width:379px){
  .bar-act .gh-link{display:none}
