@@ -79,3 +79,18 @@ a.blog-kicker:hover{text-decoration:underline}
 
 .bar-act .blog-lang a{display:flex}
 .bar-act .blog-lang{margin-right:4px}
+
+/* Phones: the header row must fit the screen, or the whole page scrolls sideways. The language
+   menu shows only its flag (the name stays in the aria-label and in the open list). */
+@media (max-width:640px){
+ .bar-row{gap:12px}
+ .bar .mark{flex:none}
+ .bar-act{gap:8px;min-width:0}
+ .bar-act .blog-lang{margin-right:0}
+ .bar-act .blog-lang summary{gap:0;padding:0 10px;font-size:0}
+ .bar-act .blog-lang summary>span{font-size:16px;line-height:1}
+ .bar-act .blog-lang ul{font-size:14px}
+}
+@media (max-width:379px){
+ .bar-act .gh-link{display:none}
+}
