@@ -59,7 +59,7 @@ export function renderShots(body,lang,hasShot=()=>true){
 }
 const firstShot=body=>/<figure data-shot="([a-z0-9-]+)">/.exec(body)?.[1]||'overview';
 
-const LOGO='<svg class="mark-logo" viewBox="0 0 40 40" width="28" height="28" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#3d63ee"/><path d="M27.6 12.4c-3.3-.4-6.7 1.1-9.3 3.7l-1.5 1.6-3.6.4-2.4 2.4 3.4 1 2.3 2.3 1 3.4 2.4-2.4.4-3.6 1.6-1.5c2.6-2.6 4.1-6 3.7-9.3Z" fill="#fff"/></svg>';
+const LOGO='<img src="/favicon.svg" width="28" height="28" alt="">';
 const THEME_SCRIPT=`<script>(()=>{const d=document.documentElement,dark=matchMedia('(prefers-color-scheme: dark)');let p='system';try{p=localStorage.getItem('thrive-theme')||'system'}catch{}const apply=()=>{d.dataset.theme=p==='light'||p==='dark'?p:dark.matches?'dark':'light'};apply();dark.addEventListener('change',()=>{if(p!=='light'&&p!=='dark')apply()})})()</script>`;
 const fmtDate=(lang,iso)=>new Intl.DateTimeFormat(lang,{year:'numeric',month:'long',day:'numeric',timeZone:'UTC'}).format(new Date(iso+'T00:00:00Z'));
 
