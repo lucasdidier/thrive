@@ -60,8 +60,8 @@ a.blog-kicker:hover{text-decoration:underline}
 .blog-art{--art-bg:color-mix(in srgb,var(--c) 9%,var(--bg));--art-paper:var(--paper);--art-line:var(--rule);--art-ink:var(--ink);--art-shadow:rgba(16,24,40,.07);display:block;aspect-ratio:16/10;overflow:hidden;border-radius:14px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 18%,transparent)}
 :root:not([data-theme=light]) .blog-art{--art-bg:color-mix(in srgb,var(--c) 16%,var(--bg));--art-shadow:rgba(0,0,0,.35)}
 .blog-art svg{display:block;width:100%;height:100%}
-.blog-card a .blog-art svg>g,.blog-card a .blog-art svg>path,.blog-card a .blog-art svg>rect:nth-child(n+5){transition:transform 300ms var(--ease-out)}
-@media (hover:hover) and (prefers-reduced-motion:no-preference){.blog-card a:hover .blog-art svg>g{transform:translateY(-3px)}}
+.blog-card a .blog-art svg>g,.blog-card a .blog-art svg>path,.blog-card a .blog-art svg>rect:nth-child(n+5){transition:translate 300ms var(--ease-out)}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.blog-card a:hover .blog-art svg>g{translate:0 -3px}}
 .blog-card strong{font-size:20px;line-height:1.3;letter-spacing:-.015em;font-weight:650;color:var(--text-strong)}
 .blog-card span{color:var(--text-2);font-size:var(--t-s)}
 .blog-card .blog-card-meta{margin-top:6px;color:var(--text-3);font-size:13px}
