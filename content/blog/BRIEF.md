@@ -38,7 +38,7 @@ call-to-action box after it, so don't write a button.
 ## Screenshots available (real Thrive UI, fictional studio "Morgan Studio" and its clients)
 - overview: home dashboard (business totals, calendar, open projects, items awaiting a response)
 - clients: client list with pipeline stages
-- project: a project page (tasks, documents, invoices and time for one client project)
+- project: a project page (documents, invoices, time and messages for one client project; Thrive has no task list)
 - proposal: a proposal open in the editor, with its client view
 - contracts: a contract open (terms, signature status)
 - client-proposal: what the client sees when they open the proposal link (accept online)

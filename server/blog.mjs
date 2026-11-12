@@ -8,7 +8,7 @@ import {LANGUAGES,languageFlag} from '../public/i18n.js';
 import {blogArt} from './blog-art.mjs';
 
 export const BLOG_LANGUAGES=LANGUAGES.map(l=>l.code);
-export const ARTICLE_ORDER=['how-to-invoice-clients','proposals-and-contracts','generate-leads-with-forms','automate-busy-work','time-tracking-for-freelancers','how-to-price-freelance-work','client-portals','run-your-business-with-ai'];
+export const ARTICLE_ORDER=['how-to-invoice-clients','proposals-and-contracts','generate-leads-with-forms','automate-busy-work','time-tracking-for-freelancers','how-to-price-freelance-work','client-portals','run-your-business-with-ai','onboard-new-clients','book-client-calls','manage-multiple-projects','weekly-admin-routine','simple-crm-for-freelancers'];
 export const PUBLISHED='2026-11-11';
 
 // The page around the articles, in each language.
@@ -143,10 +143,12 @@ export function renderBlog(pathname,{articles,origin='',app='',hasShot=()=>true,
  const available=BLOG_LANGUAGES.filter(l=>articles[slug]?.[l]);
  const alternates=Object.fromEntries(available.map(l=>[l,blogURL(l,slug)]));
  const others=order.filter(s=>s!==slug).map(s=>[s,load(s,lang)]).filter(([,x])=>x).slice(0,3);
- const date=fmtDate(lang,published);
+ // An article can carry its own "date" in its meta (YYYY-MM-DD); otherwise the blog's launch date.
+ const day=/^\d{4}-\d{2}-\d{2}$/.test(a.meta.date||'')?a.meta.date:published;
+ const date=fmtDate(lang,day);
  const image=`/blog-shots/${a.shotLang}/${a.cover}.webp`;
- const jsonld={'@context':'https://schema.org','@type':'BlogPosting',headline:a.meta.title,description:a.meta.description,inLanguage:lang,datePublished:published,image:origin+image,mainEntityOfPage:origin+blogURL(lang,slug),author:{'@type':'Organization',name:'Thrive'},publisher:{'@type':'Organization',name:'Thrive',logo:{'@type':'ImageObject',url:origin+'/apple-touch-icon.png'}}};
- const body=`<article class="wrap blog-article"><header class="blog-head"><div class="blog-head-row"><a class="blog-kicker" href="${blogURL(lang)}">← ${esc(blogText(lang,'all'))}</a>${languageMenu(lang,l=>blogURL(l,slug),available)}</div><h1>${esc(a.meta.title)}</h1><p class="blog-meta"><time datetime="${published}">${esc(date)}</time> · ${esc(blogText(lang,'min',{n:a.meta.minutes}))}</p></header><div class="blog-body">${renderShots(a.body,lang,hasShot)}</div>${cta(lang,app)}${others.length?`<section class="blog-more" aria-labelledby="blog-more-title"><h2 id="blog-more-title">${esc(blogText(lang,'more'))}</h2><ul class="blog-cards">${others.map(([s,x])=>card(lang,s,x)).join('')}</ul></section>`:''}</article>`;
+ const jsonld={'@context':'https://schema.org','@type':'BlogPosting',headline:a.meta.title,description:a.meta.description,inLanguage:lang,datePublished:day,image:origin+image,mainEntityOfPage:origin+blogURL(lang,slug),author:{'@type':'Organization',name:'Thrive'},publisher:{'@type':'Organization',name:'Thrive',logo:{'@type':'ImageObject',url:origin+'/apple-touch-icon.png'}}};
+ const body=`<article class="wrap blog-article"><header class="blog-head"><div class="blog-head-row"><a class="blog-kicker" href="${blogURL(lang)}">← ${esc(blogText(lang,'all'))}</a>${languageMenu(lang,l=>blogURL(l,slug),available)}</div><h1>${esc(a.meta.title)}</h1><p class="blog-meta"><time datetime="${day}">${esc(date)}</time> · ${esc(blogText(lang,'min',{n:a.meta.minutes}))}</p></header><div class="blog-body">${renderShots(a.body,lang,hasShot)}</div>${cta(lang,app)}${others.length?`<section class="blog-more" aria-labelledby="blog-more-title"><h2 id="blog-more-title">${esc(blogText(lang,'more'))}</h2><ul class="blog-cards">${others.map(([s,x])=>card(lang,s,x)).join('')}</ul></section>`:''}</article>`;
  return page({lang,title:`${a.meta.title} · Thrive`,description:a.meta.description,path:blogURL(lang,slug),alternates,image,jsonld,body,origin,app,home:homeFor(lang)});
 }
 

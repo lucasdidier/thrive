@@ -10,6 +10,11 @@ const ART={
  'how-to-price-freelance-work':{color:'#22a06b',draw:pricing},
  'client-portals':{color:'#0b93d6',draw:portal},
  'run-your-business-with-ai':{color:'#d9468f',draw:ai},
+ 'onboard-new-clients':{color:'#9b51e0',draw:onboarding},
+ 'book-client-calls':{color:'#0fa5b8',draw:booking},
+ 'manage-multiple-projects':{color:'#5b5bd6',draw:board},
+ 'weekly-admin-routine':{color:'#e5484d',draw:routine},
+ 'simple-crm-for-freelancers':{color:'#65a30d',draw:crm},
 };
 const FALLBACK={color:'#3d63ee',draw:proposal};
 
@@ -52,6 +57,35 @@ function portal(){
 }
 function ai(){
  return `${paper(56,52,184,62,16)}${line(76,72,120)}${line(76,88,84)}<path d="M78 114l-6 16 22-16z" fill="var(--art-paper)" stroke="var(--art-line)"/><rect x="74" y="112" width="24" height="4" fill="var(--art-paper)"/><rect x="153" y="139" width="190" height="68" rx="16" fill="var(--art-shadow)"/><rect x="150" y="133" width="190" height="68" rx="16" fill="var(--c)"/><path d="M314 201l10 16-24-16z" fill="var(--c)"/>${[0,1,2].map(i=>`<rect x="170" y="${152+i*15}" width="${[132,150,96][i]}" height="6" rx="3" fill="#fff" opacity="${[.95,.7,.7][i]}"/>`).join('')}${sparkle(292,70,1.5)}${sparkle(330,104,.7)}${sparkle(96,176,.8)}${sparkle(260,46,.5)}`;
+}
+const tick=(cx,cy,on)=>on?`<circle cx="${cx}" cy="${cy}" r="9" fill="var(--c)"/><path d="M${cx-4} ${cy}l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`:`<circle cx="${cx}" cy="${cy}" r="8" fill="none" stroke="var(--art-line)" stroke-width="2"/>`;
+const CLOCK='<circle r="9" stroke-width="3"/><path d="M0-5v5l4 3" stroke-width="3"/>';
+// A welcome checklist: three steps done, one to go, and the new client waving in.
+function onboarding(){
+ const rows=[0,1,2,3].map(i=>`${tick(156,94+i*32,i<3)}${line(176,91+i*32,[96,74,108,62][i],6,i<3?'.22':'.12')}`).join('');
+ return `${paper(130,38,176,190,14)}${accent(148,56,70,9)}${line(148,72,44,5,'.1')}${rows}${person(96,92,26,'.95')}${badge(306,48,20,'<path d="M0-8v16M-8 0h16"/>')}`;
+}
+// A week of slots with one booked, and a clock.
+function booking(){
+ const slots=[0,1,2,3,4].flatMap(c=>[0,1,2].map(r=>{const x=126+c*36,y=104+r*30,on=c===2&&r===1;return on?`<rect x="${x}" y="${y}" width="28" height="22" rx="6" fill="var(--c)"/><path d="M${x+9} ${y+11}l3 3 6-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`:`<rect x="${x}" y="${y}" width="28" height="22" rx="6" fill="var(--c)" opacity="${(c+r)%3?'.12':'.24'}"/>`;})).join('');
+ return `${paper(108,40,200,180,14)}<rect x="108" y="40" width="200" height="40" rx="14" fill="var(--c)" opacity=".12"/>${line(126,56,70,7,'.22')}${[0,1,2,3,4].map(i=>line(132+i*36,88,16,5,'.14')).join('')}${slots}${badge(306,190,22,CLOCK)}`;
+}
+// A board: three stage columns with project cards, one card mid-move.
+function board(){
+ const card=(x,y,w,o)=>`<rect x="${x}" y="${y}" width="${w}" height="34" rx="8" fill="var(--art-paper)" stroke="var(--art-line)"/>${accent(x+10,y+10,22,6)}${line(x+10,y+21,w-36,5,o)}`;
+ const col=(x,n)=>`<rect x="${x}" y="58" width="92" height="160" rx="12" fill="var(--c)" opacity=".12"/>${line(x+12,70,40,6,'.22')}${Array.from({length:n},(_,i)=>card(x+8,88+i*42,76,'.14')).join('')}`;
+ return `${col(62,3)}${col(162,2)}${col(262,1)}<g transform="rotate(-6 262 160)"><rect x="232" y="143" width="78" height="36" rx="8" fill="var(--art-shadow)"/>${card(228,138,78,'.18')}</g>`;
+}
+// The week with Friday picked out, and a short routine ticked off.
+function routine(){
+ const days=[0,1,2,3,4].map(i=>i===4?`<rect x="${70+i*30}" y="56" width="24" height="34" rx="8" fill="var(--c)"/><circle cx="${82+i*30}" cy="80" r="3" fill="#fff"/>`:`<rect x="${70+i*30}" y="56" width="24" height="34" rx="8" fill="var(--c)" opacity=".14"/>`).join('');
+ const rows=[0,1,2].map(i=>`${tick(214,126+i*30,i<2)}${line(232,123+i*30,[78,64,88][i],6,i<2?'.22':'.12')}`).join('');
+ return `${days}${paper(190,92,150,128,14)}${accent(206,106,52,7)}${rows}${badge(110,166,34,`<g transform="scale(1.6)" stroke-width="2.2">${CLOCK.replaceAll(' stroke-width="3"','')}</g>`)}`;
+}
+// Client cards in a stack, with a returning client highlighted.
+function crm(){
+ const cardRow=(x,y,o,hi)=>`${paper(x,y,190,52,12,hi?' stroke-width="2" style="stroke:var(--c)"':'')}${person(x+26,y+26,16,hi?'.95':'.4')}${line(x+52,y+16,hi?96:80,7,hi?'.26':'.16')}${line(x+52,y+31,60,5,o)}${hi?accent(x+140,y+28,34,10,5):`<rect x="${x+140}" y="${y+28}" width="34" height="10" rx="5" fill="var(--art-ink)" opacity=".1"/>`}`;
+ return `${cardRow(96,48,'.1',false)}${cardRow(116,104,'.14',true)}${cardRow(96,160,'.1',false)}${badge(316,108,20,'<path d="M0 7C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 14z" fill="#fff" stroke="none"/>')}`;
 }
 
 export function blogArt(slug){
