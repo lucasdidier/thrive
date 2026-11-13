@@ -24,7 +24,7 @@ Thrive keeps its name and existing outline mark. The user requested a visual rev
 
 ## Evidence
 
-Existing product brief: `../docs/product-brief.md`. Current implementation: `public/`, `ui/`, `fluid/`. The seed dataset is fictional and must not be represented as customer proof. Design research and primary visual sources are recorded in `docs/lago-design-audit.md`.
+Current implementation: `public/`, `ui/`, `fluid/`. The seed dataset is fictional and must not be represented as customer proof.
 
 ## Principles
 
