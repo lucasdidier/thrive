@@ -29,7 +29,7 @@ Go to Cloudflare → runonthrive.com → Email → Email Routing and forward `he
 3. Go to Authentication → Sign In / Providers. Turn **Google on** (you'll paste its keys in step 3 below) and keep **Email on** for "Email me a code". In the Email provider, set **Email OTP length** to 6. Thrive never offers passwords in the beta; the server only accepts Google or a code for an invited email.
 4. Go to Authentication → URL Configuration. Set Site URL to `https://app.runonthrive.com` and add the redirect URL `https://app.runonthrive.com/auth/callback`.
 5. Put the project reference (from Settings → General) into `SUPABASE_URL` in `wrangler.production.jsonc`.
-6. Invite yourself in the SQL Editor: `insert into thrive_beta_invites(email) values ('owner@example.com');`
+6. Invite yourself in the SQL Editor: `insert into thrive_beta_invites(email) values ('you@example.com');`
 
 ## 3. Google sign-in
 
