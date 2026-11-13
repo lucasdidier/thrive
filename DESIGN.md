@@ -1,6 +1,6 @@
 # Thrive · Cobalt workspace
 
-October 29, 2026. This replaces the application’s evergreen/monochrome visual direction. The explicit references are LAGO and Attio; the user selected light-first with matching dark mode. See [the visual audit](docs/lago-design-audit.md) for evidence and reasoning.
+October 29, 2026. This replaces the application’s evergreen/monochrome visual direction. The explicit references are LAGO and Attio; the user selected light-first with matching dark mode.
 
 ## Intent
 

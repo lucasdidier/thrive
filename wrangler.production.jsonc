@@ -32,8 +32,9 @@
     // Open sign-up: anyone can create an account with Google or an emailed code, free for now.
     // "invite" restricts sign-in to emails in thrive_beta_invites.
     "THRIVE_ACCESS": "open",
-    // Receives access requests and error alerts.
-    "THRIVE_ADMIN_EMAIL": "owner@example.com",
+    // THRIVE_ADMIN_EMAIL (the admin's sign-in address: receives access requests, error and payment alerts,
+    // opens /api/digest, is never locked and is left out of analytics) is a Worker secret:
+    // npx wrangler secret put THRIVE_ADMIN_EMAIL --config wrangler.production.jsonc
     "THRIVE_SUPPORT_EMAIL": "hello@runonthrive.com",
     // Gets a "New sign-up" email the first time each new account opens its workspace (server/signup-alert.mjs).
     "THRIVE_SIGNUP_ALERTS": "hello@runonthrive.com",
@@ -47,7 +48,7 @@
     "TURNSTILE_SITE_KEY": "0x4AAAAAAF8wInBdIrFrA7yZ",
     // Daily digest at 7:00 Lisbon (server/digest.mjs): visits, sign-ups, plans, usage and Search Console.
     // Search Console needs the GSC_SERVICE_ACCOUNT secret (a service account JSON key).
-    "THRIVE_DIGEST_TO": "owner@example.com",
+    "THRIVE_DIGEST_TO": "hello@runonthrive.com",
     "GSC_SITE": "sc-domain:runonthrive.com",
     "THRIVE_BILLING": "paddle",
     "PADDLE_CLIENT_TOKEN": "live_1c255d0743c442de3269d7ce3f9",

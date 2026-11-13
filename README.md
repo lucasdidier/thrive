@@ -37,7 +37,7 @@ Production answers on two hostnames from the same Worker (`server/hosts.mjs`): `
 
 `npm run check:production` (run by both production scripts) refuses to build while a `REPLACE_` value or legal-page placeholder remains. Both builds write `dist/server/wrangler.json`, so build and deploy one target at a time. Deploy from a clean checkout of a commit so uncommitted work never ships.
 
-Non-secret settings live in the Wrangler config `vars`. Secrets are stored on each Worker with `npx wrangler secret put NAME --config <config>`: `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `NYLAS_API_KEY`, `NYLAS_CLIENT_ID`, `NYLAS_TOKEN_ENCRYPTION_KEY`, `RESEND_API_KEY` and, optionally, `GOOGLE_CLIENT_SECRET`. An hourly Cron Trigger sends summary emails and invites, and production writes a nightly backup to the `thrive-backups` R2 bucket.
+Non-secret settings live in the Wrangler config `vars`. Secrets are stored on each Worker with `npx wrangler secret put NAME --config <config>`: `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `NYLAS_API_KEY`, `NYLAS_CLIENT_ID`, `NYLAS_TOKEN_ENCRYPTION_KEY`, `RESEND_API_KEY` and, optionally, `GOOGLE_CLIENT_SECRET`. Staging also keeps `THRIVE_OWNER_EMAIL`, and production `THRIVE_ADMIN_EMAIL`, as secrets, so those addresses aren't in the repository. An hourly Cron Trigger sends summary emails and invites, and production writes a nightly backup to the `thrive-backups` R2 bucket.
 
 Production setup, step by step: [`docs/launch.md`](docs/launch.md). Running your own copy: [`docs/self-hosting.md`](docs/self-hosting.md), or hand [`docs/agent-setup.md`](docs/agent-setup.md) to a coding agent. The original ChatGPT Sites build (`npm run build`, `.openai/hosting.json`) is legacy and must not be deployed as a public app.
 
@@ -272,7 +272,7 @@ The Website contact template includes topic, name, email, and message. It matche
 
 Accounts have two runtime modes. Without `THRIVE_AUTH_MODE=supabase` (the local preview), D1/R2 data and the loopback mock sign-in are used, and `/auth/sign-up` and `/auth/sign-in` don't accept accounts. With it, Supabase handles identity, and the access mode decides who can sign in:
 
-- **Owner only** (`THRIVE_OWNER_EMAIL`, used by staging): Google sign-in for that one confirmed address.
+- **Owner only** (`THRIVE_OWNER_EMAIL` Worker secret, used by staging): Google sign-in for that one confirmed address.
 - **Invite only** (`THRIVE_ACCESS=invite`): Google or an emailed 6-digit code, for addresses in `thrive_beta_invites`.
 - **Open** (`THRIVE_ACCESS=open`, used by production): anyone can create an account with Google or an emailed code.
 - **Otherwise:** email/password sign-up with confirmation and recovery, plus Google/Microsoft when `THRIVE_GOOGLE_LOGIN` / `THRIVE_MICROSOFT_LOGIN` are on.
