@@ -83,3 +83,26 @@ test('cards show an illustration per article, the same in every language', async
  for(const slug of ARTICLE_ORDER)assert.match(blogArt(slug),/^<span class="blog-art" style="--c:#[0-9a-f]{6}" aria-hidden="true"><svg/);
  assert.doesNotMatch(blogArt('how-to-invoice-clients'),/€/,'the euro sign is an entity');
 });
+
+test('each article shows its own publication date, the same in every language', ()=>{
+ const src=(d,extra='')=>`<!--meta {${d?`"date":"${d}",`:''}"title":"T","description":"D","minutes":3${extra}}-->\n<p>Hi</p>`;
+ assert.equal(parseArticle(src('2026-11-16')).meta.date,'2026-11-16');
+ assert.equal(parseArticle(src('16 Nov')).meta.date,undefined);
+ const articles={a:{en:src('2026-11-16'),fr:src('2026-11-16')},b:{en:src('')}};
+ const page=renderBlog('/blog/a',{articles,published:'2026-11-11'});
+ assert.match(page,/<time datetime="2026-11-16">November 16, 2026<\/time>/);
+ assert.match(page,/"datePublished":"2026-11-16"/);
+ const index=renderBlog('/blog',{articles,published:'2026-11-11'});
+ assert.match(index,/<time datetime="2026-11-16">November 16, 2026<\/time> · /);
+ for(const slug of readdirSync(dir).filter(s=>existsSync(new URL(`${s}/en.html`,dir)))){
+  const en=parseArticle(readFileSync(new URL(`${slug}/en.html`,dir),'utf8')).meta.date;
+  assert.ok(en,`${slug} has a date`);
+  for(const l of BLOG_LANGUAGES){const f=new URL(`${slug}/${l}.html`,dir);if(existsSync(f))assert.equal(parseArticle(readFileSync(f,'utf8')).meta.date,en,`${slug}/${l}`);}
+ }
+});
+
+test('the blog index lists the newest articles first', ()=>{
+ const src=d=>`<!--meta {"date":"${d}","title":"${d}","description":"D","minutes":3}-->\n<p>Hi</p>`;
+ const html=renderBlog('/blog',{articles:{old:{en:src('2026-11-11')},newer:{en:src('2026-11-16')},mid:{en:src('2026-11-12')}}});
+ assert.deepEqual([...html.matchAll(/<strong>([^<]*)<\/strong>/g)].map(m=>m[1]),['2026-11-16','2026-11-12','2026-11-11']);
+});

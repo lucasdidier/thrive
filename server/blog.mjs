@@ -46,7 +46,7 @@ export function parseArticle(source){
  if(!m)throw Error('Article is missing its meta comment.');
  const meta=JSON.parse(m[1]);
  if(!meta.title||!meta.description)throw Error('Article meta needs a title and a description.');
- return {meta:{title:String(meta.title),description:String(meta.description),minutes:Math.max(1,Number(meta.minutes)||5)},body:String(source).slice(m[0].length).trim()};
+ return {meta:{title:String(meta.title),description:String(meta.description),minutes:Math.max(1,Number(meta.minutes)||5),...(/^\d{4}-\d{2}-\d{2}$/.test(meta.date||"")?{date:meta.date}:{})},body:String(source).slice(m[0].length).trim()};
 }
 
 // Screenshot placeholders → images in the article's language, else English.
@@ -121,7 +121,7 @@ function cta(lang,app){
  return `<aside class="blog-cta" aria-labelledby="blog-cta-title"><h2 id="blog-cta-title">${t('ctaTitle')}</h2><p>${t('ctaText')}</p><a class="btn" href="${app}/auth/sign-up?lang=${lang}">${t('ctaButton')}</a><p class="blog-cta-note">${t('ctaNote')}</p></aside>`;
 }
 function card(lang,slug,a){
- return `<li class="blog-card"><a href="${blogURL(lang,slug)}">${blogArt(slug)}<span class="blog-card-meta">${esc(blogText(lang,'min',{n:a.meta.minutes}))}</span><strong>${esc(a.meta.title)}</strong><span>${esc(a.meta.description)}</span></a></li>`;
+ return `<li class="blog-card"><a href="${blogURL(lang,slug)}">${blogArt(slug)}<span class="blog-card-meta"><time datetime="${a.meta.date||PUBLISHED}">${esc(fmtDate(lang,a.meta.date||PUBLISHED))}</time> · ${esc(blogText(lang,'min',{n:a.meta.minutes}))}</span><strong>${esc(a.meta.title)}</strong><span>${esc(a.meta.description)}</span></a></li>`;
 }
 
 // articles: {slug: {lang: source}}. Returns null when the page doesn't exist.
@@ -132,7 +132,8 @@ export function renderBlog(pathname,{articles,origin='',app='',hasShot=()=>true,
  const load=(s,l)=>{const src=articles[s]?.[l];if(!src)return null;const a=parseArticle(src);const cover=firstShot(a.body);return {...a,cover,shotLang:hasShot(l,cover)?l:'en'};};
  const order=ARTICLE_ORDER.filter(s=>articles[s]).concat(Object.keys(articles).filter(s=>!ARTICLE_ORDER.includes(s)).sort());
  if(!slug){
-  const list=order.map(s=>[s,load(s,lang)]).filter(([,a])=>a);
+  // Newest first; articles from the same day keep ARTICLE_ORDER (the sort is stable).
+  const list=order.map(s=>[s,load(s,lang)]).filter(([,a])=>a).sort(([,x],[,y])=>(y.meta.date||published).localeCompare(x.meta.date||published));
   if(!list.length)return null;
   const available=BLOG_LANGUAGES.filter(l=>order.some(s=>articles[s]?.[l]));
   const alternates=Object.fromEntries(available.map(l=>[l,blogURL(l)]));
