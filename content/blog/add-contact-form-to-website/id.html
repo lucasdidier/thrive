@@ -1,0 +1,80 @@
+<!--meta {"date":"2026-11-16","title":"Cara menambahkan formulir kontak ke situs web Anda (Squarespace, Webflow, WordPress, atau HTML biasa)","description":"Tambahkan formulir kontak ke situs Anda: pertanyaan yang perlu diajukan, popup atau inline, perlindungan spam dasar, dan apa yang terjadi setelah dikirim.","minutes":7} -->
+<p class="lede">Alamat email yang terpampang di situs web terasa seperti pilihan paling ramah, tapi justru menambah pekerjaan. Pertanyaan datang tanpa konteks, tercampur di kotak masuk yang sama dengan semua hal lain, dan Anda menyalin detailnya ke catatan secara manual, itu pun kalau ingat. Formulir kontak kecil menyelesaikan masalah itu. Pengunjung tahu apa yang perlu disampaikan, Anda mendapat informasi yang sama setiap kali, dan setiap pertanyaan masuk ke satu tempat. Begini cara memasangnya di situs yang sudah Anda punya.</p>
+
+<h2>Formulir kontak atau formulir pertanyaan proyek?</h2>
+<p>Keduanya berkaitan, tapi tugasnya berbeda:</p>
+<ul>
+  <li><strong>Formulir kontak</strong> itu singkat dan terbuka. Nama, email, alasan menghubungi, dan pesan. Untuk "saya punya pertanyaan", "saya ingin bekerja sama dengan Anda", dan "boleh saya wawancarai Anda untuk podcast saya".</li>
+  <li><strong>Formulir pertanyaan proyek</strong> menyaring sebuah proyek: ruang lingkup, anggaran, jadwal, dari mana mereka tahu tentang Anda. Formulir ini lebih panjang dan tempatnya di halaman "Bekerja dengan saya".</li>
+</ul>
+<p>Kebanyakan freelancer butuh formulir kontak di setiap halaman dan formulir pertanyaan proyek di satu halaman. Artikel ini membahas formulir kontak dan cara memasangnya. Kalau Anda ingin merancang formulir yang menyaring prospek berdasarkan anggaran dan waktu, baca <a href="/blog/id/generate-leads-with-forms">cara freelancer mendapat prospek yang lebih banyak (dan lebih baik)</a>, yang membahas sisi pertanyaan proyek secara detail.</p>
+
+<h2>Apa yang perlu ditanyakan (dan apa yang tidak)</h2>
+<p>Setiap field tambahan mengurangi jumlah kiriman. Untuk formulir kontak, empat pertanyaan sudah cukup:</p>
+<ol>
+  <li><strong>Kenapa Anda menghubungi saya?</strong> Daftar pilihan singkat: Menyewa jasa saya untuk proyek, Kolaborasi, Pembicara atau media, Lainnya. Dengan begitu Anda bisa memilah dan memprioritaskan tanpa harus membaca setiap pesan lebih dulu.</li>
+  <li><strong>Nama Anda.</strong> Satu field. Memisahkan nama depan dan belakang hanya menambah hambatan tanpa manfaat di tahap ini.</li>
+  <li><strong>Email Anda.</strong> Wajib, dan dicek formatnya valid.</li>
+  <li><strong>Pesan Anda.</strong> Kotak teks besar dengan placeholder yang membantu, seperti "Beberapa baris tentang proyek atau pertanyaan Anda".</li>
+</ol>
+<p>Jangan tanyakan nomor telepon (kecuali Anda memang menelepon balik), ukuran perusahaan, alamat, dan apa pun yang baru Anda butuhkan setelah mulai bekerja sama. Semua itu bisa dikumpulkan nanti dengan formulir onboarding, seperti dijelaskan di <a href="/blog/id/onboard-new-clients">cara onboarding klien baru</a>.</p>
+<p>Dua detail kecil membuat perbedaan besar: judul yang terdengar seperti Anda ("Ceritakan apa yang ada di pikiran Anda", bukan "Kontak"), dan pesan terima kasih yang menjelaskan apa yang terjadi selanjutnya ("Saya membalas setiap pesan dalam satu hari kerja").</p>
+
+<h2>Popup atau inline?</h2>
+<p>Ada dua cara umum menempatkan formulir di situs web, dan keduanya punya tempatnya masing-masing.</p>
+<table>
+  <thead><tr><th>Penempatan</th><th>Cocok untuk</th><th>Perlu diperhatikan</th></tr></thead>
+  <tbody>
+    <tr><td>Popup dari tombol</td><td>Tombol "Hubungi saya" di header atau di akhir setiap studi kasus</td><td>Pengunjung harus mengeklik dulu sebelum melihat formulirnya</td></tr>
+    <tr><td>Inline di halaman</td><td>Halaman Kontak khusus, atau bagian bawah halaman beranda</td><td>Memakan tempat; butuh tinggi yang pas</td></tr>
+  </tbody>
+</table>
+<p>Popup bekerja dengan baik karena membuat orang tetap di tempatnya. Seseorang yang sedang membaca studi kasus Anda mengeklik "Mulai proyek", mengisi formulir di atas halaman, lalu menutupnya tanpa kehilangan posisi bacanya. Formulir inline lebih baik kalau seluruh halaman memang dibuat untuk dihubungi. Banyak freelancer memakai keduanya: tombol di header di semua halaman, dan formulir inline di halaman Kontak.</p>
+
+<h2>Dasar-dasar menangkal spam</h2>
+<p>Formulir publik apa pun pasti kebagian spam. Anda tidak butuh banyak untuk membuatnya tetap terkendali:</p>
+<ul>
+  <li><strong>Jangan tampilkan alamat email Anda sebagai teks biasa</strong> di samping formulir. Scraper akan menemukannya, dan spam tetap datang.</li>
+  <li><strong>Pakai field "honeypot" tersembunyi.</strong> Manusia tidak pernah melihatnya, bot mengisinya, dan kirimannya ditolak.</li>
+  <li><strong>Batasi seberapa sering formulir bisa dikirim,</strong> supaya satu skrip tidak bisa mengirimi Anda ratusan pesan.</li>
+  <li><strong>Jadikan email wajib dan tervalidasi.</strong> Ini menyaring bot yang paling malas dan memastikan Anda selalu bisa membalas.</li>
+  <li><strong>Perhatikan polanya.</strong> Kalau spam selalu memilih "Lainnya", itu tanda untuk memeriksa pilihan itu lebih dulu dengan curiga.</li>
+</ul>
+<p>Formulir Thrive menyertakan beberapa yang pertama di server: field honeypot tersembunyi, batas kiriman per formulir per jam dan per hari, dan validasi setiap jawaban. Tidak ada CAPTCHA, sehingga formulirnya lebih ramah bagi pengunjung sungguhan.</p>
+
+<h2>Siapkan formulirnya di Thrive</h2>
+<p>Buka <strong>Formulir → Formulir baru</strong> dan pilih template awal <strong>Kontak situs web</strong>. Template ini berisi persis empat pertanyaan di atas (alasan menghubungi, nama, email, dan pesan) dan desain gelap yang bisa Anda ubah. Edit kata-katanya supaya terdengar seperti Anda, ubah pilihannya agar sesuai dengan pekerjaan Anda, dan tandai pertanyaan yang Anda butuhkan sebagai wajib.</p>
+<p>Lalu buka <strong>Tampilan &amp; branding situs web</strong> di editor untuk menyesuaikannya dengan situs Anda: font, latar belakang, warna teks dan tombol, radius sudut, judul singkat, label tombol, catatan footer, pesan terima kasih, dan tata letak dua kolom. Perubahan di sini berlaku untuk tautan formulir dan sematan apa pun yang sudah Anda pasang, jadi Anda bisa mengubah desainnya nanti tanpa menyentuh situs web lagi.</p>
+
+<h2>Tambahkan ke situs web Anda</h2>
+<p>Buka formulirnya, pilih <strong>Bagikan</strong>, lalu pindah ke tab <strong>Sematkan di situs</strong>. Kalau formulirnya belum punya tautan, <strong>Buat tautan sematan</strong> akan membuatnya (tautan formulir secara default tidak kedaluwarsa). Lalu:</p>
+<ol>
+  <li>Pilih <strong>Penempatan</strong>: <strong>Popup dari tombol</strong> atau <strong>Langsung di halaman Anda</strong>.</li>
+  <li>Untuk popup, atur <strong>Label tombol</strong>, misalnya "Hubungi saya". Untuk inline, Anda mengatur judul frame sebagai gantinya.</li>
+  <li>Pilih <strong>Salin kode</strong>, dan pakai <strong>Pratinjau formulir</strong> untuk melihatnya seperti pengunjung. Perlu dicatat, kiriman dari pratinjau disimpan sebagai respons sungguhan.</li>
+</ol>
+<figure data-shot="form-embed"><figcaption>Dialog Bagikan formulir, tab Sematkan di situs: penempatan diatur ke Popup dari tombol, dengan kode sematan siap disalin.</figcaption></figure>
+<p>Untuk popup, kodenya dua baris: tag script untuk <code>embed.js</code> Thrive, yang Anda tambahkan sekali per halaman, dan tautan yang membuka formulir. Tautan itu mengikuti gaya situs Anda sendiri. Kalau Anda sudah punya tombol yang ingin dipakai, buka <strong>Gunakan tombol yang ada</strong> untuk melihat atribut yang perlu ditambahkan ke tombol itu. Untuk penempatan inline, kodenya satu iframe, lebar penuh, dengan tinggi yang bisa Anda ubah di potongan kodenya (awalnya 820 piksel).</p>
+<p>Tempat menempelkannya tergantung pembuat situs Anda:</p>
+<ul>
+  <li><strong>Squarespace:</strong> tambahkan blok Code di tempat yang Anda inginkan untuk formulir, lalu tempel kodenya. Blok Code tergantung paket Squarespace Anda, jadi cek apakah paket Anda mengizinkannya.</li>
+  <li><strong>Webflow:</strong> seret elemen Code Embed dan tempel kodenya. Skrip berjalan di situs yang sudah dipublikasikan, bukan di dalam Designer, jadi uji popup-nya setelah publikasi.</li>
+  <li><strong>WordPress:</strong> di editor blok, tambahkan blok Custom HTML. Beberapa paket hosting menghapus skrip; dalam hal itu, iframe inline adalah pilihan yang lebih sederhana.</li>
+  <li><strong>HTML biasa:</strong> tempel kodenya di tempat yang Anda inginkan untuk tombol atau formulir di halaman.</li>
+</ul>
+<p>Aturan umumnya: popup membutuhkan situs yang mengizinkan JavaScript kustom, dan versi inline membutuhkan situs yang mengizinkan iframe. Kalau situs Anda mengirim Content Security Policy, kebijakan itu harus mengizinkan alamat Thrive untuk skrip, gaya, dan frame. Thrive tidak pernah mengubah situs web Anda sendiri; tidak ada yang muncul sampai Anda menempelkan kodenya.</p>
+<p>Tidak punya situs web, atau tidak punya akses ke kodenya? Tab <strong>Tautan klien</strong> di dialog yang sama memberi Anda tautan biasa ke formulir, yang bisa dipakai di tanda tangan email, bio, atau profil media sosial.</p>
+
+<h2>Apa yang terjadi setelah seseorang mengirim</h2>
+<p>Di sinilah formulir mengungguli alamat email. Dengan template awal Kontak situs web, setiap kiriman:</p>
+<ul>
+  <li><strong>Muncul di daftar kiriman formulir di Thrive</strong>, dengan jawaban persis seperti yang diberikan, meskipun Anda mengedit pertanyaannya nanti.</li>
+  <li><strong>Dicocokkan ke klien berdasarkan email.</strong> Kalau emailnya milik klien yang sudah ada, responsnya ditautkan ke klien itu. Kalau tidak, Thrive membuat klien baru dengan nama dan emailnya. Kiriman anonim tidak pernah menimpa detail yang sudah Anda simpan untuk klien yang ada.</li>
+  <li><strong>Tidak membuat proyek.</strong> Pesan kontak belum tentu pekerjaan. Kalau Anda ingin setiap kiriman menjadi proyek terencana, pakai template awal Permintaan proyek, atau ubah kegunaan setiap jawaban di <strong>Opsi lainnya → Gunakan jawaban untuk</strong> pada pertanyaan tersebut.</li>
+</ul>
+<figure data-shot="forms"><figcaption>Kiriman ke sebuah formulir di Thrive, masing-masing ditautkan ke klien.</figcaption></figure>
+<p>Thrive bisa mengirimi Anda email saat ada respons baru (Pengaturan akun → Notifikasi), dan <a href="/blog/id/daily-summary-email">email ringkasan harian</a> mencantumkan respons baru bersama semua hal lain yang menunggu Anda. Alur kerja juga bisa berjalan saat formulir dikirim, misalnya untuk membuat draf balasan yang bisa Anda tinjau. Lihat <a href="/blog/id/automate-busy-work">cara mengotomatiskan pekerjaan rutin</a>.</p>
+<p>Lalu balas. Cepat dan singkat lebih baik daripada lambat dan sempurna: ucapkan terima kasih, ulangi apa yang Anda pahami, dan usulkan langkah berikutnya. Kalau langkah berikutnya adalah telepon, tautan pemesanan menghemat satu putaran email; <a href="/blog/id/book-client-calls">cara menjadwalkan telepon dengan klien</a> menjelaskan cara menyiapkannya.</p>
+
+<h2>Coba di proyek Anda berikutnya</h2>
+<p>Pilih template awal Kontak situs web, sesuaikan empat pertanyaan dan warnanya, lalu tempel kode popup di balik tombol "Hubungi saya" di situs Anda. Thrive seharga $10 per bulan atau $100 per tahun, dengan uji coba gratis 7 hari tanpa perlu kartu. <a href="https://app.runonthrive.com/auth/sign-up">Mulai uji coba Anda</a> dan lihat pertanyaan berikutnya datang dalam keadaan sudah tertaut ke klien.</p>

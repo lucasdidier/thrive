@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Müşterilerini tablodan taşımak (yolda hiçbir şey kaybetmeden)","description":"Müşteri tablonun sınırına geldiğini gösteren işaretler, taşımadan önce temizlik, sütunları eşleştirmek, sorunlu satırları düzeltmek ve süreci yeniden kurmak.","minutes":7} -->
+<p class="lede">Neredeyse her freelancer bir tabloyla başlar. "Müşteriler" adlı bir sekme, ad, e-posta ve şirket için birkaç sütun, belki elle renklendirdiğin bir durum sütunu. Bir süre işe yarar, sonra bir gün sırf "bu kişiye en son ne zaman fatura kestim?" sorusunu yanıtlamak için üç farklı dosya ve eski bir e-posta yazışması açtığını fark edersin. Taşınma zamanı tam olarak o andır. Bu rehberde zamanın geldiğini nasıl anlayacağını, taşınmanın sancısız olması için tabloyu nasıl temizleyeceğini ve diğer tarafta ne yapacağını anlatıyoruz.</p>
+
+<h2>Tabloyu aştığını gösteren işaretler</h2>
+<p>Sorun tablonun kendisi değil. Sıkıntı, müşteri listesi bir liste olmaktan çıkıp işinin merkezine dönüştüğünde başlar. Sık görülen bazı işaretler:</p>
+<ul>
+  <li><strong>Aynı müşteri birkaç yerde yaşıyor.</strong> Müşteri tablosunda bir satır, fatura takip dosyanda bir başkası, bir teklif klasöründe üçüncüsü. Bir e-posta adresini değiştirdiğinde ikisi artık yanlış.</li>
+  <li><strong>Geçmiş satırda değil.</strong> Northwind'den Sam'in müşterin olduğunu görebiliyorsun ama hangi projeleri yaptığını, ne teklif ettiğini ya da hangi faturanın hâlâ açık olduğunu göremiyorsun.</li>
+  <li><strong>Durum sütunu yalan söylüyor.</strong> Üç hafta önce imza atmış bir müşteri için "Teklif gönderildi" yazıyor, çünkü teklifi güncelledin ve tabloyu unuttun.</li>
+  <li><strong>Açmaktan kaçınıyorsun.</strong> Tabloyu güncellemek angarya gibi geliyorsa güncellenmez; güvenmediğin bir liste ise hiç liste olmamasından kötüdür.</li>
+</ul>
+<p>Bunlardan iki üçü tanıdık geliyorsa tablo görevini tamamlamış demektir. Şimdi amaç, müşteri kaydının ve onlar için yaptığın işin birbirine bağlı olduğu bir yer; böylece teklif ve fatura gönderdikçe geçmiş kendiliğinden oluşur. Hafif bir CRM'in neleri tutması gerektiğine dair genel resmi görmek istersen <a href="/blog/tr/simple-crm-for-freelancers">freelancer'lar için basit bir CRM</a> yazımızı oku.</p>
+
+<h2>Taşımadan önce tabloyu temizle</h2>
+<p>Otuz dakikalık bir toparlama, sonradan bir öğleden sonrayı düzeltmelerle geçirmekten kurtarır. Tablonun bir kopyası üzerinde çalış.</p>
+<ol>
+  <li><strong>Her müşteri için bir satır.</strong> Boş satırları, ara toplam satırlarını ve "BU SATIRIN ALTI ARŞİV" ayracını kaldır. Yinelenen kayıtları birleştir: aynı kişinin farklı yazılışlarla iki kez girilmesi en yaygın karmaşadır.</li>
+  <li><strong>Benzersiz adlara sahip tek bir başlık satırı.</strong> Birleştirilmiş başlık hücrelerini sil ve belirsiz sütunları yeniden adlandır ("Bilgi", "Notlar" olsun).</li>
+  <li><strong>Her müşterinin bir e-postası olmalı.</strong> Düzgün bir araç müşterileri bununla ayırt eder, sen de onlara bununla ulaşırsın. Eksik olanları doldur ya da e-postası olmayan müşterileri sonra ilgilenmek üzere ayrı bir sekmeye taşı.</li>
+  <li><strong>Değerleri tutarlı yap.</strong> Her durum için tek bir yazım seç ("Aktif"; "aktif", "AKTİF" ve "güncel" değil). Tarihleri "mart ortası" yerine 2026-03-14 şeklinde yaz. Tutarlardan para birimi simgelerini ve binlik ayraçlarını kaldır, yani 4.800 € 4800 olsun.</li>
+</ol>
+<p>Ardından CSV olarak dışa aktar. Google Sheets'te bu Dosya → İndir → Virgülle ayrılmış değerler yoludur. Excel'de Farklı Kaydet'i seçip "CSV UTF-8"i seç. Notion'da veritabanını Markdown &amp; CSV olarak dışa aktar ve CSV dosyasını kullan. Herhangi bir müşterinin adında aksanlı ya da özel bir harf varsa UTF-8 önemlidir: Zoë ve Müller, Zoë ve Müller olarak gelmeli.</p>
+
+<h3>İçe aktarma öncesi hızlı kontrol listesi</h3>
+<ul>
+  <li>Tek bir başlık satırı, boş ya da birleştirilmiş hücre yok.</li>
+  <li>Her müşteri için bir satır, yinelenenler birleştirilmiş.</li>
+  <li>Her satırda bir e-posta adresi.</li>
+  <li>Durumlar her seferinde aynı şekilde yazılmış.</li>
+  <li>Tarihler YYYY-AA-GG, tutarlar düz sayı olarak.</li>
+  <li>UTF-8 CSV olarak kaydedilmiş.</li>
+</ul>
+
+<h2>Hangi sütunların alana dönüşeceğine karar ver</h2>
+<p>İçe aktarmadan önce kalan sütunlarına bak ve onları üç gruba ayır.</p>
+<ul>
+  <li><strong>Standart müşteri bilgileri:</strong> e-posta, ad ve soyad, şirket adı, kişi adı. Her müşteri aracında bunlar vardır.</li>
+  <li><strong>Kendi takip sütunların:</strong> kaynak, ilişki aşaması, kim yönlendirdi, son görüşme. Bunlar özel alanlara dönüşür.</li>
+  <li><strong>Aslında müşteri verisi olmayan şeyler:</strong> proje adları, fatura numaraları, alacak tutarları. Bunları dışarıda bırak. Bir müşteri satırına sıkıştırılmak yerine projelere ve faturalara aitler.</li>
+</ul>
+<p>Thrive'da özel alanları içe aktarmadan <em>önce</em> oluştur ki sütunlarının gidecek bir yeri olsun. Müşteri tablosundaki <strong>+</strong> düğmesini ya da <strong>Sütunlar → Özel alanları yönet</strong>'i kullan. Alanlar metin, sayı, para birimi, tarih, onay kutusu, seçim, çoklu seçim, e-posta ya da URL olabilir. Durum sütunu için bir seçim alanı kullan ve tablonda geçen seçenekleri birebir ekle (örneğin Potansiyel, Aktif, Eski), çünkü içe aktarılan değerlerin mevcut bir seçenekle eşleşmesi gerekir.</p>
+
+<h2>Sütunları eşleştir</h2>
+<p>Thrive'da <strong>Müşteriler → Müşterileri içe aktar</strong>'a git. Pencere, virgül ya da noktalı virgülle ayrılmış, en fazla 500 müşteri ve 2 MB boyutunda bir UTF-8 CSV kabul eder. Temiz bir şablonla başlamayı tercih edersen <strong>Örnek CSV’yi indir</strong>, başlık olarak tüm müşteri alanlarını ve aktif özel alanlarını içeren, üzerine yazacağın bir örnek satırla birlikte bir dosya verir.</p>
+<p>Dosyanı seçtikten sonra <strong>Sütunları eşleştir</strong> adımı her başlığını, altında ilk satırındaki değerle birlikte listeler; böylece içinde gerçekte ne olduğunu görürsün. Her birinin yanında ait olduğu Thrive alanını ya da <strong>İçe aktarma</strong>'yı seçersin. Thrive, "Email address", "Company" ya da "Contact name" gibi tanınabilir bir başlık olduğunda eşleşme önerir. Özel alanların listede "Özel: Kaynak", "Özel: İlişki" gibi görünür.</p>
+<figure data-shot="import-map"><figcaption>Bir tablonun sütunlarını Thrive'ın müşteri alanlarıyla eşleştirmek; her başlığın altında ilk satırdan örnek bir değer.</figcaption></figure>
+<p>Birkaç kural işi kolaylaştırır: tek zorunlu alan E-posta'dır, her Thrive alanı yalnızca bir kez eşleştirilebilir ve İçe aktarma'da bıraktığın her sütun bir sonraki ekranda yok sayılanlar arasında listelenir, yani hiçbir şey sessizce kaybolmaz. Logolar, projeler ve faturalar gibi ilişkili kayıtlar ve hesaplanan toplamlar CSV alanı değildir.</p>
+<p>Bir sütun boşsa Thrive, e-posta adresinden mantıklı öneriler doldurur. Gmail ya da Outlook adresi bir bireyi, kurumsal bir alan adı ise bir şirketi ve alan adından alınan bir şirket adını önerir. Adlar sam.lee@ gibi adreslerden önerilebilir, ama info@ ya da hello@ gibi ortak kutulardan önerilmez. Bunları kesin bilgi değil, başlangıç noktası olarak gör.</p>
+
+<h2>İlgilenmen gereken satırları düzelt</h2>
+<p><strong>İçe aktarmayı gözden geçir</strong>'i seçtiğinde <strong>Müşterileri gözden geçir</strong> ekranı açılır: kaç satırın içe aktarılmaya hazır olduğu, kaç yinelenen kaydın atlanacağı ve kaç satırın ilgilenmeni gerektirdiğine dair bir özet ve altında her satırı gösteren bir tablo. Thrive'ın çıkardığı değerler önerilen olarak işaretlenir, böylece herhangi bir şey kaydedilmeden önce müşteri türünü ve adı kontrol edebilirsin.</p>
+<figure data-shot="import-review"><figcaption>İçe aktarma incelemesi: içe aktarılmaya hazır satırlar ve aktarılmadan önce ilgilenilmesi gereken bir satır.</figcaption></figure>
+<p>Satırlar genelde birkaç sebepten ilgi ister:</p>
+<ul>
+  <li><strong>Geçersiz bir e-posta.</strong> Bir yazım hatası, eksik bir alan adı, tek hücrede iki adres.</li>
+  <li><strong>Alana uymayan bir değer.</strong> "Mart" diye yazılmış bir tarih, para birimi alanında "4.800 €" (4800 kullan) ya da onay kutusu alanında "Belki" (true ya da false kullan).</li>
+  <li><strong>Bilinmeyen bir seçenek.</strong> Seçenekleri Potansiyel, Aktif ve Eski olan bir durum sütununda "Aktf".</li>
+  <li><strong>Bozuk bir satır.</strong> Başlıktan fazla ya da az hücre; çoğu zaman bir notun içindeki tırnak içine alınmamış bir virgülden kaynaklanır.</li>
+</ul>
+<p>Bunlarla başa çıkmanın üç yolu var. Satırda <strong>Düzenle</strong>'yi kullan, düzelt ve <strong>Satırı kaydet</strong>. Sorunlu her satırı sebebiyle birlikte içeren bir CSV almak için <strong>Sorunları indir</strong>'i kullan, bunları tablonda düzelt ve ikinci bir parti olarak içe aktar. Ya da sorunlu satırlar ihtiyacın olmayan eski kişilerse <strong>Geçersiz satırları atla ve yalnızca geçerli müşterileri içe aktar</strong>'ı işaretle. Bunlardan birini seçmediğin sürece, ilgi bekleyen satırlar varken Thrive içe aktarma yapmaz.</p>
+<p>Yinelenen kayıtlar senin yerine halledilir. Çalışma alanında zaten bulunan (arşivlenmiş müşteriler dahil) ya da dosyada iki kez geçen her e-posta, yeniden içe aktarılmak yerine atlanır. Yani birkaç satırı düzelttikten sonra listeni ikiye katlamadan içe aktarmayı güvenle tekrar çalıştırabilirsin.</p>
+<p>Zaten <a href="/blog/tr/automate-busy-work">iş akışları</a> kullanıyorsan, bunlar içe aktarılan müşterilerde de çalışır; içe aktarma başına 100 eylemle sınırlı olarak. "Bir müşteri oluşturulduğunda" iş akışın varsa daha küçük partiler hâlinde içe aktar ve ardından çalışma geçmişini kontrol et.</p>
+<p>Dosyayı bir yapay zekâ asistanına vermeyi mi tercih edersin? İçe aktarma penceresindeki <strong>MCP kullan</strong>, içe aktarmayı önizleyip onayını bekleyebilen Claude ya da ChatGPT'yi nasıl bağlayacağını gösterir. Bkz. <a href="/blog/tr/run-your-business-with-ai">idari işlerin için yapay zekâ kullanmak</a>.</p>
+
+<h2>İçe aktarmadan sonra: renk kodları yerine görünümler</h2>
+<p>Taşınmanın amacı aynı listeye başka bir yerde sahip olmak değildi. Amaç, listeyi elle güncel tutmayı bırakmaktı. Tablodaki alışkanlıklarının yerini birkaç şey alıyor:</p>
+<ul>
+  <li><strong>Renkli satırlar yerine pano görünümü.</strong> Müşteri listesini <strong>Pano görünümü</strong>'ne çevir, <strong>Grupla</strong>'yı seç ve İlişki ya da Aşama seçim alanını belirle. Her seçenek bir sütun olur ve bir müşteri kartını Potansiyel'den Aktif'e sürüklemek alanı günceller.</li>
+  <li><strong>Gizli satırlar yerine filtreler.</strong> Özel alanlar dahil her alana göre ara, filtrele ve sırala; her hafta kullandığın görünümleri kaydet.</li>
+  <li><strong>Not sütunları yerine bağlı işler.</strong> Yeni projeler, teklifler, sözleşmeler ve faturalar müşteriye bağlı olarak oluşturulur, böylece kayıt senin yazdığın bir satırı değil, gerçek geçmişi gösterir.</li>
+</ul>
+<figure data-shot="clients"><figcaption>İçe aktarmadan sonra süreç aşamasına göre gruplanmış müşteri listesi.</figcaption></figure>
+<p>Eski tabloyu bir ay boyunca salt okunur yedek olarak tut, sonra arşivle. Kendini onu "sadece kontrol etmek için" açarken yakalarsan, aradığın şeyi bir alan olarak ekle. Buradan sonrasını <a href="/blog/tr/manage-multiple-projects">birden fazla müşteri projesini yönetmek</a> yazımız devralıyor; <a href="/blog/tr/daily-summary-email">günlük özet e-postası</a> da listeyi açmadan neyin değiştiğini söylüyor. Bunun yerine hepsi bir arada bir araçtan mı geliyorsun? <a href="/blog/tr/honeybook-alternative">HoneyBook alternatifi</a> rehberimize göz at.</p>
+
+<h2>Bir sonraki projende dene</h2>
+<p>Tablonu temizle, iki üç özel alan oluştur ve müşteri listeni tek oturuşta içe aktar. Thrive aylık 10 $ ya da yıllık 100 $; 7 günlük ücretsiz deneme var, kart gerekmiyor. <a href="https://app.runonthrive.com/auth/sign-up">Denemeni başlat</a> ve tabloyu bu hafta emekliye ayır.</p>

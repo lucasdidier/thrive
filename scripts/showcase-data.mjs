@@ -2,7 +2,7 @@
 // domain functions so every record is valid. All names and emails are made up (.example).
 import {readFileSync} from 'node:fs';
 import {saveClient,createProject} from '../public/domain.js';
-import {submitForm,createDocument,publishDocument,respondDocument} from '../public/workspace-domain.js';
+import {submitForm,createDocument,saveDocument,publishDocument,respondDocument} from '../public/workspace-domain.js';
 import {savePortal,portalCandidates} from '../public/portal-domain.js';
 import {saveTimeEntry} from '../public/time-domain.js';
 import {startTimer} from '../public/timer-domain.js';
@@ -106,6 +106,24 @@ export function showcaseWorkspace(s,now=new Date()){
   const options=portalCandidates(s,juniper.id);
   savePortal(s,juniper.id,{enabled:true,title:'Juniper Studio × Morgan Studio',intro:'Everything for your brand identity project in one place: documents to review, invoices and progress.',sections:{documents:true,invoices:true,projects:true,forms:false,meetings:false},documents:options.documents.map(d=>d.id),invoices:options.invoices.map(i=>i.id),projects:options.projects.map(p=>p.id)});
  }
+ // Package proposals (client chooses one of three), for the blog's packages screenshots: one sent (client view)
+ // and one draft (the editor's Pricing step).
+ const packageProposal=(name,id,title,publish)=>{
+  const cl=s.clients.find(c=>c.name===name);if(!cl||s.documents.some(d=>d.id===id))return;
+  const d=createDocument(s,{clientId:cl.id,kind:'proposal',templateId:'package-proposal',title});d.id=id;
+  const item=(id,name,rate,description='')=>({id,name,description,rate,mode:'required',group:'',min:1,max:1,quantity:1,unit:'item',billingModel:'fixed'});
+  const pack=(id,name,description,items)=>({id,name,description,packageItems:items,taxRate:0,rate:items.reduce((a,x)=>a+x.rate,0),quantity:1,min:1,max:1,unit:'item',billingModel:'fixed',mode:'choice',group:'Package'});
+  saveDocument(s,d.id,{title,scope:`Three ways to refresh the ${name} identity, from a focused logo update to a complete brand system. Pick the package that fits this season.`,
+   deliverables:'Logo and wordmark\nColour palette and typography\nBrand guidelines (Complete package)',terms:'Start date: within 2 weeks of acceptance\nDelivery: 3 to 6 weeks depending on the package\nPayment: 50% deposit, balance on delivery',
+   showPricing:true,selectionMode:'single',responseMode:'acceptance',offers:[
+    pack('pkg-essential','Essential','A refreshed logo and wordmark, ready in 3 weeks.',[item('pkg-e1','Logo refresh',180000),item('pkg-e2','Wordmark',60000)]),
+    pack('pkg-signature','Signature','Logo, palette and typography, with one round of packaging mockups.',[item('pkg-s1','Logo refresh',180000),item('pkg-s2','Colour palette and typography',120000),item('pkg-s3','Packaging mockups',90000)]),
+    pack('pkg-complete','Complete','Everything in Signature plus a 24-page brand guide your team can use.',[item('pkg-c1','Logo refresh',180000),item('pkg-c2','Colour palette and typography',120000),item('pkg-c3','Packaging mockups',90000),item('pkg-c4','Brand guidelines',150000)]),
+   ]});
+  if(publish)publishDocument(s,d.id);
+ };
+ packageProposal('Fable Books','doc-packages','Fable Books: brand packages',true);
+ packageProposal('Bloom Florals','doc-packages-draft','Bloom Florals: brand packages',false);
  // Clients open on the board grouped by service.
  initCRM(s).active.clients='board';
  // A timer that has been running for 1 h 12 min.

@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Je klanten uit een spreadsheet halen (zonder onderweg iets kwijt te raken)","description":"Signalen dat je klantenspreadsheet zijn grens bereikt, hoe je hem opschoont, en hoe je kolommen koppelt, probleemrijen oplost en je pipeline opnieuw opbouwt.","minutes":7} -->
+<p class="lede">Bijna elke freelancer begint met een spreadsheet. Een tabblad "Klanten", een paar kolommen voor naam, e-mail en bedrijf, misschien een statuskolom die je met de hand inkleurt. Dat werkt een tijdje, en op een dag merk je dat je drie verschillende bestanden en een oude mailwisseling hebt geopend om één vraag te beantwoorden: "wanneer heb ik deze persoon voor het laatst gefactureerd?" Dat is het moment om over te stappen. Deze gids laat zien hoe je merkt dat het tijd is, hoe je de sheet opschoont zodat de overstap soepel gaat, en wat je daarna doet.</p>
+
+<h2>Signalen dat je de spreadsheet ontgroeid bent</h2>
+<p>Een spreadsheet is niet het probleem. Het gaat mis als de klantenlijst geen lijst meer is, maar het middelpunt van je bedrijf. Een paar veelvoorkomende signalen:</p>
+<ul>
+  <li><strong>Dezelfde klant staat op meerdere plekken.</strong> Eén rij in de klantensheet, nog een in je factuuroverzicht, een derde in een offertemap. Verander een e-mailadres en twee ervan kloppen niet meer.</li>
+  <li><strong>De geschiedenis staat niet in de rij.</strong> Je ziet dat Sam van Northwind een klant is, maar niet welke projecten je deed, wat je offreerde of welke factuur nog openstaat.</li>
+  <li><strong>De statuskolom liegt.</strong> Er staat "Offerte verstuurd" bij een klant die drie weken geleden tekende, omdat je de offerte bijwerkte en de sheet vergat.</li>
+  <li><strong>Je opent hem liever niet.</strong> Voelt het bijwerken van de sheet als een klus, dan gebeurt het niet, en een lijst die je niet vertrouwt is erger dan geen lijst.</li>
+</ul>
+<p>Klinken twee of drie hiervan bekend, dan heeft de sheet zijn werk gedaan. Het doel is nu een plek waar de klantgegevens en het werk dat je voor die klant doet aan elkaar gekoppeld zijn, zodat de geschiedenis zichzelf opbouwt terwijl je offertes en facturen verstuurt. Wil je het grotere plaatje van wat een lichte CRM moet bevatten, lees dan <a href="/blog/nl/simple-crm-for-freelancers">een eenvoudige CRM voor freelancers</a>.</p>
+
+<h2>Schoon de sheet op voordat je verhuist</h2>
+<p>Een halfuur opruimen bespaart je later een middag repareren. Werk in een kopie van de sheet.</p>
+<ol>
+  <li><strong>Eén rij per klant.</strong> Verwijder lege rijen, subtotaalrijen en de scheidingsregel "ARCHIEF ONDER DEZE REGEL". Voeg dubbelen samen: dezelfde persoon twee keer ingevoerd met een andere spelling is de meest voorkomende rommel.</li>
+  <li><strong>Eén kopregel, met unieke namen.</strong> Verwijder samengevoegde titelcellen en geef vage kolommen een betere naam ("Info" wordt "Notities").</li>
+  <li><strong>Elke klant heeft een e-mailadres nodig.</strong> Zo houdt een goede tool klanten uit elkaar, en zo bereik je ze. Vul de ontbrekende aan, of zet klanten zonder e-mailadres op een apart tabblad om later af te handelen.</li>
+  <li><strong>Maak waarden consistent.</strong> Kies één manier om elke status te schrijven ("Actief", niet "actief", "ACTIEF" en "lopend"). Schrijf datums als 2026-03-14 in plaats van "half maart". Haal valutatekens en scheidingstekens voor duizendtallen uit bedragen, zodat € 4.800 wordt 4800.</li>
+</ol>
+<p>Exporteer hem daarna als CSV. In Google Sheets is dat Bestand → Downloaden → Kommagescheiden waarden. In Excel kies je Opslaan als en dan "CSV UTF-8". In Notion exporteer je de database als Markdown &amp; CSV en gebruik je het CSV-bestand. UTF-8 is belangrijk als een klant een accent in zijn naam heeft: Zoë en Müller moeten aankomen als Zoë en Müller.</p>
+
+<h3>Een snelle checklist voor de import</h3>
+<ul>
+  <li>Eén kopregel, geen lege of samengevoegde cellen.</li>
+  <li>Eén rij per klant, dubbelen samengevoegd.</li>
+  <li>Een e-mailadres in elke rij.</li>
+  <li>Statussen elke keer op dezelfde manier gespeld.</li>
+  <li>Datums als JJJJ-MM-DD, bedragen als gewone getallen.</li>
+  <li>Opgeslagen als UTF-8 CSV.</li>
+</ul>
+
+<h2>Bepaal welke kolommen velden worden</h2>
+<p>Bekijk voor de import je overgebleven kolommen en verdeel ze in drie groepen.</p>
+<ul>
+  <li><strong>Standaard klantgegevens:</strong> e-mail, voor- en achternaam, bedrijfsnaam, naam contactpersoon. Elke klanttool heeft die.</li>
+  <li><strong>Je eigen kolommen om dingen bij te houden:</strong> bron, relatiefase, doorverwezen door, laatste contactmoment. Die worden eigen velden.</li>
+  <li><strong>Dingen die eigenlijk geen klantgegevens zijn:</strong> projectnamen, factuurnummers, openstaande bedragen. Laat die weg. Ze horen bij projecten en facturen, niet in een klantrij geperst.</li>
+</ul>
+<p>Maak in Thrive de eigen velden aan <em>vóór</em> je importeert, zodat je kolommen ergens heen kunnen. Gebruik de knop <strong>+</strong> in de klantentabel of <strong>Kolommen → Eigen velden beheren</strong>. Velden kunnen tekst, getal, valuta, datum, selectievakje, keuzelijst, meerkeuzelijst, e-mail of URL zijn. Gebruik voor een statuskolom een keuzelijstveld en voeg precies de opties toe die je sheet gebruikt (bijvoorbeeld Lead, Actief, Voorbij), want geïmporteerde waarden moeten overeenkomen met een bestaande optie.</p>
+
+<h2>Koppel de kolommen</h2>
+<p>Ga in Thrive naar <strong>Klanten → Klanten importeren</strong>. Het venster accepteert een UTF-8 CSV van maximaal 500 klanten en 2 MB, gescheiden door komma's of puntkomma's. Begin je liever met een schoon sjabloon, dan geeft <strong>Voorbeeld-CSV downloaden</strong> je een bestand met elk klantveld en je actieve eigen velden als kopjes, plus een voorbeeldrij om te vervangen.</p>
+<p>Nadat je je bestand gekozen hebt, toont de stap <strong>Kolommen koppelen</strong> elk van je kopjes met de waarde uit je eerste rij eronder, zodat je ziet wat er echt in staat. Naast elk kopje kies je het Thrive-veld waar het bij hoort, of <strong>Niet importeren</strong>. Thrive stelt een koppeling voor als een kopje herkenbaar is, zoals "Email address", "Company" of "Contact name". Je eigen velden staan in de lijst als "Eigen: Bron", "Eigen: Relatie" enzovoort.</p>
+<figure data-shot="import-map"><figcaption>De kolommen van een spreadsheet koppelen aan de klantvelden van Thrive, met een voorbeeldwaarde uit de eerste rij onder elk kopje.</figcaption></figure>
+<p>Een paar regels houden het overzichtelijk: E-mail is het enige verplichte veld, elk Thrive-veld kan één keer gekoppeld worden, en elke kolom die je op Niet importeren laat staan, wordt op het volgende scherm als genegeerd vermeld, dus er verdwijnt niets ongemerkt. Logo's, gekoppelde records zoals projecten en facturen, en berekende totalen zijn geen CSV-velden.</p>
+<p>Is een kolom leeg, dan vult Thrive verstandige suggesties in op basis van het e-mailadres. Een Gmail- of Outlook-adres wijst op een particulier; een zakelijk domein wijst op een bedrijf, met een bedrijfsnaam afgeleid van het domein. Namen kunnen worden voorgesteld uit adressen als sam.lee@, maar niet uit gedeelde inboxen als info@ of hello@. Zie dit als startpunt, niet als feit.</p>
+
+<h2>Los de rijen op die aandacht nodig hebben</h2>
+<p>Kies <strong>Import controleren</strong> en je krijgt <strong>Klanten controleren</strong>: een overzicht van hoeveel rijen klaar zijn om te importeren, hoeveel dubbelen worden overgeslagen en hoeveel rijen aandacht nodig hebben, met daaronder een tabel van elke rij. Waarden die Thrive heeft afgeleid, zijn gemarkeerd als voorgesteld, zodat je het klanttype en de naam kunt nakijken voordat er iets wordt opgeslagen.</p>
+<figure data-shot="import-review"><figcaption>De importcontrole: rijen die klaar zijn om te importeren, met één rij die eerst aandacht nodig heeft.</figcaption></figure>
+<p>Rijen hebben meestal om een paar redenen aandacht nodig:</p>
+<ul>
+  <li><strong>Een ongeldig e-mailadres.</strong> Een typfout, een ontbrekend domein, twee adressen in één cel.</li>
+  <li><strong>Een waarde die niet bij het veld past.</strong> Een datum geschreven als "maart", "€ 4.800" in een valutaveld (gebruik 4800), of "Misschien" in een selectievakje (gebruik true of false).</li>
+  <li><strong>Een onbekende optie.</strong> "Actef" in een statuskolom met de opties Lead, Actief en Voorbij.</li>
+  <li><strong>Een kapotte rij.</strong> Meer of minder cellen dan de kopregel, vaak door een komma zonder aanhalingstekens in een notitie.</li>
+</ul>
+<p>Je kunt ze op drie manieren afhandelen. Gebruik <strong>Bewerken</strong> op de rij, verbeter hem en kies <strong>Rij opslaan</strong>. Gebruik <strong>Problemen downloaden</strong> voor een CSV van elke probleemrij met de reden, los ze op in je spreadsheet en importeer ze als tweede batch. Of vink <strong>Ongeldige rijen overslaan en alleen geldige klanten importeren</strong> aan als de probleemrijen oude contacten zijn die je niet nodig hebt. Thrive importeert niet zolang er rijen aandacht nodig hebben, tenzij je een van deze opties kiest.</p>
+<p>Dubbelen worden voor je afgehandeld. Elk e-mailadres dat al in je werkruimte bestaat, ook bij gearchiveerde klanten, of dat twee keer in het bestand staat, wordt overgeslagen in plaats van opnieuw geïmporteerd. Je kunt een import dus veilig opnieuw draaien nadat je een paar rijen hebt verbeterd, zonder dat je lijst verdubbelt.</p>
+<p>Gebruik je al <a href="/blog/nl/automate-busy-work">workflows</a>, dan draaien die ook op geïmporteerde klanten, met een maximum van 100 acties per import. Heb je een workflow die start "wanneer een klant wordt aangemaakt", importeer dan in kleinere batches en bekijk daarna de uitvoergeschiedenis.</p>
+<p>Geef je het bestand liever aan een AI-assistent? <strong>MCP gebruiken</strong> in het importvenster laat zien hoe je Claude of ChatGPT koppelt; die kunnen de import vooraf tonen en op jouw goedkeuring wachten. Zie <a href="/blog/nl/run-your-business-with-ai">AI gebruiken voor je administratie</a>.</p>
+
+<h2>Na de import: weergaven in plaats van kleurcodes</h2>
+<p>Het doel van de overstap was niet om dezelfde lijst ergens anders te hebben. Het was om te stoppen met de lijst met de hand bijhouden. Een paar dingen vervangen de gewoontes die je in de sheet had:</p>
+<ul>
+  <li><strong>Bordweergave in plaats van gekleurde rijen.</strong> Zet de klantenlijst op <strong>Bordweergave</strong>, kies <strong>Groeperen op</strong> en selecteer je keuzelijstveld Relatie of Fase. Elke optie wordt een kolom, en als je een klantkaart van Lead naar Actief sleept, wordt het veld bijgewerkt.</li>
+  <li><strong>Filters in plaats van verborgen rijen.</strong> Zoek, filter en sorteer op elk veld, ook je eigen velden, en bewaar de weergaven die je elke week gebruikt.</li>
+  <li><strong>Gekoppeld werk in plaats van notitiekolommen.</strong> Nieuwe projecten, offertes, contracten en facturen worden bij de klant aangemaakt, dus het record toont de echte geschiedenis in plaats van een regel die je zelf typte.</li>
+</ul>
+<figure data-shot="clients"><figcaption>De klantenlijst gegroepeerd op fase in de pipeline, na de import.</figcaption></figure>
+<p>Bewaar de oude spreadsheet een maand als alleen-lezen back-up en archiveer hem daarna. Betrap je jezelf erop dat je hem "even" opent om iets te checken, voeg dan toe wat je zocht als veld. Vanaf hier gaat <a href="/blog/nl/manage-multiple-projects">meerdere klantprojecten beheren</a> verder, en een <a href="/blog/nl/daily-summary-email">dagelijkse samenvattingsmail</a> vertelt je wat er veranderd is zonder dat je de lijst opent. Kom je juist van een alles-in-één-tool? Zie onze gids <a href="/blog/nl/honeybook-alternative">HoneyBook-alternatief</a>.</p>
+
+<h2>Probeer het bij je volgende project</h2>
+<p>Schoon je sheet op, maak twee of drie eigen velden aan, en importeer je klantenlijst in één keer. Thrive kost $10 per maand of $100 per jaar, met een gratis proefperiode van 7 dagen, zonder creditcard. <a href="https://app.runonthrive.com/auth/sign-up">Start je proefperiode</a> en zet de spreadsheet deze week met pensioen.</p>

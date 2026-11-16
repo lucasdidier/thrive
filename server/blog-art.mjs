@@ -15,6 +15,18 @@ const ART={
  'manage-multiple-projects':{color:'#5b5bd6',draw:board},
  'weekly-admin-routine':{color:'#e5484d',draw:routine},
  'simple-crm-for-freelancers':{color:'#65a30d',draw:crm},
+ 'honeybook-alternative':{color:'#3d63ee',draw:switching},
+ 'dubsado-alternative':{color:'#7c5cff',draw:switching},
+ 'plutio-alternative':{color:'#0b93d6',draw:switching},
+ 'moxie-alternative':{color:'#12a594',draw:switching},
+ '17hats-alternative':{color:'#d9468f',draw:switching},
+ 'open-source-freelance-software':{color:'#22a06b',draw:openSource},
+ 'switch-from-spreadsheets':{color:'#65a30d',draw:spreadsheet},
+ 'client-emails-in-one-place':{color:'#0fa5b8',draw:emails},
+ 'add-contact-form-to-website':{color:'#f08a3c',draw:contactForm},
+ 'offer-packages-in-proposals':{color:'#9b51e0',draw:packages},
+ 'how-much-deposit-to-charge':{color:'#e5a000',draw:deposit},
+ 'daily-summary-email':{color:'#e5484d',draw:summary},
 };
 const FALLBACK={color:'#3d63ee',draw:proposal};
 
@@ -86,6 +98,46 @@ function routine(){
 function crm(){
  const cardRow=(x,y,o,hi)=>`${paper(x,y,190,52,12,hi?' stroke-width="2" style="stroke:var(--c)"':'')}${person(x+26,y+26,16,hi?'.95':'.4')}${line(x+52,y+16,hi?96:80,7,hi?'.26':'.16')}${line(x+52,y+31,60,5,o)}${hi?accent(x+140,y+28,34,10,5):`<rect x="${x+140}" y="${y+28}" width="34" height="10" rx="5" fill="var(--art-ink)" opacity=".1"/>`}`;
  return `${cardRow(96,48,'.1',false)}${cardRow(116,104,'.14',true)}${cardRow(96,160,'.1',false)}${badge(316,108,20,'<path d="M0 7C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 14z" fill="#fff" stroke="none"/>')}`;
+}
+
+// Moving over: a faded old window, an arrow, and the new workspace with a check.
+function switching(){
+ const win=(x,y,o,hi)=>`${paper(x,y,120,140,12,hi?' stroke-width="2" style="stroke:var(--c)"':'')}<rect x="${x}" y="${y}" width="120" height="24" rx="12" fill="var(--c)" opacity="${hi?'.16':'.06'}"/>${[0,1,2].map(i=>`<circle cx="${x+14+i*10}" cy="${y+12}" r="3" fill="var(--art-ink)" opacity=".18"/>`).join('')}${[0,1,2,3].map(i=>line(x+16,y+40+i*22,[78,60,86,52][i],7,o)).join('')}${hi?accent(x+16,y+40,42,7):''}`;
+ return `<g opacity=".55">${win(56,60,'.12',false)}</g><path d="M188 132h34m-10-11 11 11-11 11" fill="none" stroke="var(--c)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>${win(234,44,'.2',true)}${badge(344,184,22,CHECK)}`;
+}
+// Code you can read: a file of code lines and an open-bracket badge.
+function openSource(){
+ const rows=[[0,70],[1,96],[1,58],[2,84],[1,40],[0,30]].map(([ind,w],i)=>`${i===2?accent(150+ind*16,84+i*20,w,7):line(150+ind*16,84+i*20,w,7,ind?'.16':'.24')}`).join('');
+ return `${paper(120,44,190,180,14)}<rect x="120" y="44" width="190" height="26" rx="14" fill="var(--c)" opacity=".12"/>${[0,1,2].map(i=>`<circle cx="${136+i*11}" cy="57" r="3.2" fill="var(--art-ink)" opacity=".2"/>`).join('')}${[0,1,2,3,4,5].map(i=>line(134,85+i*20,8,5,'.1')).join('')}${rows}${badge(96,176,30,'<path d="M-6-10-15 0l9 10M6-10l9 10-9 10"/>')}`;
+}
+// A spreadsheet grid turning into tidy client cards.
+function spreadsheet(){
+ const grid=[0,1,2,3,4,5].map(r=>[0,1,2].map(c=>`<rect x="${58+c*44}" y="${62+r*24}" width="40" height="20" rx="3" fill="var(--c)" opacity="${r===0?'.26':(r+c)%2?'.08':'.14'}"/>`).join('')).join('');
+ const card=(y,hi)=>`${paper(246,y,110,40,10,hi?' stroke-width="2" style="stroke:var(--c)"':'')}${person(266,y+20,12,hi?'.95':'.45')}${line(284,y+13,hi?56:48,6,hi?'.24':'.16')}${line(284,y+25,36,5,'.1')}`;
+ return `${paper(46,50,150,166,10)}${grid}<path d="M206 133h28m-9-10 10 10-10 10" fill="none" stroke="var(--c)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>${card(62,false)}${card(112,true)}${card(162,false)}`;
+}
+// An inbox where each thread carries its client.
+function emails(){
+ const row=(y,hi)=>`${hi?tint(118,y-4,200,44,10):''}${person(142,y+18,13,hi?'.95':'.4')}${line(164,y+6,hi?96:80,7,hi?'.26':'.18')}${line(164,y+20,120,5,'.1')}${hi?accent(270,y+4,36,10,5):''}`;
+ return `${paper(104,40,228,182,14)}${line(122,56,64,8,'.22')}${row(78,false)}${row(126,true)}${row(174,false)}${badge(92,72,26,'<rect x="-11" y="-8" width="22" height="16" rx="3"/><path d="M-10-6 0 2l10-8"/>')}`;
+}
+// A website with an inquiry form and its send button.
+function contactForm(){
+ return `${paper(70,36,260,186,14)}<rect x="70" y="36" width="260" height="26" rx="14" fill="var(--c)" opacity=".12"/>${[0,1,2].map(i=>`<circle cx="${86+i*11}" cy="49" r="3.2" fill="var(--art-ink)" opacity=".2"/>`).join('')}${line(90,80,70,9,'.24')}${line(90,98,100,5,'.12')}${line(90,110,84,5,'.12')}<rect x="200" y="78" width="112" height="128" rx="10" fill="var(--c)" opacity=".1"/>${[0,1,2].map(i=>`<rect x="212" y="${92+i*28}" width="88" height="18" rx="5" fill="var(--art-paper)" stroke="var(--art-line)"/>`).join('')}${accent(212,178,56,16,6)}${badge(328,200,20,'<path d="M0-8v16M-8 0h16"/>')}`;
+}
+// Three packages side by side, the middle one chosen.
+function packages(){
+ const card=(x,y,h,hi)=>`${paper(x,y,86,h,12,hi?' stroke-width="2" style="stroke:var(--c)"':'')}${hi?`<rect x="${x}" y="${y}" width="86" height="30" rx="12" fill="var(--c)" opacity=".16"/>`:''}${line(x+14,y+12,40,7,hi?'.28':'.2')}${(hi?accent:(a,b,c,d)=>line(a,b,c,d,'.22'))(x+14,y+40,46,10)}${[0,1,2].map(i=>`${tick(x+20,y+70+i*22,hi||i<1)}`).join('')}${[0,1,2].map(i=>line(x+34,y+67+i*22,36,5,'.12')).join('')}`;
+ return `${card(62,70,140,false)}${card(158,50,168,true)}${card(254,70,140,false)}${badge(244,58,18,CHECK)}`;
+}
+// A payment schedule with the deposit part paid.
+function deposit(){
+ return `${paper(100,40,200,184,14)}${accent(120,60,64,9)}${line(120,78,100,5,'.12')}<rect x="120" y="102" width="160" height="16" rx="8" fill="var(--c)" opacity=".14"/><rect x="120" y="102" width="80" height="16" rx="8" fill="var(--c)"/>${[0,1,2].map(i=>`${tick(130,146+i*24,i===0)}${line(146,143+i*24,[70,58,64][i],6,i?'.12':'.22')}${line(240,143+i*24,30,6,i?'.12':'.22')}`).join('')}${badge(306,74,26,'<circle r="10"/><path d="M0-5v10M-3-2h5a2 2 0 0 1 0 4h-4"/>')}`;
+}
+// The morning summary: a short list under a rising sun.
+function summary(){
+ const rows=[0,1,2,3].map(i=>`<circle cx="${146}" cy="${118+i*26}" r="5" fill="var(--c)" opacity="${i<2?'1':'.3'}"/>${line(160,115+i*26,[92,70,104,60][i],6,i<2?'.22':'.12')}${line(270,115+i*26,18,6,i<2?'.22':'.12')}`).join('');
+ return `${paper(124,46,186,176,14)}${accent(142,64,58,9)}${line(142,82,96,5,'.12')}${rows}${badge(110,70,28,'<circle r="6"/><path d="M0-14v3M0 11v3M-14 0h3M11 0h3M-10-10l2 2M8 8l2 2M-10 10l2-2M8-8l2-2"/>')}`;
 }
 
 export function blogArt(slug){

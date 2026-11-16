@@ -1,0 +1,74 @@
+<!--meta {"date":"2026-11-16","title":"Freelance işini yönetmek için açık kaynak yazılım","description":"Tek kişilik işletme için açık kaynak neden önemli, seçmeden önce neye bakmalı, kendi sunucunda barındırmanın dürüst ödünleri ve Thrive'ın iki kullanım yolu.","minutes":7} -->
+<p class="lede">Müşteri listen, sözleşmelerin ve üç yıllık faturaların işinin hafızasıdır. Çoğu freelancer bu hafızayı kiraladığı ve içini göremediği yazılımlarda tutar. Bu genelde sorunsuz işler; ta ki fiyat ikiye katlanana, güvendiğin bir özellik ortadan kalkana ya da şirket satılana kadar. Açık kaynak yazılım sana başka bir seçenek sunar. Küçük bir hizmet işletmesi için bunun neden önemli olduğunu, nelere bakman gerektiğini, kendi sunucunda barındırmanın sana gerçekte ne kadar zamana mal olduğunu ve Thrive'ın iki tarafı nasıl ele aldığını anlatıyoruz.</p>
+
+<h2>Açık kaynak küçük bir işletme için neden önemli?</h2>
+<p>Açık kaynak, kodun herkese açık olması ve herkesin kullanmasına, değiştirmesine ve çalıştırmasına izin veren bir lisansla yayınlanması demektir. Bir freelancer için bu ideolojiden çok beş pratik korumayla ilgilidir.</p>
+<h3>Verilerinin sahibi sensin</h3>
+<p>Açık kaynak yazılımda kayıtlarının nasıl saklandığını her zaman görebilirsin ve veritabanını senin kontrol ettiğin bir kopyayı çalıştırmanı hiçbir şey engellemez. Müşterilerin ve faturaların tek bir şirketin iyi niyetine bağlı değildir.</p>
+<h3>Bağımlılık yok</h3>
+<p>Aracı aşarsan ya da sadece ayrılmak istersen, verilerinin biçimi kodun kendisinde belgelenmiştir. Ayrılmak bir rehine pazarlığı değil, bir projedir.</p>
+<h3>Kendin barındırabilirsin</h3>
+<p>İstersen yazılımı kendi hesaplarında çalıştırabilirsin. Bazı freelancer'lar bunu gizlilik için, bazıları maliyet için, bazıları da bir müşteri sözleşmesi gerektirdiği için yapar. Çoğu hiç yapmaz, ama bu seçeneğin olması satıcıyla ilişkini değiştirir.</p>
+<h3>Kodu inceleyebilirsin</h3>
+<p>Sen, geliştirici bir arkadaşın ya da bir müşterinin güvenlik ekibi; bir bağlantının nasıl paylaşıldığını, bir müşterinin neyi görebildiğini ve bir dosyanın nerede saklandığını okuyabilir. Bir pazarlama sayfasının sözüne güvenmek zorunda değilsin.</p>
+<h3>Fiyat rehin alınamaz</h3>
+<p>Barındırılan bir plan yine de zamlanabilir. Ama yazılımın kendisini çalıştırmak ücretsizken satıcı, ayrılıp aynı aracı yanında götürebileceğini bilir. Bu, fiyatları dürüst tutar. Beş yıllık süreçlerini tek bir uygulama etrafında kurmuş bir freelancer için bu, en çok hafife alınan faydadır.</p>
+
+<h2>Nelere bakmalı?</h2>
+<p>Bir ana sayfadaki "açık kaynak" ifadesi bir başlangıçtır, garanti değil. İşini bir araca emanet etmeden önce şu noktaları kontrol et:</p>
+<ul>
+<li><strong>Lisans.</strong> MIT gibi serbest lisanslar, yazılımı ticari işler dahil her amaçla kullanmana, değiştirmene ve barındırmana izin verir. Bazı "kaynağı erişilebilir" lisanslar bunu kısıtlar, bu yüzden lisans dosyasını oku.</li>
+<li><strong>Kod gerçekten herkese açık</strong>, açabileceğin bir depoda; "talep üzerine erişilebilir" değil.</li>
+<li><strong>Kendi sunucunda barındırma belgeleri mevcut</strong> ve yalnızca yerel bir demoyu değil, gerçek bir canlı ortam kurulumunu anlatıyor.</li>
+<li><strong>Verilerini dışa aktarabiliyorsun</strong>, barındırılan versiyondan da, CSV gibi bir biçimde.</li>
+<li><strong>Barındırılan versiyon aynı yazılım.</strong> Ücretli bulutta açık kodda olmayan özellikler varsa yeniden bağımlılığa dönmüşsün demektir.</li>
+<li><strong>İşi görüyor.</strong> Açık kaynak olmak eksik özellikleri telafi etmez. Tekliflerin, sözleşmelerin ve faturaların senin çalışma biçimine uyup uymadığını kontrol et.</li>
+<li><strong>Hâlâ bakımı yapılıyor.</strong> Kodun en son ne zaman değiştiğine ve güncellemelerin talimatlarla gelip gelmediğine bak.</li>
+</ul>
+
+<h2>Kendi sunucunda barındırmanın dürüst ödünleri</h2>
+<p>Kendi iş yazılımını barındırmak gerçek bir sorumluluktur. Seçmeden önce neyi üstlendiğini net olarak bil:</p>
+<ul>
+<li><strong>Bakımı sen yaparsın.</strong> Güncellemeler, yedekler ve bir sağlayıcı bir şeyi değiştirdiğinde ortaya çıkan sorunları düzeltmek senin işin. Gece 2'de senin kopyana başka kimse göz kulak olmuyor.</li>
+<li><strong>Altyapı sağlayıcılarında hesaplara ihtiyacın var.</strong> Thrive için bu, bir Cloudflare hesabı ve bir Supabase projesi demek. Onların planları ve kullanım ücretleri seninle onlar arasındadır.</li>
+<li><strong>Biraz teknik rahatlığa ihtiyacın var.</strong> Terminal kullanacak, bir yapılandırma dosyası düzenleyecek, gizli anahtarlar tanımlayacak ve hata mesajları okuyacaksın. "<code>npm test</code> çalıştır" sana yabancı geliyorsa barındırılan versiyon muhtemelen daha iyi bir seçimdir.</li>
+<li><strong>Yedekler sana kalır.</strong> Faturaların ve imzalı sözleşmelerin iş kayıtlarıdır. Geri yükleyemediğin bir kopya yedek değildir.</li>
+<li><strong>E-posta ve takvim ek kurulum gerektirir.</strong> E-posta kutularını ve takvimleri bağlamak genelde bir sağlayıcıda kendi hesaplarını ve onların inceleme süreçlerini gerektirir.</li>
+</ul>
+<p>Çoğu freelancer için makul yol şu: barındırılan versiyonu kullan ve bir gün gerekirse kendi sunucunda barındırabilecek olmanın değerini bil.</p>
+
+<h2>Thrive iki yolla nasıl çalışır?</h2>
+<p>Thrive, freelancer'lar ve küçük stüdyolar için bir çalışma alanıdır: müşteriler, projeler, teklifler, sözleşmeler, faturalar, zaman takibi, müşterilere bağlı e-posta, rezervasyon sayfaları, web sitesi formları, iş akışları ve müşteri portalları. Kodu MIT lisansıyla <a href="https://github.com/lucasdidier/thrive">github.com/lucasdidier/thrive</a> adresinde herkese açık. İki şekilde kullanabilirsin.</p>
+<h3>Thrive Cloud: aylık 10 $</h3>
+<p>runonthrive.com'da kaydol ve çalışmaya başla. Kart gerektirmeyen 7 günlük ücretsiz denemeden sonra aylık 10 $ ya da yıllık 100 $. Barındırma, güncellemeler ve yedekler senin için halledilir; ücretli bir plana geçtiğinde Google ya da Microsoft e-postanı ve takvimini bağlamak birkaç tıklamalık iştir.</p>
+<figure data-shot="overview"><figcaption>Thrive'da Ana sayfa: işletme toplamları, takvim, açık projeler ve müşteriden yanıt bekleyen öğeler.</figcaption></figure>
+<p>Ayrılmak da basit. Müşteriler, projeler ve faturalar gibi listeler CSV olarak dışa aktarılabilir, böylece oluşturduğun kayıtlar başka yerlerde de kullanılabilir kalır.</p>
+<h3>Kendi sunucunda: MIT lisansıyla ücretsiz</h3>
+<p>Aynı kodu kendi hesaplarında çalıştırabilirsin. Thrive'ın kendi sunucunda barındırma rehberi (depodaki <code>docs/self-hosting.md</code>), giriş, veritabanı ve özel dosya depolama için Supabase ile birlikte Cloudflare Workers üzerinde bir kurulumu anlatıyor. Kısaca:</p>
+<ol>
+<li><strong>Bir Supabase projesi oluştur</strong> ve depodaki SQL migration dosyalarını bir kez, sırayla uygula. E-posta ve şifreyle girişi aç, site adresini ve yönlendirme URL'lerini belirle ve kayıt ve şifre e-postaları için kendi SMTP hizmetini yapılandır.</li>
+<li><strong>Worker'ı yapılandır.</strong> Node.js 22.13 ya da sonrasıyla bağımlılıkları kur ve testleri çalıştır, ardından <code>wrangler.self-hosted.jsonc</code> içinde Worker adını, uygulamanın adresini ve Supabase URL'ni belirle.</li>
+<li><strong>Wrangler ile derle ve yayına al</strong>, ardından iki Supabase anahtarını Worker gizli anahtarları olarak ekle. Worker'ın kendi workers.dev adresini kullan ya da kendi alan adını bağla.</li>
+<li><strong>İsteğe bağlı ekler.</strong> E-posta, takvim ve rezervasyon sayfaları kendi Nylas hesabını gerektirir. Claude ya da ChatGPT'yi bağlamak için Supabase'in OAuth sunucusunu rehberde anlatıldığı gibi etkinleştir.</li>
+<li><strong>Doğrula ve yedekle.</strong> Rehberde bir kontrol listesi var: kayıt ve giriş, tarayıcılar arasında kaydedilen veriler, iptal edildiğinde çalışmayı bırakan müşteri bağlantıları ve hem veritabanının hem saklanan dosyaların yedekleri.</li>
+</ol>
+<p>Depoda ayrıca kurulumu seninle birlikte adım adım yürütmesi için bir kodlama ajanına verebileceğin bir kurulum istemi de var. Kendi sunucundaki bir kopya tek bir kişi için ya da ayrı çalışma alanlarına sahip birkaç kişi için çalışır; ortak bir ekip yetkilendirme modeli yoktur. Kendi sunucundaki kurulumda faturalandırma kapalıdır.</p>
+
+<h2>Hangisini seçersen seç, aynı özellikler</h2>
+<p>Barındırılan ya da kendi sunucunda, aynı Thrive'ı alırsın: müşterinin seçtiği paketlerle teklifler, yazılan adla imzalanan sözleşmeler, kendi ödeme talimatlarını içeren faturalar, fatura taslaklarına dönüşen takip edilmiş zaman, müşteri portalları, CSV ile müşteri içe aktarma, olaya dayalı iş akışları ve on arayüz dili.</p>
+<p>Thrive yapay zekâ asistanlarıyla da çalışır. Claude ya da ChatGPT'yi MCP üzerinden bağla; çalışma alanını okuyabilir, teklif taslağı yazabilir ve fatura taslakları hazırlayabilirler; gönderme ve fatura kesme ise senin onayına bırakılır. Kendi sunucundaki bir kopyada asistan bizim sunucumuzla değil, seninkiyle konuşur. Bkz. <a href="/blog/tr/run-your-business-with-ai">idari işlerini yürütmek için yapay zekâyı kullanmak</a>.</p>
+<figure data-shot="mcp"><figcaption>"Yapay zekâ ile kullan" sayfası: Claude ya da ChatGPT'yi Thrive çalışma alanına bağla.</figcaption></figure>
+<p>Aynı sınırlar da geçerli. Thrive ödeme işlemez: müşteriler Thrive dışında, banka havalesiyle ya da faturaya eklediğin bir ödeme bağlantısıyla öder. Yinelenen faturalar, otomatik ödeme hatırlatmaları ve tarihe dayalı iş akışı tetikleyicileri yoktur.</p>
+
+<h2>Hızlı bir karar kontrol listesi</h2>
+<ul>
+<li>Güncellemelere ve yedeklere zaman ayırmak istiyor musun? İstemiyorsan barındırılan versiyonu kullan.</li>
+<li>Bir müşteri ya da kendi gizlilik politikan verilerin kendi hesaplarında olmasını gerektiriyor mu? Kendi sunucunda barındır.</li>
+<li>Terminal ve yapılandırma dosyalarıyla aran iyi mi? Kendi sunucunda barındırmak gerçekçi bir seçenek.</li>
+<li>Asıl istediğin düşük maliyet ve bağımlılığın olmaması mı? Barındırılan plan ve CSV dışa aktarma bunu karşılar.</li>
+</ul>
+<p>Thrive'ı kapalı araçlarla mı karşılaştırıyorsun? <a href="/blog/tr/plutio-alternative">Plutio</a>, <a href="/blog/tr/moxie-alternative">Moxie</a>, <a href="/blog/tr/honeybook-alternative">HoneyBook</a> ve <a href="/blog/tr/dubsado-alternative">Dubsado</a> ile dürüst karşılaştırmalarımızı oku ya da <a href="/blog/tr/switch-from-spreadsheets">tablolardan geçiş</a> yazımızla başla.</p>
+<figure data-shot="import-review"><figcaption>Müşterilerini bir CSV dosyasından getirmek: Thrive, herhangi bir şey kaydedilmeden önce hangi satırların hazır olduğunu ve hangilerinin düzeltilmesi gerektiğini gösterir.</figcaption></figure>
+
+<h2>Bir sonraki projende dene</h2>
+<p>Açık kaynak bir yazılımı değerlendirmenin en hızlı yolu onu gerçek bir işte kullanmaktır. Kart gerektirmeyen 7 günlük ücretsiz denemeyle Thrive Cloud'da başla, kendi sunucunda barındırma rehberini de bir kenarda tut. <a href="https://app.runonthrive.com/auth/sign-up">Denemeni başlat</a>.</p>

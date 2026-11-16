@@ -1,0 +1,74 @@
+<!--meta {"date":"2026-11-16","title":"Open-source software to run your freelance business","description":"Why open source matters for a one-person business, what to check before you choose, the honest trade-offs of self-hosting, and how Thrive works both ways.","minutes":7} -->
+<p class="lede">Your client list, your contracts and three years of invoices are the memory of your business. Most freelancers keep that memory in software they rent and can't see inside. That usually works fine, until the price doubles, a feature you rely on disappears, or the company is sold. Open-source software gives you another option. Here is why it matters for a small service business, what to look for, what self-hosting really costs you in time, and how Thrive handles both sides.</p>
+
+<h2>Why open source matters for a small business</h2>
+<p>Open source means the code is public and published under a licence that lets anyone use, change and run it. For a freelancer that is less about ideology and more about five practical protections.</p>
+<h3>You own your data</h3>
+<p>With open-source software you can always see how your records are stored, and nothing stops you from running a copy where you control the database. Your clients and invoices don't depend on one company's goodwill.</p>
+<h3>No lock-in</h3>
+<p>If you outgrow the tool, or just want to leave, the format of your data is documented in the code itself. Moving on is a project, not a hostage negotiation.</p>
+<h3>You can host it yourself</h3>
+<p>If you want to, you can run the software on your own accounts. Some freelancers do this for privacy, some for cost, some because a client contract requires it. Most never do, but having the option changes the relationship with the vendor.</p>
+<h3>You can inspect the code</h3>
+<p>You, a developer friend or a client's security team can read how a link is shared, what a client can see and where a file is stored. You don't have to take a marketing page's word for it.</p>
+<h3>The price can't be held hostage</h3>
+<p>A hosted plan can still go up. But when the software itself is free to run, the vendor knows you can leave and take the same tool with you. That keeps prices honest. For a freelancer who has built five years of processes around one app, this is the most underrated benefit.</p>
+
+<h2>What to look for</h2>
+<p>"Open source" on a homepage is a start, not a guarantee. Before you commit your business to a tool, check these points:</p>
+<ul>
+<li><strong>The licence.</strong> Permissive licences such as MIT let you use, change and host the software for any purpose, including commercial work. Some "source-available" licences restrict that, so read the licence file.</li>
+<li><strong>The code is actually public</strong>, in a repository you can open, not "available on request".</li>
+<li><strong>Self-hosting docs exist</strong> and describe a real production setup, not just a local demo.</li>
+<li><strong>You can export your data</strong> from the hosted version too, in a format like CSV.</li>
+<li><strong>The hosted version is the same software.</strong> If the paid cloud has features the open code doesn't, you are back to lock-in.</li>
+<li><strong>It does the job.</strong> Open source doesn't make up for missing features. Check the proposals, contracts and invoices work the way you do.</li>
+<li><strong>It is still maintained.</strong> Look at when the code last changed and whether updates come with instructions.</li>
+</ul>
+
+<h2>The honest trade-offs of self-hosting</h2>
+<p>Hosting your own business software is a real responsibility. Before you choose it, be clear about what you are signing up for:</p>
+<ul>
+<li><strong>You maintain it.</strong> Updates, backups and fixing things when a provider changes something are your job. Nobody else is watching your copy at 2 am.</li>
+<li><strong>You need accounts with infrastructure providers.</strong> For Thrive, that means a Cloudflare account and a Supabase project. Their plans and usage costs are between you and them.</li>
+<li><strong>You need some technical comfort.</strong> You will use a terminal, edit a configuration file, set secrets and read error messages. If "run <code>npm test</code>" sounds unfamiliar, the hosted version is probably the better choice.</li>
+<li><strong>Backups are on you.</strong> Your invoices and signed contracts are business records. A copy you can't restore isn't a backup.</li>
+<li><strong>Email and calendar take extra setup.</strong> Connecting mailboxes and calendars usually needs your own accounts with a provider, plus their review processes.</li>
+</ul>
+<p>For most freelancers, the sensible path is: use the hosted version, and value the fact that you could self-host if you ever needed to.</p>
+
+<h2>How Thrive works both ways</h2>
+<p>Thrive is a workspace for freelancers and small studios: clients, projects, proposals, contracts, invoices, time tracking, email linked to clients, booking pages, website forms, workflows and client portals. Its code is public at <a href="https://github.com/lucasdidier/thrive">github.com/lucasdidier/thrive</a> under the MIT licence. You can use it in two ways.</p>
+<h3>Thrive Cloud: $10 a month</h3>
+<p>Sign up at runonthrive.com and start working. It costs $10 a month or $100 a year, after a 7-day free trial with no card. Hosting, updates and backups are handled for you, and connecting your Google or Microsoft email and calendar is a couple of clicks once you are on a paid plan.</p>
+<figure data-shot="overview"><figcaption>The Home page in Thrive: business totals, calendar, open projects and items waiting on a client.</figcaption></figure>
+<p>Leaving is simple too. Lists such as clients, projects and invoices can be exported as CSV, so the records you built stay usable elsewhere.</p>
+<h3>Self-hosted: free under the MIT licence</h3>
+<p>You can run the same code on your own accounts. Thrive's self-hosting guide (<code>docs/self-hosting.md</code> in the repository) describes a setup on Cloudflare Workers with Supabase for sign-in, the database and private file storage. In short:</p>
+<ol>
+<li><strong>Create a Supabase project</strong> and apply the SQL migration files from the repository once, in order. Turn on email and password sign-in, set your site address and redirect URLs, and configure your own SMTP service for sign-up and password emails.</li>
+<li><strong>Configure the Worker.</strong> With Node.js 22.13 or later, install and run the tests, then set your Worker name, your app's address and your Supabase URL in <code>wrangler.self-hosted.jsonc</code>.</li>
+<li><strong>Build and deploy</strong> with Wrangler, then add your two Supabase keys as Worker secrets. Use the Worker's own workers.dev address or attach your domain.</li>
+<li><strong>Optional extras.</strong> Email, calendar and booking pages need your own Nylas account. To connect Claude or ChatGPT, enable Supabase's OAuth server as the guide describes.</li>
+<li><strong>Verify and back up.</strong> The guide includes a checklist: sign-up and sign-in, data saved across browsers, client links that stop working when revoked, and backups of both the database and stored files.</li>
+</ol>
+<p>The repository also includes a setup prompt you can hand to a coding agent to walk through the installation with you. A self-hosted copy works for one person, or for several people with separate workspaces; there is no shared-team permissions model. Billing is off in a self-hosted install.</p>
+
+<h2>Same features, either way</h2>
+<p>Hosted or self-hosted, you get the same Thrive: proposals with packages the client chooses from, contracts signed with a typed name, invoices with your own payment instructions, tracked time that turns into invoice drafts, client portals, a CSV client import, event-based workflows and ten interface languages.</p>
+<p>Thrive also works with AI assistants. Connect Claude or ChatGPT through MCP and they can read your workspace, draft proposals and prepare invoice drafts, with sending and issuing left for you to confirm. On a self-hosted copy, the assistant talks to your server, not ours. See <a href="/blog/run-your-business-with-ai">how to use AI to run your admin</a>.</p>
+<figure data-shot="mcp"><figcaption>The "Use with AI" page: connect Claude or ChatGPT to your Thrive workspace.</figcaption></figure>
+<p>And the same limits apply. Thrive doesn't process payments: clients pay outside it, by bank transfer or a payment link you put on the invoice. It has no recurring invoices, no automatic payment reminders and no date-based workflow triggers.</p>
+
+<h2>A quick decision checklist</h2>
+<ul>
+<li>Do you want to spend time on updates and backups? If not, use the hosted version.</li>
+<li>Does a client or your own privacy policy require data on your accounts? Self-host.</li>
+<li>Are you comfortable with a terminal and configuration files? Self-hosting is realistic.</li>
+<li>Do you mainly want low cost and no lock-in? The hosted plan plus CSV export covers it.</li>
+</ul>
+<p>Comparing Thrive with closed tools? Read our honest comparisons with <a href="/blog/plutio-alternative">Plutio</a>, <a href="/blog/moxie-alternative">Moxie</a>, <a href="/blog/honeybook-alternative">HoneyBook</a> and <a href="/blog/dubsado-alternative">Dubsado</a>, or start from <a href="/blog/switch-from-spreadsheets">switching from spreadsheets</a>.</p>
+<figure data-shot="import-review"><figcaption>Bringing your clients in from a CSV file: Thrive shows which rows are ready and which need a fix before anything is saved.</figcaption></figure>
+
+<h2>Try it on your next project</h2>
+<p>The quickest way to judge open-source software is to use it on real work. Start on Thrive Cloud with a 7-day free trial and no card, and keep the self-hosting guide in your back pocket. <a href="https://app.runonthrive.com/auth/sign-up">Start your trial</a>.</p>

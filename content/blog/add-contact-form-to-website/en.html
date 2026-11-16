@@ -1,0 +1,80 @@
+<!--meta {"date":"2026-11-16","title":"How to add a contact form to your website (Squarespace, Webflow, WordPress or plain HTML)","description":"Add a contact form to your own site: which fields to ask, popup or inline placement, basic spam protection, and what should happen after someone submits.","minutes":7} -->
+<p class="lede">A visible email address on your website feels like the friendliest option, but it creates work. Inquiries arrive with no context, end up in the same inbox as everything else, and you copy the details into your records by hand, if you remember. A small contact form fixes that. Visitors know what to tell you, you get the same information every time, and every inquiry lands in one place. Here's how to set one up on the site you already have.</p>
+
+<h2>Contact form or inquiry form?</h2>
+<p>They're related but do different jobs:</p>
+<ul>
+  <li><strong>A contact form</strong> is short and open. Name, email, a reason for getting in touch and a message. It's for "I have a question", "I'd like to work with you" and "can I interview you for my podcast".</li>
+  <li><strong>An inquiry form</strong> qualifies a project: scope, budget, timeline, how they found you. It's longer and belongs on your "Work with me" page.</li>
+</ul>
+<p>Most freelancers need a contact form on every page and an inquiry form on one. This article is about the contact form and how to install it. If you want to design a form that filters leads by budget and timing, read <a href="/blog/generate-leads-with-forms">how freelancers get more (and better) leads</a>, which covers the inquiry side in detail.</p>
+
+<h2>What to ask (and what to leave out)</h2>
+<p>Every extra field costs you some submissions. For a contact form, four questions are enough:</p>
+<ol>
+  <li><strong>Why are you getting in touch?</strong> A short choice list: Hire me for a project, Collaboration, Speaking or press, Something else. It lets you sort and prioritise without reading every message first.</li>
+  <li><strong>Your name.</strong> One field. Splitting first and last name adds friction for no benefit at this stage.</li>
+  <li><strong>Your email.</strong> Required, and checked for a valid format.</li>
+  <li><strong>Your message.</strong> A large text box with a helpful placeholder, such as "A few lines about your project or question".</li>
+</ol>
+<p>Leave out phone number (unless you actually call people back), company size, address and anything you'd only need once you're working together. You can collect those later with an onboarding form, as described in <a href="/blog/onboard-new-clients">how to onboard a new client</a>.</p>
+<p>Two small details make a big difference: a heading that sounds like you ("Tell me what you have in mind" rather than "Contact"), and a thank-you message that says what happens next ("I reply to every message within one working day").</p>
+
+<h2>Popup or inline?</h2>
+<p>There are two common ways to place a form on a website, and both have their place.</p>
+<table>
+  <thead><tr><th>Placement</th><th>Good for</th><th>Watch out for</th></tr></thead>
+  <tbody>
+    <tr><td>Popup from a button</td><td>A "Get in touch" button in your header or at the end of every case study</td><td>Visitors have to click before they see the form</td></tr>
+    <tr><td>Inline on the page</td><td>A dedicated Contact page, or the bottom of your home page</td><td>Takes up space; needs a sensible height</td></tr>
+  </tbody>
+</table>
+<p>A popup works well because it keeps people where they are. Someone reading your case study clicks "Start a project", fills in the form over the page, and closes it without losing their place. An inline form is better when the whole page exists to be contacted. Many freelancers use both: a header button everywhere, and an inline form on the Contact page.</p>
+
+<h2>Spam basics</h2>
+<p>Any public form gets some spam. You don't need much to keep it manageable:</p>
+<ul>
+  <li><strong>Don't publish your email address in plain text</strong> next to the form. Scrapers find it, and you'll get the spam anyway.</li>
+  <li><strong>Use a hidden "honeypot" field.</strong> Humans never see it, bots fill it in, and the submission is rejected.</li>
+  <li><strong>Limit how often a form can be submitted,</strong> so one script can't send you hundreds of messages.</li>
+  <li><strong>Make the email required and validated.</strong> It filters out the laziest bots and means you can always reply.</li>
+  <li><strong>Watch for patterns.</strong> If spam always picks "Something else", that's your cue to look at those first with suspicion.</li>
+</ul>
+<p>Thrive's forms include the first few of these on the server: a hidden honeypot field, a limit on submissions per form per hour and per day, and validation of every answer. There's no CAPTCHA, which keeps the form friendlier for real visitors.</p>
+
+<h2>Set up the form in Thrive</h2>
+<p>Go to <strong>Forms → New form</strong> and pick the <strong>Website contact</strong> starter. It comes with exactly the four questions above (a reason for contacting you, name, email and message) and a dark design you can change. Edit the wording so it sounds like you, change the choices to match your work, and mark the questions you need as required.</p>
+<p>Then open <strong>Appearance &amp; website branding</strong> in the editor to match your site: font, background, text and button colours, corner radius, a short heading, the button label, a footer note, the thank-you message and a two-column layout. Changes here apply to the form link and to any embed you've already installed, so you can tweak the design later without touching your website again.</p>
+
+<h2>Add it to your website</h2>
+<p>Open the form, choose <strong>Share</strong> and switch to the <strong>Website embed</strong> tab. If the form doesn't have a link yet, <strong>Create embed link</strong> makes one (form links don't expire by default). Then:</p>
+<ol>
+  <li>Choose a <strong>Placement</strong>: <strong>Popup from a button</strong> or <strong>Inline on your page</strong>.</li>
+  <li>For a popup, set the <strong>Button label</strong>, such as "Get in touch". For inline, you set a frame title instead.</li>
+  <li>Choose <strong>Copy embed code</strong>, and use <strong>Preview form</strong> to see it as a visitor would. Note that a preview submission is saved as a real response.</li>
+</ol>
+<figure data-shot="form-embed"><figcaption>The form's Share dialog, Website embed tab: placement set to Popup from a button, with the embed code ready to copy.</figcaption></figure>
+<p>For a popup, the code is two lines: a script tag for Thrive's <code>embed.js</code>, which you add once per page, and a link that opens the form. The link picks up your site's own styling. If you already have a button you want to use, open <strong>Use an existing button</strong> for the attributes to add to it instead. For inline placement, the code is a single iframe, full width, with a height you can change in the snippet (it starts at 820 pixels).</p>
+<p>Where to paste it depends on your site builder:</p>
+<ul>
+  <li><strong>Squarespace:</strong> add a Code block where you want the form, and paste the code. Code blocks depend on your Squarespace plan, so check yours allows them.</li>
+  <li><strong>Webflow:</strong> drag in a Code Embed element and paste the code. Scripts run on the published site, not inside the Designer, so test the popup after publishing.</li>
+  <li><strong>WordPress:</strong> in the block editor, add a Custom HTML block. Some hosted plans strip scripts, in which case the inline iframe is the simpler option.</li>
+  <li><strong>Plain HTML:</strong> paste the code where you want the button or form in your page.</li>
+</ul>
+<p>The general rule: the popup needs a site that allows custom JavaScript, and the inline version needs one that allows iframes. If your site sends a Content Security Policy, it has to allow Thrive's address for scripts, styles and frames. Thrive never changes your website on its own; nothing appears until you paste the code.</p>
+<p>No website, or no access to its code? The <strong>Client link</strong> tab in the same dialog gives you a plain link to the form, which works in your email signature, your bio or a social profile.</p>
+
+<h2>What happens after someone submits</h2>
+<p>This is where a form beats an email address. With the Website contact starter, each submission:</p>
+<ul>
+  <li><strong>Appears in the form's submissions in Thrive</strong>, with the answers exactly as they were given, even if you edit the questions later.</li>
+  <li><strong>Is matched to a client by email.</strong> If the email belongs to an existing client, the response is linked to them. If not, Thrive creates a new client with the name and email. An anonymous submission never overwrites details you've already saved for an existing client.</li>
+  <li><strong>Doesn't create a project.</strong> A contact message isn't necessarily work. If you want each submission to become a planned project, use the Project inquiry starter instead, or change what each answer is used for under the question's <strong>More options → Use answer for</strong>.</li>
+</ul>
+<figure data-shot="forms"><figcaption>Submissions to a form in Thrive, each one linked to a client.</figcaption></figure>
+<p>Thrive can email you when a new response arrives (Account settings → Notifications), and a <a href="/blog/daily-summary-email">daily summary email</a> lists new responses with everything else waiting on you. A workflow can run when a form is submitted too, for example to create a draft reply for you to review. See <a href="/blog/automate-busy-work">how to automate the busy work</a>.</p>
+<p>Then reply. Fast and short beats slow and perfect: thank them, repeat back what you understood, and suggest a next step. If that next step is a call, a booking link saves a round of emails; <a href="/blog/book-client-calls">how to book client calls</a> explains the setup.</p>
+
+<h2>Try it on your next project</h2>
+<p>Pick the Website contact starter, adjust four questions and the colours, and paste the popup code behind a "Get in touch" button on your site. Thrive is $10 a month or $100 a year, with a 7-day free trial and no card needed. <a href="https://app.runonthrive.com/auth/sign-up">Start your trial</a> and see your next inquiry arrive already linked to a client.</p>

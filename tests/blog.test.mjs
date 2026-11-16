@@ -9,7 +9,7 @@ const articles={};
 for(const slug of readdirSync(dir,{withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>d.name))
  for(const f of readdirSync(new URL(slug+'/',dir)))if(f.endsWith('.html'))(articles[slug]??={})[f.slice(0,-5)]=readFileSync(new URL(`${slug}/${f}`,dir),'utf8');
 const shots=JSON.parse(readFileSync(new URL('shots.json',dir),'utf8')).files;
-const SHOTS=new Set(['overview','clients','project','proposal','contracts','client-proposal','client-contract','invoice','client-invoice','time','forms','workflows','builder','scheduling','mcp','client-portal']);
+const SHOTS=new Set(['overview','clients','project','proposal','contracts','client-proposal','client-contract','invoice','client-invoice','time','forms','workflows','builder','scheduling','mcp','client-portal','emails','summary-settings','deposit-settings','packages-template','packages-editor','client-packages','import-map','import-review','form-embed']);
 const ALLOWED=new Set(['p','h2','h3','ul','ol','li','strong','em','a','blockquote','figure','figcaption','table','thead','tbody','tr','th','td','code','br']);
 
 test('blog URLs: English at /blog, other languages under /blog/<language>', ()=>{
@@ -26,7 +26,7 @@ test('the site serves the blog instead of sending it to the app', ()=>{
  for(const p of ['/blog','/blog/fr/automate-busy-work','/blog-shots/fr/time.webp','/sitemap.xml','/robots.txt'])assert.equal(siteRoute(new Request('https://runonthrive.com'+p),env),null,p);
 });
 
-test('five articles in every language, each well formed and matching the English', ()=>{
+test('every article in every language, each well formed and matching the English', ()=>{
  assert.deepEqual(Object.keys(articles).sort(),[...ARTICLE_ORDER].sort());
  for(const slug of ARTICLE_ORDER){
   const en=parseArticle(articles[slug].en),enShots=[...en.body.matchAll(/data-shot="([a-z-]+)"/g)].map(m=>m[1]);
@@ -40,7 +40,7 @@ test('five articles in every language, each well formed and matching the English
    assert.doesNotMatch(body,/<script|on[a-z]+=|style=/i,`${slug}/${lang}: no scripts or inline styles`);
    for(const [,href] of body.matchAll(/href="([^"]+)"/g)){
     if(href.startsWith('/blog'))assert.ok(blogPath(href)?.lang===lang&&articles[blogPath(href).slug],`${slug}/${lang}: link ${href}`);
-    else assert.match(href,/^https:\/\/(app\.)?runonthrive\.com\//,`${slug}/${lang}: link ${href}`);
+    else assert.match(href,/^https:\/\/((app\.)?runonthrive\.com\/|github\.com\/lucasdidier\/thrive\b)/,`${slug}/${lang}: link ${href}`);
    }
   }
  }

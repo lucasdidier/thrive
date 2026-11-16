@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Kunden aus der Tabelle umziehen (ohne unterwegs etwas zu verlieren)","description":"Wann deine Kundentabelle an Grenzen stößt, wie du sie vor dem Umzug aufräumst, Spalten zuordnest, Problemzeilen behebst und die Pipeline neu baust.","minutes":7} -->
+<p class="lede">Fast jeder Freelancer fängt mit einer Tabelle an. Ein Tab namens „Kunden“, ein paar Spalten für Name, E-Mail und Firma, vielleicht eine Statusspalte, die du von Hand einfärbst. Das funktioniert eine Weile, und dann merkst du eines Tages, dass du drei verschiedene Dateien und einen alten Mailverlauf geöffnet hast, nur um die Frage zu beantworten: „Wann habe ich dieser Person zuletzt eine Rechnung geschickt?“ Das ist der Moment für den Umzug. Dieser Leitfaden zeigt, woran du erkennst, dass es so weit ist, wie du die Tabelle aufräumst, damit der Umzug schmerzlos klappt, und was du danach machst.</p>
+
+<h2>Woran du merkst, dass dir die Tabelle zu klein geworden ist</h2>
+<p>Die Tabelle an sich ist nicht das Problem. Schwierig wird es, wenn die Kundenliste keine Liste mehr ist, sondern das Zentrum deines Geschäfts. Ein paar typische Anzeichen:</p>
+<ul>
+  <li><strong>Derselbe Kunde steht an mehreren Orten.</strong> Eine Zeile in der Kundentabelle, eine weitere in deiner Rechnungsliste, eine dritte im Angebotsordner. Änderst du eine E-Mail-Adresse, sind zwei davon jetzt falsch.</li>
+  <li><strong>Die Geschichte steht nicht in der Zeile.</strong> Du siehst, dass Sam von Northwind Kunde ist, aber nicht, welche Projekte du gemacht hast, was du angeboten hast oder welche Rechnung noch offen ist.</li>
+  <li><strong>Die Statusspalte lügt.</strong> Da steht „Angebot verschickt“ bei einem Kunden, der vor drei Wochen unterschrieben hat, weil du das Angebot aktualisiert und die Tabelle vergessen hast.</li>
+  <li><strong>Du öffnest sie nur ungern.</strong> Wenn sich das Pflegen der Tabelle wie eine lästige Pflicht anfühlt, wird sie nicht gepflegt, und eine Liste, der du nicht traust, ist schlimmer als gar keine.</li>
+</ul>
+<p>Wenn dir zwei oder drei davon bekannt vorkommen, hat die Tabelle ihren Dienst getan. Jetzt brauchst du einen Ort, an dem der Kundendatensatz und deine Arbeit für den Kunden verbunden sind, damit sich die Geschichte von selbst aufbaut, während du Angebote und Rechnungen verschickst. Was ein schlankes CRM enthalten sollte, liest du in <a href="/blog/de/simple-crm-for-freelancers">ein einfaches CRM für Freelancer</a>.</p>
+
+<h2>Räum die Tabelle auf, bevor du umziehst</h2>
+<p>Dreißig Minuten Aufräumen sparen dir später einen Nachmittag voller Korrekturen. Arbeite mit einer Kopie der Tabelle.</p>
+<ol>
+  <li><strong>Eine Zeile pro Kunde.</strong> Entferne leere Zeilen, Zwischensummen und die Trennlinie „UNTER DIESER ZEILE ARCHIV“. Führ Duplikate zusammen: Dieselbe Person, zweimal mit unterschiedlicher Schreibweise eingetragen, ist das häufigste Durcheinander.</li>
+  <li><strong>Eine Kopfzeile mit eindeutigen Namen.</strong> Lösch verbundene Titelzellen und benenn vage Spalten um („Info“ wird zu „Notizen“).</li>
+  <li><strong>Jeder Kunde braucht eine E-Mail-Adresse.</strong> Daran unterscheidet ein richtiges Tool Kunden voneinander, und darüber erreichst du sie. Ergänze die fehlenden oder verschieb Kunden ohne E-Mail in einen separaten Tab, um den du dich später kümmerst.</li>
+  <li><strong>Mach die Werte einheitlich.</strong> Leg dich für jeden Status auf eine Schreibweise fest („Aktiv“, nicht „aktiv“, „AKTIV“ und „laufend“). Schreib Datumsangaben als 2026-03-14 statt „Mitte März“. Entferne Währungssymbole und Tausendertrennzeichen aus Beträgen, aus 4.800 € wird also 4800.</li>
+</ol>
+<p>Dann exportierst du sie als CSV. In Google Sheets geht das über Datei → Herunterladen → Kommagetrennte Werte. In Excel wählst du Speichern unter und dann „CSV UTF-8“. In Notion exportierst du die Datenbank als Markdown &amp; CSV und nimmst die CSV-Datei. UTF-8 ist wichtig, sobald ein Kunde Akzente oder Umlaute im Namen hat: Zoë und Müller sollen als Zoë und Müller ankommen.</p>
+
+<h3>Eine kurze Checkliste vor dem Import</h3>
+<ul>
+  <li>Eine Kopfzeile, keine leeren oder verbundenen Zellen.</li>
+  <li>Eine Zeile pro Kunde, Duplikate zusammengeführt.</li>
+  <li>Eine E-Mail-Adresse in jeder Zeile.</li>
+  <li>Status immer gleich geschrieben.</li>
+  <li>Datumsangaben als JJJJ-MM-TT, Beträge als einfache Zahlen.</li>
+  <li>Als UTF-8-CSV gespeichert.</li>
+</ul>
+
+<h2>Leg fest, welche Spalten zu Feldern werden</h2>
+<p>Schau dir vor dem Import deine übrigen Spalten an und sortier sie in drei Gruppen.</p>
+<ul>
+  <li><strong>Standardangaben zum Kunden:</strong> E-Mail, Vor- und Nachname, Firmenname, Kontaktname. Die hat jedes Kundentool.</li>
+  <li><strong>Deine eigenen Tracking-Spalten:</strong> Quelle, Beziehungsphase, empfohlen von, letzter Check-in. Daraus werden eigene Felder.</li>
+  <li><strong>Dinge, die eigentlich keine Kundendaten sind:</strong> Projektnamen, Rechnungsnummern, offene Beträge. Lass die weg. Sie gehören zu Projekten und Rechnungen, nicht in eine Kundenzeile gequetscht.</li>
+</ul>
+<p>Leg in Thrive die eigenen Felder <em>vor</em> dem Import an, damit deine Spalten ein Ziel haben. Nutz dafür den Button <strong>+</strong> in der Kundentabelle oder <strong>Spalten → Eigene Felder verwalten</strong>. Felder können Text, Zahl, Währung, Datum, Kontrollkästchen, Auswahl, Mehrfachauswahl, E-Mail oder URL sein. Für eine Statusspalte nimmst du ein Auswahlfeld und legst genau die Optionen an, die deine Tabelle verwendet (etwa Lead, Aktiv, Ehemalig), denn importierte Werte müssen zu einer bestehenden Option passen.</p>
+
+<h2>Ordne die Spalten zu</h2>
+<p>Geh in Thrive auf <strong>Kunden → Kunden importieren</strong>. Der Dialog nimmt eine UTF-8-CSV mit bis zu 500 Kunden und 2 MB an, getrennt durch Kommas oder Semikolons. Wenn du lieber mit einer sauberen Vorlage startest, bekommst du über <strong>Beispiel-CSV herunterladen</strong> eine Datei mit allen Kundenfeldern und deinen aktiven eigenen Feldern als Spaltenköpfe, dazu eine Beispielzeile zum Ersetzen.</p>
+<p>Nachdem du deine Datei ausgewählt hast, listet der Schritt <strong>Spalten zuordnen</strong> jeden deiner Spaltenköpfe auf, mit dem Wert aus deiner ersten Zeile darunter, damit du siehst, was tatsächlich drinsteht. Daneben wählst du jeweils das Thrive-Feld, zu dem die Spalte gehört, oder <strong>Nicht importieren</strong>. Thrive schlägt eine Zuordnung vor, wenn ein Spaltenkopf erkennbar ist, etwa „Email address“, „Company“ oder „Contact name“. Deine eigenen Felder erscheinen in der Liste als „Eigenes Feld: Quelle“, „Eigenes Feld: Beziehung“ und so weiter.</p>
+<figure data-shot="import-map"><figcaption>Die Spalten einer Tabelle den Kundenfeldern in Thrive zuordnen, mit einem Beispielwert aus der ersten Zeile unter jedem Spaltenkopf.</figcaption></figure>
+<p>Ein paar Regeln halten es übersichtlich: E-Mail ist das einzige Pflichtfeld, jedes Thrive-Feld lässt sich nur einmal zuordnen, und jede Spalte, die du auf Nicht importieren lässt, wird auf dem nächsten Bildschirm als ignoriert aufgeführt. Es verschwindet also nichts stillschweigend. Logos, verknüpfte Datensätze wie Projekte und Rechnungen sowie berechnete Summen sind keine CSV-Felder.</p>
+<p>Ist eine Spalte leer, ergänzt Thrive sinnvolle Vorschläge aus der E-Mail-Adresse. Eine Gmail- oder Outlook-Adresse deutet auf eine Privatperson hin; eine Firmendomain auf eine Firma, mit einem Firmennamen, der aus der Domain abgeleitet wird. Namen können aus Adressen wie sam.lee@ vorgeschlagen werden, aber nicht aus Sammeladressen wie info@ oder hello@. Sieh diese Vorschläge als Ausgangspunkt, nicht als Tatsachen.</p>
+
+<h2>Behebe die Zeilen, die Aufmerksamkeit brauchen</h2>
+<p>Wähl <strong>Import prüfen</strong>, und du kommst zu <strong>Kunden prüfen</strong>: einer Zusammenfassung, wie viele Zeilen bereit zum Import sind, wie viele Duplikate übersprungen werden und wie viele Zeilen Aufmerksamkeit brauchen, mit einer Tabelle aller Zeilen darunter. Werte, die Thrive abgeleitet hat, sind als vorgeschlagen markiert, damit du Kundentyp und Namen prüfen kannst, bevor irgendetwas gespeichert wird.</p>
+<figure data-shot="import-review"><figcaption>Die Importprüfung: Zeilen, die bereit zum Import sind, und eine Zeile, die Aufmerksamkeit braucht, bevor sie übernommen werden kann.</figcaption></figure>
+<p>Zeilen brauchen meist aus einer Handvoll Gründe Aufmerksamkeit:</p>
+<ul>
+  <li><strong>Eine ungültige E-Mail-Adresse.</strong> Ein Tippfehler, eine fehlende Domain, zwei Adressen in einer Zelle.</li>
+  <li><strong>Ein Wert, der nicht zum Feld passt.</strong> Ein Datum als „März“, „4.800 €“ in einem Währungsfeld (nimm 4800) oder „Vielleicht“ in einem Kontrollkästchen-Feld (nimm true oder false).</li>
+  <li><strong>Eine unbekannte Option.</strong> „Aktv“ in einer Statusspalte mit den Optionen Lead, Aktiv und Ehemalig.</li>
+  <li><strong>Eine kaputte Zeile.</strong> Mehr oder weniger Zellen als die Kopfzeile, oft wegen eines Kommas ohne Anführungszeichen in einer Notiz.</li>
+</ul>
+<p>Du hast drei Möglichkeiten, damit umzugehen. Klick bei der Zeile auf <strong>Bearbeiten</strong>, korrigier sie und wähl <strong>Zeile speichern</strong>. Lad dir mit <strong>Probleme herunterladen</strong> eine CSV mit allen Problemzeilen und dem jeweiligen Grund herunter, korrigier sie in deiner Tabelle und importier sie als zweiten Schwung. Oder setz den Haken bei <strong>Ungültige Zeilen überspringen und nur gültige Kunden importieren</strong>, wenn die Problemzeilen alte Kontakte sind, die du nicht brauchst. Solange Zeilen Aufmerksamkeit brauchen, importiert Thrive nicht, außer du wählst eine dieser Möglichkeiten.</p>
+<p>Um Duplikate kümmert sich Thrive für dich. Jede E-Mail-Adresse, die es in deinem Arbeitsbereich schon gibt, auch bei archivierten Kunden, oder die zweimal in der Datei steht, wird übersprungen statt erneut importiert. Du kannst einen Import also gefahrlos noch einmal starten, nachdem du ein paar Zeilen korrigiert hast, ohne deine Liste zu verdoppeln.</p>
+<p>Wenn du schon <a href="/blog/de/automate-busy-work">Workflows</a> nutzt, laufen sie auch für importierte Kunden, begrenzt auf 100 Aktionen pro Import. Hast du einen Workflow „wenn ein Kunde erstellt wird“, importier in kleineren Schwüngen und schau dir danach den Ausführungsverlauf an.</p>
+<p>Du gibst die Datei lieber einem KI-Assistenten? <strong>MCP nutzen</strong> im Importdialog zeigt, wie du Claude oder ChatGPT verbindest. Beide können eine Vorschau des Imports zeigen und auf deine Freigabe warten. Mehr dazu in <a href="/blog/de/run-your-business-with-ai">dein Business mit KI führen</a>.</p>
+
+<h2>Nach dem Import: Ansichten statt Farbcodes</h2>
+<p>Der Sinn des Umzugs war nicht, dieselbe Liste woanders zu haben. Es ging darum, die Liste nicht mehr von Hand zu pflegen. Ein paar Dinge ersetzen die Gewohnheiten, die du in der Tabelle hattest:</p>
+<ul>
+  <li><strong>Boardansicht statt eingefärbter Zeilen.</strong> Stell die Kundenliste auf <strong>Boardansicht</strong> um, wähl <strong>Gruppieren</strong> und dann dein Auswahlfeld für Beziehung oder Phase. Jede Option wird zu einer Spalte, und wenn du eine Kundenkarte von Lead nach Aktiv ziehst, wird das Feld aktualisiert.</li>
+  <li><strong>Filter statt ausgeblendeter Zeilen.</strong> Such, filtere und sortiere nach jedem Feld, auch nach eigenen, und speichere die Ansichten, die du jede Woche nutzt.</li>
+  <li><strong>Verknüpfte Arbeit statt Notizspalten.</strong> Neue Projekte, Angebote, Verträge und Rechnungen werden direkt beim Kunden angelegt. Der Datensatz zeigt also die echte Geschichte statt einer Zeile, die du getippt hast.</li>
+</ul>
+<figure data-shot="clients"><figcaption>Die Kundenliste nach dem Import, gruppiert nach Pipeline-Phase.</figcaption></figure>
+<p>Heb die alte Tabelle einen Monat lang als schreibgeschütztes Backup auf und archivier sie dann. Wenn du dich dabei ertappst, sie „nur kurz zum Nachsehen“ zu öffnen, leg das, was du gesucht hast, als Feld an. Von hier aus geht es weiter mit <a href="/blog/de/manage-multiple-projects">mehrere Kundenprojekte im Griff behalten</a>, und eine <a href="/blog/de/daily-summary-email">tägliche Zusammenfassung per E-Mail</a> sagt dir, was sich geändert hat, ohne dass du die Liste öffnen musst. Du kommst stattdessen von einem All-in-one-Tool? Lies unseren Leitfaden zur <a href="/blog/de/honeybook-alternative">HoneyBook-Alternative</a>.</p>
+
+<h2>Probier es bei deinem nächsten Projekt aus</h2>
+<p>Räum deine Tabelle auf, leg zwei oder drei eigene Felder an und importier deine Kundenliste in einem Rutsch. Thrive kostet 10 $ im Monat oder 100 $ im Jahr, mit 7 Tagen kostenloser Testphase und ohne Kreditkarte. <a href="https://app.runonthrive.com/auth/sign-up">Starte deine Testphase</a> und schick die Tabelle diese Woche in Rente.</p>

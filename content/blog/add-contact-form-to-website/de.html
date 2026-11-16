@@ -1,0 +1,80 @@
+<!--meta {"date":"2026-11-16","title":"Kontaktformular auf deiner Website einbauen (Squarespace, Webflow, WordPress oder reines HTML)","description":"Bau ein Kontaktformular in deine Website ein: welche Felder du abfragst, Pop-up oder eingebettet, einfacher Spamschutz und was nach dem Absenden passiert.","minutes":7} -->
+<p class="lede">Eine sichtbare E-Mail-Adresse auf deiner Website wirkt wie die freundlichste Lösung, macht aber Arbeit. Anfragen kommen ohne Kontext, landen im selben Postfach wie alles andere, und du überträgst die Details von Hand in deine Unterlagen, wenn du daran denkst. Ein kleines Kontaktformular löst das. Besucher wissen, was sie dir erzählen sollen, du bekommst jedes Mal dieselben Informationen, und jede Anfrage landet an einem Ort. So richtest du eines auf der Website ein, die du schon hast.</p>
+
+<h2>Kontaktformular oder Anfrageformular?</h2>
+<p>Die beiden sind verwandt, haben aber unterschiedliche Aufgaben:</p>
+<ul>
+  <li><strong>Ein Kontaktformular</strong> ist kurz und offen. Name, E-Mail, ein Grund für die Kontaktaufnahme und eine Nachricht. Es ist für „Ich habe eine Frage“, „Ich würde gern mit dir arbeiten“ und „Darf ich dich für meinen Podcast interviewen?“.</li>
+  <li><strong>Ein Anfrageformular</strong> qualifiziert ein Projekt: Umfang, Budget, Zeitplan, wie man dich gefunden hat. Es ist länger und gehört auf deine Seite „Zusammenarbeit“.</li>
+</ul>
+<p>Die meisten Freelancer brauchen ein Kontaktformular auf jeder Seite und ein Anfrageformular auf einer. In diesem Artikel geht es um das Kontaktformular und wie du es einbaust. Wenn du ein Formular gestalten willst, das Leads nach Budget und Zeitpunkt filtert, lies <a href="/blog/de/generate-leads-with-forms">wie Freelancer mehr (und bessere) Leads gewinnen</a>. Dort geht es ausführlich um die Anfrageseite.</p>
+
+<h2>Was du fragen solltest (und was nicht)</h2>
+<p>Jedes zusätzliche Feld kostet dich Einsendungen. Für ein Kontaktformular reichen vier Fragen:</p>
+<ol>
+  <li><strong>Worum geht es?</strong> Eine kurze Auswahlliste: Projektanfrage, Zusammenarbeit, Vortrag oder Presse, Etwas anderes. So kannst du sortieren und priorisieren, ohne erst jede Nachricht zu lesen.</li>
+  <li><strong>Dein Name.</strong> Ein Feld. Vor- und Nachname zu trennen, bringt in dieser Phase nur Reibung und keinen Nutzen.</li>
+  <li><strong>Deine E-Mail.</strong> Pflichtfeld, auf gültiges Format geprüft.</li>
+  <li><strong>Deine Nachricht.</strong> Ein großes Textfeld mit hilfreichem Platzhalter, etwa „Ein paar Zeilen zu deinem Projekt oder deiner Frage“.</li>
+</ol>
+<p>Lass die Telefonnummer weg (außer du rufst wirklich zurück), ebenso Unternehmensgröße, Adresse und alles, was du erst brauchst, wenn ihr zusammenarbeitet. Das kannst du später mit einem Onboarding-Formular einsammeln, wie in <a href="/blog/de/onboard-new-clients">wie du neue Kunden onboardest</a> beschrieben.</p>
+<p>Zwei kleine Details machen einen großen Unterschied: eine Überschrift, die nach dir klingt („Erzähl mir, was du vorhast“ statt „Kontakt“), und eine Dankesnachricht, die sagt, wie es weitergeht („Ich antworte auf jede Nachricht innerhalb eines Werktags“).</p>
+
+<h2>Pop-up oder direkt auf der Seite?</h2>
+<p>Es gibt zwei gängige Arten, ein Formular auf einer Website zu platzieren, und beide haben ihre Berechtigung.</p>
+<table>
+  <thead><tr><th>Platzierung</th><th>Gut für</th><th>Achte auf</th></tr></thead>
+  <tbody>
+    <tr><td>Pop-up über einen Button</td><td>Einen „Kontakt aufnehmen“-Button im Header oder am Ende jeder Fallstudie</td><td>Besucher müssen klicken, bevor sie das Formular sehen</td></tr>
+    <tr><td>Direkt auf der Seite</td><td>Eine eigene Kontaktseite oder das Ende deiner Startseite</td><td>Braucht Platz und eine sinnvolle Höhe</td></tr>
+  </tbody>
+</table>
+<p>Ein Pop-up funktioniert gut, weil die Leute bleiben, wo sie sind. Jemand liest deine Fallstudie, klickt auf „Projekt starten“, füllt das Formular über der Seite aus und schließt es, ohne seine Stelle zu verlieren. Ein direkt eingebettetes Formular ist besser, wenn die ganze Seite nur dazu da ist, Kontakt aufzunehmen. Viele Freelancer nutzen beides: überall einen Button im Header und ein eingebettetes Formular auf der Kontaktseite.</p>
+
+<h2>Spam-Grundlagen</h2>
+<p>Jedes öffentliche Formular bekommt etwas Spam. Um ihn im Rahmen zu halten, brauchst du nicht viel:</p>
+<ul>
+  <li><strong>Veröffentliche deine E-Mail-Adresse nicht im Klartext</strong> neben dem Formular. Scraper finden sie, und dann bekommst du den Spam trotzdem.</li>
+  <li><strong>Nutze ein verstecktes „Honeypot“-Feld.</strong> Menschen sehen es nie, Bots füllen es aus, und die Einsendung wird abgelehnt.</li>
+  <li><strong>Begrenze, wie oft ein Formular abgeschickt werden kann,</strong> damit ein einzelnes Skript dir nicht Hunderte Nachrichten schickt.</li>
+  <li><strong>Mach die E-Mail zur Pflicht und prüf sie.</strong> Das filtert die faulsten Bots heraus, und du kannst immer antworten.</li>
+  <li><strong>Achte auf Muster.</strong> Wenn Spam immer „Etwas anderes“ wählt, ist das dein Signal, diese Einsendungen zuerst mit Skepsis anzusehen.</li>
+</ul>
+<p>Die Formulare von Thrive haben die ersten davon auf dem Server eingebaut: ein verstecktes Honeypot-Feld, eine Grenze für Einsendungen pro Formular und Stunde sowie pro Tag und eine Prüfung jeder Antwort. Ein CAPTCHA gibt es nicht, damit das Formular für echte Besucher freundlicher bleibt.</p>
+
+<h2>Das Formular in Thrive einrichten</h2>
+<p>Geh zu <strong>Formulare → Neues Formular</strong> und wähl die Vorlage <strong>Website-Kontakt</strong>. Sie bringt genau die vier Fragen von oben mit (ein Grund für die Kontaktaufnahme, Name, E-Mail und Nachricht) und ein dunkles Design, das du ändern kannst. Pass die Formulierungen an, damit sie nach dir klingen, ändere die Auswahlmöglichkeiten passend zu deiner Arbeit und markiere die Fragen, die du brauchst, als Pflicht.</p>
+<p>Öffne dann im Editor <strong>Aussehen &amp; Website-Branding</strong>, um es an deine Website anzupassen: Schrift, Hintergrund, Text- und Buttonfarben, Eckenradius, eine kurze Überschrift, den Button-Text, eine Fußnote, die Dankesnachricht und ein zweispaltiges Layout. Änderungen hier gelten für den Formularlink und für jede Einbettung, die du schon installiert hast. So kannst du das Design später anpassen, ohne deine Website noch einmal anzufassen.</p>
+
+<h2>Auf deiner Website einbauen</h2>
+<p>Öffne das Formular, wähl <strong>Teilen</strong> und wechsle zum Tab <strong>Website-Einbettung</strong>. Hat das Formular noch keinen Link, erstellt <strong>Einbettungslink erstellen</strong> einen (Formularlinks laufen standardmäßig nicht ab). Dann:</p>
+<ol>
+  <li>Wähl eine <strong>Platzierung</strong>: <strong>Pop-up über einen Button</strong> oder <strong>Direkt auf deiner Seite</strong>.</li>
+  <li>Für ein Pop-up legst du den <strong>Button-Text</strong> fest, etwa „Kontakt aufnehmen“. Für die direkte Einbettung legst du stattdessen einen Rahmentitel fest.</li>
+  <li>Wähl <strong>Code kopieren</strong> und sieh dir das Formular mit <strong>Formularvorschau</strong> so an, wie es Besucher sehen. Beachte, dass eine Einsendung aus der Vorschau als echte Antwort gespeichert wird.</li>
+</ol>
+<figure data-shot="form-embed"><figcaption>Der Teilen-Dialog des Formulars, Tab Website-Einbettung: Platzierung auf Pop-up über einen Button, der Einbettungscode bereit zum Kopieren.</figcaption></figure>
+<p>Für ein Pop-up besteht der Code aus zwei Zeilen: einem Script-Tag für Thrives <code>embed.js</code>, das du einmal pro Seite einfügst, und einem Link, der das Formular öffnet. Der Link übernimmt das Styling deiner Website. Wenn du schon einen Button hast, den du nutzen willst, öffne <strong>Vorhandenen Button nutzen</strong>; dort stehen die Attribute, die du ihm stattdessen hinzufügst. Für die direkte Einbettung ist der Code ein einzelnes iframe in voller Breite, dessen Höhe du im Snippet ändern kannst (sie startet bei 820 Pixeln).</p>
+<p>Wo du ihn einfügst, hängt von deinem Website-Baukasten ab:</p>
+<ul>
+  <li><strong>Squarespace:</strong> Füg dort, wo das Formular hin soll, einen Code-Block ein und den Code hinein. Code-Blöcke hängen von deinem Squarespace-Tarif ab, prüf also, ob deiner sie erlaubt.</li>
+  <li><strong>Webflow:</strong> Zieh ein Code-Embed-Element hinein und füg den Code ein. Skripte laufen auf der veröffentlichten Website, nicht im Designer, also teste das Pop-up nach dem Veröffentlichen.</li>
+  <li><strong>WordPress:</strong> Füg im Block-Editor einen Block „Individuelles HTML“ hinzu. Manche gehosteten Tarife entfernen Skripte; dann ist das eingebettete iframe die einfachere Wahl.</li>
+  <li><strong>Reines HTML:</strong> Füg den Code dort in deine Seite ein, wo der Button oder das Formular erscheinen soll.</li>
+</ul>
+<p>Die allgemeine Regel: Das Pop-up braucht eine Website, die eigenes JavaScript erlaubt, die eingebettete Variante eine, die iframes erlaubt. Wenn deine Website eine Content Security Policy sendet, muss sie die Adresse von Thrive für Skripte, Styles und Frames erlauben. Thrive ändert deine Website nie von sich aus; nichts erscheint, bevor du den Code einfügst.</p>
+<p>Keine Website oder kein Zugriff auf den Code? Der Tab <strong>Kundenlink</strong> im selben Dialog gibt dir einen einfachen Link zum Formular, der in deiner E-Mail-Signatur, deiner Bio oder einem Social-Media-Profil funktioniert.</p>
+
+<h2>Was nach dem Absenden passiert</h2>
+<p>Hier schlägt ein Formular eine E-Mail-Adresse. Mit der Vorlage Website-Kontakt wird jede Einsendung:</p>
+<ul>
+  <li><strong>In den Einsendungen des Formulars in Thrive angezeigt</strong>, mit den Antworten genau so, wie sie gegeben wurden, auch wenn du die Fragen später änderst.</li>
+  <li><strong>Über die E-Mail einem Kunden zugeordnet.</strong> Gehört die E-Mail zu einem bestehenden Kunden, wird die Antwort mit ihm verknüpft. Wenn nicht, legt Thrive einen neuen Kunden mit Name und E-Mail an. Eine anonyme Einsendung überschreibt nie Daten, die du für einen bestehenden Kunden schon gespeichert hast.</li>
+  <li><strong>Nicht zu einem Projekt.</strong> Eine Kontaktnachricht ist nicht unbedingt ein Auftrag. Wenn jede Einsendung zu einem geplanten Projekt werden soll, nimm stattdessen die Vorlage Projektanfrage oder ändere unter <strong>Weitere Optionen → Antwort verwenden für</strong> bei der jeweiligen Frage, wofür jede Antwort verwendet wird.</li>
+</ul>
+<figure data-shot="forms"><figcaption>Einsendungen zu einem Formular in Thrive, jede mit einem Kunden verknüpft.</figcaption></figure>
+<p>Thrive kann dir eine E-Mail schicken, wenn eine neue Antwort eingeht (Kontoeinstellungen → Benachrichtigungen), und eine <a href="/blog/de/daily-summary-email">tägliche Zusammenfassung per E-Mail</a> listet neue Antworten zusammen mit allem anderen auf, was auf dich wartet. Auch ein Workflow kann laufen, wenn ein Formular eingesendet wird, zum Beispiel um einen Antwortentwurf zu erstellen, den du prüfst. Siehe <a href="/blog/de/automate-busy-work">wie du lästigen Kleinkram automatisierst</a>.</p>
+<p>Dann antworte. Schnell und kurz schlägt langsam und perfekt: Bedank dich, fass zusammen, was du verstanden hast, und schlag einen nächsten Schritt vor. Ist dieser nächste Schritt ein Call, spart ein Buchungslink eine Mailrunde; <a href="/blog/de/book-client-calls">wie du Kundentermine buchst</a> erklärt die Einrichtung.</p>
+
+<h2>Probier es bei deinem nächsten Projekt aus</h2>
+<p>Wähl die Vorlage Website-Kontakt, pass vier Fragen und die Farben an und setz den Pop-up-Code hinter einen „Kontakt aufnehmen“-Button auf deiner Website. Thrive kostet 10 $ im Monat oder 100 $ im Jahr, mit 7 Tagen kostenloser Testphase und ohne Kreditkarte. <a href="https://app.runonthrive.com/auth/sign-up">Starte deine Testphase</a> und sieh zu, wie deine nächste Anfrage schon mit einem Kunden verknüpft ankommt.</p>

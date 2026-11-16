@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Spostare i clienti da un foglio di calcolo (senza perdere niente per strada)","description":"I segnali che il tuo foglio clienti è arrivato al limite, come ripulirlo prima di spostarlo e come abbinare colonne, sistemare righe e ricostruire la pipeline.","minutes":7} -->
+<p class="lede">Quasi ogni freelance inizia con un foglio di calcolo. Una scheda chiamata "Clienti", qualche colonna per nome, email e azienda, magari una colonna di stato che colori a mano. Funziona per un po', poi un giorno ti accorgi di aver aperto tre file diversi e una vecchia conversazione email solo per rispondere a "quand'è che ho fatturato l'ultima volta a questa persona?". È quello il momento di cambiare. Questa guida spiega come capire che è ora, come ripulire il foglio perché il passaggio sia indolore e cosa fare una volta dall'altra parte.</p>
+
+<h2>I segnali che il foglio di calcolo non ti basta più</h2>
+<p>Il problema non è il foglio di calcolo. I guai iniziano quando l'elenco clienti smette di essere un elenco e diventa il centro della tua attività. Alcuni segnali comuni:</p>
+<ul>
+  <li><strong>Lo stesso cliente vive in più posti.</strong> Una riga nel foglio clienti, un'altra nel tracker delle fatture, una terza in una cartella di proposte. Cambi un indirizzo email e due di questi ora sono sbagliati.</li>
+  <li><strong>La storia non sta nella riga.</strong> Vedi che Sam di Northwind è un cliente, ma non quali progetti avete fatto, cosa gli hai preventivato o quale fattura è ancora aperta.</li>
+  <li><strong>La colonna di stato mente.</strong> Dice "Proposta inviata" per un cliente che ha firmato tre settimane fa, perché hai aggiornato la proposta e ti sei dimenticato del foglio.</li>
+  <li><strong>Eviti di aprirlo.</strong> Se aggiornare il foglio ti pesa, non verrà aggiornato, e un elenco di cui non ti fidi è peggio di nessun elenco.</li>
+</ul>
+<p>Se due o tre di questi ti suonano familiari, il foglio ha fatto il suo lavoro. Ora l'obiettivo è un posto in cui la scheda del cliente e il lavoro che fai per lui siano collegati, così la storia si costruisce da sola mentre mandi proposte e fatture. Se vuoi un quadro più ampio di cosa dovrebbe contenere un CRM leggero, leggi <a href="/blog/it/simple-crm-for-freelancers">un CRM semplice per freelance</a>.</p>
+
+<h2>Ripulisci il foglio prima di spostarlo</h2>
+<p>Trenta minuti di riordino ti risparmiano un pomeriggio di correzioni dopo. Lavora su una copia del foglio.</p>
+<ol>
+  <li><strong>Una riga per cliente.</strong> Elimina le righe vuote, quelle dei subtotali e il separatore "ARCHIVIO SOTTO QUESTA RIGA". Unisci i duplicati: la stessa persona inserita due volte con grafie diverse è il disordine più comune.</li>
+  <li><strong>Una sola riga di intestazione, con nomi unici.</strong> Elimina le celle del titolo unite e rinomina le colonne vaghe ("Info" diventa "Note").</li>
+  <li><strong>Ogni cliente ha bisogno di un'email.</strong> È il modo in cui uno strumento serio distingue i clienti, e il modo in cui li raggiungerai. Aggiungi quelle mancanti, oppure sposta i clienti senza email in una scheda separata da sistemare più avanti.</li>
+  <li><strong>Rendi coerenti i valori.</strong> Scegli un solo modo di scrivere ogni stato ("Attivo", non "attivo", "ATTIVO" e "in corso"). Scrivi le date come 2026-03-14 invece di "metà marzo". Togli simboli di valuta e separatori delle migliaia dagli importi, così 4.800 € diventa 4800.</li>
+</ol>
+<p>Poi esportalo come CSV. In Google Sheets è File → Scarica → Valori separati da virgola. In Excel scegli Salva con nome e seleziona "CSV UTF-8". In Notion esporta il database come Markdown &amp; CSV e usa il file CSV. L'UTF-8 conta se un cliente ha un accento nel nome: Zoë e Müller devono arrivare come Zoë e Müller.</p>
+
+<h3>Una checklist veloce prima dell'importazione</h3>
+<ul>
+  <li>Una sola riga di intestazione, nessuna cella vuota o unita.</li>
+  <li>Una riga per cliente, duplicati uniti.</li>
+  <li>Un indirizzo email in ogni riga.</li>
+  <li>Stati scritti sempre allo stesso modo.</li>
+  <li>Date come AAAA-MM-GG, importi come numeri semplici.</li>
+  <li>Salvato come CSV UTF-8.</li>
+</ul>
+
+<h2>Decidi quali colonne diventano campi</h2>
+<p>Prima di importare, guarda le colonne rimaste e dividile in tre gruppi.</p>
+<ul>
+  <li><strong>Dati standard del cliente:</strong> email, nome e cognome, nome dell'azienda, nome del contatto. Ogni strumento per clienti li ha.</li>
+  <li><strong>Le tue colonne di monitoraggio:</strong> provenienza, fase della relazione, segnalato da, ultimo contatto. Queste diventano campi personalizzati.</li>
+  <li><strong>Cose che non sono davvero dati del cliente:</strong> nomi dei progetti, numeri di fattura, importi da incassare. Lasciale fuori. Appartengono a progetti e fatture, non stipate in una riga del cliente.</li>
+</ul>
+<p>In Thrive, crea i campi personalizzati <em>prima</em> di importare, così le tue colonne hanno un posto dove andare. Usa il pulsante <strong>+</strong> della tabella clienti oppure <strong>Colonne → Gestisci campi personalizzati</strong>. I campi possono essere testo, numero, valuta, data, casella di spunta, selezione, selezione multipla, email o URL. Per una colonna di stato, usa un campo di selezione e aggiungi esattamente le opzioni che usa il tuo foglio (per esempio Lead, Attivo, Passato), perché i valori importati devono corrispondere a un'opzione esistente.</p>
+
+<h2>Abbina le colonne</h2>
+<p>In Thrive, vai su <strong>Clienti → Importa clienti</strong>. La finestra accetta un CSV UTF-8 fino a 500 clienti e 2 MB, separato da virgole o punti e virgola. Se preferisci partire da un modello pulito, <strong>Scarica CSV di esempio</strong> ti dà un file con tutti i campi del cliente e i tuoi campi personalizzati attivi come intestazioni, più una riga di esempio da sostituire.</p>
+<p>Dopo aver scelto il file, il passaggio <strong>Abbina colonne</strong> elenca ognuna delle tue intestazioni con sotto il valore della prima riga, così vedi cosa contiene davvero. Accanto a ciascuna scegli il campo di Thrive a cui appartiene, oppure <strong>Non importare</strong>. Thrive suggerisce un abbinamento quando un'intestazione è riconoscibile, come "Email address", "Company" o "Contact name". I tuoi campi personalizzati compaiono nell'elenco come "Personalizzato: Provenienza", "Personalizzato: Relazione" e così via.</p>
+<figure data-shot="import-map"><figcaption>Abbinare le colonne di un foglio di calcolo ai campi cliente di Thrive, con un valore di esempio dalla prima riga sotto ogni intestazione.</figcaption></figure>
+<p>Poche regole rendono tutto semplice: Email è l'unico campo obbligatorio, ogni campo di Thrive si può abbinare una sola volta, e ogni colonna lasciata su Non importare compare come ignorata nella schermata successiva, quindi niente sparisce in silenzio. Loghi, record collegati come progetti e fatture, e totali calcolati non sono campi del CSV.</p>
+<p>Se una colonna è vuota, Thrive compila suggerimenti sensati a partire dall'indirizzo email. Un indirizzo Gmail o Outlook suggerisce un privato; un dominio aziendale suggerisce un'azienda, con un nome ricavato dal dominio. I nomi si possono suggerire da indirizzi come sam.lee@, ma non da caselle condivise come info@ o hello@. Considerali punti di partenza, non fatti.</p>
+
+<h2>Sistema le righe che richiedono attenzione</h2>
+<p>Scegli <strong>Controlla importazione</strong> e arrivi a <strong>Controlla clienti</strong>: un riepilogo di quante righe sono pronte per l'importazione, quanti duplicati verranno saltati e quante righe richiedono attenzione, con sotto una tabella di tutte le righe. I valori dedotti da Thrive sono segnati come suggeriti, così puoi controllare tipo di cliente e nome prima che venga salvato qualcosa.</p>
+<figure data-shot="import-review"><figcaption>Il controllo dell'importazione: righe pronte da importare, con una riga che richiede attenzione prima di poter passare.</figcaption></figure>
+<p>Di solito le righe richiedono attenzione per pochi motivi:</p>
+<ul>
+  <li><strong>Un'email non valida.</strong> Un errore di battitura, un dominio mancante, due indirizzi nella stessa cella.</li>
+  <li><strong>Un valore che non va bene per il campo.</strong> Una data scritta come "marzo", "4.800 €" in un campo valuta (usa 4800), oppure "Forse" in una casella di spunta (usa true o false).</li>
+  <li><strong>Un'opzione sconosciuta.</strong> "Attvo" in una colonna di stato le cui opzioni sono Lead, Attivo e Passato.</li>
+  <li><strong>Una riga rotta.</strong> Più o meno celle dell'intestazione, spesso per una virgola non racchiusa tra virgolette dentro una nota.</li>
+</ul>
+<p>Hai tre modi per gestirle. Usa <strong>Modifica</strong> sulla riga, correggila e scegli <strong>Salva riga</strong>. Usa <strong>Scarica problemi</strong> per ottenere un CSV con tutte le righe problematiche e il motivo, correggile nel tuo foglio e importale in un secondo gruppo. Oppure spunta <strong>Salta le righe non valide e importa solo i clienti validi</strong> se le righe problematiche sono vecchi contatti che non ti servono. Finché ci sono righe che richiedono attenzione, Thrive non importa nulla, a meno che tu non scelga una di queste opzioni.</p>
+<p>Ai duplicati pensa Thrive. Ogni email che esiste già nel tuo spazio di lavoro, inclusi i clienti archiviati, o che compare due volte nel file, viene saltata invece di essere importata di nuovo. Questo significa che puoi rilanciare un'importazione senza rischi dopo aver corretto qualche riga, senza raddoppiare il tuo elenco.</p>
+<p>Se usi già i <a href="/blog/it/automate-busy-work">workflow</a>, si attivano anche sui clienti importati, con un limite di 100 azioni per importazione. Se hai un workflow "quando viene creato un cliente", importa in gruppi più piccoli e poi controlla lo storico delle esecuzioni.</p>
+<p>Preferisci passare il file a un assistente di IA? <strong>Usa MCP</strong> nella finestra di importazione mostra come collegare Claude o ChatGPT, che possono visualizzare un'anteprima dell'importazione e aspettare la tua approvazione. Vedi <a href="/blog/it/run-your-business-with-ai">usare l'IA per la tua amministrazione</a>.</p>
+
+<h2>Dopo l'importazione: viste al posto dei colori</h2>
+<p>Lo scopo del trasloco non era avere lo stesso elenco da un'altra parte. Era smettere di aggiornare l'elenco a mano. Alcune cose sostituiscono le abitudini che avevi nel foglio:</p>
+<ul>
+  <li><strong>Vista bacheca al posto delle righe colorate.</strong> Passa l'elenco clienti alla <strong>Vista bacheca</strong>, scegli <strong>Raggruppa per</strong> e seleziona il tuo campo di selezione Relazione o Fase. Ogni opzione diventa una colonna, e trascinare la scheda di un cliente da Lead ad Attivo aggiorna il campo.</li>
+  <li><strong>Filtri al posto delle righe nascoste.</strong> Cerca, filtra e ordina per qualsiasi campo, inclusi quelli personalizzati, e salva le viste che usi ogni settimana.</li>
+  <li><strong>Lavoro collegato al posto delle colonne di note.</strong> Nuovi progetti, proposte, contratti e fatture vengono creati sul cliente, quindi la scheda mostra la storia reale invece di una riga che hai scritto tu.</li>
+</ul>
+<figure data-shot="clients"><figcaption>L'elenco clienti raggruppato per fase della pipeline, dopo l'importazione.</figcaption></figure>
+<p>Tieni il vecchio foglio di calcolo come backup in sola lettura per un mese, poi archivialo. Se ti sorprendi ad aprirlo "solo per controllare", aggiungi come campo quello che stavi cercando. Da qui, <a href="/blog/it/manage-multiple-projects">gestire più progetti per i clienti</a> riprende il filo, e un'<a href="/blog/it/daily-summary-email">email di riepilogo giornaliera</a> ti dice cosa è cambiato senza aprire l'elenco. Arrivi invece da uno strumento tutto in uno? Leggi la nostra guida sull'<a href="/blog/it/honeybook-alternative">alternativa a HoneyBook</a>.</p>
+
+<h2>Provalo sul tuo prossimo progetto</h2>
+<p>Ripulisci il foglio, crea due o tre campi personalizzati e importa il tuo elenco clienti in una sola sessione. Thrive costa 10 $ al mese o 100 $ all'anno, con 7 giorni di prova gratuita e senza carta. <a href="https://app.runonthrive.com/auth/sign-up">Inizia la prova</a> e manda in pensione il foglio di calcolo questa settimana.</p>

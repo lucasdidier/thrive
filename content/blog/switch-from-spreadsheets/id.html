@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Memindahkan data klien dari spreadsheet (tanpa ada yang hilang di jalan)","description":"Tanda spreadsheet klien Anda sudah mentok, cara merapikannya sebelum pindah, lalu cara mencocokkan kolom, memperbaiki baris bermasalah, dan menata pipeline.","minutes":7} -->
+<p class="lede">Hampir semua freelancer memulai dengan spreadsheet. Satu tab bernama "Klien", beberapa kolom untuk nama, email, dan perusahaan, mungkin kolom status yang Anda warnai manual. Cara ini berhasil untuk sementara, lalu suatu hari Anda sadar sudah membuka tiga file berbeda dan satu utas email lama hanya untuk menjawab "kapan terakhir saya menagih orang ini?" Itulah saatnya pindah. Panduan ini membahas cara mengetahui bahwa waktunya sudah tiba, cara merapikan spreadsheet supaya perpindahannya mulus, dan apa yang perlu dilakukan setelahnya.</p>
+
+<h2>Tanda Anda sudah melampaui spreadsheet</h2>
+<p>Spreadsheet bukan masalahnya. Masalah muncul saat daftar klien berhenti menjadi sekadar daftar dan mulai menjadi pusat bisnis Anda. Beberapa tanda yang umum:</p>
+<ul>
+  <li><strong>Klien yang sama ada di beberapa tempat.</strong> Satu baris di sheet klien, satu lagi di pelacak faktur, yang ketiga di folder proposal. Ganti satu alamat email, dan dua lainnya sekarang salah.</li>
+  <li><strong>Riwayatnya tidak ada di baris itu.</strong> Anda bisa melihat bahwa Sam dari Northwind adalah klien, tapi tidak bisa melihat proyek apa saja yang sudah dikerjakan, berapa yang Anda tawarkan, atau faktur mana yang masih terbuka.</li>
+  <li><strong>Kolom statusnya bohong.</strong> Tertulis "Proposal terkirim" untuk klien yang sudah tanda tangan tiga minggu lalu, karena Anda memperbarui proposalnya dan lupa memperbarui sheet.</li>
+  <li><strong>Anda malas membukanya.</strong> Kalau memperbarui sheet terasa seperti beban, sheet itu tidak akan diperbarui, dan daftar yang tidak Anda percayai lebih buruk daripada tidak punya daftar sama sekali.</li>
+</ul>
+<p>Kalau dua atau tiga tanda itu terdengar akrab, sheet Anda sudah menjalankan tugasnya. Tujuan sekarang adalah tempat di mana catatan klien dan pekerjaan yang Anda lakukan untuk mereka saling terhubung, sehingga riwayatnya terbentuk sendiri saat Anda mengirim proposal dan faktur. Kalau Anda ingin gambaran lebih besar tentang apa yang perlu disimpan CRM sederhana, baca <a href="/blog/id/simple-crm-for-freelancers">CRM sederhana untuk freelancer</a>.</p>
+
+<h2>Rapikan sheet sebelum memindahkannya</h2>
+<p>Tiga puluh menit merapikan menghemat satu sore memperbaiki di kemudian hari. Kerjakan di salinan sheet.</p>
+<ol>
+  <li><strong>Satu baris per klien.</strong> Hapus baris kosong, baris subtotal, dan pembatas "ARSIP DI BAWAH BARIS INI". Gabungkan duplikat: orang yang sama dimasukkan dua kali dengan ejaan berbeda adalah kekacauan yang paling umum.</li>
+  <li><strong>Satu baris header, dengan nama yang unik.</strong> Hapus sel judul yang digabung dan ganti nama kolom yang tidak jelas ("Info" menjadi "Catatan").</li>
+  <li><strong>Setiap klien butuh email.</strong> Email adalah cara aplikasi yang layak membedakan klien dan cara Anda menghubungi mereka. Isi yang kosong, atau pindahkan klien tanpa email ke tab terpisah untuk diurus nanti.</li>
+  <li><strong>Buat nilainya konsisten.</strong> Pilih satu cara menulis setiap status ("Aktif", bukan "aktif", "AKTIF", dan "berjalan"). Tulis tanggal sebagai 2026-03-14, bukan "pertengahan Maret". Hapus simbol mata uang dan pemisah ribuan dari nominal, jadi €4.800 menjadi 4800.</li>
+</ol>
+<p>Lalu ekspor sebagai CSV. Di Google Sheets, caranya File → Download → Comma-separated values. Di Excel, pilih Save As lalu pilih "CSV UTF-8". Di Notion, ekspor database sebagai Markdown &amp; CSV dan pakai file CSV-nya. UTF-8 penting kalau ada klien dengan aksen di namanya: Zoë dan Müller harus tiba sebagai Zoë dan Müller.</p>
+
+<h3>Checklist singkat sebelum impor</h3>
+<ul>
+  <li>Satu baris header, tanpa sel kosong atau sel gabungan.</li>
+  <li>Satu baris per klien, duplikat sudah digabung.</li>
+  <li>Alamat email di setiap baris.</li>
+  <li>Status ditulis dengan cara yang sama setiap kali.</li>
+  <li>Tanggal dalam format YYYY-MM-DD, nominal sebagai angka biasa.</li>
+  <li>Disimpan sebagai CSV UTF-8.</li>
+</ul>
+
+<h2>Tentukan kolom mana yang menjadi field</h2>
+<p>Sebelum mengimpor, lihat kolom yang tersisa dan kelompokkan ke dalam tiga grup.</p>
+<ul>
+  <li><strong>Detail klien standar:</strong> email, nama depan dan belakang, nama perusahaan, nama kontak. Setiap aplikasi klien punya field ini.</li>
+  <li><strong>Kolom pelacakan Anda sendiri:</strong> sumber, tahap hubungan, direferensikan oleh, check-in terakhir. Ini menjadi kolom kustom.</li>
+  <li><strong>Hal-hal yang sebenarnya bukan data klien:</strong> nama proyek, nomor faktur, jumlah utang. Tinggalkan saja. Data ini milik proyek dan faktur, bukan dijejalkan ke baris klien.</li>
+</ul>
+<p>Di Thrive, buat kolom kustom <em>sebelum</em> mengimpor, supaya kolom Anda punya tempat tujuan. Pakai tombol <strong>+</strong> di tabel klien atau <strong>Kolom → Kelola kolom kustom</strong>. Field bisa berupa teks, angka, mata uang, tanggal, kotak centang, pilihan, pilihan ganda, email, atau URL. Untuk kolom status, pakai field pilihan dan tambahkan persis opsi yang dipakai sheet Anda (misalnya Prospek, Aktif, Selesai), karena nilai yang diimpor harus cocok dengan opsi yang sudah ada.</p>
+
+<h2>Cocokkan kolomnya</h2>
+<p>Di Thrive, buka <strong>Klien → Impor klien</strong>. Dialognya menerima CSV UTF-8 berisi sampai 500 klien dan 2 MB, dipisahkan dengan koma atau titik koma. Kalau Anda lebih suka mulai dari template bersih, <strong>Unduh contoh CSV</strong> memberi Anda file dengan semua field klien dan kolom kustom aktif Anda sebagai header, ditambah satu baris contoh untuk diganti.</p>
+<p>Setelah memilih file, langkah <strong>Cocokkan kolom</strong> menampilkan setiap header Anda dengan nilai dari baris pertama di bawahnya, jadi Anda bisa melihat isi sebenarnya. Di sebelah masing-masing, Anda memilih field Thrive tujuannya, atau <strong>Jangan impor</strong>. Thrive menyarankan pasangan saat header-nya bisa dikenali, seperti "Email address", "Company", atau "Contact name". Kolom kustom Anda muncul di daftar sebagai "Kustom: Sumber", "Kustom: Hubungan", dan seterusnya.</p>
+<figure data-shot="import-map"><figcaption>Mencocokkan kolom spreadsheet dengan field klien Thrive, dengan contoh nilai dari baris pertama di bawah setiap header.</figcaption></figure>
+<p>Beberapa aturan membuatnya tetap sederhana: Email adalah satu-satunya field wajib, setiap field Thrive hanya bisa dicocokkan sekali, dan kolom yang Anda biarkan di Jangan impor dicantumkan sebagai diabaikan di layar berikutnya, jadi tidak ada yang hilang diam-diam. Logo, catatan terkait seperti proyek dan faktur, serta total yang dihitung bukan field CSV.</p>
+<p>Kalau sebuah kolom kosong, Thrive mengisi saran yang masuk akal dari alamat email. Alamat Gmail atau Outlook menandakan perorangan; domain bisnis menandakan perusahaan, dengan nama perusahaan diambil dari domainnya. Nama bisa disarankan dari alamat seperti sam.lee@, tapi tidak dari kotak masuk bersama seperti info@ atau hello@. Anggap ini titik awal, bukan fakta.</p>
+
+<h2>Perbaiki baris yang perlu perhatian</h2>
+<p>Pilih <strong>Tinjau impor</strong> dan Anda mendapat <strong>Tinjau klien</strong>: ringkasan berapa baris yang siap diimpor, berapa duplikat yang akan dilewati, dan berapa baris yang perlu perhatian, dengan tabel semua baris di bawahnya. Nilai yang disimpulkan Thrive ditandai sebagai disarankan, jadi Anda bisa mengecek jenis dan nama klien sebelum ada yang disimpan.</p>
+<figure data-shot="import-review"><figcaption>Tinjauan impor: baris yang siap diimpor, dengan satu baris yang perlu perhatian sebelum bisa ikut masuk.</figcaption></figure>
+<p>Baris biasanya perlu perhatian karena beberapa alasan:</p>
+<ul>
+  <li><strong>Email tidak valid.</strong> Salah ketik, domain yang hilang, dua alamat dalam satu sel.</li>
+  <li><strong>Nilai yang tidak cocok dengan field-nya.</strong> Tanggal yang ditulis "Maret", "€4.800" di field mata uang (pakai 4800), atau "Mungkin" di field kotak centang (pakai true atau false).</li>
+  <li><strong>Opsi yang tidak dikenal.</strong> "Aktf" di kolom status yang opsinya Prospek, Aktif, dan Selesai.</li>
+  <li><strong>Baris yang rusak.</strong> Jumlah sel lebih banyak atau lebih sedikit daripada header, sering kali karena koma tanpa tanda kutip di dalam catatan.</li>
+</ul>
+<p>Ada tiga cara menanganinya. Pakai <strong>Edit</strong> di baris itu, perbaiki, lalu <strong>Simpan baris</strong>. Pakai <strong>Unduh masalah</strong> untuk mendapatkan CSV berisi semua baris bermasalah beserta alasannya, perbaiki di spreadsheet Anda, lalu impor sebagai gelombang kedua. Atau centang <strong>Lewati baris tidak valid dan impor hanya klien yang valid</strong> kalau baris bermasalah itu kontak lama yang tidak Anda butuhkan. Thrive tidak akan mengimpor selama masih ada baris yang perlu perhatian, kecuali Anda memilih salah satu cara ini.</p>
+<p>Duplikat ditangani untuk Anda. Email apa pun yang sudah ada di workspace Anda, termasuk klien yang diarsipkan, atau yang muncul dua kali di file, akan dilewati, bukan diimpor lagi. Artinya Anda bisa menjalankan ulang impor dengan aman setelah memperbaiki beberapa baris tanpa membuat daftar Anda berlipat ganda.</p>
+<p>Kalau Anda sudah memakai <a href="/blog/id/automate-busy-work">alur kerja</a>, alur kerja itu juga berjalan untuk klien yang diimpor, dibatasi 100 tindakan per impor. Dengan alur kerja "saat klien dibuat", impor dalam gelombang yang lebih kecil dan cek riwayat jalannya sesudahnya.</p>
+<p>Lebih suka menyerahkan file ke asisten AI? <strong>Gunakan MCP</strong> di dialog impor menunjukkan cara menghubungkan Claude atau ChatGPT, yang bisa melihat pratinjau impor dan menunggu persetujuan Anda. Lihat <a href="/blog/id/run-your-business-with-ai">memakai AI untuk urusan admin</a>.</p>
+
+<h2>Setelah impor: tampilan, bukan kode warna</h2>
+<p>Tujuan pindah bukan untuk punya daftar yang sama di tempat lain. Tujuannya berhenti mengurus daftar secara manual. Beberapa hal menggantikan kebiasaan Anda di sheet:</p>
+<ul>
+  <li><strong>Tampilan papan, bukan baris berwarna.</strong> Ubah daftar klien ke <strong>Tampilan papan</strong>, pilih <strong>Kelompokkan</strong>, lalu pilih field pilihan Hubungan atau Tahap Anda. Setiap opsi menjadi kolom, dan menyeret kartu klien dari Prospek ke Aktif memperbarui field-nya.</li>
+  <li><strong>Filter, bukan baris tersembunyi.</strong> Cari, filter, dan urutkan berdasarkan field apa pun, termasuk kolom kustom, dan simpan tampilan yang Anda pakai setiap minggu.</li>
+  <li><strong>Pekerjaan yang terhubung, bukan kolom catatan.</strong> Proyek, proposal, kontrak, dan faktur baru dibuat untuk klien tersebut, jadi catatannya menampilkan riwayat yang sebenarnya, bukan satu baris yang Anda ketik.</li>
+</ul>
+<figure data-shot="clients"><figcaption>Daftar klien yang dikelompokkan per tahap pipeline, setelah impor.</figcaption></figure>
+<p>Simpan spreadsheet lama sebagai cadangan hanya-baca selama sebulan, lalu arsipkan. Kalau Anda mendapati diri membukanya "hanya untuk mengecek", tambahkan apa pun yang Anda cari sebagai field. Dari sini, <a href="/blog/id/manage-multiple-projects">mengelola banyak proyek klien</a> melanjutkan pembahasannya, dan <a href="/blog/id/daily-summary-email">email ringkasan harian</a> memberi tahu apa yang berubah tanpa perlu membuka daftar. Pindah dari aplikasi all-in-one? Lihat panduan <a href="/blog/id/honeybook-alternative">alternatif HoneyBook</a> kami.</p>
+
+<h2>Coba di proyek Anda berikutnya</h2>
+<p>Rapikan sheet Anda, buat dua atau tiga kolom kustom, dan impor daftar klien dalam satu kali duduk. Thrive seharga $10 per bulan atau $100 per tahun, dengan uji coba gratis 7 hari tanpa perlu kartu. <a href="https://app.runonthrive.com/auth/sign-up">Mulai uji coba Anda</a> dan pensiunkan spreadsheet Anda minggu ini.</p>

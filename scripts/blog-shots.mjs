@@ -16,6 +16,10 @@ const PORT=4177,DEBUG=9337,W=1440,H=900;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 // __click waits up to 6 s for the element: some pages render after their data loads.
 const helpers=`window.__click=async sel=>{for(let i=0;i<30;i++){const el=document.querySelector(sel);if(el){el.click();return;}await new Promise(r=>setTimeout(r,200));}throw Error('Missing '+sel);};`;
+// Opens the client import with a small fictional CSV (the import dialog's file input).
+const IMPORT=`const b=document.createElement('button');b.dataset.action='ci-start';b.hidden=true;document.body.append(b);b.click();b.remove();await new Promise(r=>setTimeout(r,600));
+ const csv='Name,Email,Company,Service,Tags\\nMaya Patel,maya@harbourtea.example,Harbour Tea,Branding,referral\\nTom Becker,tom@northwind.example,Northwind Cycles,Web design,website\\nLina Costa,lina@solmarket.example,Sol Market,Branding,instagram\\nJonas Berg,jonas@fjordfilms.example,Fjord Films,Packaging,referral\\nnot-an-email,,Old Lead Co,,\\n';
+ const inp=document.querySelector('dialog[open] input[type=file]'),dt=new DataTransfer();dt.items.add(new File([csv],'clients-2026.csv',{type:'text/csv'}));inp.files=dt.files;inp.dispatchEvent(new Event('change',{bubbles:true}));`;
 // Steps use data attributes only, so they work in every language.
 const shots={
  overview:{hash:'overview'},
@@ -30,6 +34,15 @@ const shots={
  contracts:{hash:'contracts',steps:[`await __click('[data-action="document"]')`]},
  scheduling:{hash:'scheduling'},
  mcp:{hash:'settings/mcp',steps:[`[...document.querySelectorAll('*')].filter(e=>!e.children.length&&/127\\.0\\.0\\.1:\\d+/.test(e.textContent)).forEach(e=>e.textContent=e.textContent.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/,'https://runonthrive.com'))`]},
+ emails:{hash:'messages'},
+ 'summary-settings':{hash:'settings/notifications'},
+ 'deposit-settings':{hash:'settings/proposals',steps:[`document.querySelector('[name=deposit]').scrollIntoView({block:'center'})`]},
+ 'packages-template':{hash:'proposals',steps:[`await __click('[data-action="new-proposal"]')`,`await __click('[name=templateId][value="package-proposal"]')`]},
+ 'packages-editor':{hash:'proposals',steps:[`await __click('[data-action="document"][data-id="doc-packages-draft"]')`,`await __click('[data-editor-go="1"]')`]},
+ 'client-packages':{path:'/share/document.doc-packages',w:1120,steps:[`document.querySelector('.doc-pricing').scrollIntoView({block:'start'});window.scrollBy(0,-24)`]},
+ 'import-map':{hash:'clients',steps:[IMPORT]},
+ 'import-review':{hash:'clients',steps:[IMPORT,`await __click('dialog[open] [data-action="ci-review"]')`]},
+ 'form-embed':{hash:'forms',steps:[`await __click('#main [data-action="more-actions"]')`,`[...document.querySelectorAll('[data-action="share-item"]')].find(e=>e.offsetParent).click()`,`await __click('dialog[open] [data-action="share-generate"]')`,`document.querySelectorAll('dialog[open] textarea').forEach(t=>t.value=t.value.replace(/http:\\/\\/127\\.0\\.0\\.1:\\d+/g,'https://app.runonthrive.com'));document.querySelector('dialog[open] textarea').scrollTop=0`]},
  'client-proposal':{path:'/share/document.doc-p1',w:1120},
  'client-contract':{path:'/share/contract.latest',w:1120},
  'client-invoice':{path:'/share/invoice.latest',w:1120},

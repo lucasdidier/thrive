@@ -1,0 +1,74 @@
+<!--meta {"date":"2026-11-16","title":"Des logiciels open source pour gérer votre activité de freelance","description":"Pourquoi l’open source compte pour un freelance, quoi vérifier avant de choisir, les vrais compromis de l’auto-hébergement, et les deux usages de Thrive.","minutes":7} -->
+<p class="lede">Votre liste de clients, vos contrats et trois ans de factures forment la mémoire de votre activité. La plupart des freelances confient cette mémoire à des logiciels qu’ils louent et dont ils ne voient pas l’intérieur. En général, ça se passe bien, jusqu’au jour où le prix double, où une fonction dont vous dépendez disparaît, ou où l’entreprise est rachetée. Les logiciels open source offrent une autre voie. Voici pourquoi c’est important pour une petite entreprise de services, ce qu’il faut vérifier, ce que l’auto-hébergement vous coûte vraiment en temps, et comment Thrive gère les deux options.</p>
+
+<h2>Pourquoi l’open source compte pour une petite entreprise</h2>
+<p>Open source signifie que le code est public et publié sous une licence qui permet à chacun de l’utiliser, de le modifier et de l’exécuter. Pour un freelance, c’est moins une question d’idéologie que de cinq protections concrètes.</p>
+<h3>Vos données vous appartiennent</h3>
+<p>Avec un logiciel open source, vous pouvez toujours voir comment vos données sont stockées, et rien ne vous empêche de faire tourner une copie dont vous contrôlez la base de données. Vos clients et vos factures ne dépendent pas du bon vouloir d’une seule entreprise.</p>
+<h3>Pas d’enfermement</h3>
+<p>Si l’outil ne vous suffit plus, ou si vous voulez simplement partir, le format de vos données est documenté dans le code lui-même. Partir devient un projet, pas une prise d’otage.</p>
+<h3>Vous pouvez l’héberger vous-même</h3>
+<p>Si vous le souhaitez, vous pouvez faire tourner le logiciel sur vos propres comptes. Certains freelances le font pour la confidentialité, d’autres pour le coût, d’autres parce qu’un contrat client l’exige. La plupart ne le font jamais, mais avoir cette possibilité change la relation avec l’éditeur.</p>
+<h3>Vous pouvez inspecter le code</h3>
+<p>Vous, un ami développeur ou l’équipe sécurité d’un client pouvez lire comment un lien est partagé, ce qu’un client peut voir et où un fichier est stocké. Vous n’avez pas à croire une page marketing sur parole.</p>
+<h3>Le prix ne peut pas être pris en otage</h3>
+<p>Une offre hébergée peut toujours augmenter. Mais quand le logiciel lui-même est libre d’utilisation, l’éditeur sait que vous pouvez partir en emportant le même outil. Cela garde les prix honnêtes. Pour un freelance qui a bâti cinq ans de méthodes de travail autour d’une seule application, c’est l’avantage le plus sous-estimé.</p>
+
+<h2>Ce qu’il faut vérifier</h2>
+<p>« Open source » sur une page d’accueil, c’est un début, pas une garantie. Avant de confier votre activité à un outil, vérifiez ces points :</p>
+<ul>
+<li><strong>La licence.</strong> Les licences permissives comme MIT vous permettent d’utiliser, de modifier et d’héberger le logiciel pour n’importe quel usage, y compris commercial. Certaines licences « source disponible » le restreignent : lisez le fichier de licence.</li>
+<li><strong>Le code est réellement public</strong>, dans un dépôt que vous pouvez ouvrir, et non « disponible sur demande ».</li>
+<li><strong>Une documentation d’auto-hébergement existe</strong> et décrit une vraie installation de production, pas seulement une démo locale.</li>
+<li><strong>Vous pouvez exporter vos données</strong> depuis la version hébergée aussi, dans un format comme le CSV.</li>
+<li><strong>La version hébergée est le même logiciel.</strong> Si le cloud payant a des fonctions que le code ouvert n’a pas, vous revoilà enfermé.</li>
+<li><strong>Il fait le travail.</strong> L’open source ne compense pas les fonctions manquantes. Vérifiez que les propositions, les contrats et les factures fonctionnent comme vous travaillez.</li>
+<li><strong>Il est toujours maintenu.</strong> Regardez quand le code a changé pour la dernière fois et si les mises à jour sont accompagnées d’instructions.</li>
+</ul>
+
+<h2>Les vrais compromis de l’auto-hébergement</h2>
+<p>Héberger vous-même votre logiciel de gestion est une vraie responsabilité. Avant de faire ce choix, sachez clairement à quoi vous vous engagez :</p>
+<ul>
+<li><strong>C’est vous qui le maintenez.</strong> Les mises à jour, les sauvegardes et les réparations quand un fournisseur change quelque chose sont votre affaire. Personne d’autre ne surveille votre copie à 2 h du matin.</li>
+<li><strong>Il vous faut des comptes chez des fournisseurs d’infrastructure.</strong> Pour Thrive, cela veut dire un compte Cloudflare et un projet Supabase. Leurs offres et leurs coûts d’utilisation se règlent entre vous et eux.</li>
+<li><strong>Il vous faut une certaine aisance technique.</strong> Vous utiliserez un terminal, modifierez un fichier de configuration, définirez des secrets et lirez des messages d’erreur. Si « lancer <code>npm test</code> » ne vous dit rien, la version hébergée est sans doute le meilleur choix.</li>
+<li><strong>Les sauvegardes sont à votre charge.</strong> Vos factures et vos contrats signés sont des documents comptables et commerciaux. Une copie que vous ne savez pas restaurer n’est pas une sauvegarde.</li>
+<li><strong>L’e-mail et l’agenda demandent une configuration supplémentaire.</strong> Connecter des boîtes mail et des agendas nécessite en général vos propres comptes chez un fournisseur, plus leurs processus de validation.</li>
+</ul>
+<p>Pour la plupart des freelances, la voie raisonnable est la suivante : utiliser la version hébergée, et apprécier de pouvoir s’auto-héberger si un jour c’était nécessaire.</p>
+
+<h2>Comment Thrive fonctionne des deux façons</h2>
+<p>Thrive est un espace de travail pour les freelances et les petits studios : clients, projets, propositions, contrats, factures, suivi du temps, e-mails liés aux clients, pages de réservation, formulaires pour votre site, automatisations et portails clients. Son code est public sur <a href="https://github.com/lucasdidier/thrive">github.com/lucasdidier/thrive</a> sous licence MIT. Vous pouvez l’utiliser de deux façons.</p>
+<h3>Thrive Cloud : 10 $ par mois</h3>
+<p>Inscrivez-vous sur runonthrive.com et commencez à travailler. Cela coûte 10 $ par mois ou 100 $ par an, après un essai gratuit de 7 jours sans carte bancaire. L’hébergement, les mises à jour et les sauvegardes sont gérés pour vous, et connecter votre e-mail et votre agenda Google ou Microsoft se fait en quelques clics une fois sur une offre payante.</p>
+<figure data-shot="overview"><figcaption>La page Accueil dans Thrive : les totaux de l’activité, le calendrier, les projets en cours et les éléments en attente de réponse d’un client.</figcaption></figure>
+<p>Partir est simple aussi. Les listes comme les clients, les projets et les factures peuvent être exportées en CSV : les données que vous avez constituées restent utilisables ailleurs.</p>
+<h3>Auto-hébergé : gratuit sous licence MIT</h3>
+<p>Vous pouvez faire tourner le même code sur vos propres comptes. Le guide d’auto-hébergement de Thrive (<code>docs/self-hosting.md</code> dans le dépôt) décrit une installation sur Cloudflare Workers avec Supabase pour la connexion, la base de données et le stockage privé des fichiers. En résumé :</p>
+<ol>
+<li><strong>Créez un projet Supabase</strong> et appliquez une fois, dans l’ordre, les fichiers de migration SQL du dépôt. Activez la connexion par e-mail et mot de passe, définissez l’adresse de votre site et les URL de redirection, et configurez votre propre service SMTP pour les e-mails d’inscription et de mot de passe.</li>
+<li><strong>Configurez le Worker.</strong> Avec Node.js 22.13 ou plus récent, installez et lancez les tests, puis indiquez le nom de votre Worker, l’adresse de votre application et votre URL Supabase dans <code>wrangler.self-hosted.jsonc</code>.</li>
+<li><strong>Compilez et déployez</strong> avec Wrangler, puis ajoutez vos deux clés Supabase comme secrets du Worker. Utilisez l’adresse workers.dev du Worker ou rattachez votre domaine.</li>
+<li><strong>Options supplémentaires.</strong> L’e-mail, l’agenda et les pages de réservation nécessitent votre propre compte Nylas. Pour connecter Claude ou ChatGPT, activez le serveur OAuth de Supabase comme le décrit le guide.</li>
+<li><strong>Vérifiez et sauvegardez.</strong> Le guide comprend une checklist : inscription et connexion, données enregistrées d’un navigateur à l’autre, liens client qui cessent de fonctionner une fois révoqués, et sauvegardes de la base de données comme des fichiers stockés.</li>
+</ol>
+<p>Le dépôt contient aussi une invite de configuration que vous pouvez confier à un agent de code pour qu’il vous accompagne dans l’installation. Une copie auto-hébergée convient à une personne, ou à plusieurs personnes avec des espaces de travail séparés ; il n’y a pas de gestion des droits pour une équipe partagée. La facturation de l’abonnement est désactivée dans une installation auto-hébergée.</p>
+
+<h2>Les mêmes fonctions, dans les deux cas</h2>
+<p>Hébergé ou auto-hébergé, vous avez le même Thrive : des propositions avec des forfaits parmi lesquels le client choisit, des contrats signés en tapant son nom, des factures avec vos propres instructions de paiement, du temps suivi qui se transforme en brouillons de facture, des portails clients, l’import de clients par CSV, des automatisations déclenchées par des événements et dix langues d’interface.</p>
+<p>Thrive fonctionne aussi avec les assistants IA. Connectez Claude ou ChatGPT via MCP : ils peuvent lire votre espace de travail, rédiger des propositions et préparer des brouillons de facture, l’envoi et l’émission restant soumis à votre confirmation. Sur une copie auto-hébergée, l’assistant communique avec votre serveur, pas le nôtre. Voyez <a href="/blog/fr/run-your-business-with-ai">comment utiliser l’IA pour gérer votre administratif</a>.</p>
+<figure data-shot="mcp"><figcaption>La page « Utiliser avec l’IA » : connectez Claude ou ChatGPT à votre espace de travail Thrive.</figcaption></figure>
+<p>Et les mêmes limites s’appliquent. Thrive ne traite pas les paiements : les clients paient en dehors, par virement bancaire ou via un lien de paiement que vous indiquez sur la facture. Il n’a ni factures récurrentes, ni relances de paiement automatiques, ni déclencheurs d’automatisation basés sur une date.</p>
+
+<h2>Une checklist rapide pour décider</h2>
+<ul>
+<li>Voulez-vous passer du temps sur les mises à jour et les sauvegardes ? Sinon, prenez la version hébergée.</li>
+<li>Un client ou votre propre politique de confidentialité exige-t-il que les données soient sur vos comptes ? Auto-hébergez.</li>
+<li>Êtes-vous à l’aise avec un terminal et des fichiers de configuration ? L’auto-hébergement est réaliste.</li>
+<li>Voulez-vous surtout un coût faible et pas d’enfermement ? L’offre hébergée plus l’export CSV répondent à ce besoin.</li>
+</ul>
+<p>Vous comparez Thrive à des outils fermés ? Lisez nos comparatifs honnêtes avec <a href="/blog/fr/plutio-alternative">Plutio</a>, <a href="/blog/fr/moxie-alternative">Moxie</a>, <a href="/blog/fr/honeybook-alternative">HoneyBook</a> et <a href="/blog/fr/dubsado-alternative">Dubsado</a>, ou commencez par <a href="/blog/fr/switch-from-spreadsheets">quitter les tableurs</a>.</p>
+<figure data-shot="import-review"><figcaption>Importer vos clients depuis un fichier CSV : Thrive montre quelles lignes sont prêtes et lesquelles doivent être corrigées avant tout enregistrement.</figcaption></figure>
+
+<h2>Essayez sur votre prochain projet</h2>
+<p>Le moyen le plus rapide de juger un logiciel open source, c’est de l’utiliser sur du vrai travail. Commencez sur Thrive Cloud avec un essai gratuit de 7 jours, sans carte bancaire, et gardez le guide d’auto-hébergement sous le coude. <a href="https://app.runonthrive.com/auth/sign-up">Lancez votre essai</a>.</p>

@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Moving your clients out of a spreadsheet (without losing anything on the way)","description":"Signs your client spreadsheet has hit its limit, how to clean it up before you move, and how to map columns, fix problem rows and rebuild your pipeline.","minutes":7} -->
+<p class="lede">Almost every freelancer starts with a spreadsheet. A tab called "Clients", a few columns for name, email and company, maybe a status column you colour by hand. It works for a while, and then one day you realise you've opened three different files and an old email thread just to answer "when did I last invoice this person?" That's the moment to move. This guide covers how to tell it's time, how to clean the sheet so the move is painless, and what to do on the other side.</p>
+
+<h2>Signs you've outgrown the spreadsheet</h2>
+<p>A spreadsheet isn't the problem. The trouble starts when the client list stops being a list and starts being the middle of your business. Some common signs:</p>
+<ul>
+  <li><strong>The same client lives in several places.</strong> One row in the client sheet, another in your invoice tracker, a third in a proposal folder. Change an email address and two of them are now wrong.</li>
+  <li><strong>The history isn't in the row.</strong> You can see that Sam at Northwind is a client, but not which projects you did, what you quoted, or which invoice is still open.</li>
+  <li><strong>The status column lies.</strong> It says "Proposal sent" for a client who signed three weeks ago, because you updated the proposal and forgot the sheet.</li>
+  <li><strong>You avoid opening it.</strong> If updating the sheet feels like a chore, it won't get updated, and a list you don't trust is worse than no list.</li>
+</ul>
+<p>If two or three of those sound familiar, the sheet has done its job. The aim now is a place where the client record and the work you do for them are connected, so the history builds itself as you send proposals and invoices. If you want the bigger picture of what a light CRM should hold, read <a href="/blog/simple-crm-for-freelancers">a simple CRM for freelancers</a>.</p>
+
+<h2>Clean the sheet before you move it</h2>
+<p>Thirty minutes of tidying saves an afternoon of fixes later. Work on a copy of the sheet.</p>
+<ol>
+  <li><strong>One row per client.</strong> Remove blank rows, subtotal rows and the "ARCHIVE BELOW THIS LINE" divider. Merge duplicates: the same person entered twice with different spellings is the most common mess.</li>
+  <li><strong>One header row, with unique names.</strong> Delete merged title cells and rename vague columns ("Info" becomes "Notes").</li>
+  <li><strong>Every client needs an email.</strong> It's how a proper tool tells clients apart and how you'll reach them. Fill in the missing ones, or move clients without an email to a separate tab to deal with later.</li>
+  <li><strong>Make values consistent.</strong> Pick one way to write each status ("Active", not "active", "ACTIVE" and "current"). Write dates as 2026-03-14 rather than "mid-March". Remove currency symbols and thousands separators from amounts, so €4,800 becomes 4800.</li>
+</ol>
+<p>Then export it as CSV. In Google Sheets that's File → Download → Comma-separated values. In Excel, choose Save As and pick "CSV UTF-8". In Notion, export the database as Markdown &amp; CSV and use the CSV file. UTF-8 matters if any client has an accent in their name: Zoë and Müller should arrive as Zoë and Müller.</p>
+
+<h3>A quick pre-import checklist</h3>
+<ul>
+  <li>One header row, no blank or merged cells.</li>
+  <li>One row per client, duplicates merged.</li>
+  <li>An email address on every row.</li>
+  <li>Statuses spelled the same way every time.</li>
+  <li>Dates as YYYY-MM-DD, amounts as plain numbers.</li>
+  <li>Saved as UTF-8 CSV.</li>
+</ul>
+
+<h2>Decide which columns become fields</h2>
+<p>Before you import, look at your remaining columns and sort them into three groups.</p>
+<ul>
+  <li><strong>Standard client details:</strong> email, first and last name, company name, contact name. Every client tool has these.</li>
+  <li><strong>Your own tracking columns:</strong> source, relationship stage, referred by, last check-in. These become custom fields.</li>
+  <li><strong>Things that aren't really client data:</strong> project names, invoice numbers, amounts owed. Leave these out. They belong on projects and invoices, not squeezed into a client row.</li>
+</ul>
+<p>In Thrive, create the custom fields <em>before</em> you import, so your columns have somewhere to go. Use the client table's <strong>+</strong> button or <strong>Columns → Manage custom fields</strong>. Fields can be text, number, currency, date, checkbox, select, multi-select, email or URL. For a status column, use a select field and add exactly the options your sheet uses (Lead, Active, Past, say), because imported values have to match an existing option.</p>
+
+<h2>Map the columns</h2>
+<p>In Thrive, go to <strong>Clients → Import clients</strong>. The dialog accepts a UTF-8 CSV of up to 500 clients and 2 MB, separated by commas or semicolons. If you'd rather start from a clean template, <strong>Download example CSV</strong> gives you a file with every client field and your active custom fields as headers, plus an example row to replace.</p>
+<p>After you choose your file, the <strong>Match columns</strong> step lists each of your headers with the value from your first row underneath, so you can see what's actually in it. Next to each one you pick the Thrive field it belongs to, or <strong>Don't import</strong>. Thrive suggests a match when a header is recognisable, such as "Email address", "Company" or "Contact name". Your custom fields appear in the list as "Custom: Source", "Custom: Relationship" and so on.</p>
+<figure data-shot="import-map"><figcaption>Matching a spreadsheet's columns to Thrive's client fields, with a sample value from the first row under each header.</figcaption></figure>
+<p>A few rules keep it straightforward: Email is the only required field, each Thrive field can be mapped once, and any column you leave on Don't import is listed as ignored on the next screen, so nothing disappears silently. Logos, related records like projects and invoices, and computed totals aren't CSV fields.</p>
+<p>If a column is empty, Thrive fills in sensible suggestions from the email address. A Gmail or Outlook address suggests an individual; a business domain suggests a company and a company name taken from the domain. Names can be suggested from addresses like sam.lee@, but not from shared inboxes like info@ or hello@. Treat these as starting points, not facts.</p>
+
+<h2>Fix the rows that need attention</h2>
+<p>Choose <strong>Review import</strong> and you get <strong>Review clients</strong>: a summary of how many rows are ready to import, how many duplicates will be skipped and how many rows need attention, with a table of every row underneath. Values Thrive inferred are marked as suggested, so you can check the client type and name before anything is saved.</p>
+<figure data-shot="import-review"><figcaption>The import review: rows ready to import, with one row that needs attention before it can come across.</figcaption></figure>
+<p>Rows usually need attention for a handful of reasons:</p>
+<ul>
+  <li><strong>An invalid email.</strong> A typo, a missing domain, two addresses in one cell.</li>
+  <li><strong>A value that doesn't fit the field.</strong> A date written as "March", "€4,800" in a currency field (use 4800), or "Maybe" in a checkbox field (use true or false).</li>
+  <li><strong>An unknown option.</strong> "Actve" in a status column whose options are Lead, Active and Past.</li>
+  <li><strong>A broken row.</strong> More or fewer cells than the header, often from an unquoted comma inside a note.</li>
+</ul>
+<p>You have three ways to deal with them. Use <strong>Edit</strong> on the row, correct it and <strong>Save row</strong>. Use <strong>Download issues</strong> to get a CSV of every problem row with the reason, fix them in your spreadsheet, and import them as a second batch. Or tick <strong>Skip invalid rows and import only valid clients</strong> if the problem rows are old contacts you don't need. Thrive won't import while rows need attention unless you choose one of these.</p>
+<p>Duplicates are handled for you. Any email that already exists in your workspace, including archived clients, or that appears twice in the file, is skipped rather than imported again. That means you can safely re-run an import after fixing a few rows without doubling your list.</p>
+<p>If you already use <a href="/blog/automate-busy-work">workflows</a>, they run on imported clients too, limited to 100 actions per import. With a "when a client is created" workflow, import in smaller batches and check the run history afterwards.</p>
+<p>Prefer to hand the file to an AI assistant? <strong>Use MCP</strong> in the import dialog shows how to connect Claude or ChatGPT, which can preview the import and wait for your approval. See <a href="/blog/run-your-business-with-ai">using AI for your admin</a>.</p>
+
+<h2>After the import: views instead of colour coding</h2>
+<p>The point of moving wasn't to have the same list somewhere else. It was to stop maintaining the list by hand. A few things replace the habits you had in the sheet:</p>
+<ul>
+  <li><strong>Board view instead of coloured rows.</strong> Switch the client list to <strong>Board view</strong>, choose <strong>Group by</strong> and pick your Relationship or Stage select field. Each option becomes a column, and dragging a client card from Lead to Active updates the field.</li>
+  <li><strong>Filters instead of hidden rows.</strong> Search, filter and sort by any field, including custom ones, and save the views you use every week.</li>
+  <li><strong>Linked work instead of notes columns.</strong> New projects, proposals, contracts and invoices are created against the client, so the record shows the real history rather than a line you typed.</li>
+</ul>
+<figure data-shot="clients"><figcaption>The client list grouped by pipeline stage, after the import.</figcaption></figure>
+<p>Keep the old spreadsheet as a read-only backup for a month, then archive it. If you catch yourself opening it "just to check", add whatever you were looking for as a field. From here, <a href="/blog/manage-multiple-projects">managing multiple client projects</a> picks up the thread, and a <a href="/blog/daily-summary-email">daily summary email</a> tells you what changed without opening the list. Coming from an all-in-one tool instead? See our <a href="/blog/honeybook-alternative">HoneyBook alternative</a> guide.</p>
+
+<h2>Try it on your next project</h2>
+<p>Clean your sheet, create two or three custom fields, and import your client list in one sitting. Thrive is $10 a month or $100 a year, with a 7-day free trial and no card needed. <a href="https://app.runonthrive.com/auth/sign-up">Start your trial</a> and retire the spreadsheet this week.</p>

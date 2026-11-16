@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Cómo sacar a tus clientes de una hoja de cálculo (sin perder nada por el camino)","description":"Señales de que tu hoja de clientes ha llegado a su límite, cómo limpiarla antes del cambio y cómo asignar columnas, corregir filas y rehacer tu embudo.","minutes":7} -->
+<p class="lede">Casi todos los freelancers empiezan con una hoja de cálculo. Una pestaña llamada «Clientes», unas columnas para nombre, correo y empresa, quizá una columna de estado que coloreas a mano. Funciona durante un tiempo, y un día te das cuenta de que has abierto tres archivos distintos y un hilo de correo antiguo solo para responder «¿cuándo le facturé por última vez a esta persona?». Ese es el momento de cambiar. Esta guía explica cómo saber que ha llegado la hora, cómo limpiar la hoja para que el cambio sea sencillo y qué hacer al otro lado.</p>
+
+<h2>Señales de que la hoja de cálculo se te ha quedado pequeña</h2>
+<p>La hoja de cálculo no es el problema. El lío empieza cuando la lista de clientes deja de ser una lista y pasa a ser el centro de tu negocio. Algunas señales habituales:</p>
+<ul>
+  <li><strong>El mismo cliente vive en varios sitios.</strong> Una fila en la hoja de clientes, otra en tu control de facturas, una tercera en una carpeta de propuestas. Cambias una dirección de correo y dos de ellas pasan a estar mal.</li>
+  <li><strong>El historial no está en la fila.</strong> Ves que Sam, de Northwind, es cliente, pero no qué proyectos hiciste, qué presupuestaste ni qué factura sigue abierta.</li>
+  <li><strong>La columna de estado miente.</strong> Dice «Propuesta enviada» para un cliente que firmó hace tres semanas, porque actualizaste la propuesta y te olvidaste de la hoja.</li>
+  <li><strong>Evitas abrirla.</strong> Si actualizar la hoja te parece un fastidio, no se actualizará, y una lista en la que no confías es peor que no tener lista.</li>
+</ul>
+<p>Si dos o tres de estas te suenan, la hoja ya ha cumplido su función. Ahora el objetivo es un sitio donde la ficha del cliente y el trabajo que haces para él estén conectados, para que el historial se construya solo a medida que envías propuestas y facturas. Si quieres ver en conjunto qué debería guardar un CRM ligero, lee <a href="/blog/es/simple-crm-for-freelancers">un CRM sencillo para freelancers</a>.</p>
+
+<h2>Limpia la hoja antes de moverla</h2>
+<p>Treinta minutos de orden te ahorran una tarde de arreglos después. Trabaja sobre una copia de la hoja.</p>
+<ol>
+  <li><strong>Una fila por cliente.</strong> Elimina las filas en blanco, las de subtotales y el separador «ARCHIVO DEBAJO DE ESTA LÍNEA». Fusiona los duplicados: la misma persona introducida dos veces con distinta ortografía es el desorden más habitual.</li>
+  <li><strong>Una sola fila de encabezado, con nombres únicos.</strong> Elimina las celdas de título combinadas y renombra las columnas poco claras («Info» pasa a ser «Notas»).</li>
+  <li><strong>Cada cliente necesita un correo.</strong> Es como una herramienta de verdad distingue a los clientes y como vas a contactar con ellos. Completa los que faltan, o pasa los clientes sin correo a una pestaña aparte para ocuparte de ellos más tarde.</li>
+  <li><strong>Haz que los valores sean coherentes.</strong> Elige una sola forma de escribir cada estado («Activo», no «activo», «ACTIVO» y «actual»). Escribe las fechas como 2026-03-14 en lugar de «mediados de marzo». Quita los símbolos de moneda y los separadores de miles de los importes, de modo que 4.800 € pase a ser 4800.</li>
+</ol>
+<p>Después expórtala como CSV. En Google Sheets es Archivo → Descargar → Valores separados por comas. En Excel, elige Guardar como y selecciona «CSV UTF-8». En Notion, exporta la base de datos como Markdown &amp; CSV y usa el archivo CSV. UTF-8 importa si algún cliente tiene un acento en el nombre: Zoë y Müller deben llegar como Zoë y Müller.</p>
+
+<h3>Checklist rápida antes de importar</h3>
+<ul>
+  <li>Una sola fila de encabezado, sin celdas en blanco ni combinadas.</li>
+  <li>Una fila por cliente, con los duplicados fusionados.</li>
+  <li>Una dirección de correo en cada fila.</li>
+  <li>Los estados escritos siempre igual.</li>
+  <li>Fechas como AAAA-MM-DD, importes como números sin formato.</li>
+  <li>Guardado como CSV UTF-8.</li>
+</ul>
+
+<h2>Decide qué columnas se convierten en campos</h2>
+<p>Antes de importar, mira las columnas que te quedan y clasifícalas en tres grupos.</p>
+<ul>
+  <li><strong>Datos estándar del cliente:</strong> correo, nombre y apellidos, nombre de la empresa, nombre de contacto. Todas las herramientas de clientes los tienen.</li>
+  <li><strong>Tus propias columnas de seguimiento:</strong> origen, fase de la relación, quién te recomendó, último contacto. Estas se convierten en campos personalizados.</li>
+  <li><strong>Lo que en realidad no son datos del cliente:</strong> nombres de proyectos, números de factura, importes pendientes. Déjalos fuera. Pertenecen a proyectos y facturas, no a una fila de cliente donde no caben.</li>
+</ul>
+<p>En Thrive, crea los campos personalizados <em>antes</em> de importar, para que tus columnas tengan dónde ir. Usa el botón <strong>+</strong> de la tabla de clientes o <strong>Columnas → Gestionar campos personalizados</strong>. Los campos pueden ser de texto, número, moneda, fecha, casilla, selección, selección múltiple, correo o URL. Para una columna de estado, usa un campo de selección y añade exactamente las opciones que usa tu hoja (por ejemplo, Potencial, Activo, Antiguo), porque los valores importados tienen que coincidir con una opción existente.</p>
+
+<h2>Asigna las columnas</h2>
+<p>En Thrive, ve a <strong>Clientes → Importar clientes</strong>. El diálogo acepta un CSV UTF-8 de hasta 500 clientes y 2 MB, separado por comas o por punto y coma. Si prefieres empezar con una plantilla limpia, <strong>Descargar CSV de ejemplo</strong> te da un archivo con todos los campos de cliente y tus campos personalizados activos como encabezados, más una fila de ejemplo para sustituir.</p>
+<p>Después de elegir tu archivo, el paso <strong>Asignar columnas</strong> muestra cada uno de tus encabezados con el valor de tu primera fila debajo, para que veas qué contiene de verdad. Junto a cada uno eliges el campo de Thrive al que corresponde, o <strong>No importar</strong>. Thrive sugiere una asignación cuando reconoce un encabezado, como «Email address», «Company» o «Contact name». Tus campos personalizados aparecen en la lista como «Personalizado: Origen», «Personalizado: Relación», etc.</p>
+<figure data-shot="import-map"><figcaption>Asignación de las columnas de una hoja de cálculo a los campos de cliente de Thrive, con un valor de muestra de la primera fila bajo cada encabezado.</figcaption></figure>
+<p>Unas pocas reglas lo hacen sencillo: el correo es el único campo obligatorio, cada campo de Thrive se puede asignar una sola vez, y cualquier columna que dejes en No importar aparece como ignorada en la siguiente pantalla, así que nada desaparece sin avisar. Los logotipos, los registros relacionados como proyectos y facturas, y los totales calculados no son campos del CSV.</p>
+<p>Si una columna está vacía, Thrive rellena sugerencias razonables a partir de la dirección de correo. Una dirección de Gmail u Outlook sugiere un particular; un dominio de empresa sugiere una empresa y un nombre de empresa sacado del dominio. Los nombres se pueden sugerir a partir de direcciones como sam.lee@, pero no de buzones compartidos como info@ o hello@. Tómalas como punto de partida, no como datos seguros.</p>
+
+<h2>Corrige las filas que requieren atención</h2>
+<p>Elige <strong>Revisar importación</strong> y llegas a <strong>Revisar clientes</strong>: un resumen de cuántas filas están listas para importar, cuántos duplicados se omitirán y cuántas filas requieren atención, con una tabla de todas las filas debajo. Los valores que Thrive ha deducido aparecen marcados como sugeridos, para que puedas comprobar el tipo de cliente y el nombre antes de guardar nada.</p>
+<figure data-shot="import-review"><figcaption>La revisión de la importación: filas listas para importar, con una fila que requiere atención antes de poder pasar.</figcaption></figure>
+<p>Las filas suelen requerir atención por unos pocos motivos:</p>
+<ul>
+  <li><strong>Un correo no válido.</strong> Una errata, un dominio que falta, dos direcciones en una celda.</li>
+  <li><strong>Un valor que no encaja con el campo.</strong> Una fecha escrita como «marzo», «4.800 €» en un campo de moneda (usa 4800) o «Quizá» en un campo de casilla (usa true o false).</li>
+  <li><strong>Una opción desconocida.</strong> «Actvo» en una columna de estado cuyas opciones son Potencial, Activo y Antiguo.</li>
+  <li><strong>Una fila rota.</strong> Más o menos celdas que el encabezado, a menudo por una coma sin comillas dentro de una nota.</li>
+</ul>
+<p>Tienes tres formas de resolverlo. Usa <strong>Editar</strong> en la fila, corrígela y pulsa <strong>Guardar fila</strong>. Usa <strong>Descargar incidencias</strong> para obtener un CSV con todas las filas problemáticas y el motivo, corrígelas en tu hoja de cálculo e impórtalas en un segundo lote. O marca <strong>Omitir filas no válidas e importar solo los clientes válidos</strong> si las filas problemáticas son contactos antiguos que no necesitas. Thrive no importa mientras haya filas que requieran atención, salvo que elijas una de estas opciones.</p>
+<p>Los duplicados se gestionan solos. Cualquier correo que ya exista en tu espacio de trabajo, incluidos los clientes archivados, o que aparezca dos veces en el archivo, se omite en lugar de importarse otra vez. Eso significa que puedes repetir una importación sin riesgo después de corregir unas cuantas filas, sin duplicar tu lista.</p>
+<p>Si ya usas <a href="/blog/es/automate-busy-work">flujos de trabajo</a>, también se ejecutan con los clientes importados, con un límite de 100 acciones por importación. Si tienes un flujo «cuando se crea un cliente», importa en lotes más pequeños y revisa después el historial de ejecuciones.</p>
+<p>¿Prefieres pasarle el archivo a un asistente de IA? <strong>Usar MCP</strong>, en el diálogo de importación, explica cómo conectar Claude o ChatGPT, que pueden previsualizar la importación y esperar a tu aprobación. Consulta <a href="/blog/es/run-your-business-with-ai">usar la IA para tu administración</a>.</p>
+
+<h2>Después de importar: vistas en lugar de colores</h2>
+<p>El objetivo del cambio no era tener la misma lista en otro sitio. Era dejar de mantener la lista a mano. Unas cuantas cosas sustituyen los hábitos que tenías en la hoja:</p>
+<ul>
+  <li><strong>Vista de tablero en lugar de filas de colores.</strong> Cambia la lista de clientes a <strong>Vista de tablero</strong>, elige <strong>Agrupar por</strong> y selecciona tu campo de selección Relación o Fase. Cada opción se convierte en una columna, y al arrastrar la tarjeta de un cliente de Potencial a Activo se actualiza el campo.</li>
+  <li><strong>Filtros en lugar de filas ocultas.</strong> Busca, filtra y ordena por cualquier campo, incluidos los personalizados, y guarda las vistas que usas cada semana.</li>
+  <li><strong>Trabajo vinculado en lugar de columnas de notas.</strong> Los nuevos proyectos, propuestas, contratos y facturas se crean asociados al cliente, así que la ficha muestra el historial real y no una línea que escribiste tú.</li>
+</ul>
+<figure data-shot="clients"><figcaption>La lista de clientes agrupada por fase del embudo, después de la importación.</figcaption></figure>
+<p>Guarda la hoja antigua como copia de seguridad de solo lectura durante un mes y luego archívala. Si te pillas abriéndola «solo para comprobar algo», añade como campo lo que estabas buscando. A partir de aquí, <a href="/blog/es/manage-multiple-projects">gestionar varios proyectos de clientes</a> retoma el hilo, y un <a href="/blog/es/daily-summary-email">correo de resumen diario</a> te cuenta qué ha cambiado sin abrir la lista. ¿Vienes de una herramienta todo en uno? Consulta nuestra guía de <a href="/blog/es/honeybook-alternative">alternativas a HoneyBook</a>.</p>
+
+<h2>Pruébalo en tu próximo proyecto</h2>
+<p>Limpia tu hoja, crea dos o tres campos personalizados e importa tu lista de clientes de una sentada. Thrive cuesta 10 $ al mes o 100 $ al año, con una prueba gratuita de 7 días sin tarjeta. <a href="https://app.runonthrive.com/auth/sign-up">Empieza tu prueba</a> y jubila la hoja de cálculo esta semana.</p>

@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Como tirar seus clientes de uma planilha (sem perder nada no caminho)","description":"Sinais de que sua planilha de clientes chegou ao limite, como organizá-la antes de mudar e como associar colunas, corrigir linhas e remontar seu funil.","minutes":7} -->
+<p class="lede">Quase todo freelancer começa com uma planilha. Uma aba chamada "Clientes", algumas colunas para nome, e-mail e empresa, talvez uma coluna de status que você pinta à mão. Funciona por um tempo, até que um dia você percebe que abriu três arquivos diferentes e uma conversa antiga de e-mail só para responder "quando foi a última vez que faturei para essa pessoa?". É a hora de mudar. Este guia mostra como saber que chegou a hora, como organizar a planilha para a mudança ser tranquila e o que fazer do outro lado.</p>
+
+<h2>Sinais de que a planilha ficou pequena</h2>
+<p>A planilha não é o problema. O problema começa quando a lista de clientes deixa de ser uma lista e passa a ser o centro do seu negócio. Alguns sinais comuns:</p>
+<ul>
+  <li><strong>O mesmo cliente mora em vários lugares.</strong> Uma linha na planilha de clientes, outra no controle de faturas, uma terceira numa pasta de propostas. Mude um endereço de e-mail e duas delas passam a estar erradas.</li>
+  <li><strong>O histórico não está na linha.</strong> Você vê que o Sam da Northwind é cliente, mas não quais projetos você fez, quanto orçou ou qual fatura ainda está em aberto.</li>
+  <li><strong>A coluna de status mente.</strong> Ela diz "Proposta enviada" para um cliente que assinou há três semanas, porque você atualizou a proposta e esqueceu da planilha.</li>
+  <li><strong>Você evita abrir a planilha.</strong> Se atualizar a planilha parece uma tarefa chata, ela não vai ser atualizada, e uma lista em que você não confia é pior do que nenhuma lista.</li>
+</ul>
+<p>Se dois ou três desses sinais parecem familiares, a planilha já cumpriu o seu papel. O objetivo agora é um lugar onde o cadastro do cliente e o trabalho que você faz para ele estejam conectados, para o histórico se formar sozinho conforme você manda propostas e faturas. Se quiser uma visão geral do que um CRM leve deve guardar, leia <a href="/blog/pt-BR/simple-crm-for-freelancers">um CRM simples para freelancers</a>.</p>
+
+<h2>Organize a planilha antes de mudar</h2>
+<p>Trinta minutos de arrumação poupam uma tarde de correções depois. Trabalhe numa cópia da planilha.</p>
+<ol>
+  <li><strong>Uma linha por cliente.</strong> Apague linhas em branco, linhas de subtotal e o divisor "ARQUIVO ABAIXO DESTA LINHA". Junte as duplicatas: a mesma pessoa cadastrada duas vezes com grafias diferentes é a bagunça mais comum.</li>
+  <li><strong>Uma linha de cabeçalho, com nomes únicos.</strong> Apague células de título mescladas e renomeie colunas vagas ("Info" vira "Observações").</li>
+  <li><strong>Todo cliente precisa de um e-mail.</strong> É assim que uma ferramenta de verdade diferencia os clientes e é por onde você vai falar com eles. Preencha os que faltam, ou mova os clientes sem e-mail para outra aba e resolva depois.</li>
+  <li><strong>Deixe os valores consistentes.</strong> Escolha um jeito de escrever cada status ("Ativo", não "ativo", "ATIVO" e "atual"). Escreva as datas como 2026-03-14 em vez de "meados de março". Tire os símbolos de moeda e os separadores de milhar dos valores, para que € 4.800 vire 4800.</li>
+</ol>
+<p>Depois exporte como CSV. No Google Sheets, é Arquivo → Fazer download → Valores separados por vírgula. No Excel, escolha Salvar como e selecione "CSV UTF-8". No Notion, exporte o banco de dados como Markdown &amp; CSV e use o arquivo CSV. O UTF-8 importa se algum cliente tem acento no nome: Zoë e Müller devem chegar como Zoë e Müller.</p>
+
+<h3>Um checklist rápido antes de importar</h3>
+<ul>
+  <li>Uma linha de cabeçalho, sem células vazias ou mescladas.</li>
+  <li>Uma linha por cliente, duplicatas juntadas.</li>
+  <li>Um endereço de e-mail em cada linha.</li>
+  <li>Status escritos sempre do mesmo jeito.</li>
+  <li>Datas como AAAA-MM-DD, valores como números simples.</li>
+  <li>Salvo como CSV UTF-8.</li>
+</ul>
+
+<h2>Decida quais colunas viram campos</h2>
+<p>Antes de importar, olhe as colunas que sobraram e separe em três grupos.</p>
+<ul>
+  <li><strong>Dados padrão do cliente:</strong> e-mail, nome e sobrenome, nome da empresa, nome do contato. Toda ferramenta de clientes tem esses campos.</li>
+  <li><strong>Suas próprias colunas de acompanhamento:</strong> origem, estágio do relacionamento, indicado por, último contato. Essas viram campos personalizados.</li>
+  <li><strong>O que não é bem dado de cliente:</strong> nomes de projetos, números de faturas, valores a receber. Deixe de fora. Isso pertence aos projetos e às faturas, não espremido numa linha de cliente.</li>
+</ul>
+<p>No Thrive, crie os campos personalizados <em>antes</em> de importar, para as suas colunas terem para onde ir. Use o botão <strong>+</strong> da tabela de clientes ou <strong>Colunas → Gerenciar campos personalizados</strong>. Os campos podem ser texto, número, moeda, data, caixa de seleção, seleção, seleção múltipla, e-mail ou URL. Para uma coluna de status, use um campo de seleção e adicione exatamente as opções que a sua planilha usa (Lead, Ativo, Antigo, por exemplo), porque os valores importados precisam bater com uma opção existente.</p>
+
+<h2>Associe as colunas</h2>
+<p>No Thrive, vá em <strong>Clientes → Importar clientes</strong>. A janela aceita um CSV UTF-8 com até 500 clientes e 2 MB, separado por vírgulas ou ponto e vírgula. Se preferir começar de um modelo limpo, <strong>Baixar CSV de exemplo</strong> dá um arquivo com todos os campos de cliente e seus campos personalizados ativos como cabeçalhos, mais uma linha de exemplo para substituir.</p>
+<p>Depois que você escolhe o arquivo, a etapa <strong>Associar colunas</strong> lista cada cabeçalho com o valor da sua primeira linha embaixo, para você ver o que realmente tem ali. Ao lado de cada um, você escolhe o campo do Thrive a que ele corresponde, ou <strong>Não importar</strong>. O Thrive sugere uma associação quando reconhece o cabeçalho, como "Email address", "Company" ou "Contact name". Seus campos personalizados aparecem na lista como "Personalizado: Origem", "Personalizado: Relacionamento" e assim por diante.</p>
+<figure data-shot="import-map"><figcaption>Associando as colunas de uma planilha aos campos de cliente do Thrive, com um valor de exemplo da primeira linha sob cada cabeçalho.</figcaption></figure>
+<p>Algumas regras deixam tudo simples: E-mail é o único campo obrigatório, cada campo do Thrive pode ser associado uma vez só, e qualquer coluna deixada em Não importar aparece como ignorada na tela seguinte, então nada some sem aviso. Logos, registros relacionados como projetos e faturas, e totais calculados não são campos do CSV.</p>
+<p>Se uma coluna está vazia, o Thrive preenche sugestões sensatas a partir do endereço de e-mail. Um endereço do Gmail ou do Outlook sugere uma pessoa física; um domínio empresarial sugere uma empresa e um nome de empresa tirado do domínio. Nomes podem ser sugeridos a partir de endereços como sam.lee@, mas não de caixas compartilhadas como info@ ou hello@. Trate essas sugestões como ponto de partida, não como fatos.</p>
+
+<h2>Corrija as linhas que precisam de atenção</h2>
+<p>Escolha <strong>Revisar importação</strong> e você chega em <strong>Revisar clientes</strong>: um resumo de quantas linhas estão prontas para importar, quantas duplicatas serão ignoradas e quantas linhas precisam de atenção, com uma tabela de todas as linhas embaixo. Os valores que o Thrive deduziu ficam marcados como sugeridos, para você conferir o tipo e o nome do cliente antes de qualquer coisa ser salva.</p>
+<figure data-shot="import-review"><figcaption>A revisão da importação: linhas prontas para importar, com uma linha que precisa de atenção antes de entrar.</figcaption></figure>
+<p>As linhas normalmente precisam de atenção por alguns motivos:</p>
+<ul>
+  <li><strong>Um e-mail inválido.</strong> Um erro de digitação, um domínio faltando, dois endereços numa célula.</li>
+  <li><strong>Um valor que não cabe no campo.</strong> Uma data escrita como "março", "€ 4.800" num campo de moeda (use 4800), ou "Talvez" num campo de caixa de seleção (use true ou false).</li>
+  <li><strong>Uma opção desconhecida.</strong> "Ativvo" numa coluna de status cujas opções são Lead, Ativo e Antigo.</li>
+  <li><strong>Uma linha quebrada.</strong> Mais ou menos células do que o cabeçalho, muitas vezes por causa de uma vírgula sem aspas dentro de uma observação.</li>
+</ul>
+<p>Você tem três formas de resolver. Use <strong>Editar</strong> na linha, corrija e clique em <strong>Salvar linha</strong>. Use <strong>Baixar problemas</strong> para obter um CSV com todas as linhas com problema e o motivo, corrija na sua planilha e importe como um segundo lote. Ou marque <strong>Ignorar linhas inválidas e importar só os clientes válidos</strong> se as linhas com problema forem contatos antigos de que você não precisa. O Thrive não importa enquanto houver linhas precisando de atenção, a menos que você escolha uma dessas opções.</p>
+<p>As duplicatas são tratadas para você. Qualquer e-mail que já existe no seu espaço de trabalho, incluindo clientes arquivados, ou que aparece duas vezes no arquivo, é ignorado em vez de importado de novo. Isso significa que você pode rodar uma importação de novo com segurança depois de corrigir algumas linhas, sem duplicar sua lista.</p>
+<p>Se você já usa <a href="/blog/pt-BR/automate-busy-work">fluxos de trabalho</a>, eles também rodam nos clientes importados, com limite de 100 ações por importação. Com um fluxo do tipo "quando um cliente é criado", importe em lotes menores e confira o histórico de execuções depois.</p>
+<p>Prefere entregar o arquivo a um assistente de IA? <strong>Usar MCP</strong>, na janela de importação, mostra como conectar o Claude ou o ChatGPT, que podem pré-visualizar a importação e esperar a sua aprovação. Veja <a href="/blog/pt-BR/run-your-business-with-ai">como usar IA na sua rotina administrativa</a>.</p>
+
+<h2>Depois da importação: visualizações em vez de cores</h2>
+<p>O objetivo da mudança não era ter a mesma lista em outro lugar. Era parar de manter a lista à mão. Algumas coisas substituem os hábitos que você tinha na planilha:</p>
+<ul>
+  <li><strong>Visualização em quadro em vez de linhas coloridas.</strong> Mude a lista de clientes para <strong>Visualização em quadro</strong>, escolha <strong>Agrupar por</strong> e selecione seu campo de seleção Relacionamento ou Estágio. Cada opção vira uma coluna, e arrastar o cartão de um cliente de Lead para Ativo atualiza o campo.</li>
+  <li><strong>Filtros em vez de linhas ocultas.</strong> Pesquise, filtre e ordene por qualquer campo, inclusive os personalizados, e salve as visualizações que você usa toda semana.</li>
+  <li><strong>Trabalho vinculado em vez de colunas de observações.</strong> Novos projetos, propostas, contratos e faturas são criados ligados ao cliente, então o cadastro mostra o histórico real, não uma linha que você digitou.</li>
+</ul>
+<figure data-shot="clients"><figcaption>A lista de clientes agrupada por estágio do funil, depois da importação.</figcaption></figure>
+<p>Guarde a planilha antiga como backup somente leitura por um mês e depois arquive. Se você se pegar abrindo ela "só para conferir", adicione como campo o que você estava procurando. A partir daqui, <a href="/blog/pt-BR/manage-multiple-projects">como gerenciar vários projetos de clientes</a> continua a história, e um <a href="/blog/pt-BR/daily-summary-email">e-mail de resumo diário</a> conta o que mudou sem você abrir a lista. Vem de uma ferramenta tudo-em-um? Veja nosso guia <a href="/blog/pt-BR/honeybook-alternative">alternativa ao HoneyBook</a>.</p>
+
+<h2>Teste no seu próximo projeto</h2>
+<p>Organize sua planilha, crie dois ou três campos personalizados e importe sua lista de clientes de uma vez só. O Thrive custa US$ 10 por mês ou US$ 100 por ano, com 7 dias de teste grátis, sem precisar de cartão. <a href="https://app.runonthrive.com/auth/sign-up">Comece seu teste</a> e aposente a planilha esta semana.</p>

@@ -52,6 +52,15 @@ call-to-action box after it, so don't write a button.
 - builder: a workflow open in the builder (trigger + actions)
 - scheduling: booking pages and upcoming meetings
 - mcp: the "Use with AI" page (connect Claude/ChatGPT to Thrive)
+- emails: the Emails page (inbox with threads linked to clients and projects, a thread open)
+- summary-settings: Settings → Notifications (daily/weekly summary email and what it includes)
+- deposit-settings: Settings → Proposals (default deposit % for new proposals, client response, standard terms)
+- packages-template: the New proposal dialog with the "Package proposal" template selected
+- packages-editor: a proposal's Pricing step: Single option / Packages / Multi-select, with a package's services
+- client-packages: what the client sees: "Choose your package" with each package's services and total
+- import-map: client CSV import, matching the file's columns to Thrive fields
+- import-review: client CSV import review (rows ready, one row that needs attention)
+- form-embed: a form's Share dialog, Website embed tab (popup from a button, embed code)
 
 ## Product facts to check
 Read the README.md sections relevant to your article before writing (e.g. "Document templates and service
@@ -78,3 +87,14 @@ claiming them. Don't edit any file except your article.
   "minutes"). Keep the JSON valid (escape quotes).
 - Links: internal article links /blog/<slug> become /blog/<lang>/<slug>. Keep https://app.runonthrive.com/auth/sign-up.
 - Code spans like {{client.name}} stay as they are.
+
+## Comparison articles ("Thrive vs X", "X alternative")
+- Be fair and factual. Describe the other product only with facts from its own official website or help
+  center, checked now, and say "as of November 2026" for prices and plans. Don't guess, don't disparage, and
+  don't repeat claims from review sites as fact. If you can't verify something, leave it out.
+- Say plainly where the other tool is the better choice (e.g. it collects card payments or offers a mobile app,
+  if true) and who Thrive is for. Thrive's real limits: no payment processing (clients pay by bank transfer or
+  your own payment link written on the invoice), typed-name signatures only, no recurring invoices, no
+  automatic payment reminders, no date-based workflow triggers. Never mention Bonsai.
+- Include a short comparison table (only verified rows) and a "How to switch" section (CSV client import,
+  rebuilding templates, connecting email and calendar).

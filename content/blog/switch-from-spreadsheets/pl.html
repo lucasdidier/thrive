@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Jak przenieść klientów z arkusza kalkulacyjnego (i niczego nie zgubić po drodze)","description":"Po czym poznać, że arkusz z klientami dotarł do granic, jak go uporządkować przed przenosinami, jak dopasować kolumny, poprawić błędy i odbudować lejek.","minutes":7} -->
+<p class="lede">Prawie każdy freelancer zaczyna od arkusza kalkulacyjnego. Zakładka „Klienci”, kilka kolumn na imię i nazwisko, e-mail i firmę, może kolumna statusu kolorowana ręcznie. Przez jakiś czas to działa, aż pewnego dnia orientujesz się, że otworzyłeś trzy różne pliki i stary wątek mailowy tylko po to, żeby odpowiedzieć na pytanie „kiedy ostatnio wystawiłem tej osobie fakturę?”. To jest moment na przeprowadzkę. Ten poradnik pokazuje, jak rozpoznać, że już czas, jak uporządkować arkusz, żeby przenosiny były bezbolesne, i co robić po drugiej stronie.</p>
+
+<h2>Oznaki, że arkusz przestał wystarczać</h2>
+<p>Sam arkusz nie jest problemem. Kłopoty zaczynają się, gdy lista klientów przestaje być listą, a staje się środkiem twojej firmy. Kilka typowych oznak:</p>
+<ul>
+  <li><strong>Ten sam klient mieszka w kilku miejscach.</strong> Jeden wiersz w arkuszu klientów, drugi w zestawieniu faktur, trzeci w folderze z ofertami. Zmienisz adres e-mail i dwa z nich są już nieaktualne.</li>
+  <li><strong>Historii nie ma w wierszu.</strong> Widzisz, że Sam z Northwind jest klientem, ale nie widzisz, jakie projekty robiliście, ile wyceniłeś ani która faktura jest wciąż otwarta.</li>
+  <li><strong>Kolumna statusu kłamie.</strong> Pisze „Oferta wysłana” przy kliencie, który podpisał umowę trzy tygodnie temu, bo zaktualizowałeś ofertę, a o arkuszu zapomniałeś.</li>
+  <li><strong>Unikasz otwierania go.</strong> Jeśli aktualizowanie arkusza wydaje się przykrym obowiązkiem, nie będzie aktualizowany, a lista, której nie ufasz, jest gorsza niż brak listy.</li>
+</ul>
+<p>Jeśli dwie albo trzy z tych sytuacji brzmią znajomo, arkusz spełnił już swoje zadanie. Teraz celem jest miejsce, w którym karta klienta i praca, którą dla niego wykonujesz, są ze sobą połączone, więc historia buduje się sama, gdy wysyłasz oferty i faktury. Jeśli chcesz szerzej zobaczyć, co powinien zawierać lekki CRM, przeczytaj o <a href="/blog/pl/simple-crm-for-freelancers">prostym CRM dla freelancerów</a>.</p>
+
+<h2>Uporządkuj arkusz przed przenosinami</h2>
+<p>Trzydzieści minut porządków oszczędza popołudnie poprawek później. Pracuj na kopii arkusza.</p>
+<ol>
+  <li><strong>Jeden wiersz na klienta.</strong> Usuń puste wiersze, wiersze sum częściowych i separator „ARCHIWUM PONIŻEJ TEJ LINII”. Połącz duplikaty: ta sama osoba wpisana dwa razy w różnej pisowni to najczęstszy bałagan.</li>
+  <li><strong>Jeden wiersz nagłówka z unikalnymi nazwami.</strong> Usuń scalone komórki z tytułem i zmień nazwy niejasnych kolumn („Info” zamień na „Notatki”).</li>
+  <li><strong>Każdy klient potrzebuje adresu e-mail.</strong> Po nim porządne narzędzie odróżnia klientów i przez niego się z nimi kontaktujesz. Uzupełnij brakujące albo przenieś klientów bez adresu do osobnej zakładki, żeby zająć się nimi później.</li>
+  <li><strong>Ujednolicaj wartości.</strong> Wybierz jeden sposób zapisu każdego statusu („Aktywny”, a nie „aktywny”, „AKTYWNY” i „obecny”). Zapisuj daty jako 2026-03-14 zamiast „połowa marca”. Usuń z kwot symbole walut i separatory tysięcy, żeby 4 800 € zamieniło się w 4800.</li>
+</ol>
+<p>Potem wyeksportuj go jako CSV. W Arkuszach Google to Plik → Pobierz → Wartości rozdzielone przecinkami. W Excelu wybierz Zapisz jako i format „CSV UTF-8”. W Notion wyeksportuj bazę danych jako Markdown &amp; CSV i użyj pliku CSV. Kodowanie UTF-8 ma znaczenie, jeśli któryś klient ma w nazwisku znaki diakrytyczne: Zoë i Müller powinni dotrzeć jako Zoë i Müller.</p>
+
+<h3>Szybka lista kontrolna przed importem</h3>
+<ul>
+  <li>Jeden wiersz nagłówka, bez pustych i scalonych komórek.</li>
+  <li>Jeden wiersz na klienta, duplikaty połączone.</li>
+  <li>Adres e-mail w każdym wierszu.</li>
+  <li>Statusy zapisane za każdym razem tak samo.</li>
+  <li>Daty jako RRRR-MM-DD, kwoty jako zwykłe liczby.</li>
+  <li>Zapisane jako CSV w UTF-8.</li>
+</ul>
+
+<h2>Zdecyduj, które kolumny staną się polami</h2>
+<p>Przed importem przejrzyj pozostałe kolumny i podziel je na trzy grupy.</p>
+<ul>
+  <li><strong>Standardowe dane klienta:</strong> e-mail, imię i nazwisko, nazwa firmy, osoba kontaktowa. Każde narzędzie do obsługi klientów je ma.</li>
+  <li><strong>Twoje własne kolumny do śledzenia:</strong> źródło, etap relacji, polecony przez, ostatni kontakt. Te staną się polami własnymi.</li>
+  <li><strong>Rzeczy, które tak naprawdę nie są danymi klienta:</strong> nazwy projektów, numery faktur, kwoty do zapłaty. Pomiń je. Należą do projektów i faktur, a nie do wiersza klienta.</li>
+</ul>
+<p>W Thrive utwórz pola własne <em>przed</em> importem, żeby twoje kolumny miały dokąd trafić. Użyj przycisku <strong>+</strong> w tabeli klientów albo <strong>Kolumny → Zarządzaj polami własnymi</strong>. Pola mogą być tekstowe, liczbowe, walutowe, datą, polem wyboru, listą jednokrotnego lub wielokrotnego wyboru, e-mailem albo adresem URL. Dla kolumny statusu użyj pola listy wyboru i dodaj dokładnie te opcje, których używa twój arkusz (na przykład Potencjalny, Aktywny, Były), bo importowane wartości muszą pasować do istniejącej opcji.</p>
+
+<h2>Dopasuj kolumny</h2>
+<p>W Thrive przejdź do <strong>Klienci → Importuj klientów</strong>. Okno przyjmuje plik CSV w UTF-8 z maksymalnie 500 klientami i do 2 MB, rozdzielany przecinkami lub średnikami. Jeśli wolisz zacząć od czystego szablonu, <strong>Pobierz przykładowy CSV</strong> da ci plik z nagłówkami dla wszystkich pól klienta i twoich aktywnych pól własnych oraz przykładowym wierszem do zastąpienia.</p>
+<p>Po wybraniu pliku krok <strong>Dopasuj kolumny</strong> wyświetla każdy z twoich nagłówków z wartością z pierwszego wiersza pod spodem, więc widzisz, co faktycznie w nim jest. Obok każdego wybierasz pole Thrive, do którego należy, albo <strong>Nie importuj</strong>. Thrive proponuje dopasowanie, gdy nagłówek jest rozpoznawalny, na przykład „Email address”, „Company” czy „Contact name”. Twoje pola własne pojawiają się na liście jako „Niestandardowe: Źródło”, „Niestandardowe: Relacja” i tak dalej.</p>
+<figure data-shot="import-map"><figcaption>Dopasowywanie kolumn arkusza do pól klienta w Thrive, z przykładową wartością z pierwszego wiersza pod każdym nagłówkiem.</figcaption></figure>
+<p>Kilka zasad upraszcza sprawę: E-mail to jedyne wymagane pole, każde pole Thrive można przypisać tylko raz, a każda kolumna pozostawiona na Nie importuj jest wymieniona na następnym ekranie jako pominięta, więc nic nie znika po cichu. Logo, powiązane rekordy, takie jak projekty i faktury, oraz wyliczane sumy nie są polami CSV.</p>
+<p>Jeśli kolumna jest pusta, Thrive podpowiada rozsądne wartości na podstawie adresu e-mail. Adres z Gmail lub Outlook sugeruje osobę prywatną; domena firmowa sugeruje firmę i nazwę firmy wziętą z domeny. Imiona mogą zostać zasugerowane z adresów w rodzaju sam.lee@, ale nie ze wspólnych skrzynek w rodzaju info@ czy hello@. Traktuj je jako punkt wyjścia, a nie fakty.</p>
+
+<h2>Popraw wiersze, które wymagają uwagi</h2>
+<p>Wybierz <strong>Sprawdź import</strong>, a zobaczysz <strong>Sprawdź klientów</strong>: podsumowanie, ile wierszy jest gotowych do importu, ile duplikatów zostanie pominiętych i ile wierszy wymaga uwagi, a pod spodem tabelę ze wszystkimi wierszami. Wartości wywnioskowane przez Thrive są oznaczone jako sugerowane, więc możesz sprawdzić typ klienta i nazwę, zanim cokolwiek zostanie zapisane.</p>
+<figure data-shot="import-review"><figcaption>Przegląd importu: wiersze gotowe do importu i jeden wiersz, który wymaga uwagi, zanim będzie mógł zostać przeniesiony.</figcaption></figure>
+<p>Wiersze zwykle wymagają uwagi z kilku powodów:</p>
+<ul>
+  <li><strong>Nieprawidłowy e-mail.</strong> Literówka, brak domeny, dwa adresy w jednej komórce.</li>
+  <li><strong>Wartość, która nie pasuje do pola.</strong> Data zapisana jako „marzec”, „4 800 €” w polu walutowym (użyj 4800) albo „Może” w polu wyboru (użyj true lub false).</li>
+  <li><strong>Nieznana opcja.</strong> „Aktywy” w kolumnie statusu, której opcje to Potencjalny, Aktywny i Były.</li>
+  <li><strong>Uszkodzony wiersz.</strong> Więcej lub mniej komórek niż w nagłówku, często z powodu przecinka w notatce, który nie był w cudzysłowie.</li>
+</ul>
+<p>Masz trzy sposoby, żeby się z nimi uporać. Użyj <strong>Edytuj</strong> przy wierszu, popraw go i kliknij <strong>Zapisz wiersz</strong>. Użyj <strong>Pobierz problemy</strong>, żeby dostać CSV ze wszystkimi problematycznymi wierszami i powodem, popraw je w arkuszu i zaimportuj jako drugą partię. Albo zaznacz <strong>Pomiń nieprawidłowe wiersze i importuj tylko prawidłowych klientów</strong>, jeśli problematyczne wiersze to stare kontakty, których nie potrzebujesz. Thrive nie zaimportuje danych, dopóki wiersze wymagają uwagi, chyba że wybierzesz jedną z tych opcji.</p>
+<p>Duplikatami Thrive zajmuje się za ciebie. Każdy e-mail, który już istnieje w twojej przestrzeni roboczej, łącznie z zarchiwizowanymi klientami, albo który występuje w pliku dwa razy, jest pomijany, a nie importowany ponownie. Dzięki temu możesz bezpiecznie powtórzyć import po poprawieniu kilku wierszy i nie podwoić listy.</p>
+<p>Jeśli już korzystasz z <a href="/blog/pl/automate-busy-work">automatyzacji</a>, uruchamiają się one także dla importowanych klientów, z limitem 100 akcji na import. Jeśli masz automatyzację „gdy zostanie utworzony klient”, importuj mniejszymi partiami i sprawdź potem historię uruchomień.</p>
+<p>Wolisz przekazać plik asystentowi AI? <strong>Użyj MCP</strong> w oknie importu pokazuje, jak połączyć Claude lub ChatGPT, które mogą wyświetlić podgląd importu i poczekać na twoją zgodę. Zobacz <a href="/blog/pl/run-your-business-with-ai">jak używać AI do administracji</a>.</p>
+
+<h2>Po imporcie: widoki zamiast kolorowania</h2>
+<p>Nie chodziło o to, żeby mieć tę samą listę gdzie indziej. Chodziło o to, żeby przestać prowadzić ją ręcznie. Kilka rzeczy zastępuje nawyki, które miałeś w arkuszu:</p>
+<ul>
+  <li><strong>Widok tablicy zamiast kolorowych wierszy.</strong> Przełącz listę klientów na <strong>Widok tablicy</strong>, wybierz <strong>Grupuj według</strong> i wskaż pole listy wyboru Relacja albo Etap. Każda opcja staje się kolumną, a przeciągnięcie karty klienta z Potencjalny do Aktywny aktualizuje pole.</li>
+  <li><strong>Filtry zamiast ukrytych wierszy.</strong> Wyszukuj, filtruj i sortuj według dowolnego pola, także własnego, i zapisuj widoki, których używasz co tydzień.</li>
+  <li><strong>Powiązana praca zamiast kolumn z notatkami.</strong> Nowe projekty, oferty, umowy i faktury są tworzone dla klienta, więc karta pokazuje prawdziwą historię, a nie linijkę, którą wpisałeś.</li>
+</ul>
+<figure data-shot="clients"><figcaption>Lista klientów pogrupowana według etapu lejka, po imporcie.</figcaption></figure>
+<p>Zatrzymaj stary arkusz przez miesiąc jako kopię tylko do odczytu, a potem go zarchiwizuj. Jeśli przyłapiesz się na otwieraniu go „tylko żeby sprawdzić”, dodaj jako pole to, czego szukałeś. Dalej wątek podejmuje poradnik o <a href="/blog/pl/manage-multiple-projects">prowadzeniu wielu projektów klientów</a>, a <a href="/blog/pl/daily-summary-email">e-mail z dziennym podsumowaniem</a> powie ci, co się zmieniło, bez otwierania listy. Przechodzisz raczej z narzędzia typu „wszystko w jednym”? Zobacz nasz poradnik o <a href="/blog/pl/honeybook-alternative">alternatywie dla HoneyBook</a>.</p>
+
+<h2>Wypróbuj to przy następnym projekcie</h2>
+<p>Uporządkuj arkusz, utwórz dwa albo trzy pola własne i zaimportuj listę klientów za jednym posiedzeniem. Thrive kosztuje 10 USD miesięcznie albo 100 USD rocznie, z 7-dniowym darmowym okresem próbnym bez podawania karty. <a href="https://app.runonthrive.com/auth/sign-up">Rozpocznij okres próbny</a> i pożegnaj arkusz jeszcze w tym tygodniu.</p>

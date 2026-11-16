@@ -1,0 +1,76 @@
+<!--meta {"date":"2026-11-16","title":"Sortir vos clients d’un tableur (sans rien perdre en chemin)","description":"Les signes que votre tableur clients a atteint ses limites, comment le nettoyer avant de migrer, associer les colonnes, corriger les lignes et refaire le suivi.","minutes":7} -->
+<p class="lede">Presque tous les freelances commencent avec un tableur. Un onglet « Clients », quelques colonnes pour le nom, l’e-mail et l’entreprise, peut-être une colonne de statut que vous colorez à la main. Ça marche un temps, puis un jour vous vous rendez compte que vous avez ouvert trois fichiers différents et un vieux fil d’e-mails rien que pour répondre à « quand ai-je facturé cette personne pour la dernière fois ? ». C’est le moment de migrer. Ce guide explique comment savoir que c’est l’heure, comment nettoyer le tableur pour que la migration se passe sans douleur, et quoi faire une fois de l’autre côté.</p>
+
+<h2>Les signes que votre tableur ne suffit plus</h2>
+<p>Le tableur n’est pas le problème. Les ennuis commencent quand la liste de clients cesse d’être une liste et devient le centre de votre activité. Quelques signes courants :</p>
+<ul>
+  <li><strong>Le même client vit à plusieurs endroits.</strong> Une ligne dans le tableur des clients, une autre dans votre suivi des factures, une troisième dans un dossier de propositions. Changez une adresse e-mail, et deux d’entre elles deviennent fausses.</li>
+  <li><strong>L’historique n’est pas dans la ligne.</strong> Vous voyez que Sam, chez Northwind, est client, mais pas quels projets vous avez réalisés, ce que vous avez chiffré, ni quelle facture est encore ouverte.</li>
+  <li><strong>La colonne de statut ment.</strong> Elle indique « Proposition envoyée » pour un client qui a signé il y a trois semaines, parce que vous avez mis à jour la proposition et oublié le tableur.</li>
+  <li><strong>Vous évitez de l’ouvrir.</strong> Si mettre à jour le tableur ressemble à une corvée, il ne sera pas mis à jour, et une liste à laquelle vous ne faites pas confiance est pire que pas de liste du tout.</li>
+</ul>
+<p>Si deux ou trois de ces signes vous parlent, le tableur a fait son temps. L’objectif est maintenant un endroit où la fiche client et le travail que vous faites pour ce client sont reliés, pour que l’historique se construise tout seul à mesure que vous envoyez propositions et factures. Pour une vue d’ensemble de ce qu’un CRM léger doit contenir, lisez <a href="/blog/fr/simple-crm-for-freelancers">un CRM simple pour freelances</a>.</p>
+
+<h2>Nettoyez le tableur avant de le migrer</h2>
+<p>Trente minutes de rangement vous épargnent un après-midi de corrections plus tard. Travaillez sur une copie du tableur.</p>
+<ol>
+  <li><strong>Une ligne par client.</strong> Supprimez les lignes vides, les lignes de sous-total et le séparateur « ARCHIVES SOUS CETTE LIGNE ». Fusionnez les doublons : la même personne saisie deux fois avec des orthographes différentes est le désordre le plus fréquent.</li>
+  <li><strong>Une seule ligne d’en-tête, avec des noms uniques.</strong> Supprimez les cellules de titre fusionnées et renommez les colonnes floues (« Infos » devient « Notes »).</li>
+  <li><strong>Chaque client a besoin d’un e-mail.</strong> C’est ce qui permet à un vrai outil de distinguer les clients, et c’est par là que vous les joindrez. Complétez les adresses manquantes, ou déplacez les clients sans e-mail dans un onglet à part pour plus tard.</li>
+  <li><strong>Harmonisez les valeurs.</strong> Choisissez une seule façon d’écrire chaque statut (« Actif », et non « actif », « ACTIF » et « en cours »). Écrivez les dates sous la forme 2026-03-14 plutôt que « mi-mars ». Retirez les symboles monétaires et les séparateurs de milliers des montants : 4 800 € devient 4800.</li>
+</ol>
+<p>Exportez-le ensuite en CSV. Dans Google Sheets, c’est Fichier → Télécharger → Valeurs séparées par des virgules. Dans Excel, choisissez Enregistrer sous, puis « CSV UTF-8 ». Dans Notion, exportez la base de données en Markdown &amp; CSV et utilisez le fichier CSV. L’UTF-8 compte dès qu’un client a un accent dans son nom : Zoë et Müller doivent arriver sous la forme Zoë et Müller.</p>
+
+<h3>Une checklist rapide avant l’import</h3>
+<ul>
+  <li>Une seule ligne d’en-tête, aucune cellule vide ou fusionnée.</li>
+  <li>Une ligne par client, doublons fusionnés.</li>
+  <li>Une adresse e-mail sur chaque ligne.</li>
+  <li>Des statuts orthographiés de la même façon partout.</li>
+  <li>Des dates au format AAAA-MM-JJ, des montants en nombres simples.</li>
+  <li>Enregistré en CSV UTF-8.</li>
+</ul>
+
+<h2>Décidez quelles colonnes deviennent des champs</h2>
+<p>Avant d’importer, passez en revue les colonnes restantes et répartissez-les en trois groupes.</p>
+<ul>
+  <li><strong>Les coordonnées client standard :</strong> e-mail, prénom et nom, nom de l’entreprise, nom du contact. Tous les outils de gestion de clients les ont.</li>
+  <li><strong>Vos propres colonnes de suivi :</strong> source, étape de la relation, recommandé par, dernier point. Elles deviennent des champs personnalisés.</li>
+  <li><strong>Ce qui n’est pas vraiment une donnée client :</strong> noms de projets, numéros de facture, montants dus. Laissez-les de côté. Ils ont leur place dans les projets et les factures, pas entassés dans une ligne client.</li>
+</ul>
+<p>Dans Thrive, créez les champs personnalisés <em>avant</em> d’importer, pour que vos colonnes aient un endroit où aller. Utilisez le bouton <strong>+</strong> du tableau des clients ou <strong>Colonnes → Gérer les champs personnalisés</strong>. Un champ peut être de type texte, nombre, devise, date, case à cocher, liste, choix multiple, e-mail ou URL. Pour une colonne de statut, utilisez un champ liste et ajoutez exactement les options de votre tableur (par exemple Prospect, Actif, Ancien), car les valeurs importées doivent correspondre à une option existante.</p>
+
+<h2>Associez les colonnes</h2>
+<p>Dans Thrive, allez dans <strong>Clients → Importer des clients</strong>. La fenêtre accepte un CSV UTF-8 de 500 clients et 2 Mo au maximum, séparé par des virgules ou des points-virgules. Si vous préférez partir d’un modèle propre, <strong>Télécharger un CSV d’exemple</strong> vous donne un fichier avec en en-têtes tous les champs client et vos champs personnalisés actifs, plus une ligne d’exemple à remplacer.</p>
+<p>Une fois votre fichier choisi, l’étape <strong>Associer les colonnes</strong> liste chacun de vos en-têtes avec, en dessous, la valeur de votre première ligne, pour que vous voyiez ce qu’elle contient vraiment. Pour chacun, vous choisissez le champ Thrive correspondant, ou <strong>Ne pas importer</strong>. Thrive propose une correspondance quand un en-tête est reconnaissable, comme « Email address », « Company » ou « Contact name ». Vos champs personnalisés apparaissent dans la liste sous la forme « Personnalisé : Source », « Personnalisé : Relation », etc.</p>
+<figure data-shot="import-map"><figcaption>L’association des colonnes d’un tableur aux champs client de Thrive, avec une valeur d’exemple tirée de la première ligne sous chaque en-tête.</figcaption></figure>
+<p>Quelques règles simplifient les choses : l’e-mail est le seul champ obligatoire, chaque champ Thrive ne peut être associé qu’une fois, et toute colonne laissée sur Ne pas importer est listée comme ignorée à l’écran suivant, pour que rien ne disparaisse en silence. Les logos, les éléments liés comme les projets et les factures, et les totaux calculés ne sont pas des champs CSV.</p>
+<p>Si une colonne est vide, Thrive propose des valeurs plausibles à partir de l’adresse e-mail. Une adresse Gmail ou Outlook suggère un particulier ; un domaine professionnel suggère une entreprise, avec un nom d’entreprise tiré du domaine. Les noms peuvent être déduits d’adresses comme sam.lee@, mais pas de boîtes partagées comme info@ ou hello@. Voyez-y des points de départ, pas des certitudes.</p>
+
+<h2>Corrigez les lignes qui posent problème</h2>
+<p>Choisissez <strong>Vérifier l’import</strong> et vous arrivez sur <strong>Vérifier les clients</strong> : un résumé du nombre de lignes prêtes à importer, du nombre de doublons qui seront ignorés et du nombre de lignes qui demandent une action, avec en dessous un tableau de toutes les lignes. Les valeurs déduites par Thrive sont marquées comme suggérées, pour que vous puissiez vérifier le type de client et le nom avant tout enregistrement.</p>
+<figure data-shot="import-review"><figcaption>La vérification de l’import : des lignes prêtes à importer, et une ligne à corriger avant de pouvoir passer.</figcaption></figure>
+<p>Une ligne demande en général une action pour l’une de ces raisons :</p>
+<ul>
+  <li><strong>Un e-mail invalide.</strong> Une faute de frappe, un domaine manquant, deux adresses dans une même cellule.</li>
+  <li><strong>Une valeur qui ne correspond pas au champ.</strong> Une date écrite « mars », « 4 800 € » dans un champ devise (mettez 4800), ou « Peut-être » dans un champ case à cocher (mettez true ou false).</li>
+  <li><strong>Une option inconnue.</strong> « Actf » dans une colonne de statut dont les options sont Prospect, Actif et Ancien.</li>
+  <li><strong>Une ligne cassée.</strong> Plus ou moins de cellules que l’en-tête, souvent à cause d’une virgule sans guillemets dans une note.</li>
+</ul>
+<p>Vous avez trois façons de les traiter. Utilisez <strong>Modifier</strong> sur la ligne, corrigez-la, puis <strong>Enregistrer la ligne</strong>. Utilisez <strong>Télécharger les problèmes</strong> pour obtenir un CSV de toutes les lignes en erreur avec leur motif, corrigez-les dans votre tableur et importez-les dans un second lot. Ou cochez <strong>Ignorer les lignes invalides et n’importer que les clients valides</strong> si les lignes en erreur sont d’anciens contacts dont vous n’avez pas besoin. Thrive n’importe rien tant que des lignes demandent une action, sauf si vous choisissez l’une de ces options.</p>
+<p>Les doublons sont gérés pour vous. Tout e-mail qui existe déjà dans votre espace de travail, clients archivés compris, ou qui apparaît deux fois dans le fichier, est ignoré au lieu d’être importé à nouveau. Vous pouvez donc relancer un import sans risque après avoir corrigé quelques lignes, sans doubler votre liste.</p>
+<p>Si vous utilisez déjà des <a href="/blog/fr/automate-busy-work">automatisations</a>, elles s’exécutent aussi sur les clients importés, dans la limite de 100 actions par import. Avec une automatisation « quand un client est créé », importez par petits lots et consultez ensuite l’historique d’exécution.</p>
+<p>Vous préférez confier le fichier à un assistant IA ? <strong>Utiliser le MCP</strong>, dans la fenêtre d’import, explique comment connecter Claude ou ChatGPT, qui peuvent prévisualiser l’import et attendre votre accord. Voyez <a href="/blog/fr/run-your-business-with-ai">utiliser l’IA pour votre administratif</a>.</p>
+
+<h2>Après l’import : des vues plutôt qu’un code couleur</h2>
+<p>Le but de la migration n’était pas d’avoir la même liste ailleurs. C’était d’arrêter de la tenir à jour à la main. Quelques fonctions remplacent les habitudes que vous aviez dans le tableur :</p>
+<ul>
+  <li><strong>Une vue Kanban plutôt que des lignes colorées.</strong> Passez la liste de clients en <strong>Vue Kanban</strong>, choisissez <strong>Grouper par</strong> et sélectionnez votre champ liste Relation ou Étape. Chaque option devient une colonne, et faire glisser la carte d’un client de Prospect à Actif met le champ à jour.</li>
+  <li><strong>Des filtres plutôt que des lignes masquées.</strong> Recherchez, filtrez et triez sur n’importe quel champ, y compris les champs personnalisés, et enregistrez les vues que vous utilisez chaque semaine.</li>
+  <li><strong>Du travail lié plutôt que des colonnes de notes.</strong> Les nouveaux projets, propositions, contrats et factures sont créés pour le client, donc la fiche montre le véritable historique plutôt qu’une ligne que vous avez tapée.</li>
+</ul>
+<figure data-shot="clients"><figcaption>La liste de clients regroupée par étape du pipeline, après l’import.</figcaption></figure>
+<p>Gardez l’ancien tableur en lecture seule comme sauvegarde pendant un mois, puis archivez-le. Si vous vous surprenez à l’ouvrir « juste pour vérifier », ajoutez ce que vous cherchiez sous forme de champ. Pour la suite, <a href="/blog/fr/manage-multiple-projects">gérer plusieurs projets clients</a> prend le relais, et un <a href="/blog/fr/daily-summary-email">e-mail récapitulatif quotidien</a> vous dit ce qui a changé sans ouvrir la liste. Vous venez plutôt d’un outil tout-en-un ? Lisez notre guide <a href="/blog/fr/honeybook-alternative">alternative à HoneyBook</a>.</p>
+
+<h2>Essayez sur votre prochain projet</h2>
+<p>Nettoyez votre tableur, créez deux ou trois champs personnalisés et importez votre liste de clients en une seule séance. Thrive coûte 10 $ par mois ou 100 $ par an, avec un essai gratuit de 7 jours, sans carte bancaire. <a href="https://app.runonthrive.com/auth/sign-up">Lancez votre essai</a> et mettez le tableur à la retraite cette semaine.</p>
