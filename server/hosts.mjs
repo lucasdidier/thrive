@@ -14,7 +14,7 @@ export function siteOrigin(env){
 export const landingURL=env=>{const site=siteOrigin(env);return site?site+'/':'/landing';};
 export const onSite=(request,env)=>{const site=siteOrigin(env);return !!site&&new URL(request.url).origin===site;};
 
-// The blog (/blog, /blog/…) is served on the site too.
+// The blog (/blog, /blog/…) and the comparison pages (/compare, /compare/…) are served on the site too.
 const PAGES=new Set(['/privacy','/terms','/checkout','/visit']);
 const STATIC=/\/[^/]+\.[a-z0-9]{2,5}$/i;
 // On the site host: `/` shows the landing page, pages and static files are served, and every other path
@@ -30,6 +30,6 @@ export function siteRoute(request,env){
  if(lang!=='en'&&LANGUAGE_CODES.includes(lang))return {request:new Request(new URL('/landing/'+lang+url.search,url),request)};
  const old=/^\/landing\/([A-Za-z-]+)\/?$/.exec(url.pathname);
  if(old&&LANGUAGE_CODES.includes(old[1])&&old[1]!=='en')return {response:new Response(null,{status:308,headers:{Location:url.origin+'/'+old[1]+url.search}})};
- if(PAGES.has(url.pathname)||url.pathname==='/blog'||url.pathname.startsWith('/blog/')||STATIC.test(url.pathname))return null;
+ if(PAGES.has(url.pathname)||url.pathname==='/blog'||url.pathname.startsWith('/blog/')||url.pathname==='/compare'||url.pathname.startsWith('/compare/')||STATIC.test(url.pathname))return null;
  return {response:new Response(null,{status:308,headers:{Location:new URL(url.pathname+url.search,env.THRIVE_APP_URL).href,'Cache-Control':'public, max-age=3600'}})};
 }
