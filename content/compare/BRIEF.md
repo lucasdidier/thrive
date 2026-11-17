@@ -101,3 +101,25 @@ public/compare/logos/<slug>.svg (or .png). Check it: the file must be an image (
 external references, no event attributes), show the wordmark or symbol clearly, and not be a third-party copy.
 Report the exact source URL. If the header logo is inline SVG in the page HTML, extract that <svg> element
 into the file. Don't recolor or alter it.
+
+## Translating (content/compare/thrive-vs-<slug>/<lang>.html)
+- Translate every English page (content/compare/*/en.html) into your language, one file next to en.html with
+  the same slug. Write like a native SaaS copywriter in that language for freelancers, not a literal
+  translation: natural phrasing, the local terms freelancers use, same structure, sections, lists, table rows
+  and meaning. Keep it exactly as honest: add no claims, drop no caveats ("as of November 2026" stays, in your
+  language).
+- Register: German informal "du", Portuguese (Brazil) "você", French "vous", Spanish "tú", Italian "tu", Dutch
+  "je"; Polish, Turkish, Indonesian: the natural friendly register for SaaS marketing.
+- Keep in English: product names, plan names (Starter, Essentials, Premier, Pro…), feature names that are the
+  competitor's own brand names (Dubsado Payments, HoneyBook AI, Plutio Pal, Smart Flows…), and the package names
+  Essential/Signature/Complete if they appear. Prices stay in USD with the same amounts; format numbers the way
+  your language does (e.g. 29 $ or US$ 29 per local convention; "USD" in Polish like the Polish blog).
+- When the text names a Thrive button, page or field (Import clients, Use with AI, Settings → Invoices,
+  Emails…), use the app's own translation from public/locales/<lang>.json (the English text is the key).
+- Keep the HTML exactly: same tags, classes (vs-pick, vs-faq, vs-table, vs-note, yes/no/part on cells),
+  data-shot names and figure/figcaption structure (translate captions and headings, including "Choose X if").
+- Meta JSON: translate title, description (140–160 characters if the language allows), lede and checked
+  ("November 2026" in your language). Keep date, name, site, logo and logoText exactly. Keep the JSON valid.
+- Links: /blog/<slug> becomes /blog/<lang>/<slug>; /compare/thrive-vs-<x> becomes /compare/<lang>/thrive-vs-<x>.
+  Competitor URLs, https://app.runonthrive.com/auth/sign-up and mailto links stay as they are.
+- Never mention Bonsai.

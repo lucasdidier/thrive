@@ -2,6 +2,7 @@
 // public site (staging, self-hosted) the same pages are at /landing and /landing/<language>.
 import {translateHTML} from './landing-i18n.mjs';
 import {BLOG_LANGUAGES,blogURL,languageMenu} from './blog.mjs';
+import {compareURL} from './compare.mjs';
 
 export const LANDING_LANGUAGES=BLOG_LANGUAGES;
 export const landingPath=(lang,site)=>site?(lang==='en'?'/':'/'+lang):(lang==='en'?'/landing':'/landing/'+lang);
@@ -20,6 +21,7 @@ export function renderLanding(html,{lang='en',maps={},origin='',site=false,app='
  out=out.replace(/href="([^"]*\/auth\/sign-(?:up|in))"/g,`href="$1?lang=${lang}"`);
  out=out.replace('<html lang="en">',`<html lang="${lang}">`);
  out=out.replaceAll('href="/blog"',`href="${blogURL(lang)}"`);
+ out=out.replace(/href="\/compare(?:\/(thrive-vs-[a-z0-9-]+))?"/g,(m,slug)=>`href="${compareURL(lang,slug||'')}"`);
  const url=origin+landingPath(lang,true);
  const alternates=available.map(l=>`<link rel="alternate" hreflang="${l}" href="${escAttr(origin+landingPath(l,true))}">`).join('')+`<link rel="alternate" hreflang="x-default" href="${escAttr(origin+'/')}">`;
  out=out.replace('<meta property="og:url" content="https://runonthrive.com/">',`<meta property="og:url" content="${escAttr(url)}"><meta property="og:locale" content="${lang.replace('-','_')}"><link rel="canonical" href="${escAttr(url)}">${alternates}<link rel="stylesheet" href="/blog.css">`);

@@ -31,7 +31,7 @@ test('the site serves the comparison pages and their logos', ()=>{
 test('a comparison page has both logos, the buttons, the FAQ data, the call to action and the trademark note', ()=>{
  const html=renderCompare('/compare/thrive-vs-acme',{pages:{'thrive-vs-acme':{en:sample()}},origin:'https://runonthrive.com',app:'https://app.runonthrive.com'});
  assert.match(html,/<h1>Thrive vs Acme<\/h1>/);
- assert.match(html,/<img src="\/compare\/logos\/acme.svg" alt="Acme logo"/);
+ assert.match(html,/<img src="\/compare\/logos\/acme.svg\?v=2" alt="Acme logo"/);
  assert.match(html,/<a class="btn quiet" href="https:\/\/www.acme.example\/" rel="noopener nofollow" target="_blank">Visit acme.example/);
  assert.match(html,/href="https:\/\/app.runonthrive.com\/auth\/sign-up\?lang=en"/);
  assert.match(html,/"@type":"FAQPage".*"name":"Is there a trial\?"/);
